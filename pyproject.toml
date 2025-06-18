@@ -15,5 +15,5 @@ classifiers = [
 #license-files = ["LICEN[CS]E*"]
 #
 [project.urls]
-Homepage = "https://github.com/pypa/sampleproject"
+Homepage = "https://github.com/CheesecakeTV/SwiftGUI"
 #Issues = "https://github.com/pypa/sampleproject/issues"
