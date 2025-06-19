@@ -1,5 +1,0 @@
-import tkinter as tk
-
-
-
-
