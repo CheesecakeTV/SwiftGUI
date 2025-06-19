@@ -16,13 +16,18 @@ layout = [
                 sg.T("Inside of another Frame!")
             ]
         ])
+    ],[
+        sg.Button("Hallo Welt-Button",key="Hallo Welt",key_function=lambda :print("Yooo"))
     ]
 ]
 
 
 w = sg.Window(layout)
 
-print("Loop:",w.loop(),w.values)
+for i in range(5):
+    e = w.loop()
+
+    print("Loop:",e,w.values)
 
 
 

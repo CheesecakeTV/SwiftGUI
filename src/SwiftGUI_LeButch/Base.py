@@ -1,4 +1,4 @@
-from collections.abc import Iterable
+from collections.abc import Iterable, Callable
 from typing import Literal,Self
 import tkinter as tk
 
@@ -14,6 +14,10 @@ class BaseElement:
     fake_tk_element:tk.Widget = None   # This gets returned when parent is None
     is_container:bool = False   # True, if this Element contains others
     window = None # Main Window
+
+    key:any = None  # If given, this will be written to the event-value. Elements without a key can not throw key-events
+    key_function: Callable | Iterable[Callable] = None  # Called as an event
+    _key_function_send_wev:bool = False   # True, if window, event, value should be sent to key_function
 
     def _init(self,parent:"BaseElement",window):
         """
