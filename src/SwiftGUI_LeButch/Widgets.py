@@ -7,8 +7,12 @@ from BaseWidget import BaseWidget,BaseContainer
 class Example(BaseWidget):
     """
     Copy this class ot create your own Widget
+
+    The following methods are to be overwritten if needed:
+    _get_value  (determines the value returned by this widget)
+    _init_widget_for_inherrit   (Initializes the widget)
     """
-    tk_widget_class:type = None # Class of the connected widget
+    _tk_widget_class:type = None # Class of the connected widget
 
     def __init__(
             self,
@@ -31,7 +35,7 @@ class Text(BaseWidget):
     """
     Copy this class ot create your own Widget
     """
-    tk_widget_class:type = tk.Label # Class of the connected widget
+    _tk_widget_class:type = tk.Label # Class of the connected widget
 
     def __init__(
             self,
@@ -55,7 +59,7 @@ class Frame(BaseContainer):
     """
     Copy this class ot create your own Widget
     """
-    tk_widget_class:type = tk.Frame # Class of the connected widget
+    _tk_widget_class:type = tk.Frame # Class of the connected widget
 
     def __init__(
             self,
@@ -101,7 +105,14 @@ if __name__ == '__main__':
         [
             Text("Hallo"),
             T("Welt"),
-        ],
+            Frame([
+                [
+                    T("Das ist ein Test")
+                ],[
+                    T("Ja, wirklich")
+                ]
+            ])
+        ]
     ]
 
     # test = Text(tk_kwargs={"text":"Hallo Welt"})
