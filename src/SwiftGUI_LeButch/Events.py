@@ -8,7 +8,8 @@ class Event(enum.Enum):
     FocusOut = "FocusOut"   #
 
     ### Mouse ###
-    MouseWheel = "MouseWheel"
+    MouseWheel = "MouseWheel"   # Scrolled with scroll wheel
+    MouseMove = "Motion"    # Mouse has been moved
 
     MouseEnter = "Enter"    # Mouse hovering over the event
     MouseExit = "Leave"     #
@@ -24,16 +25,3 @@ class Event(enum.Enum):
     ### Special keys ###
     EnterKey = "Return" #
 
-
-# <KeyPress>:
-# Key on keyboard has been pressed down.
-# <KeyRelease>:
-# Key has been released.
-# <ButtonPress>:
-# A mouse button has been pressed.
-# <ButtonRelease>:
-# A mouse button has been released.
-# <Motion>:
-# Mouse has been moved.
-# <Configure>:
-# Widget has changed size or position.
