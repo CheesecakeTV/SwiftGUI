@@ -1,6 +1,6 @@
 #from SwiftGUI_LeButch import Windows as sg
-import SwiftGUI_LeButch as sg
 
+import SwiftGUI_LeButch as sg
 
 layout = [
     [
@@ -21,5 +21,9 @@ layout = [
 
 
 w = sg.Window(layout)
-w.loop()
-print(w.allElements)
+
+print("Loop:",w.loop(),w.values)
+
+
+
+
