@@ -1,4 +1,5 @@
 import SwiftGUI_LeButch as sg
+from SwiftGUI_LeButch import Event
 
 layout = [
     [
@@ -21,7 +22,7 @@ layout = [
 ]
 
 w = sg.Window(layout)
-w["Input-Test"].bind_event("Button",key_function=lambda val:print(val),send_val=True)
+w["Input-Test"].bind_event(Event.ClickDoubleLeft,key_function=lambda val:print("Input:",val),send_val=True)
 
 while True:
     e = w.loop()

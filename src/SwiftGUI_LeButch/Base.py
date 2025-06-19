@@ -2,6 +2,8 @@ from collections.abc import Iterable, Callable
 from typing import Literal, Self, Union
 import tkinter as tk
 
+from SwiftGUI_LeButch import Event
+
 
 class BaseElement:
     """
@@ -120,7 +122,7 @@ class BaseWidget(BaseElement):
 
         self._insert_kwargs = {"side":tk.LEFT}
 
-    def bind_event(self,tk_event:str,key_extention:Union[str,any]=None,key:any=None,key_function:Callable|Iterable[Callable]=None,send_wev:bool=False,send_val:bool=False)->Self:
+    def bind_event(self,tk_event:str|Event,key_extention:Union[str,any]=None,key:any=None,key_function:Callable|Iterable[Callable]=None,send_wev:bool=False,send_val:bool=False)->Self:
         """
         Bind a tk-event onto the underlying tk-widget
 
@@ -135,6 +137,9 @@ class BaseWidget(BaseElement):
         :return: Calling element for inline-calls
         """
         new_key = None
+
+        if hasattr(tk_event,"value"):
+            tk_event = tk_event.value
 
         if len(tk_event) > 1 and not tk_event.startswith("<"):
             tk_event = f"<{tk_event}>"

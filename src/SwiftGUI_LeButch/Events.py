@@ -14,16 +14,25 @@ class Event(enum.Enum):
     MouseEnter = "Enter"    # Mouse hovering over the event
     MouseExit = "Leave"     #
 
-    MouseClickAny = "Button"
-    MouseClickLeft = "Button-1"
-    MouseClickMiddle = "Button-2"
-    MouseClickRight = "Button-3"
+    ClickAny = "Button"
+    ClickLeft = "Button-1"
+    ClickMiddle = "Button-2"
+    ClickRight = "Button-3"
 
-    MouseDoubleClickLeft = "Double-Button-1"
-    MouseDoubleClickMiddle = "Double-Button-2"
-    MouseDoubleClickRight = "Double-Button-3"
+    ClickDoubleAny = "Double-Button"
+    ClickDoubleLeft = "Double-Button-1"
+    ClickDoubleMiddle = "Double-Button-2"
+    ClickDoubleRight = "Double-Button-3"
 
     ### Special keys ###
-    EnterKey = "Return"
+    KeyEnter = "Return"
+    KeySpace = "Space"
+    KeyShift = "Shift"
+    KeyAlt = "Alt"
+    KeyControl = "Control"
+
+    ### Combinations ###
+    Control_Enter = "Control-Return"
+    Shift_Enter = "Shift-Return"
 
 
