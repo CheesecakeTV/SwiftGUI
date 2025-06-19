@@ -13,18 +13,40 @@ class BaseElement:
     parent:Self = None  # next higher Element
     fake_tk_element:tk.Widget = None   # This gets returned when parent is None
     is_container:bool = False   # True, if this Element contains others
+    window = None # Main Window
 
-    def _init(self,parent:Self):
+    def _init(self,parent:"BaseElement",window):
         """
         Not __init__
 
         This gets called when the window is initialized.
-        Use it to initialize all containing widgets.
 
         :param parent: Element to contain this element
+        :param window: Main Window
+        :return:
+        """
+        self._normal_init(parent,window)
+        self._personal_init()
+
+    def _normal_init(self,parent:"BaseElement",window):
+        """
+        Don't override
+        :param parent:
+        :param window:
         :return:
         """
         self.parent = parent
+        self.window = window
+
+        window.register_element(self)
+
+
+    def _personal_init(self):
+        """
+        Use to your liking
+        :return:
+        """
+        ...
 
     def _get_value(self) -> any:
         """
@@ -89,9 +111,8 @@ class BaseWidget(BaseElement):
         """
         return self._tk_widget_class(container, *self._tk_args, **self._tk_kwargs)
 
-    def _init(self,parent:BaseElement):
-        self.parent = parent
-        self._init_widget(parent.tk_widget)
+    def _personal_init(self):
+        self._init_widget(self.parent.tk_widget)
 
     def _init_widget(self,container:tk.Widget|tk.Tk,mode:Literal["pack","grid"]="pack") -> None:
         """
@@ -121,7 +142,7 @@ class BaseWidget(BaseElement):
             line_elem.fake_tk_element = line
 
             for k in i:
-                k._init(line_elem)
+                k._init(line_elem,self.window)
 
             line.grid()
 
@@ -150,11 +171,13 @@ class BaseContainer(BaseWidget):
     """
     is_container = True
 
-    def window_entry_point(self,root:tk.Tk):
+    def window_entry_point(self,root:tk.Tk,window:BaseElement):
         """
         Starting point for the whole window.
         Don't use this unless you overwrite the sg.Window class
+        :param window: Window Element
         :param root: Window to put every element
         :return:
         """
+        self.window = window
         self._init_widget(root)

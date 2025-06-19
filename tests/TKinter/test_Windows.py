@@ -22,4 +22,4 @@ layout = [
 
 w = sg.Window(layout)
 w.loop()
-
+print(w.allElements)

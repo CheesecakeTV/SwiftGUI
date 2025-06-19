@@ -8,14 +8,13 @@ from SwiftGUI_LeButch import BaseElement,Key,Frame
 
 class Window(BaseElement):
     def __init__(self,layout:Iterable[Iterable[BaseElement]]):
+        self.allElements = list()   # Elemente will be registered in here
+
         self._tk = tk.Tk()
         self._sg_widget:Frame
 
         self._sg_widget = Frame(layout)
-        self._sg_widget.window_entry_point(self._tk)
-
-    def _init(self,parent:None=None):
-        self.parent = self  # A window refers to itself, because why not
+        self._sg_widget.window_entry_point(self._tk, self)
 
     @property
     def tk_widget(self) ->tk.Widget:
@@ -28,6 +27,14 @@ class Window(BaseElement):
         """
         self._tk.mainloop()
         return None
+
+    def register_element(self,elem:BaseElement):
+        """
+        Register an Element in this window
+        :param elem:
+        :return:
+        """
+        self.allElements.append(elem)
 
 
 
