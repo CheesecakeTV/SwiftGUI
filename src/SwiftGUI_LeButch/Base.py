@@ -1,5 +1,5 @@
 from collections.abc import Iterable, Callable
-from typing import Literal,Self
+from typing import Literal, Self, Union
 import tkinter as tk
 
 
@@ -63,9 +63,10 @@ class BaseElement:
         """
         return None
 
-    def set_value(self):
+    def set_value(self,val:any):
         """
         Set the value of the element
+        :param val: New value
         :return:
         """
         pass
@@ -118,6 +119,45 @@ class BaseWidget(BaseElement):
         self._tk_kwargs = tk_kwargs
 
         self._insert_kwargs = {"side":tk.LEFT}
+
+    def bind_event(self,tk_event:str,key_extention:Union[str,any]=None,key:any=None,key_function:Callable|Iterable[Callable]=None,send_wev:bool=False,send_val:bool=False)->Self:
+        """
+        Bind a tk-event onto the underlying tk-widget
+
+        To just throw the element-key, set key_extention = ""
+
+        :param tk_event: tkinter event-string. You don't need to add brackets, if your event-text is longer than 1 char
+        :param key_extention: Added to the event-key
+        :param key: event-key. If None and key_extention is not None, it will be appended onto the element-key
+        :param key_function: Called when this event is thrown
+        :param send_wev: Send window, event, values to functions
+        :param send_val: Send element-value to functions
+        :return: Calling element for inline-calls
+        """
+        new_key = None
+
+        if len(tk_event) > 1 and not tk_event.startswith("<"):
+            tk_event = f"<{tk_event}>"
+
+        match (key_extention is not None,key is not None):
+            case (True,True):
+                new_key = key + key_extention
+            case (False,True):
+                new_key = key
+            case (True,False):
+                new_key = self.key + key_extention
+            case (False,False):
+                pass
+
+        temp = self.window.get_event_function(self, new_key, key_function=key_function, key_function_send_wev=send_wev,
+                                       key_function_send_val=send_val)
+
+        self._tk_widget.bind(
+            tk_event,
+            temp
+        )
+
+        return self
 
     @property
     def tk_widget(self) ->tk.Widget:

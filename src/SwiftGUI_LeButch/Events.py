@@ -4,7 +4,7 @@ import enum
 
 class Event(enum.Enum):
 
-    FocusIn = "FocusIn" # Keyboard focus
+    FocusIn = "FocusIn" # Element got focus in layout
     FocusOut = "FocusOut"   #
 
     ### Mouse ###
@@ -14,6 +14,7 @@ class Event(enum.Enum):
     MouseEnter = "Enter"    # Mouse hovering over the event
     MouseExit = "Leave"     #
 
+    MouseClickAny = "Button"
     MouseClickLeft = "Button-1"
     MouseClickMiddle = "Button-2"
     MouseClickRight = "Button-3"
@@ -23,5 +24,6 @@ class Event(enum.Enum):
     MouseDoubleClickRight = "Double-Button-3"
 
     ### Special keys ###
-    EnterKey = "Return" #
+    EnterKey = "Return"
+
 

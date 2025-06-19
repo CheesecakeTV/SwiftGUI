@@ -20,14 +20,14 @@ layout = [
     ]
 ]
 
-
 w = sg.Window(layout)
+w["Input-Test"].bind_event("Button",key_function=lambda val:print(val),send_val=True)
 
-for i in range(5):
+while True:
     e = w.loop()
-    print("Loop:",e,w.values)
+    print(e,w.values)
 
-    if e is None:
+    if not w.exists:
         break
 
 

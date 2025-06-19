@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from SwiftGUI_LeButch import BaseElement, Window
 
 
 # Todo
@@ -12,7 +13,10 @@ def copy_value(to_key:any) -> Callable:
     :param to_key: Element to copy to
     :return:
     """
-    def fkt(w,e,v):
-        ...
+    def fkt(w:Window,e,v,val=NotImplemented):
+        if val is NotImplemented:
+            val = v[e]
+
+        w[to_key].set_value(val)
 
     return fkt

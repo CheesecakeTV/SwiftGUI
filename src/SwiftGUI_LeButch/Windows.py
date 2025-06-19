@@ -2,7 +2,8 @@ import tkinter as tk
 from collections.abc import Iterable,Callable
 from dataclasses import dataclass
 
-from SwiftGUI_LeButch import BaseElement,Frame
+from SwiftGUI_LeButch import BaseElement, Frame, BaseWidget
+
 
 @dataclass
 class Options_Windowwide:
@@ -15,6 +16,8 @@ class Window(BaseElement):
     values:dict = None  # Key:Value of all named elements
 
     allKeyElements: dict[any, BaseElement]   # Key:Element, if key is present
+
+    exists:bool = False # True, if this window exists at the moment
 
     def __init__(self,layout:Iterable[Iterable[BaseElement]]):
         self.allElements = list()   # Elemente will be registered in here
@@ -36,7 +39,15 @@ class Window(BaseElement):
         Main loop
         :return: Triggering event key
         """
+        self.exists = True
         self._tk.mainloop()
+
+        try:
+            assert self._tk.winfo_exists()
+        except (AssertionError,tk.TclError):
+            self.exists = False
+            return None
+
         return self._prev_event
 
     def register_element(self,elem:BaseElement):
@@ -85,7 +96,7 @@ class Window(BaseElement):
         if (key_function is not None) and not hasattr(key_function, "__iter__"):
             key_function = (key_function,)
 
-        def single_event():
+        def single_event(*_):
             self.refresh_values()
 
             if key_function: # Call key-functions
@@ -102,7 +113,7 @@ class Window(BaseElement):
 
                 self.refresh_values() # In case you change values with the key-functions
 
-            if not key is None: # Call named event
+            if key is not None: # Call named event
                 self._receive_event(key)
 
         return single_event
@@ -117,7 +128,7 @@ class Window(BaseElement):
 
         return self.values
 
-    def __getitem__(self, item):
+    def __getitem__(self, item) -> BaseElement|BaseWidget:
         try:
             return self.allKeyElements[item]
         except KeyError:

@@ -129,7 +129,7 @@ class Button(BaseWidget):
 
     def _personal_init(self):
         self._tk_kwargs.update({
-            "command": self.window.get_event_function(self, self.key, self.key_function, self._key_function_send_wev)
+            "command": self.window.get_event_function(self, self.key, self.key_function, self._key_function_send_wev, self._key_function_send_val)
         })
 
         super()._personal_init()
