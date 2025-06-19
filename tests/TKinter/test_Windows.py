@@ -1,5 +1,3 @@
-#from SwiftGUI_LeButch import Windows as sg
-
 import SwiftGUI_LeButch as sg
 
 layout = [
@@ -17,7 +15,8 @@ layout = [
             ]
         ])
     ],[
-        sg.Button("Hallo Welt-Button",key="Hallo Welt",key_function=lambda :print("Yooo"))
+        sg.Button("Hallo Welt-Button",key="Hallo Welt",key_function=lambda :print("Yooo")),
+        sg.In("Was geht",key="Input-Test")
     ]
 ]
 
@@ -26,8 +25,11 @@ w = sg.Window(layout)
 
 for i in range(5):
     e = w.loop()
-
     print("Loop:",e,w.values)
+
+    if e is None:
+        break
+
 
 
 

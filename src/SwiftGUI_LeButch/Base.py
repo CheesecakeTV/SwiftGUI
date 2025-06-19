@@ -17,7 +17,10 @@ class BaseElement:
 
     key:any = None  # If given, this will be written to the event-value. Elements without a key can not throw key-events
     key_function: Callable | Iterable[Callable] = None  # Called as an event
+
     _key_function_send_wev:bool = False   # True, if window, event, value should be sent to key_function
+    _key_function_send_val:bool = False   # True, if current event value shall be sent to key_function
+    # If both are True, it will be sent like this: window, event, values, value
 
     def _init(self,parent:"BaseElement",window):
         """
@@ -54,10 +57,27 @@ class BaseElement:
 
     def _get_value(self) -> any:
         """
-        Returns the value(s) of the Element
+        Returns the value(s) of the Element.
+        Override this function.
         :return:
         """
         return None
+
+    def set_value(self):
+        """
+        Set the value of the element
+        :return:
+        """
+        pass
+
+    @property
+    def value(self) -> any:
+        """
+        Value of the surrounding object.
+        Override _get_value to create custom values
+        :return:
+        """
+        return self._get_value()
 
     @property
     def tk_widget(self) ->tk.Widget:
@@ -79,7 +99,7 @@ class BaseWidget(BaseElement):
     _tk_args:tuple = tuple()    # args and kwargs to pass to the tk_widget_class when initializing
     _tk_kwargs:dict = dict()
 
-    _tk_target_value:tk.Variable = None
+    _tk_target_value:tk.Variable = None # By default, the value of this is read when fetching the value
 
     _insert_kwargs:dict = dict()    # kwargs for the packer/grid
 
@@ -150,24 +170,15 @@ class BaseWidget(BaseElement):
 
             line.grid()
 
-    @property
-    def value(self) -> any:
-        """
-        Value of the surrounding object.
-        Override _get_value to create custom values
-        :return:
-        """
-        try:
-            return self._get_value()
-        except AttributeError:
-            return None
-
     def _get_value(self) -> any:
         """
         This method is used when the value/state of the Widget is read.
         :return:
         """
-        return self._tk_target_value.get()  # Standard target
+        try:
+            return self._tk_target_value.get()  # Standard target
+        except AttributeError:  # _tk_target_value isn't used
+            return None
 
 class BaseContainer(BaseWidget):
     """
