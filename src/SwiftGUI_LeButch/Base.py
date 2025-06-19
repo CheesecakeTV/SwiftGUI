@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from collections.abc import Iterable
 from typing import Literal,Self
 import tkinter as tk
@@ -12,8 +11,9 @@ class BaseElement:
     BaseElement allows you to do whatever the f you want, it's just a class pattern.
     """
     parent:Self = None  # next higher Element
+    fake_tk_element:tk.Widget = None   # This gets returned when parent is None
+    is_container:bool = False   # True, if this Element contains others
 
-    @abstractmethod
     def _init(self,parent:Self):
         """
         Not __init__
@@ -39,6 +39,8 @@ class BaseElement:
         This will be used to store all contained Widgets into
         :return:
         """
+        if self.parent is None:
+            return self.fake_tk_element
         return self.parent.tk_widget
 
 
@@ -88,6 +90,7 @@ class BaseWidget(BaseElement):
         return self._tk_widget_class(container, *self._tk_args, **self._tk_kwargs)
 
     def _init(self,parent:BaseElement):
+        self.parent = parent
         self._init_widget(parent.tk_widget)
 
     def _init_widget(self,container:tk.Widget|tk.Tk,mode:Literal["pack","grid"]="pack") -> None:
@@ -113,8 +116,13 @@ class BaseWidget(BaseElement):
         """
         for i in self.contains:
             line = tk.Frame(self._tk_widget)
+
+            line_elem = BaseElement()
+            line_elem.fake_tk_element = line
+
             for k in i:
-                k._init_widget(line)
+                k._init(line_elem)
+
             line.grid()
 
     @property
@@ -146,7 +154,7 @@ class BaseContainer(BaseWidget):
         """
         Starting point for the whole window.
         Don't use this unless you overwrite the sg.Window class
-        :param root:
+        :param root: Window to put every element
         :return:
         """
         self._init_widget(root)

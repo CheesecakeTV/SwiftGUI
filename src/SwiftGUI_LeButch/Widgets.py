@@ -1,7 +1,8 @@
 import tkinter as tk
 from collections.abc import Iterable
 
-from BaseWidget import BaseWidget,BaseContainer
+from SwiftGUI_LeButch import BaseElement
+from .Base import BaseWidget,BaseContainer
 
 
 class Example(BaseWidget):
@@ -63,7 +64,7 @@ class Frame(BaseContainer):
 
     def __init__(
             self,
-            layout:Iterable[Iterable[BaseWidget]],
+            layout:Iterable[Iterable[BaseElement]],
             # Add here
             tk_args:tuple[any]=tuple(),
             tk_kwargs:dict[str:any]=None
@@ -84,43 +85,5 @@ T = Text
 Label = Text
 
 
-if __name__ == '__main__':
-    # Test
-    root = tk.Tk()
-    root.grid()
-
-    layout = [
-        [
-            Text("Hallo"),
-            T("Welt"),
-        ],
-        [
-            Text("Hallo"),
-            T("Welt"),
-        ],
-        [
-            Text("Hallo"),
-            T("Welt"),
-        ],
-        [
-            Text("Hallo"),
-            T("Welt"),
-            Frame([
-                [
-                    T("Das ist ein Test")
-                ],[
-                    T("Ja, wirklich")
-                ]
-            ])
-        ]
-    ]
-
-    # test = Text(tk_kwargs={"text":"Hallo Welt"})
-    # test._init_widget(root)
-
-    the_Frame = Frame(layout)
-    the_Frame.window_entry_point(root)
-
-    root.mainloop()
 
 
