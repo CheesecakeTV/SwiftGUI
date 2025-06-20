@@ -1,0 +1,3 @@
+
+Instead of a global key-list, keep an option to make it a tree-like structure.
+That way it's possible to copy parts of the layout without changing its keys.
