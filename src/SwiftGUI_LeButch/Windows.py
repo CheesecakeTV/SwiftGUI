@@ -32,6 +32,8 @@ class Window(BaseElement):
         self._sg_widget = Frame(layout)
         self._sg_widget.window_entry_point(self._tk, self)
 
+        self.refresh_values()
+
     @property
     def tk_widget(self) ->tk.Widget:
         return self._sg_widget.tk_widget

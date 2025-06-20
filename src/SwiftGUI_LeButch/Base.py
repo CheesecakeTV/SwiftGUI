@@ -117,7 +117,7 @@ class BaseWidget(BaseElement):
     # def is_container(self) -> bool:
     #     return False
 
-    def __init__(self,tk_args:tuple[any]=tuple(),tk_kwargs:dict[str:any]=None):
+    def __init__(self,key:any=None,tk_args:tuple[any]=tuple(),tk_kwargs:dict[str:any]=None):
         self._tk_args = tk_args
 
         if tk_kwargs is None:
@@ -125,6 +125,7 @@ class BaseWidget(BaseElement):
         self._tk_kwargs = tk_kwargs
 
         self._insert_kwargs = {"side":tk.LEFT}
+        self.key = key
 
     def bind_event(self,tk_event:str|Event,key_extention:Union[str,any]=None,key:any=None,key_function:Callable|Iterable[Callable]=None,send_wev:bool=False,send_val:bool=False)->Self:
         """
@@ -184,8 +185,27 @@ class BaseWidget(BaseElement):
         """
         return self._tk_widget_class(container, *self._tk_args, **self._tk_kwargs)
 
+    def _personal_init_inherit(self):
+        """
+        At window initialization before full widget initialization
+        :return:
+        """
+        pass
+
     def _personal_init(self):
+        self._personal_init_inherit()
         self._init_widget(self.parent.tk_widget)    # Init the contained widgets
+
+    def _set_tk_target_variable(self,value_type:type=tk.StringVar,kwargs_key:str="textvariable",default_value:any=None):
+        """
+        Define a target variable for this widget
+        :param value_type: Class of the needed variable
+        :param kwargs_key: Key this value will be added into the tk-widget
+        :param default_value: Passed to value
+        :return:
+        """
+        self._tk_target_value = value_type(self.tk_widget,value=default_value)
+        self._tk_kwargs[kwargs_key] = self._tk_target_value
 
     def _init_widget(self,container:tk.Widget|tk.Tk,mode:Literal["pack","grid"]="pack") -> None:
         """

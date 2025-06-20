@@ -43,19 +43,24 @@ class Text(BaseWidget):
             self,
             # Add here
             text:str = "",
+            key:any=None,
 
             tk_args:tuple[any]=tuple(),
             tk_kwargs:dict[str:any]=None
     ):
-        super().__init__(tk_args=tk_args,tk_kwargs=tk_kwargs)
+        super().__init__(key=key,tk_args=tk_args,tk_kwargs=tk_kwargs)
 
         if tk_kwargs is None:
             tk_kwargs = dict()
 
         self._tk_kwargs.update({
             **tk_kwargs,
-            "text":text,
         })
+
+        self._text = text
+
+    def _personal_init_inherit(self):
+        self._set_tk_target_variable(default_value=self._text)
 
 # Aliases
 T = Text
@@ -122,7 +127,7 @@ class Button(BaseWidget):
             tk_args:tuple[any]=tuple(),
             tk_kwargs:dict[str:any]=None
     ):
-        super().__init__(tk_args=tk_args,tk_kwargs=tk_kwargs)
+        super().__init__(key=key,tk_args=tk_args,tk_kwargs=tk_kwargs)
 
         if tk_kwargs is None:
             tk_kwargs = dict()
@@ -135,7 +140,6 @@ class Button(BaseWidget):
         })
         #tk.Button(command=)
 
-        self.key = key
         self.key_function = key_function
         self._key_function_send_wev = key_function_send_wev
 
@@ -168,7 +172,7 @@ class Input(BaseWidget):
             tk_args:tuple[any]=tuple(),
             tk_kwargs:dict[str:any]=None
     ):
-        super().__init__(tk_args=tk_args,tk_kwargs=tk_kwargs)
+        super().__init__(key=key,tk_args=tk_args,tk_kwargs=tk_kwargs)
 
         if tk_kwargs is None:
             tk_kwargs = dict()
@@ -181,7 +185,6 @@ class Input(BaseWidget):
         })
         #tk.Button(command=)
 
-        self.key = key
         self.key_function = key_function
         self._key_function_send_wev = key_function_send_wev
         self._key_function_send_val = key_function_send_val
