@@ -229,6 +229,12 @@ class BaseWidget(BaseElement):
         except AttributeError:  # _tk_target_value isn't used
             return None
 
+    def set_value(self,val:any):
+        try:
+            self._tk_target_value.set(val)
+        except AttributeError:
+            pass
+
 class BaseWidgetContainer(BaseWidget):
     """
     Base for Widgets that contain other widgets

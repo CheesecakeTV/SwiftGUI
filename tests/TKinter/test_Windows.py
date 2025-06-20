@@ -30,6 +30,8 @@ while True:
     e = w.loop()
     print(e,w.values)
 
+    w["Input-Test"].value = e
+
     if not w.exists:
         break
 
