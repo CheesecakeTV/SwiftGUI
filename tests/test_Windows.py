@@ -3,7 +3,7 @@ from SwiftGUI_LeButch import Event
 
 layout = [
     [
-        sg.T("Hallo")
+        sg.T("Hallo",key="TestText")
     ],[
         sg.T("Welt")
     ],[
@@ -24,7 +24,8 @@ layout = [
 ]
 
 w = sg.Window(layout)
-w["Input-Test"].bind_event(Event.MouseEnter,key_function=lambda val:print("Input:",val),send_val=True)
+w["Input-Test"].bind_event(Event.MouseEnter,send_wev=True,send_val=True,key_function=sg.KeyFunctions.copy_value("TestText"))
+w["Input-Test"].bind_event(Event.MouseEnter,send_wev=True,send_val=True,key_function=sg.KeyFunctions.copy_value("TestText"))
 
 print("Start:",w.values)
 

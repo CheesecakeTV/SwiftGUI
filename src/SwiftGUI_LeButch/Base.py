@@ -3,6 +3,7 @@ from typing import Literal, Self, Union
 import tkinter as tk
 
 from SwiftGUI_LeButch import Event
+from SwiftGUI_LeButch.ElementFlags import ElementFlag
 
 
 class BaseElement:
@@ -14,7 +15,7 @@ class BaseElement:
     """
     parent:Self = None  # next higher Element
     _fake_tk_element:tk.Widget = None   # This gets returned when parent is None
-    _is_container:bool = False   # True, if this Element contains others
+    _element_flags:set[ElementFlag] # Properties the element has
     window = None # Main Window
 
     key:any = None  # If given, this will be written to the event-value. Elements without a key can not throw key-events
@@ -34,8 +35,49 @@ class BaseElement:
         :param window: Main Window
         :return:
         """
+        self._flag_init()
         self._normal_init(parent,window)
         self._personal_init()
+
+    def _flag_init(self):
+        """
+        Override this to add flags to the element.
+        DONT FORGET TO CALL THE SUPER METHOD!
+        :return:
+        """
+        # DON'T FORGET THIS CALL: super()._flag_init()
+        # self.add_flags(...)
+        pass
+
+    @property
+    def element_flags(self) -> set[ElementFlag]:
+        if not hasattr(self,"_element_flags"):
+            self._element_flags = set()
+
+        return self._element_flags
+
+    def add_flags(self,*flags:ElementFlag):
+        """
+        Add a flag to this element.
+
+        :param flags:
+        :return:
+        """
+        if not hasattr(self,"_element_flags"):
+            self._element_flags = set()
+
+        if not flags:
+            return
+
+        self._element_flags.update(set(flags))
+
+    def has_flag(self,flag:ElementFlag) -> bool:
+        """
+        True, if this element has a certain flag
+        :param flag:
+        :return:
+        """
+        return flag in self.element_flags
 
     def _normal_init(self,parent:"BaseElement",window):
         """
@@ -110,7 +152,7 @@ class BaseWidget(BaseElement):
 
     _insert_kwargs:dict = dict()    # kwargs for the packer/grid
 
-    _is_container:bool = False   # True, if this widget contains other widgets
+    #_is_container:bool = False   # True, if this widget contains other widgets
     _contains:Iterable[Iterable[Self]] = []
 
     # @property
@@ -220,7 +262,7 @@ class BaseWidget(BaseElement):
             case "grid":
                 self._tk_widget.grid(**self._insert_kwargs)
 
-        if self._is_container:
+        if self.has_flag(ElementFlag.IS_CONTAINER):
             self._init_containing()
 
     def _init_containing(self):
@@ -259,5 +301,7 @@ class BaseWidgetContainer(BaseWidget):
     """
     Base for Widgets that contain other widgets
     """
-    _is_container = True
+    def _flag_init(self):
+        super()._flag_init()
+        self.add_flags(ElementFlag.IS_CONTAINER)
 

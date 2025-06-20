@@ -1,8 +1,9 @@
-
+from SwiftGUI_LeButch import ElementFlag
 
 
 class derTest:
     _hallo = "Welt"
+    test:ElementFlag
 
     @property
     def hallo(self):
@@ -17,3 +18,5 @@ y._hallo = 20
 
 print(x.hallo)
 print(y.hallo)
+print(x.test)
+
