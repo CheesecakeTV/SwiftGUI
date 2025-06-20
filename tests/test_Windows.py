@@ -30,15 +30,18 @@ w["Input-Test"].bind_event(Event.MouseEnter,send_wev=True,send_val=True,key_func
 print("Start:",w.values)
 
 while True:
-    e = w.loop()
-    print(e,w.values)
+    e,v = w.loop()
+    print(e,v)
 
     w["Input-Test"].value = e
     w["SomeText"].value = "Funktioniert"
 
+    w["Form"].value = {"Hallo":"Welt","Test":"Tatsache"}
+
     if not w.exists:
         break
 
-
+    if e == "Hallo Welt":
+        w["Form"].clear_all_values()
 
 

@@ -39,3 +39,20 @@ class Form(BaseElement):
             line:elem[1].value for line,elem in zip(self.texts,self.layout)
         }
 
+    def set_value(self,val:dict[str:str]):
+        """
+        Update only passed keys with their value
+        :param val:
+        :return:
+        """
+        for i,text in enumerate(self.texts):
+            if text in val.keys():
+                self.layout[i][1].value = val[text]
+
+    def clear_all_values(self):
+        """
+        Does what it says
+        :return:
+        """
+        for i,_ in enumerate(self.texts):
+            self.layout[i][1].value = ""
