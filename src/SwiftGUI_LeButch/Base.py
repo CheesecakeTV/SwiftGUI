@@ -231,13 +231,3 @@ class BaseContainer(BaseWidget):
     """
     is_container = True
 
-    def window_entry_point(self,root:tk.Tk,window:BaseElement):
-        """
-        Starting point for the whole window.
-        Don't use this unless you overwrite the sg.Window class
-        :param window: Window Element
-        :param root: Window to put every element
-        :return:
-        """
-        self.window = window
-        self._init_widget(root)
