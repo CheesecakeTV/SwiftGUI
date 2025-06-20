@@ -1,6 +1,6 @@
 import tkinter as tk
 from collections.abc import Iterable, Callable
-from SwiftGUI_LeButch import BaseElement
+from SwiftGUI_LeButch import BaseElement, ElementFlag
 from .Base import BaseWidget,BaseWidgetContainer
 
 
@@ -101,6 +101,7 @@ class Frame(BaseWidgetContainer):
         :return:
         """
         self.window = window
+        self.add_flags(ElementFlag.IS_CONTAINER)
         self._init_widget(root)
 
 

@@ -1,9 +1,13 @@
 import tkinter as tk
 from collections.abc import Iterable,Callable
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 from warnings import deprecated
 
-from SwiftGUI_LeButch import BaseElement, Frame, BaseWidget
+from SwiftGUI_LeButch import BaseElement, Frame
+
+if TYPE_CHECKING:
+    from SwiftGUI_LeButch import AnyElement
 
 
 @deprecated("WIP")
@@ -14,22 +18,21 @@ class Options_Windowwide:
 # Windows-Class
 
 class Window(BaseElement):
-    _prev_event = None  # Most recent event (-key)
-    values:dict = None  # Key:Value of all named elements
+    _prev_event:any = None  # Most recent event (-key)
+    values:dict  # Key:Value of all named elements
 
-    all_key_elements: dict[any, BaseElement]   # Key:Element, if key is present
+    all_key_elements: dict[any, "AnyElement"]   # Key:Element, if key is present
 
     exists:bool = False # True, if this window exists at the moment
 
     def __init__(self,layout:Iterable[Iterable[BaseElement]]):
-        self.all_elements = list()   # Elemente will be registered in here
-        self.all_key_elements:dict[any,BaseElement] = dict()    # Key:Element, if key is present
+        self.all_elements:list["AnyElement"] = list()   # Elemente will be registered in here
+        self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
         self.values = dict()
 
         self._tk = tk.Tk()
-        self._sg_widget:Frame
 
-        self._sg_widget = Frame(layout)
+        self._sg_widget:Frame = Frame(layout)
         self._sg_widget.window_entry_point(self._tk, self)
 
         self.refresh_values()
@@ -38,10 +41,13 @@ class Window(BaseElement):
     def tk_widget(self) ->tk.Widget:
         return self._sg_widget.tk_widget
 
-    def loop(self) -> any:
+    def loop(self) -> tuple[any,dict[any:any]]:
         """
         Main loop
-        :return: Triggering event key
+
+        When window is closed, None is returned as the key.
+
+        :return: Triggering event key; all values as dict
         """
         self.exists = True
         self._tk.mainloop()
@@ -50,9 +56,9 @@ class Window(BaseElement):
             assert self._tk.winfo_exists()
         except (AssertionError,tk.TclError):
             self.exists = False
-            return None
+            return None,self.values
 
-        return self._prev_event
+        return self._prev_event, self.values
 
     def register_element(self,elem:BaseElement):
         """
@@ -149,7 +155,7 @@ class Window(BaseElement):
 
         return self.values
 
-    def __getitem__(self, item) -> BaseElement|BaseWidget:
+    def __getitem__(self, item) -> "AnyElement":
         try:
             return self.all_key_elements[item]
         except KeyError:
