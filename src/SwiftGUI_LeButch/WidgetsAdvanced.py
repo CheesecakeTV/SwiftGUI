@@ -15,24 +15,27 @@ class Form(BaseElement):
             self,
             texts:Iterable[str],
             key:any = "",
+            seperate_keys:bool=False,   # Key for every input
     ):
         self.key = key
+        self.texts = texts
 
         self.layout = [
             [
                 Text(line),
-                Input(key=key + line),
+                Input(
+                    key=key + line if seperate_keys else None
+                ),
             ] for line in texts
         ]
 
         self._sg_widget = Frame(self.layout)
 
-
     def _personal_init(self):
         self._sg_widget._init(self,self.window)
-        # for row in self.layout:
-        #     for elem in row:
-        #         elem._init(self._sg_widget,self.window)
 
-
+    def _get_value(self) -> any:
+        return {
+            line:elem[1].value for line,elem in zip(self.texts,self.layout)
+        }
 

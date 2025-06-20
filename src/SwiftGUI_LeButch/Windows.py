@@ -1,10 +1,12 @@
 import tkinter as tk
 from collections.abc import Iterable,Callable
 from dataclasses import dataclass
+from warnings import deprecated
 
 from SwiftGUI_LeButch import BaseElement, Frame, BaseWidget
 
 
+@deprecated("WIP")
 @dataclass
 class Options_Windowwide:
     ... # Contains options for all Elements inside a window
@@ -59,6 +61,9 @@ class Window(BaseElement):
         self.allElements.append(elem)
 
         if elem.key is not None:
+            if elem.key in self.allKeyElements:
+                print(f"WARNING! Key {elem.key} is defined multiple times!")
+
             self.allKeyElements[elem.key] = elem
 
     def throw_event(self,key:any,value:any=None):
@@ -66,11 +71,25 @@ class Window(BaseElement):
         Thread-safe method to generate a custom event.
 
         :param key:
-        :param value: Will be saved inside the value-dict until changed
+        :param value: If not None, it will be saved inside the value-dict until changed
         :return:
         """
-        self.values[key] = value
+        if value is not None:
+            self.values[key] = value
         self._tk.after(0,self._receive_event,key)
+
+    @deprecated("WIP")
+    def throw_event_on_next_loop(self,key:any,value:any=None):
+        """
+        NOT THREAD-SAFE!!!
+
+        Generate an event instantly when window returns to loop
+        :param key:
+        :param value: If not None, it will be saved inside the value-dict until changed
+        :return:
+        """
+        # Todo
+        ...
 
     def _receive_event(self,key:any):
         """

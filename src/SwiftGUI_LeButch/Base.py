@@ -82,6 +82,10 @@ class BaseElement:
         """
         return self._get_value()
 
+    @value.setter
+    def value(self, val):
+        self.set_value(val)
+
     @property
     def tk_widget(self) ->tk.Widget:
         """
