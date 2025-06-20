@@ -18,7 +18,7 @@ class BaseElement:
     window = None # Main Window
 
     key:any = None  # If given, this will be written to the event-value. Elements without a key can not throw key-events
-    key_function: Callable | Iterable[Callable] = None  # Called as an event
+    _key_function: Callable | Iterable[Callable] = None  # Called as an event
 
     _key_function_send_wev:bool = False   # True, if window, event, value should be sent to key_function
     _key_function_send_val:bool = False   # True, if current event value shall be sent to key_function

@@ -17,13 +17,13 @@ class Window(BaseElement):
     _prev_event = None  # Most recent event (-key)
     values:dict = None  # Key:Value of all named elements
 
-    allKeyElements: dict[any, BaseElement]   # Key:Element, if key is present
+    all_key_elements: dict[any, BaseElement]   # Key:Element, if key is present
 
     exists:bool = False # True, if this window exists at the moment
 
     def __init__(self,layout:Iterable[Iterable[BaseElement]]):
-        self.allElements = list()   # Elemente will be registered in here
-        self.allKeyElements:dict[any,BaseElement] = dict()    # Key:Element, if key is present
+        self.all_elements = list()   # Elemente will be registered in here
+        self.all_key_elements:dict[any,BaseElement] = dict()    # Key:Element, if key is present
         self.values = dict()
 
         self._tk = tk.Tk()
@@ -60,13 +60,13 @@ class Window(BaseElement):
         :param elem:
         :return:
         """
-        self.allElements.append(elem)
+        self.all_elements.append(elem)
 
         if elem.key is not None:
-            if elem.key in self.allKeyElements:
+            if elem.key in self.all_key_elements:
                 print(f"WARNING! Key {elem.key} is defined multiple times!")
 
-            self.allKeyElements[elem.key] = elem
+            self.all_key_elements[elem.key] = elem
 
     def throw_event(self,key:any,value:any=None):
         """
@@ -144,13 +144,13 @@ class Window(BaseElement):
         "Picks up" all values from the elements to store them in Window.values
         :return: new values
         """
-        for key,elem in self.allKeyElements.items():
+        for key,elem in self.all_key_elements.items():
             self.values[key] = elem.value
 
         return self.values
 
     def __getitem__(self, item) -> BaseElement|BaseWidget:
         try:
-            return self.allKeyElements[item]
+            return self.all_key_elements[item]
         except KeyError:
             raise KeyError(f"The requested Element ({item}) wasn't found. Did you forget to set its key?")

@@ -140,12 +140,12 @@ class Button(BaseWidget):
         })
         #tk.Button(command=)
 
-        self.key_function = key_function
+        self._key_function = key_function
         self._key_function_send_wev = key_function_send_wev
 
     def _personal_init(self):
         self._tk_kwargs.update({
-            "command": self.window.get_event_function(self, self.key, self.key_function, self._key_function_send_wev, self._key_function_send_val)
+            "command": self.window.get_event_function(self, self.key, self._key_function, self._key_function_send_wev, self._key_function_send_val)
         })
 
         super()._personal_init()
@@ -185,7 +185,7 @@ class Input(BaseWidget):
         })
         #tk.Button(command=)
 
-        self.key_function = key_function
+        self._key_function = key_function
         self._key_function_send_wev = key_function_send_wev
         self._key_function_send_val = key_function_send_val
 
@@ -193,7 +193,7 @@ class Input(BaseWidget):
         self._tk_target_value = tk.StringVar(self.window.tk_widget)
 
         self._tk_kwargs.update({
-            #"command": self.window.get_event_function(self.key, self.key_function, self._key_function_send_wev),
+            #"command": self.window.get_event_function(self.key, self._key_function, self._key_function_send_wev),
             "textvariable":self._tk_target_value,
         })
 
