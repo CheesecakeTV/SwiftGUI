@@ -36,12 +36,11 @@ while True:
     w["Input-Test"].value = e
     w["SomeText"].value = "Funktioniert"
 
-    w["Form"].value = {"Hallo":"Welt","Test":"Tatsache"}
-
     if not w.exists:
         break
 
     if e == "Hallo Welt":
         w["Form"].clear_all_values()
+        w["Form"].value = {"Hallo":"Welt","Test":"Tatsache"}
 
 

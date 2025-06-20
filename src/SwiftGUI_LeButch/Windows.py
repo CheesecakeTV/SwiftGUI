@@ -44,7 +44,10 @@ class Window(BaseElement):
     def loop(self) -> tuple[any,dict[any:any]]:
         """
         Main loop
-        :return: Triggering event key
+
+        When window is closed, None is returned as the key.
+
+        :return: Triggering event key; all values as dict
         """
         self.exists = True
         self._tk.mainloop()
@@ -53,7 +56,7 @@ class Window(BaseElement):
             assert self._tk.winfo_exists()
         except (AssertionError,tk.TclError):
             self.exists = False
-            return None,None
+            return None,self.values
 
         return self._prev_event, self.values
 

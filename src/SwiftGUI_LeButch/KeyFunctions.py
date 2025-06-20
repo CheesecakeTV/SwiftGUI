@@ -20,3 +20,6 @@ def copy_value(to_key:any) -> Callable:
         w[to_key].set_value(val)
 
     return fkt
+
+def clear_input_element():
+    ...
