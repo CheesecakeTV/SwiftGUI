@@ -164,13 +164,13 @@ class BaseWidget(BaseElement):
 
         return self
 
-    @property
-    def tk_widget(self) ->tk.Widget:
-        """
-        Returns the tkinter widget connected to this sg-widget
-        :return:
-        """
-        return self._tk_widget
+    # @property
+    # def tk_widget(self) ->tk.Widget:
+    #     """
+    #     Returns the tkinter widget connected to this sg-widget
+    #     :return:
+    #     """
+    #     return self._tk_widget
 
     def _init_widget_for_inherrit(self,container) -> tk.Widget:
         """
@@ -181,7 +181,7 @@ class BaseWidget(BaseElement):
         return self._tk_widget_class(container, *self._tk_args, **self._tk_kwargs)
 
     def _personal_init(self):
-        self._init_widget(self.parent.tk_widget)
+        self._init_widget(self.parent.tk_widget)    # Init the contained widgets
 
     def _init_widget(self,container:tk.Widget|tk.Tk,mode:Literal["pack","grid"]="pack") -> None:
         """
@@ -225,7 +225,7 @@ class BaseWidget(BaseElement):
         except AttributeError:  # _tk_target_value isn't used
             return None
 
-class BaseContainer(BaseWidget):
+class BaseWidgetContainer(BaseWidget):
     """
     Base for Widgets that contain other widgets
     """

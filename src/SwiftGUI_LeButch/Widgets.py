@@ -1,7 +1,7 @@
 import tkinter as tk
 from collections.abc import Iterable, Callable
 from SwiftGUI_LeButch import BaseElement
-from .Base import BaseWidget,BaseContainer
+from .Base import BaseWidget,BaseWidgetContainer
 
 
 # Todo: Add docstrings to __init__ methods
@@ -62,7 +62,7 @@ T = Text
 Label = Text
 
 
-class Frame(BaseContainer):
+class Frame(BaseWidgetContainer):
     """
     Copy this class ot create your own Widget
     """
@@ -87,9 +87,9 @@ class Frame(BaseContainer):
             # Insert named arguments for the widget here
         })
 
-    def window_entry_point(self,root:tk.Tk,window:BaseElement):
+    def window_entry_point(self,root:tk.Tk|tk.Widget,window:BaseElement):
         """
-        Starting point for the whole window.
+        Starting point for the whole window, or part of the layout.
         Don't use this unless you overwrite the sg.Window class
         :param window: Window Element
         :param root: Window to put every element

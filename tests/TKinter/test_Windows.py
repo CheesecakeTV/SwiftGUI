@@ -18,6 +18,8 @@ layout = [
     ],[
         sg.Button("Hallo Welt-Button",key="Hallo Welt",key_function=lambda :print("Yooo")),
         sg.In("Was geht",key="Input-Test")
+    ],[
+        sg.Form(["Hallo","Welt","Das","Ist","Ein","Test"],key="Form.")
     ]
 ]
 
