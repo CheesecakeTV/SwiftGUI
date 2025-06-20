@@ -1,6 +1,6 @@
 
 # Not even close to being finished
-But I'd love to hear your suggestions.
+But I'd love to read your suggestions.
 
 # swiftGUI
 
@@ -10,6 +10,13 @@ I really liked PySimpleGUI (before they went "premium"),
 but their codebase is an utter mess.
 
 swiftGUI is more leightweight and aims at being faster to use and easier to expand.
+
+## install
+
+Install using pip:
+```bash
+pip install SwiftGUI
+```
 
 ## Why sqiftGUI?
 I have a lot of experience with PySimpleGUI, used it for years.
