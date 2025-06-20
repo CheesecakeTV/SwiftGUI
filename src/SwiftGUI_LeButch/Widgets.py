@@ -82,7 +82,7 @@ class Frame(BaseWidgetContainer):
     ):
         super().__init__(tk_args=tk_args,tk_kwargs=tk_kwargs)
 
-        self.contains = layout
+        self._contains = layout
 
         self._tk_args = self._tk_args + tk_args # Add anonymous arguments for the widget here
         if tk_kwargs is None:

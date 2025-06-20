@@ -13,8 +13,8 @@ class BaseElement:
     BaseElement allows you to do whatever the f you want, it's just a class pattern.
     """
     parent:Self = None  # next higher Element
-    fake_tk_element:tk.Widget = None   # This gets returned when parent is None
-    is_container:bool = False   # True, if this Element contains others
+    _fake_tk_element:tk.Widget = None   # This gets returned when parent is None
+    _is_container:bool = False   # True, if this Element contains others
     window = None # Main Window
 
     key:any = None  # If given, this will be written to the event-value. Elements without a key can not throw key-events
@@ -93,7 +93,7 @@ class BaseElement:
         :return:
         """
         if self.parent is None:
-            return self.fake_tk_element
+            return self._fake_tk_element
         return self.parent.tk_widget
 
 
@@ -110,11 +110,11 @@ class BaseWidget(BaseElement):
 
     _insert_kwargs:dict = dict()    # kwargs for the packer/grid
 
-    is_container:bool = False   # True, if this widget contains other widgets
-    contains:Iterable[Iterable[Self]] = []
+    _is_container:bool = False   # True, if this widget contains other widgets
+    _contains:Iterable[Iterable[Self]] = []
 
     # @property
-    # def is_container(self) -> bool:
+    # def _is_container(self) -> bool:
     #     return False
 
     def __init__(self,key:any=None,tk_args:tuple[any]=tuple(),tk_kwargs:dict[str:any]=None):
@@ -220,7 +220,7 @@ class BaseWidget(BaseElement):
             case "grid":
                 self._tk_widget.grid(**self._insert_kwargs)
 
-        if self.is_container:
+        if self._is_container:
             self._init_containing()
 
     def _init_containing(self):
@@ -228,11 +228,11 @@ class BaseWidget(BaseElement):
         Initialize all containing widgets
         :return:
         """
-        for i in self.contains:
+        for i in self._contains:
             line = tk.Frame(self._tk_widget)
 
             line_elem = BaseElement()
-            line_elem.fake_tk_element = line
+            line_elem._fake_tk_element = line
 
             for k in i:
                 k._init(line_elem,self.window)
@@ -259,5 +259,5 @@ class BaseWidgetContainer(BaseWidget):
     """
     Base for Widgets that contain other widgets
     """
-    is_container = True
+    _is_container = True
 
