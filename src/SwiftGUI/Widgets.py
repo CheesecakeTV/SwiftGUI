@@ -1,6 +1,6 @@
 import tkinter as tk
 from collections.abc import Iterable, Callable
-from SwiftGUI_LeButch import BaseElement, ElementFlag
+from SwiftGUI import BaseElement, ElementFlag
 from .Base import BaseWidget,BaseWidgetContainer
 
 

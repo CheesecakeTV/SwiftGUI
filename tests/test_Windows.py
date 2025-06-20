@@ -1,5 +1,5 @@
-import SwiftGUI_LeButch as sg
-from SwiftGUI_LeButch import Event
+import SwiftGUI as sg
+from SwiftGUI import Event
 
 layout = [
     [

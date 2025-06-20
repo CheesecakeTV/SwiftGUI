@@ -1,4 +1,4 @@
-from SwiftGUI_LeButch import ElementFlag
+from SwiftGUI import ElementFlag
 
 
 class derTest:

@@ -2,8 +2,8 @@ from collections.abc import Iterable, Callable
 from typing import Literal, Self, Union
 import tkinter as tk
 
-from SwiftGUI_LeButch import Event
-from SwiftGUI_LeButch.ElementFlags import ElementFlag
+from SwiftGUI import Event
+from SwiftGUI.ElementFlags import ElementFlag
 
 
 class BaseElement:

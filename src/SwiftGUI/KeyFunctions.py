@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from SwiftGUI_LeButch import BaseElement, Window
+from SwiftGUI import BaseElement, Window
 
 
 # Todo

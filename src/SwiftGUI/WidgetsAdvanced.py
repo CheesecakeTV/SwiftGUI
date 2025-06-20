@@ -1,5 +1,5 @@
 from collections.abc import Iterable
-from SwiftGUI_LeButch import BaseElement, Frame, Text, Input
+from SwiftGUI import BaseElement, Frame, Text, Input
 
 
 # Advanced / Combined elements

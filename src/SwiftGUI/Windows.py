@@ -4,10 +4,10 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 from warnings import deprecated
 
-from SwiftGUI_LeButch import BaseElement, Frame
+from SwiftGUI import BaseElement, Frame
 
 if TYPE_CHECKING:
-    from SwiftGUI_LeButch import AnyElement
+    from SwiftGUI import AnyElement
 
 
 @deprecated("WIP")
