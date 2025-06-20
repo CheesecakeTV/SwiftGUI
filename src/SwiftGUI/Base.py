@@ -89,7 +89,8 @@ class BaseElement:
         self.parent = parent
         self.window = window
 
-        window.register_element(self)
+        if not self.has_flag(ElementFlag.DONT_REGISTER_KEY):
+            window.register_element(self)
 
 
     def _personal_init(self):
