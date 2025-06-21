@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from collections.abc import Iterable, Callable
-from SwiftGUI import BaseElement, ElementFlag, BaseWidget, BaseWidgetContainer
+from SwiftGUI import BaseElement, ElementFlag, BaseWidget, BaseWidgetContainer, GlobalOptions
 
 
 # Todo: Add docstrings to __init__ methods
@@ -38,6 +38,7 @@ class Text(BaseWidget):
     Copy this class ot create your own Widget
     """
     _tk_widget_class:type = ttk.Label # Class of the connected widget
+    defaults = GlobalOptions.Text   # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
 
     def __init__(
             self,
@@ -45,10 +46,9 @@ class Text(BaseWidget):
             text:str = "",
             key:any=None,
 
-            tk_args:tuple[any]=tuple(),
             tk_kwargs:dict[str:any]=None
     ):
-        super().__init__(key=key,tk_args=tk_args,tk_kwargs=tk_kwargs)
+        super().__init__(key=key,tk_kwargs=tk_kwargs)
 
         if tk_kwargs is None:
             tk_kwargs = dict()

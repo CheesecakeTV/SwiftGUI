@@ -1,3 +1,5 @@
+import tkinter as tk    # Not needed, but helpful to figure out default vals
+from tkinter import ttk
 from collections.abc import Iterable
 from typing import Literal
 

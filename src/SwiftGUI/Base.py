@@ -21,7 +21,7 @@ class BaseElement:
     key:any = None  # If given, this will be written to the event-value. Elements without a key can not throw key-events
     _key_function: Callable | Iterable[Callable] = None  # Called as an event
 
-    global_options:type = GlobalOptions.Common  # Change this to apply a different default configuration
+    defaults:type[GlobalOptions.DEFAULT_OPTIONS_CLASS] = GlobalOptions.Common  # Change this to apply a different default configuration
 
     def _init(self,parent:"BaseElement",window):
         """
@@ -33,6 +33,7 @@ class BaseElement:
         :param window: Main Window
         :return:
         """
+        self._init_defaults()   # Default configuration
         self._flag_init()
         self._normal_init(parent,window)
         self._personal_init()
@@ -90,7 +91,6 @@ class BaseElement:
         if not self.has_flag(ElementFlag.DONT_REGISTER_KEY):
             window.register_element(self)
 
-
     def _personal_init(self):
         """
         Use to your liking
@@ -136,6 +136,14 @@ class BaseElement:
         if self.parent is None:
             return self._fake_tk_element
         return self.parent.tk_widget
+
+    def _init_defaults(self):
+        """
+        Apply default values in __init__, or here.
+        Keep in mind that BaseWidget inherits this method.
+        :return:
+        """
+        pass
 
 
 class BaseWidget(BaseElement):
@@ -206,6 +214,9 @@ class BaseWidget(BaseElement):
         )
 
         return self
+
+    def _init_defaults(self):
+        self.defaults.apply(self._tk_kwargs)
 
     def _init_widget_for_inherrit(self,container) -> tk.Widget:
         """
