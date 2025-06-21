@@ -16,16 +16,18 @@ layout = [
             ]
         ])
     ],[
-        sg.Button("Hallo Welt-Button",key="Hallo Welt",key_function=lambda :print("Yooo")),
-        sg.In("Was geht",key="Input-Test")
+        sg.Button("Hallo Welt-Button",key="Hallo Welt"),
+        sg.In("Was geht",key="Input-Test"),
+        sg.In("Was geht", key="Another-Input-Test"),
     ],[
         sg.Form(["Hallo","Welt","Das","Ist","Ein","Test"],key="Form")
     ]
 ]
 
 w = sg.Window(layout)
-w["Input-Test"].bind_event(Event.MouseEnter,send_wev=True,send_val=True,key_function=sg.KeyFunctions.copy_value("TestText"))
-w["Input-Test"].bind_event(Event.MouseEnter,send_wev=True,send_val=True,key_function=sg.KeyFunctions.copy_value("TestText"))
+#w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value("TestText"))
+w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.clear_str_value)
+w["Another-Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value_from("Input-Test"))
 
 print("Start:",w.values)
 

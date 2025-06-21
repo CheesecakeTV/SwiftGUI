@@ -21,10 +21,6 @@ class BaseElement:
     key:any = None  # If given, this will be written to the event-value. Elements without a key can not throw key-events
     _key_function: Callable | Iterable[Callable] = None  # Called as an event
 
-    _key_function_send_wev:bool = False   # True, if window, event, value should be sent to key_function
-    _key_function_send_val:bool = False   # True, if current event value shall be sent to key_function
-    # If both are True, it will be sent like this: window, event, values, value
-
     def _init(self,parent:"BaseElement",window):
         """
         Not __init__
@@ -170,7 +166,7 @@ class BaseWidget(BaseElement):
         self._insert_kwargs = {"side":tk.LEFT}
         self.key = key
 
-    def bind_event(self,tk_event:str|Event,key_extention:Union[str,any]=None,key:any=None,key_function:Callable|Iterable[Callable]=None,send_wev:bool=False,send_val:bool=False)->Self:
+    def bind_event(self,tk_event:str|Event,key_extention:Union[str,any]=None,key:any=None,key_function:Callable|Iterable[Callable]=None)->Self:
         """
         Bind a tk-event onto the underlying tk-widget
 
@@ -180,8 +176,6 @@ class BaseWidget(BaseElement):
         :param key_extention: Added to the event-key
         :param key: event-key. If None and key_extention is not None, it will be appended onto the element-key
         :param key_function: Called when this event is thrown
-        :param send_wev: Send window, event, values to functions
-        :param send_val: Send element-value to functions
         :return: Calling element for inline-calls
         """
         new_key = None
@@ -202,8 +196,7 @@ class BaseWidget(BaseElement):
             case (False,False):
                 pass
 
-        temp = self.window.get_event_function(self, new_key, key_function=key_function, key_function_send_wev=send_wev,
-                                       key_function_send_val=send_val)
+        temp = self.window.get_event_function(self, new_key, key_function=key_function)
 
         self._tk_widget.bind(
             tk_event,

@@ -3,6 +3,7 @@ from collections.abc import Iterable,Callable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 from warnings import deprecated
+import inspect
 
 from SwiftGUI import BaseElement, Frame
 
@@ -109,13 +110,10 @@ class Window(BaseElement):
         self._tk.quit()
 
     def get_event_function(self,me:BaseElement,key:any=None,key_function:Callable|Iterable[Callable]=None,
-                           key_function_send_wev:bool = False, key_function_send_val:bool = False,
                            )->Callable:
         """
         Returns a function that sets the event-variable accorting to key
-        :param key_function_send_val: True, if the element-value should be passed to the function
         :param me: Calling element
-        :param key_function_send_wev: True, if additional_function should be called with window, event, value as argument
         :param key_function: Will be called additionally to the event. YOU CAN PASS MULTIPLE FUNCTIONS as a list/tuple
         :param key: If passed, main loop will return this key
         :return: Function to use as a tk-event
@@ -127,16 +125,19 @@ class Window(BaseElement):
             self.refresh_values()
 
             if key_function: # Call key-functions
+                kwargs = {  # Possible parameters for function
+                    "w": self,  # Reference to main window
+                    "e": key,   # Event-key, if there is one
+                    "v": self.values,   # All values
+                    "val": me.value,    # Value of element that caused the event
+                    "elem": me,
+                }
+
                 for fkt in key_function:
-                    args = list()
+                    wanted = set(inspect.signature(fkt).parameters.keys())
+                    offers = kwargs.fromkeys(kwargs.keys() & wanted)
 
-                    if key_function_send_wev:
-                        args.extend((self,key,self.values))
-
-                    if key_function_send_val:
-                        args.append(me.value)
-
-                    fkt(*args)
+                    fkt(**{i:kwargs[i] for i in offers})
 
                 self.refresh_values() # In case you change values with the key-functions
 
