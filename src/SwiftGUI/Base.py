@@ -212,14 +212,6 @@ class BaseWidget(BaseElement):
 
         return self
 
-    # @property
-    # def tk_widget(self) ->tk.Widget:
-    #     """
-    #     Returns the tkinter widget connected to this sg-widget
-    #     :return:
-    #     """
-    #     return self._tk_widget
-
     def _init_widget_for_inherrit(self,container) -> tk.Widget:
         """
         For inheritance to change the way the widget is instantiated

@@ -1,4 +1,5 @@
 import tkinter as tk
+import tkinter.ttk as ttk
 from collections.abc import Iterable, Callable
 from SwiftGUI import BaseElement, ElementFlag
 from .Base import BaseWidget,BaseWidgetContainer
@@ -37,7 +38,7 @@ class Text(BaseWidget):
     """
     Copy this class ot create your own Widget
     """
-    _tk_widget_class:type = tk.Label # Class of the connected widget
+    _tk_widget_class:type = ttk.Label # Class of the connected widget
 
     def __init__(
             self,
@@ -71,7 +72,7 @@ class Frame(BaseWidgetContainer):
     """
     Copy this class ot create your own Widget
     """
-    _tk_widget_class:type = tk.Frame # Class of the connected widget
+    _tk_widget_class:type = ttk.Frame # Class of the connected widget
 
     def __init__(
             self,
@@ -116,7 +117,7 @@ class Button(BaseWidget):
     _get_value  (determines the value returned by this widget)
     _init_widget_for_inherrit   (Initializes the widget)
     """
-    _tk_widget_class:type = tk.Button # Class of the connected widget
+    _tk_widget_class:type = ttk.Button # Class of the connected widget
 
     def __init__(
             self,
@@ -151,7 +152,6 @@ class Button(BaseWidget):
 
         super()._personal_init()
 
-
 class Input(BaseWidget):
     """
     Copy this class ot create your own Widget
@@ -160,7 +160,7 @@ class Input(BaseWidget):
     _get_value  (determines the value returned by this widget)
     _init_widget_for_inherrit   (Initializes the widget)
     """
-    _tk_widget_class:type = tk.Entry # Class of the connected widget
+    _tk_widget_class:type = ttk.Entry # Class of the connected widget
 
     def __init__(
             self,
