@@ -257,8 +257,8 @@ class BaseWidget(BaseElement):
         :return:
         """
         for i in self._contains:
-            line = tk.Frame(self._tk_widget,background="red",relief="raised")
-            #line.option_add("relief","flat",80)
+            #line = tk.Frame(self._tk_widget,background="red",relief="raised",borderwidth="3",border=3)
+            line = tk.Frame(self._tk_widget,relief="flat")
 
             line_elem = BaseElement()
             line_elem._fake_tk_element = line

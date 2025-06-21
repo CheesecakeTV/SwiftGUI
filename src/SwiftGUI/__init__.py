@@ -1,5 +1,5 @@
 
-import GlobalOptions
+from . import GlobalOptions
 
 from .Events import *
 from .Base import *

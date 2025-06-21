@@ -1,5 +1,5 @@
 from collections.abc import Iterable
-
+from typing import Literal
 
 class DEFAULT_OPTIONS_CLASS:
 
@@ -33,7 +33,11 @@ class DEFAULT_OPTIONS_CLASS:
         return apply_to
 
 
-class GLOBAL_TEXT_OPTIONS(DEFAULT_OPTIONS_CLASS):
+class Text(DEFAULT_OPTIONS_CLASS):
     text:str = ""
 
+class Frame(DEFAULT_OPTIONS_CLASS):
+    padding:int|tuple[int,int]|tuple[int,int,int,int] = 3
+    relief:Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = "flat"
+    #background = "blue"
 
