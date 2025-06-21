@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from warnings import deprecated
 import inspect
 
-from SwiftGUI import BaseElement, Frame
+from SwiftGUI import BaseElement, Frame, do_global_config, global_element_options_dict, refresh_options_dict
 
 if TYPE_CHECKING:
     from SwiftGUI import AnyElement
@@ -26,12 +26,39 @@ class Window(BaseElement):
 
     exists:bool = False # True, if this window exists at the moment
 
-    def __init__(self,layout:Iterable[Iterable[BaseElement]]):
+    global_options = dict() # Standard-Values for options
+
+    def __init__(
+            self,
+            layout:Iterable[Iterable[BaseElement]],
+            global_options:dict[str:str] = None, # Todo:
+    ):
+        """
+
+        :param layout:
+        :param global_options: Options applied to every element in the window
+        """
         self.all_elements:list["AnyElement"] = list()   # Elemente will be registered in here
         self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
         self.values = dict()
 
         self._tk = tk.Tk()
+
+        refresh_options_dict()
+        if global_options:
+            global_options = do_global_config(global_element_options_dict,global_options)
+        else:
+            global_options = global_element_options_dict
+
+        self.global_options = global_options
+
+        if global_options:
+            for key,val in global_options.items():
+                if not (key.startswith("*") or "." in key):
+                    key = "*" + key
+
+                self._tk.option_add(key,val,priority=1)
+
 
         self._sg_widget:Frame = Frame(layout)
         self._sg_widget.window_entry_point(self._tk, self)

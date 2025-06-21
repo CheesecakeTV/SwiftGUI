@@ -24,7 +24,7 @@ layout = [
     ]
 ]
 
-w = sg.Window(layout)
+w = sg.Window(layout,global_options={"*Font":"Any 14"})
 #w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value("TestText"))
 w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.clear_str_value)
 w["Another-Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value_from("Input-Test"))

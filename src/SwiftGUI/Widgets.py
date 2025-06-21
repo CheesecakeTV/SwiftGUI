@@ -15,7 +15,7 @@ class Example(BaseWidget):
     _get_value  (determines the value returned by this widget)
     _init_widget_for_inherrit   (Initializes the widget)
     """
-    _tk_widget_class:type = None # Class of the connected widget
+    _tk_widget_class:type[tk.Widget] = None # Class of the connected widget
 
     def __init__(
             self,
@@ -72,7 +72,7 @@ class Frame(BaseWidgetContainer):
     """
     Copy this class ot create your own Widget
     """
-    _tk_widget_class:type = ttk.Frame # Class of the connected widget
+    _tk_widget_class:type[ttk.Frame] = ttk.Frame # Class of the connected widget
 
     def __init__(
             self,
