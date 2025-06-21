@@ -1,8 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from collections.abc import Iterable, Callable
-from SwiftGUI import BaseElement, ElementFlag
-from .Base import BaseWidget,BaseWidgetContainer
+from SwiftGUI import BaseElement, ElementFlag, BaseWidget, BaseWidgetContainer
 
 
 # Todo: Add docstrings to __init__ methods
