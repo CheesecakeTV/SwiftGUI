@@ -1,4 +1,5 @@
 
+from .StandardWidgetConfig import *
 from .Events import *
 from .Base import *
 from .KeyManager import *
