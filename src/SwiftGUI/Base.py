@@ -2,7 +2,7 @@ from collections.abc import Iterable, Callable
 from typing import Literal, Self, Union
 import tkinter as tk
 
-from SwiftGUI import Event
+from SwiftGUI import Event,GlobalOptions
 from SwiftGUI.ElementFlags import ElementFlag
 
 
@@ -20,6 +20,8 @@ class BaseElement:
 
     key:any = None  # If given, this will be written to the event-value. Elements without a key can not throw key-events
     _key_function: Callable | Iterable[Callable] = None  # Called as an event
+
+    global_options:type = GlobalOptions.Common  # Change this to apply a different default configuration
 
     def _init(self,parent:"BaseElement",window):
         """
