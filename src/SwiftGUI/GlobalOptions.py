@@ -3,7 +3,7 @@ from tkinter import ttk
 from collections.abc import Iterable
 from typing import Literal
 
-from SwiftGUI import Literals
+from SwiftGUI import Literals, Color
 
 
 class _DefaultOptionsMeta(type):
@@ -116,8 +116,14 @@ class Common(DEFAULT_OPTIONS_CLASS):
 
 class Text(Common):
     text:str = ""
+    takefocus:bool = False
+    #underline:str = 0
+    justify:Literal["left","right","center"] = "center"
+    background:Color|str = None
+    border:int = 2
 
 class Frame(Common):
+    takefocus = False
     padding:int|tuple[int,int]|tuple[int,int,int,int] = 3
     relief:Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = "flat"
     #background = "blue"

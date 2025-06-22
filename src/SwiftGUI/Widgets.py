@@ -1,7 +1,9 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from collections.abc import Iterable, Callable
-from SwiftGUI import BaseElement, ElementFlag, BaseWidget, BaseWidgetContainer, GlobalOptions, Literals
+from typing import Literal
+
+from SwiftGUI import BaseElement, ElementFlag, BaseWidget, BaseWidgetContainer, GlobalOptions, Literals, Color
 
 
 # Todo: Add docstrings to __init__ methods
@@ -42,14 +44,33 @@ class Text(BaseWidget):
     def __init__(
             self,
             # Add here
-            text:str = "",
+            text:str = None,
             key:any=None,
 
             # Standard-Tkinter options
             cursor:Literals.cursor = None,
+            take_focus:bool = None,
+
+            # Special Tkinter-options
+            #underline:int = None,
+            justify:Literal["left","right","center"] = None,
+            background:str|Color = None,
+            border:int = None,
 
             tk_kwargs:dict[str:any]=None
     ):
+        """
+
+        :param text: Default text to be displayed
+        :param key: Element-Key. Can be used to change the text later
+        :param cursor: Cursor-Type. Changes how the cursor looks when hovering over this element
+        :param take_focus: True, if you want this element to be able to be focused when pressing tab. Most likely False for texts.
+        :param tk_kwargs: Additional kwargs to pass to the ttk-widget
+        :param background: Background-Color
+        """
+        # Not used:
+        # :param underline: Which character to underline for alt+character selection of this element
+
         super().__init__(key=key,tk_kwargs=tk_kwargs)
 
         if tk_kwargs is None:
@@ -58,6 +79,11 @@ class Text(BaseWidget):
         self._tk_kwargs.update({
             **tk_kwargs,
             "cursor":cursor,
+            "takefocus":take_focus,
+            #"underline":None,
+            "justify":justify,
+            "background":background,
+            "border":border,
         })
 
         self._text = text
