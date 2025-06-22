@@ -11,7 +11,7 @@ def rgb(r:int,g:int,b:int) -> str:
 
     return f"#{r:#05x}{g:#05x}{b:#05x}".replace("0x","")
 
-class Color(enum.Enum):
+class Color:
     # gray0-gray99 weren't included, except for gray0, gray20, gray40,...
     snow = "snow"
     ghost_white = "ghost white"

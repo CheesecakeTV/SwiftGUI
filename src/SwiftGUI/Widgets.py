@@ -1,4 +1,5 @@
 import tkinter as tk
+import tkinter.font as font
 import tkinter.ttk as ttk
 from collections.abc import Iterable, Callable
 from typing import Literal
@@ -46,16 +47,28 @@ class Text(BaseWidget):
             # Add here
             text:str = None,
             key:any=None,
+            width:int=None,
 
             # Standard-Tkinter options
             cursor:Literals.cursor = None,
             take_focus:bool = None,
 
             # Special Tkinter-options
-            #underline:int = None,
+            underline:int = None,
             justify:Literal["left","right","center"] = None,
-            background:str|Color = None,
-            border:int = None,
+            background_color:str|Color = None,
+            text_color:str|Color = None,
+            #borderwidth:int = None, # Todo: Check if this even exists
+            relief:Literals.relief = None,
+            padding:Literals.padding = None,
+
+            # Mixed options
+            fonttype:str = None,
+            fontsize:int = None,
+            font_bold:bool = None,
+            font_italic:bool = None,
+            font_underline:bool = None,
+            font_overstrike:bool = None,
 
             tk_kwargs:dict[str:any]=None
     ):
@@ -66,7 +79,7 @@ class Text(BaseWidget):
         :param cursor: Cursor-Type. Changes how the cursor looks when hovering over this element
         :param take_focus: True, if you want this element to be able to be focused when pressing tab. Most likely False for texts.
         :param tk_kwargs: Additional kwargs to pass to the ttk-widget
-        :param background: Background-Color
+        :param background_color: Background-Color
         """
         # Not used:
         # :param underline: Which character to underline for alt+character selection of this element
@@ -76,19 +89,41 @@ class Text(BaseWidget):
         if tk_kwargs is None:
             tk_kwargs = dict()
 
+        self._fonttype = self.defaults.single("fonttype",fonttype)
+        self._fontsize = self.defaults.single("fontsize",fontsize)
+        self._bold = self.defaults.single("font_bold",font_bold)
+        self._italic = self.defaults.single("font_italic",font_italic)
+        self._underline = self.defaults.single("font_underline",font_underline)
+        self._overstrike = self.defaults.single("font_overstrike",font_overstrike)
+
         self._tk_kwargs.update({
             **tk_kwargs,
             "cursor":cursor,
             "takefocus":take_focus,
-            #"underline":None,
+            "underline":underline,
             "justify":justify,
-            "background":background,
-            "border":border,
+            "background":self.defaults.single("background_color",background_color),
+            #"borderwidth":borderwidth,
+            "relief":relief,
+            "foreground":self.defaults.single("text_color",text_color),
+            "padding":padding,
+            "width":width,
+            "wraplength":"1c"
         })
 
         self._text = text
 
     def _personal_init_inherit(self):
+        self._tk_kwargs["font"] = font.Font(
+            self.window.tk_widget,
+            family=self._fonttype,
+            size=self._fontsize,
+            weight="bold" if self._bold else "normal",
+            slant="italic" if self._italic else "roman",
+            underline=bool(self._underline),
+            overstrike=bool(self._overstrike),
+        )
+
         self._set_tk_target_variable(default_value=self._text)
 
 # Aliases

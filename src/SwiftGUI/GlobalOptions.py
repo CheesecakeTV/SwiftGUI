@@ -3,6 +3,8 @@ from tkinter import ttk
 from collections.abc import Iterable
 from typing import Literal
 
+from virtualenv.config.convert import NoneType
+
 from SwiftGUI import Literals, Color
 
 
@@ -97,18 +99,24 @@ class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
         return apply_to
 
     @classmethod
-    def single(cls,key:str,val:any) -> any:
+    def single(cls,key:str,val:any,default:any=None) -> any:
         """
+        val will be returned.
         If val is None, cls.key will be returned.
-        Else val.
-        :param key:
-        :param val:
+        If both are None, default will be returned.
+        :param default:
+        :param key: Name of attribute
+        :param val: User-val
         :return:
         """
         cls._persist_changes()
-        if val is None:
+        if not val is None:
+            return val
+
+        if hasattr(cls,key):
             return getattr(cls,key)
-        return None
+
+        return default
 
 class Common(DEFAULT_OPTIONS_CLASS):
     cursor:Literals.cursor = None   # Find available cursors here (2025): https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/cursors.html
@@ -117,14 +125,25 @@ class Common(DEFAULT_OPTIONS_CLASS):
 class Text(Common):
     text:str = ""
     takefocus:bool = False
-    #underline:str = 0
+    underline:int = None
     justify:Literal["left","right","center"] = "center"
-    background:Color|str = None
-    border:int = 2
+    background_color:Color|str = None
+    text_color:Color|str = None
+    #borderwidth:int = "5c" # Does not work
+
+    fonttype:str = "Any"
+    fontsize:int = 10
+    font_bold:bool = False
+    font_italic:bool = False
+    font_underline:bool = False
+    font_overstrike:bool = False
+
+    padding:Literals.padding = 0
+    width:int = None
 
 class Frame(Common):
     takefocus = False
-    padding:int|tuple[int,int]|tuple[int,int,int,int] = 3
-    relief:Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = "flat"
+    padding:Literals.padding = 3
+    relief:Literals.relief = "flat"
     #background = "blue"
 
