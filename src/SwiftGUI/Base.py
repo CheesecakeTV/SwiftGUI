@@ -152,7 +152,6 @@ class BaseWidget(BaseElement):
     """
     _tk_widget:tk.Widget
     _tk_widget_class:type = None # Class of the connected widget
-    _tk_args:tuple = tuple()    # args and kwargs to pass to the tk_widget_class when initializing
     _tk_kwargs:dict = dict()
 
     _tk_target_value:tk.Variable = None # By default, the value of this is read when fetching the value
@@ -166,8 +165,7 @@ class BaseWidget(BaseElement):
     # def _is_container(self) -> bool:
     #     return False
 
-    def __init__(self,key:any=None,tk_args:tuple[any]=tuple(),tk_kwargs:dict[str:any]=None):
-        self._tk_args = tk_args
+    def __init__(self,key:any=None,tk_kwargs:dict[str:any]=None):
 
         if tk_kwargs is None:
             tk_kwargs = dict()
@@ -216,7 +214,7 @@ class BaseWidget(BaseElement):
         return self
 
     def _init_defaults(self):
-        self.defaults.apply(self._tk_kwargs)
+        self._tk_kwargs = self.defaults.apply(self._tk_kwargs)
 
     def _init_widget_for_inherrit(self,container) -> tk.Widget:
         """
@@ -224,7 +222,7 @@ class BaseWidget(BaseElement):
         :param container:
         :return:
         """
-        return self._tk_widget_class(container, *self._tk_args, **self._tk_kwargs)
+        return self._tk_widget_class(container, **self._tk_kwargs)
 
     def _personal_init_inherit(self):
         """

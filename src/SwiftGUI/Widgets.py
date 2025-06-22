@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from collections.abc import Iterable, Callable
-from SwiftGUI import BaseElement, ElementFlag, BaseWidget, BaseWidgetContainer, GlobalOptions
+from SwiftGUI import BaseElement, ElementFlag, BaseWidget, BaseWidgetContainer, GlobalOptions, Literals
 
 
 # Todo: Add docstrings to __init__ methods
@@ -15,19 +15,18 @@ class Example(BaseWidget):
     _init_widget_for_inherrit   (Initializes the widget)
     """
     _tk_widget_class:type[tk.Widget] = None # Class of the connected widget
+    defaults = GlobalOptions.Common # Change this to your default-option-class if needed
 
     def __init__(
             self,
             # Add here
-            tk_args:tuple[any]=tuple(),
             tk_kwargs:dict[str:any]=None
     ):
-        super().__init__(tk_args=tk_args,tk_kwargs=tk_kwargs)
+        super().__init__(tk_kwargs=tk_kwargs)
 
         if tk_kwargs is None:
             tk_kwargs = dict()
 
-        self._tk_args = self._tk_args + tk_args # Add anonymous arguments for the widget here
         self._tk_kwargs.update({
             **tk_kwargs
             # Insert named arguments for the widget here
@@ -46,6 +45,9 @@ class Text(BaseWidget):
             text:str = "",
             key:any=None,
 
+            # Standard-Tkinter options
+            cursor:Literals.cursor = None,
+
             tk_kwargs:dict[str:any]=None
     ):
         super().__init__(key=key,tk_kwargs=tk_kwargs)
@@ -55,6 +57,7 @@ class Text(BaseWidget):
 
         self._tk_kwargs.update({
             **tk_kwargs,
+            "cursor":cursor,
         })
 
         self._text = text
@@ -80,11 +83,10 @@ class Frame(BaseWidgetContainer):
             tk_args:tuple[any]=tuple(),
             tk_kwargs:dict[str:any]=None
     ):
-        super().__init__(tk_args=tk_args,tk_kwargs=tk_kwargs)
+        super().__init__(tk_kwargs=tk_kwargs)
 
         self._contains = layout
 
-        self._tk_args = self._tk_args + tk_args # Add anonymous arguments for the widget here
         if tk_kwargs is None:
             tk_kwargs = dict()
         self._tk_kwargs.update({
@@ -124,15 +126,13 @@ class Button(BaseWidget):
             text:str = "",
             key:any = None,
             key_function:Callable|Iterable[Callable] = None,
-            tk_args:tuple[any]=tuple(),
             tk_kwargs:dict[str:any]=None
     ):
-        super().__init__(key=key,tk_args=tk_args,tk_kwargs=tk_kwargs)
+        super().__init__(key=key,tk_kwargs=tk_kwargs)
 
         if tk_kwargs is None:
             tk_kwargs = dict()
 
-        self._tk_args = self._tk_args + tk_args # Add anonymous arguments for the widget here
         self._tk_kwargs.update({
             **tk_kwargs,
             # Insert named arguments for the widget here
@@ -168,12 +168,11 @@ class Input(BaseWidget):
             tk_args:tuple[any]=tuple(),
             tk_kwargs:dict[str:any]=None
     ):
-        super().__init__(key=key,tk_args=tk_args,tk_kwargs=tk_kwargs)
+        super().__init__(key=key,tk_kwargs=tk_kwargs)
 
         if tk_kwargs is None:
             tk_kwargs = dict()
 
-        self._tk_args = self._tk_args + tk_args # Add anonymous arguments for the widget here
         self._tk_kwargs.update({
             **tk_kwargs,
             # Insert named arguments for the widget here

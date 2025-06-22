@@ -1,5 +1,5 @@
 
-from . import GlobalOptions
+from . import GlobalOptions, Literals
 
 from .Events import *
 from .Base import *
