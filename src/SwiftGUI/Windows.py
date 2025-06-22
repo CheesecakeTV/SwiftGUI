@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from warnings import deprecated
 import inspect
 
-from SwiftGUI import BaseElement, Frame
+from SwiftGUI import BaseElement, Frame, ElementFlag
 
 if TYPE_CHECKING:
     from SwiftGUI import AnyElement
@@ -77,6 +77,7 @@ class Window(BaseElement):
             assert self._tk.winfo_exists()
         except (AssertionError,tk.TclError):
             self.exists = False
+            self.remove_flags(ElementFlag.IS_CREATED)
             return None,self.values
 
         return self._prev_event, self.values

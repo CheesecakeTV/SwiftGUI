@@ -199,6 +199,7 @@ class Frame(BaseWidgetContainer):
         :return:
         """
         self.window = window
+        self.window.add_flags(ElementFlag.IS_CREATED)
         self.add_flags(ElementFlag.IS_CONTAINER)
         self._init_widget(root)
 

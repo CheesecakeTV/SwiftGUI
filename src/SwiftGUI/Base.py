@@ -74,6 +74,16 @@ class BaseElement:
 
         self._element_flags.update(set(flags))
 
+    def remove_flags(self,*flags:ElementFlag):
+        """
+        Pretty self-explanitory
+        :param flags:
+        :return:
+        """
+        for i in flags:
+            if self.has_flag(i):
+                self._element_flags.remove(i)
+
     def has_flag(self,flag:ElementFlag) -> bool:
         """
         True, if this element has a certain flag
@@ -183,10 +193,11 @@ class BaseElement:
         :param kwargs:
         :return:
         """
+
         kwargs = dict(filter(lambda a: not self._update_special_key(*a), kwargs.items()))
         self._update_default_keys(kwargs)
 
-        if self.has_flag(ElementFlag.IS_CREATED):
+        if self.has_flag(ElementFlag.IS_CREATED) and self.window.has_flag(ElementFlag.IS_CREATED):
             self._apply_update()
 
 
