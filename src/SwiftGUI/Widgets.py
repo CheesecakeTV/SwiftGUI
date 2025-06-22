@@ -108,7 +108,7 @@ class Text(BaseWidget):
             "foreground":self.defaults.single("text_color",text_color),
             "padding":padding,
             "width":width,
-            "wraplength":"1c"
+            # "wraplength":"1c" # Todo: integrate wraplength in a smart way
         })
 
         self._text = text
