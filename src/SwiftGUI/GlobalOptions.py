@@ -1,14 +1,16 @@
 import tkinter as tk    # Not needed, but helpful to figure out default vals
 from tkinter import ttk
 from collections.abc import Iterable
-from typing import Literal, Union
+from typing import Literal
 
 from SwiftGUI import Literals
 
 
-class DefaultOptionsMeta(type):
+class _DefaultOptionsMeta(type):
 
     def __new__(mcs, name, bases, namespace):
+        # Remove NONE-values so they don't overwrite non-None-values of higher classes
+        namespace = dict(filter(lambda a: a[1] is not None, namespace.items()))
         cls:"DEFAULT_OPTIONS_CLASS"|type = super().__new__(mcs, name, bases, namespace)
 
         prev = cls.__mro__[1]
@@ -24,11 +26,17 @@ class DefaultOptionsMeta(type):
     def __setattr__(self, key, value):
         if not key.startswith("_") and not key == "made_changes":
             self.made_changes = True
+
         super().__setattr__(key,value)
 
+        if value is None:
+            delattr(self,key)
 
-class DEFAULT_OPTIONS_CLASS(metaclass=DefaultOptionsMeta):
+
+class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
     """
+    Derive from this class to create a "blank" global-options template.
+
     DON'T ADD ANY OPTIONS HERE!
     """
 
@@ -104,6 +112,7 @@ class DEFAULT_OPTIONS_CLASS(metaclass=DefaultOptionsMeta):
 
 class Common(DEFAULT_OPTIONS_CLASS):
     cursor:Literals.cursor = None   # Find available cursors here (2025): https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/cursors.html
+    takefocus:bool = True
 
 class Text(Common):
     text:str = ""
@@ -112,5 +121,4 @@ class Frame(Common):
     padding:int|tuple[int,int]|tuple[int,int,int,int] = 3
     relief:Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = "flat"
     #background = "blue"
-
 
