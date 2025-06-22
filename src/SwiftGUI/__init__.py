@@ -1,5 +1,6 @@
 
 from . import GlobalOptions, Literals
+from .Colors import Color
 
 from .Events import *
 from .Base import *
