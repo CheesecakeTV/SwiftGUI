@@ -10,7 +10,7 @@ layout = [
         sg.T("Amazing what you can accomplish\non a saturday",key="SomeText",text_color="green"),
         sg.Frame([
             [
-                sg.T("I am")
+                sg.T("I am",font_overstrike=True,key="IAM",background_color="red")
             ],[
                 sg.T("Inside of another Frame!")
             ]
@@ -39,6 +39,7 @@ while True:
     #w["SomeText"].value = "Funktioniert"
 
     w["SomeText"].update(background="red")
+    w["IAM"].update(font_overstrike=False,background_color=None)
 
     if not w.exists:
         break

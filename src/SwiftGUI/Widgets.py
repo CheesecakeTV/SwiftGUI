@@ -89,14 +89,7 @@ class Text(BaseWidget):
         if tk_kwargs is None:
             tk_kwargs = dict()
 
-        self._fonttype = self.defaults.single("fonttype",fonttype)
-        self._fontsize = self.defaults.single("fontsize",fontsize)
-        self._bold = self.defaults.single("font_bold",font_bold)
-        self._italic = self.defaults.single("font_italic",font_italic)
-        self._underline = self.defaults.single("font_underline",font_underline)
-        self._overstrike = self.defaults.single("font_overstrike",font_overstrike)
-
-        self._tk_kwargs.update({
+        _tk_kwargs = {
             **tk_kwargs,
             "cursor":cursor,
             "takefocus":take_focus,
@@ -109,11 +102,19 @@ class Text(BaseWidget):
             "padding":padding,
             "width":width,
             # "wraplength":"1c" # Todo: integrate wraplength in a smart way
-        })
+            "fonttype":fonttype,
+            "fontsize":fontsize,
+            "font_bold":font_bold,
+            "font_italic":font_italic,
+            "font_underline":font_underline,
+            "font_overstrike":font_overstrike,
+        }
+        self.update(**_tk_kwargs)
 
         self._text = text
 
-    def _personal_init_inherit(self):
+    def _update_font(self):
+        # self._tk_kwargs will be passed to tk_widget later
         self._tk_kwargs["font"] = font.Font(
             self.window.tk_widget,
             family=self._fonttype,
@@ -124,6 +125,40 @@ class Text(BaseWidget):
             overstrike=bool(self._overstrike),
         )
 
+    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+        # Fish out all special keys to process them seperately
+        match key:
+            case "fonttype":
+                self._fonttype = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "fontsize":
+                self._fontsize = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "font_bold":
+                self._bold = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "font_italic":
+                self._italic = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "font_underline":
+                self._underline = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "font_overstrike":
+                self._overstrike = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case _: # Not a match
+                return False
+
+        return True
+
+    def _apply_update(self):
+        # If the font changed, apply them to self._tk_kwargs
+        if self.has_flag(ElementFlag.UPDATE_FONT):
+            self._update_font()
+
+        super()._apply_update() # Actually apply the update
+
+    def _personal_init_inherit(self):
         self._set_tk_target_variable(default_value=self._text)
 
 # Aliases

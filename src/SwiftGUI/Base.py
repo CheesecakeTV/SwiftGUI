@@ -35,8 +35,12 @@ class BaseElement:
         """
         self._init_defaults()   # Default configuration
         self._flag_init()
+        self.add_flags(ElementFlag.IS_CREATED)
+
         self._normal_init(parent,window)
         self._personal_init()
+
+        self._apply_update()
 
     def _flag_init(self):
         """
@@ -166,6 +170,13 @@ class BaseElement:
         """
         pass
 
+    def _apply_update(self):
+        """
+        Called after an update if the element was already created
+        :return:
+        """
+        ...
+
     def update(self,**kwargs):
         """
         Update configurations of this element.
@@ -174,6 +185,9 @@ class BaseElement:
         """
         kwargs = dict(filter(lambda a: not self._update_special_key(*a), kwargs.items()))
         self._update_default_keys(kwargs)
+
+        if self.has_flag(ElementFlag.IS_CREATED):
+            self._apply_update()
 
 
 class BaseWidget(BaseElement):
@@ -244,7 +258,7 @@ class BaseWidget(BaseElement):
         return self
 
     def _init_defaults(self):
-        self._tk_kwargs = self.defaults.apply(self._tk_kwargs)
+        self.update(**self._tk_kwargs)
 
     def _init_widget_for_inherrit(self,container) -> tk.Widget:
         """
@@ -323,7 +337,9 @@ class BaseWidget(BaseElement):
         kwargs = self.defaults.apply(kwargs)
 
         self._tk_kwargs.update(kwargs)
-        self._tk_widget.configure(kwargs)
+
+    def _apply_update(self):
+        self._tk_widget.configure(self._tk_kwargs)
 
     def set_value(self,val:any):
         try:
