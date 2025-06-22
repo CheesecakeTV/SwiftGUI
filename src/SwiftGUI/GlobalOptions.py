@@ -2,51 +2,72 @@ import tkinter as tk    # Not needed, but helpful to figure out default vals
 from tkinter import ttk
 from collections.abc import Iterable
 from typing import Literal, Union
+
 from SwiftGUI import Literals
 
-_all_configs:list[Union["DEFAULT_OPTIONS_CLASS",type]] = list()
-
-def persist_all_changes():
-    """
-    Persist the changes in every configuration
-    :return:
-    """
-    for i in _all_configs:
-        i.persist_changes()
 
 class DefaultOptionsMeta(type):
 
     def __new__(mcs, name, bases, namespace):
         cls:"DEFAULT_OPTIONS_CLASS"|type = super().__new__(mcs, name, bases, namespace)
-        _all_configs.append(cls)
 
         prev = cls.__mro__[1]
-        cls.dict = dict(cls.__dict__)
-        if hasattr(prev,"dict"):
-            cls.dict.update(dict(prev.__dict__))
+        cls._dict = dict(cls.__dict__)
+        if hasattr(prev,"_dict"):
+            cls._dict.update(dict(prev.__dict__))
 
-        cls.persist_changes()
+        cls.made_changes = True
+        cls._persist_changes()
 
         return cls
 
+    def __setattr__(self, key, value):
+        if not key.startswith("_") and not key == "made_changes":
+            self.made_changes = True
+        super().__setattr__(key,value)
+
+
 class DEFAULT_OPTIONS_CLASS(metaclass=DefaultOptionsMeta):
+    """
+    DON'T ADD ANY OPTIONS HERE!
+    """
 
     _prev_dict:dict = None
     _prev_class_dict:dict = None
     @classmethod
-    def persist_changes(cls):
+    def _persist_changes(cls):
         """
-        Call this to persist changes you made into the option-class.
-        I know this is kinda nasty, but still better than looping every time this gets applied...
+        Refreshes the _dict if necessary
         :return:
         """
+        cls._check_for_changes()
+        if not cls.made_changes:
+            return
+        cls.made_changes = False
 
         collected = dict()
         for i in cls.__mro__[-1::-1]:
             collected.update(i.__dict__)
 
-        cls.dict = dict(filter(lambda a: not a[0].startswith("_") and not a[0] in ["dict","apply","single","persist_changes"], collected.items()))
+        cls._dict = dict(filter(lambda a: not a[0].startswith("_") and not a[0] in ["_dict","apply","single","persist_changes"], collected.items()))
 
+    @classmethod
+    def _check_for_changes(cls):
+        """
+        Check if any parent-class changed anything
+        :return:
+        """
+        if cls.made_changes:
+            return
+
+        my_iter = iter(cls.__mro__[-3::-1])
+        for i in my_iter:    # Check higher classes
+            if i.made_changes:
+                cls.made_changes = True
+                break
+
+        for i in my_iter:   # Set changes for all the other classes between you and changed
+            i.made_changes = True
 
     @classmethod
     def apply(cls,apply_to:dict) -> dict:
@@ -56,7 +77,8 @@ class DEFAULT_OPTIONS_CLASS(metaclass=DefaultOptionsMeta):
         :param apply_to: It will be changed AND returned
         :return: apply_to will be changed AND returned
         """
-        my_dict = cls.dict
+        cls._persist_changes()
+        my_dict = cls._dict
 
         # Get keys with value None that are also in the global options
         items_change:Iterable[tuple] = filter(lambda a: a[1] is None and a[0] in my_dict , apply_to.items())
@@ -75,12 +97,13 @@ class DEFAULT_OPTIONS_CLASS(metaclass=DefaultOptionsMeta):
         :param val:
         :return:
         """
+        cls._persist_changes()
         if val is None:
             return getattr(cls,key)
         return None
 
 class Common(DEFAULT_OPTIONS_CLASS):
-    ...#cursor:Literals.cursor = "arrow"
+    cursor:Literals.cursor = None   # Find available cursors here (2025): https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/cursors.html
 
 class Text(Common):
     text:str = ""
@@ -89,4 +112,5 @@ class Frame(Common):
     padding:int|tuple[int,int]|tuple[int,int,int,int] = 3
     relief:Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = "flat"
     #background = "blue"
+
 

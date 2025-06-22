@@ -68,7 +68,7 @@ class Window(BaseElement):
 
         When window is closed, None is returned as the key.
 
-        :return: Triggering event key; all values as dict
+        :return: Triggering event key; all values as _dict
         """
         self.exists = True
         self._tk.mainloop()
@@ -100,7 +100,7 @@ class Window(BaseElement):
         Thread-safe method to generate a custom event.
 
         :param key:
-        :param value: If not None, it will be saved inside the value-dict until changed
+        :param value: If not None, it will be saved inside the value-_dict until changed
         :return:
         """
         if value is not None:
@@ -114,7 +114,7 @@ class Window(BaseElement):
 
         Generate an event instantly when window returns to loop
         :param key:
-        :param value: If not None, it will be saved inside the value-dict until changed
+        :param value: If not None, it will be saved inside the value-_dict until changed
         :return:
         """
         # Todo
