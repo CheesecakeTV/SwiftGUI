@@ -76,7 +76,7 @@ class Window(BaseElement):
         try:
             assert self._tk.winfo_exists()
         except (AssertionError,tk.TclError):
-            self.exists = False
+            self.exists = False # This looks redundant, but it's easier to use self.exists from outside. So leave it!
             self.remove_flags(ElementFlag.IS_CREATED)
             return None,self.values
 

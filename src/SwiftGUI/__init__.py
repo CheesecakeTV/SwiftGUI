@@ -1,7 +1,7 @@
 
 from .Colors import Color,rgb
 from .Fonts import *
-from . import GlobalOptions, Literals
+from . import GlobalOptions, Literals, Tools
 
 from .Events import *
 from .Base import *
