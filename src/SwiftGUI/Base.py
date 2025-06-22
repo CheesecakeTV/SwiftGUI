@@ -145,6 +145,35 @@ class BaseElement:
         """
         pass
 
+    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+        """
+        Inherit this method to pick out "special" keys to update.
+        IF YOU RETURN ANYTHING TRUE, THE KEY WILL NOT BE USED IN DEFAULT UPDATE METHOD
+
+        :param key: option-key
+        :param new_val: new value for that key
+        :return: bool if you want to catch this key, otherwise None
+        """
+        pass
+
+    def _update_default_keys(self,kwargs):
+        """
+        Standard-Update method for all those keys that didn't get picked by the special method
+        :param kwargs:
+        :return:
+        """
+        print(kwargs)
+        pass
+
+    def update(self,**kwargs):
+        """
+        Update configurations of this element.
+        :param kwargs:
+        :return:
+        """
+        kwargs = dict(filter(lambda a: not self._update_special_key(*a), kwargs.items()))
+        self._update_default_keys(kwargs)
+
 
 class BaseWidget(BaseElement):
     """
