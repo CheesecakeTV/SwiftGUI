@@ -7,7 +7,7 @@ layout = [
     ],[
         sg.T("Welt")
     ],[
-        sg.T("Amazing what you can accomplish\non a saturday",key="SomeText"),
+        sg.T("Amazing what you can accomplish\non a saturday",key="SomeText",text_color="green"),
         sg.Frame([
             [
                 sg.T("I am")
@@ -36,7 +36,9 @@ while True:
     print(e,v)
 
     w["Input-Test"].value = e
-    w["SomeText"].value = "Funktioniert"
+    #w["SomeText"].value = "Funktioniert"
+
+    w["SomeText"].update(background="red")
 
     if not w.exists:
         break

@@ -148,6 +148,8 @@ class BaseElement:
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         """
         Inherit this method to pick out "special" keys to update.
+        Keys are passed one-by-one.
+
         IF YOU RETURN ANYTHING TRUE, THE KEY WILL NOT BE USED IN DEFAULT UPDATE METHOD
 
         :param key: option-key
@@ -162,7 +164,6 @@ class BaseElement:
         :param kwargs:
         :return:
         """
-        print(kwargs)
         pass
 
     def update(self,**kwargs):
@@ -317,6 +318,12 @@ class BaseWidget(BaseElement):
             return self._tk_target_value.get()  # Standard target
         except AttributeError:  # _tk_target_value isn't used
             return None
+
+    def _update_default_keys(self,kwargs):
+        kwargs = self.defaults.apply(kwargs)
+
+        self._tk_kwargs.update(kwargs)
+        self._tk_widget.configure(kwargs)
 
     def set_value(self,val:any):
         try:
