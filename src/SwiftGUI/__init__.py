@@ -1,4 +1,8 @@
 
+from .Colors import Color,rgb
+from .Fonts import *
+from . import GlobalOptions, Literals, Tools
+
 from .Events import *
 from .Base import *
 from .KeyManager import *

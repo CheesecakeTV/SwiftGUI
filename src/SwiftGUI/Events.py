@@ -1,7 +1,5 @@
 import enum
 
-
-
 class Event(enum.Enum):
 
     FocusIn = "FocusIn" # Element got focus in layout

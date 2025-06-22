@@ -2,7 +2,7 @@ from collections.abc import Iterable, Callable
 from typing import Literal, Self, Union
 import tkinter as tk
 
-from SwiftGUI import Event
+from SwiftGUI import Event,GlobalOptions
 from SwiftGUI.ElementFlags import ElementFlag
 
 
@@ -21,9 +21,7 @@ class BaseElement:
     key:any = None  # If given, this will be written to the event-value. Elements without a key can not throw key-events
     _key_function: Callable | Iterable[Callable] = None  # Called as an event
 
-    _key_function_send_wev:bool = False   # True, if window, event, value should be sent to key_function
-    _key_function_send_val:bool = False   # True, if current event value shall be sent to key_function
-    # If both are True, it will be sent like this: window, event, values, value
+    defaults:type[GlobalOptions.DEFAULT_OPTIONS_CLASS] = GlobalOptions.Common  # Change this to apply a different default configuration
 
     def _init(self,parent:"BaseElement",window):
         """
@@ -35,9 +33,14 @@ class BaseElement:
         :param window: Main Window
         :return:
         """
+        self._init_defaults()   # Default configuration
         self._flag_init()
+        self.add_flags(ElementFlag.IS_CREATED)
+
         self._normal_init(parent,window)
         self._personal_init()
+
+        self._apply_update()
 
     def _flag_init(self):
         """
@@ -71,6 +74,16 @@ class BaseElement:
 
         self._element_flags.update(set(flags))
 
+    def remove_flags(self,*flags:ElementFlag):
+        """
+        Pretty self-explanitory
+        :param flags:
+        :return:
+        """
+        for i in flags:
+            if self.has_flag(i):
+                self._element_flags.remove(i)
+
     def has_flag(self,flag:ElementFlag) -> bool:
         """
         True, if this element has a certain flag
@@ -89,8 +102,8 @@ class BaseElement:
         self.parent = parent
         self.window = window
 
-        window.register_element(self)
-
+        if not self.has_flag(ElementFlag.DONT_REGISTER_KEY):
+            window.register_element(self)
 
     def _personal_init(self):
         """
@@ -138,6 +151,55 @@ class BaseElement:
             return self._fake_tk_element
         return self.parent.tk_widget
 
+    def _init_defaults(self):
+        """
+        Apply default values in __init__, or here.
+        Keep in mind that BaseWidget inherits this method.
+        :return:
+        """
+        pass
+
+    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+        """
+        Inherit this method to pick out "special" keys to update.
+        Keys are passed one-by-one.
+
+        IF YOU RETURN ANYTHING TRUE, THE KEY WILL NOT BE USED IN DEFAULT UPDATE METHOD
+
+        :param key: option-key
+        :param new_val: new value for that key
+        :return: bool if you want to catch this key, otherwise None
+        """
+        pass
+
+    def _update_default_keys(self,kwargs):
+        """
+        Standard-Update method for all those keys that didn't get picked by the special method
+        :param kwargs:
+        :return:
+        """
+        pass
+
+    def _apply_update(self):
+        """
+        Called after an update if the element was already created
+        :return:
+        """
+        ...
+
+    def update(self,**kwargs):
+        """
+        Update configurations of this element.
+        :param kwargs:
+        :return:
+        """
+
+        kwargs = dict(filter(lambda a: not self._update_special_key(*a), kwargs.items()))
+        self._update_default_keys(kwargs)
+
+        if self.has_flag(ElementFlag.IS_CREATED) and self.window.has_flag(ElementFlag.IS_CREATED):
+            self._apply_update()
+
 
 class BaseWidget(BaseElement):
     """
@@ -145,7 +207,6 @@ class BaseWidget(BaseElement):
     """
     _tk_widget:tk.Widget
     _tk_widget_class:type = None # Class of the connected widget
-    _tk_args:tuple = tuple()    # args and kwargs to pass to the tk_widget_class when initializing
     _tk_kwargs:dict = dict()
 
     _tk_target_value:tk.Variable = None # By default, the value of this is read when fetching the value
@@ -159,8 +220,7 @@ class BaseWidget(BaseElement):
     # def _is_container(self) -> bool:
     #     return False
 
-    def __init__(self,key:any=None,tk_args:tuple[any]=tuple(),tk_kwargs:dict[str:any]=None):
-        self._tk_args = tk_args
+    def __init__(self,key:any=None,tk_kwargs:dict[str:any]=None):
 
         if tk_kwargs is None:
             tk_kwargs = dict()
@@ -169,7 +229,7 @@ class BaseWidget(BaseElement):
         self._insert_kwargs = {"side":tk.LEFT}
         self.key = key
 
-    def bind_event(self,tk_event:str|Event,key_extention:Union[str,any]=None,key:any=None,key_function:Callable|Iterable[Callable]=None,send_wev:bool=False,send_val:bool=False)->Self:
+    def bind_event(self,tk_event:str|Event,key_extention:Union[str,any]=None,key:any=None,key_function:Callable|Iterable[Callable]=None)->Self:
         """
         Bind a tk-event onto the underlying tk-widget
 
@@ -179,8 +239,6 @@ class BaseWidget(BaseElement):
         :param key_extention: Added to the event-key
         :param key: event-key. If None and key_extention is not None, it will be appended onto the element-key
         :param key_function: Called when this event is thrown
-        :param send_wev: Send window, event, values to functions
-        :param send_val: Send element-value to functions
         :return: Calling element for inline-calls
         """
         new_key = None
@@ -201,8 +259,7 @@ class BaseWidget(BaseElement):
             case (False,False):
                 pass
 
-        temp = self.window.get_event_function(self, new_key, key_function=key_function, key_function_send_wev=send_wev,
-                                       key_function_send_val=send_val)
+        temp = self.window.get_event_function(self, new_key, key_function=key_function)
 
         self._tk_widget.bind(
             tk_event,
@@ -211,13 +268,8 @@ class BaseWidget(BaseElement):
 
         return self
 
-    # @property
-    # def tk_widget(self) ->tk.Widget:
-    #     """
-    #     Returns the tkinter widget connected to this sg-widget
-    #     :return:
-    #     """
-    #     return self._tk_widget
+    def _init_defaults(self):
+        self.update(**self._tk_kwargs)
 
     def _init_widget_for_inherrit(self,container) -> tk.Widget:
         """
@@ -225,7 +277,7 @@ class BaseWidget(BaseElement):
         :param container:
         :return:
         """
-        return self._tk_widget_class(container, *self._tk_args, **self._tk_kwargs)
+        return self._tk_widget_class(container, **self._tk_kwargs)
 
     def _personal_init_inherit(self):
         """
@@ -271,7 +323,8 @@ class BaseWidget(BaseElement):
         :return:
         """
         for i in self._contains:
-            line = tk.Frame(self._tk_widget)
+            #line = tk.Frame(self._tk_widget,background="red",relief="raised",borderwidth="3",border=3)
+            line = tk.Frame(self._tk_widget,relief="flat")
 
             line_elem = BaseElement()
             line_elem._fake_tk_element = line
@@ -290,6 +343,14 @@ class BaseWidget(BaseElement):
             return self._tk_target_value.get()  # Standard target
         except AttributeError:  # _tk_target_value isn't used
             return None
+
+    def _update_default_keys(self,kwargs):
+        kwargs = self.defaults.apply(kwargs)
+
+        self._tk_kwargs.update(kwargs)
+
+    def _apply_update(self):
+        self._tk_widget.configure(self._tk_kwargs)
 
     def set_value(self,val:any):
         try:

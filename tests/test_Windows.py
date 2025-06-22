@@ -7,25 +7,27 @@ layout = [
     ],[
         sg.T("Welt")
     ],[
-        sg.T("Amazing what you can accomplish\non a saturday",key="SomeText"),
+        sg.T("Amazing what you can accomplish\non a saturday",key="SomeText",text_color="green"),
         sg.Frame([
             [
-                sg.T("I am")
+                sg.T("I am",font_overstrike=True,key="IAM",background_color="red")
             ],[
                 sg.T("Inside of another Frame!")
             ]
         ])
     ],[
-        sg.Button("Hallo Welt-Button",key="Hallo Welt",key_function=lambda :print("Yooo")),
-        sg.In("Was geht",key="Input-Test")
+        sg.Button("Hallo Welt-Button",key="Hallo Welt"),
+        sg.In("Was geht",key="Input-Test"),
+        sg.In("Was geht", key="Another-Input-Test"),
     ],[
         sg.Form(["Hallo","Welt","Das","Ist","Ein","Test"],key="Form")
     ]
 ]
 
 w = sg.Window(layout)
-w["Input-Test"].bind_event(Event.MouseEnter,send_wev=True,send_val=True,key_function=sg.KeyFunctions.copy_value("TestText"))
-w["Input-Test"].bind_event(Event.MouseEnter,send_wev=True,send_val=True,key_function=sg.KeyFunctions.copy_value("TestText"))
+#w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value("TestText"))
+w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.clear_str_value)
+w["Another-Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value_from("Input-Test"))
 
 print("Start:",w.values)
 
@@ -34,7 +36,10 @@ while True:
     print(e,v)
 
     w["Input-Test"].value = e
-    w["SomeText"].value = "Funktioniert"
+    #w["SomeText"].value = "Funktioniert"
+
+    w["SomeText"].update(background="red")
+    w["IAM"].update(font_overstrike=False,background_color=None)
 
     if not w.exists:
         break

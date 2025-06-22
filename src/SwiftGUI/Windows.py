@@ -3,8 +3,9 @@ from collections.abc import Iterable,Callable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 from warnings import deprecated
+import inspect
 
-from SwiftGUI import BaseElement, Frame
+from SwiftGUI import BaseElement, Frame, ElementFlag
 
 if TYPE_CHECKING:
     from SwiftGUI import AnyElement
@@ -25,12 +26,32 @@ class Window(BaseElement):
 
     exists:bool = False # True, if this window exists at the moment
 
-    def __init__(self,layout:Iterable[Iterable[BaseElement]]):
+    global_options = dict() # Standard-Values for options
+
+    def __init__(
+            self,
+            layout:Iterable[Iterable[BaseElement]],
+            # global_options:dict[str:str] = None, # Todo: This conflicts with other global-options
+    ):
+        """
+
+        :param layout:
+        # :param global_options: Options applied to every element in the window
+        """
         self.all_elements:list["AnyElement"] = list()   # Elemente will be registered in here
         self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
         self.values = dict()
 
         self._tk = tk.Tk()
+
+
+        # if global_options:
+        #     for key,val in global_options.items():
+        #         if not (key.startswith("*") or "." in key):
+        #             key = "*" + key
+        #
+        #         self._tk.option_add(key,val,priority=1)
+
 
         self._sg_widget:Frame = Frame(layout)
         self._sg_widget.window_entry_point(self._tk, self)
@@ -47,7 +68,7 @@ class Window(BaseElement):
 
         When window is closed, None is returned as the key.
 
-        :return: Triggering event key; all values as dict
+        :return: Triggering event key; all values as _dict
         """
         self.exists = True
         self._tk.mainloop()
@@ -55,7 +76,8 @@ class Window(BaseElement):
         try:
             assert self._tk.winfo_exists()
         except (AssertionError,tk.TclError):
-            self.exists = False
+            self.exists = False # This looks redundant, but it's easier to use self.exists from outside. So leave it!
+            self.remove_flags(ElementFlag.IS_CREATED)
             return None,self.values
 
         return self._prev_event, self.values
@@ -79,7 +101,7 @@ class Window(BaseElement):
         Thread-safe method to generate a custom event.
 
         :param key:
-        :param value: If not None, it will be saved inside the value-dict until changed
+        :param value: If not None, it will be saved inside the value-_dict until changed
         :return:
         """
         if value is not None:
@@ -93,7 +115,7 @@ class Window(BaseElement):
 
         Generate an event instantly when window returns to loop
         :param key:
-        :param value: If not None, it will be saved inside the value-dict until changed
+        :param value: If not None, it will be saved inside the value-_dict until changed
         :return:
         """
         # Todo
@@ -109,13 +131,10 @@ class Window(BaseElement):
         self._tk.quit()
 
     def get_event_function(self,me:BaseElement,key:any=None,key_function:Callable|Iterable[Callable]=None,
-                           key_function_send_wev:bool = False, key_function_send_val:bool = False,
                            )->Callable:
         """
         Returns a function that sets the event-variable accorting to key
-        :param key_function_send_val: True, if the element-value should be passed to the function
         :param me: Calling element
-        :param key_function_send_wev: True, if additional_function should be called with window, event, value as argument
         :param key_function: Will be called additionally to the event. YOU CAN PASS MULTIPLE FUNCTIONS as a list/tuple
         :param key: If passed, main loop will return this key
         :return: Function to use as a tk-event
@@ -127,16 +146,19 @@ class Window(BaseElement):
             self.refresh_values()
 
             if key_function: # Call key-functions
+                kwargs = {  # Possible parameters for function
+                    "w": self,  # Reference to main window
+                    "e": key,   # Event-key, if there is one
+                    "v": self.values,   # All values
+                    "val": me.value,    # Value of element that caused the event
+                    "elem": me,
+                }
+
                 for fkt in key_function:
-                    args = list()
+                    wanted = set(inspect.signature(fkt).parameters.keys())
+                    offers = kwargs.fromkeys(kwargs.keys() & wanted)
 
-                    if key_function_send_wev:
-                        args.extend((self,key,self.values))
-
-                    if key_function_send_val:
-                        args.append(me.value)
-
-                    fkt(*args)
+                    fkt(**{i:kwargs[i] for i in offers})
 
                 self.refresh_values() # In case you change values with the key-functions
 
