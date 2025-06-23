@@ -142,14 +142,14 @@ class BaseElement:
         self.set_value(val)
 
     @property
-    def tk_widget(self) ->tk.Widget:
+    def parent_tk_widget(self) ->tk.Widget:
         """
         This will be used to store all contained Widgets into
         :return:
         """
         if self.parent is None:
             return self._fake_tk_element
-        return self.parent.tk_widget
+        return self.parent.parent_tk_widget
 
     def _init_defaults(self):
         """
@@ -206,6 +206,7 @@ class BaseWidget(BaseElement):
     Base for every Widget
     """
     _tk_widget:tk.Widget
+    tk_widget:tk.Widget    # My own tk_widget. Wraps _tk_widget
     _tk_widget_class:type = None # Class of the connected widget
     _tk_kwargs:dict = dict()
 
@@ -220,14 +221,20 @@ class BaseWidget(BaseElement):
     # def _is_container(self) -> bool:
     #     return False
 
-    def __init__(self,key:any=None,tk_kwargs:dict[str:any]=None):
+    def __init__(self,key:any=None,tk_kwargs:dict[str:any]=None,**kwargs):
 
         if tk_kwargs is None:
             tk_kwargs = dict()
+
+        tk_kwargs.update(kwargs)
         self._tk_kwargs = tk_kwargs
 
         self._insert_kwargs = {"side":tk.LEFT}
         self.key = key
+
+    @property
+    def tk_widget(self) -> tk.Widget:
+        return self._tk_widget
 
     def bind_event(self,tk_event:str|Event,key_extention:Union[str,any]=None,key:any=None,key_function:Callable|Iterable[Callable]=None)->Self:
         """
@@ -288,17 +295,21 @@ class BaseWidget(BaseElement):
 
     def _personal_init(self):
         self._personal_init_inherit()
-        self._init_widget(self.parent.tk_widget)    # Init the contained widgets
+        self._init_widget(self.parent.parent_tk_widget)    # Init the contained widgets
 
-    def _set_tk_target_variable(self,value_type:type=tk.StringVar,kwargs_key:str="textvariable",default_value:any=None):
+    def _set_tk_target_variable(self,value_type:type=tk.StringVar,kwargs_key:str="textvariable",default_key:str=None,default_value:any=None):
         """
         Define a target variable for this widget
+        :param default_key: If given and in self._tk_args, self._tk_args[default_key] will be the default value
         :param value_type: Class of the needed variable
         :param kwargs_key: Key this value will be added into the tk-widget
         :param default_value: Passed to value
         :return:
         """
-        self._tk_target_value = value_type(self.tk_widget,value=default_value)
+        if default_key is not None and default_key in self._tk_kwargs:
+            default_value = self._tk_kwargs.get(default_key)
+
+        self._tk_target_value = value_type(self.parent_tk_widget, value=default_value)
         self._tk_kwargs[kwargs_key] = self._tk_target_value
 
     def _init_widget(self,container:tk.Widget|tk.Tk,mode:Literal["pack","grid"]="pack") -> None:

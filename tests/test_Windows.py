@@ -3,6 +3,7 @@ from SwiftGUI import Event
 
 layout = [
     [
+        sg.Example(text="It does work!"),
         sg.T("Hallo",key="TestText")
     ],[
         sg.T("Welt")
@@ -30,6 +31,7 @@ w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.clear_s
 w["Another-Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value_from("Input-Test"))
 
 print("Start:",w.values)
+print(w["IAM"].value)
 
 while True:
     e,v = w.loop()

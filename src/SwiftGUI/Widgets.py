@@ -8,32 +8,13 @@ from SwiftGUI import BaseElement, ElementFlag, BaseWidget, BaseWidgetContainer, 
 
 
 # Todo: Add docstrings to __init__ methods
-
 class Example(BaseWidget):
-    """
-    Copy this class ot create your own Widget
+    _tk_widget_class = ttk.Label  # Class of your tk-widget
+    defaults = GlobalOptions.DEFAULT_OPTIONS_CLASS      # Default options to be applied
 
-    The following methods are to be overwritten if needed:
-    _get_value  (determines the value returned by this widget)
-    _init_widget_for_inherrit   (Initializes the widget)
-    """
-    _tk_widget_class:type[tk.Widget] = None # Class of the connected widget
-    defaults = GlobalOptions.Common # Change this to your default-option-class if needed
+    def _personal_init_inherit(self):
+        self._set_tk_target_variable(tk.StringVar,"textvariable", default_key="text")
 
-    def __init__(
-            self,
-            # Add here
-            tk_kwargs:dict[str:any]=None
-    ):
-        super().__init__(tk_kwargs=tk_kwargs)
-
-        if tk_kwargs is None:
-            tk_kwargs = dict()
-
-        self._tk_kwargs.update({
-            **tk_kwargs
-            # Insert named arguments for the widget here
-        })
 
 class Text(BaseWidget):
     """
@@ -116,7 +97,7 @@ class Text(BaseWidget):
     def _update_font(self):
         # self._tk_kwargs will be passed to tk_widget later
         self._tk_kwargs["font"] = font.Font(
-            self.window.tk_widget,
+            self.window.parent_tk_widget,
             family=self._fonttype,
             size=self._fontsize,
             weight="bold" if self._bold else "normal",
@@ -280,7 +261,7 @@ class Input(BaseWidget):
         self._key_function = key_function
 
     def _personal_init(self):
-        self._tk_target_value = tk.StringVar(self.window.tk_widget)
+        self._tk_target_value = tk.StringVar(self.window.parent_tk_widget)
 
         self._tk_kwargs.update({
             #"command": self.window.get_event_function(self.key, self._key_function),

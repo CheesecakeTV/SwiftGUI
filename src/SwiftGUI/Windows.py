@@ -59,8 +59,8 @@ class Window(BaseElement):
         self.refresh_values()
 
     @property
-    def tk_widget(self) ->tk.Widget:
-        return self._sg_widget.tk_widget
+    def parent_tk_widget(self) ->tk.Widget:
+        return self._sg_widget.parent_tk_widget
 
     def loop(self) -> tuple[any,dict[any:any]]:
         """
