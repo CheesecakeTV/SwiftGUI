@@ -95,10 +95,10 @@ class Text(BaseWidget):
             "takefocus":take_focus,
             "underline":underline,
             "justify":justify,
-            "background":self.defaults.single("background_color",background_color),
+            "background_color":background_color,
             #"borderwidth":borderwidth,
             "relief":relief,
-            "foreground":self.defaults.single("text_color",text_color),
+            "text_color":text_color,
             "padding":padding,
             "width":width,
             # "wraplength":"1c" # Todo: integrate wraplength in a smart way
@@ -146,6 +146,10 @@ class Text(BaseWidget):
             case "font_overstrike":
                 self._overstrike = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
+            case "background_color":
+                self._tk_kwargs["background"] = self.defaults.single(key,new_val)
+            case "text_color":
+                self._tk_kwargs["foreground"] = self.defaults.single(key,new_val)
             case _: # Not a match
                 return False
 
