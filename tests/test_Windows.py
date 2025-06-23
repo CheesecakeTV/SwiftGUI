@@ -38,6 +38,7 @@ while True:
     print(e,v)
 
     w["Input-Test"].value = e
+    w["Input-Test"].update(background_color=sg.Color.gold)
     #w["SomeText"].value = "Funktioniert"
 
     w["SomeText"].update(background="red")

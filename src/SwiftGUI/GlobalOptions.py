@@ -149,8 +149,40 @@ class Text(Common,Common_Textual):
     width:int = None
 
 class Input(Common,Common_Textual):
-    exportselection: bool = False   # Automatically copy selection
-
+    text: str = None
+    width: int = None
+    #
+    # Standard-Tkinter options
+    cursor: Literals.cursor = None
+    take_focus: bool = None
+    #
+    # Special Tkinter-options
+    justify: Literal["left", "right", "center"] = "left"
+    background_color: str | Color = None
+    background_color_disabled: str | Color = None
+    background_color_readonly: str | Color = None
+    text_color: str | Color = None
+    text_color_disabled: str | Color = None
+    highlightbackground_color: str | Color = None
+    selectbackground_color: str | Color = None
+    select_text_color: str | Color = None
+    selectborderwidth: int = None
+    highlightcolor: str | Color = None
+    highlightthickness: int = None
+    pass_char: str = None
+    disabled: bool = None  # Set state to tk.Normal, or 'disabled'
+    relief: Literals.relief = None
+    exportselection: bool = None
+    validate: Literals.validate = None
+    validatecommand: callable = None
+    #
+    # Mixed options
+    fonttype: str = None
+    fontsize: int = None
+    font_bold: bool = None
+    font_italic: bool = None
+    font_underline: bool = None
+    font_overstrike: bool = None
 
 class Frame(Common):
     takefocus = False
@@ -158,3 +190,25 @@ class Frame(Common):
     relief:Literals.relief = "flat"
     #background = "blue"
 
+
+def _make_dict_format_because_lazy(the_class:DEFAULT_OPTIONS_CLASS):
+    """
+    Use this to print a dict you can just copy instead of making everything yourself
+
+    YOU HAVE TO REMOVE INHERITANCE OF BASE CLASS BEFORE USING THIS!
+    Otherwise None-Values will be filtered out
+
+    :param the_class:
+    :return:
+    """
+    for key in dir(the_class):
+        if key in ("made_changes","apply","single","persist_changes","key"):
+            continue
+
+        if key.startswith("_"):
+            continue
+
+        print(f'"{key}" : {key},')
+
+# _make_dict_format_because_lazy(Input)
+# exit()

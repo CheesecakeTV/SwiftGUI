@@ -286,6 +286,7 @@ class BaseWidget(BaseElement):
         :param container:
         :return:
         """
+        pass
         return self._tk_widget_class(container, **self._tk_kwargs)
 
     def _personal_init_inherit(self):
