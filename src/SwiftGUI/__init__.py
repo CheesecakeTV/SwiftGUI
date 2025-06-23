@@ -14,3 +14,4 @@ from .WidgetsAdvanced import *
 from . import KeyFunctions
 from .AnyElement import AnyElement
 
+from . import Examples

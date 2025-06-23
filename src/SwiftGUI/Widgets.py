@@ -255,7 +255,7 @@ class Input(BaseWidget):
     }
 
     def __init__(
-            self,
+            self,   # Todo: Test all options
             # Add here
             text:str = None,
             key:any=None,
@@ -315,6 +315,7 @@ class Input(BaseWidget):
         _tk_kwargs = {
             **tk_kwargs,
             "takefocus":take_focus,
+            "background_color":background_color,
             "background_color_disabled": background_color_disabled,
             "background_color_readonly": background_color_readonly,
             "cursor": cursor,
