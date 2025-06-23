@@ -239,13 +239,25 @@ class Input(BaseWidget):
     _get_value  (determines the value returned by this widget)
     _init_widget_for_inherrit   (Initializes the widget)
     """
-    _tk_widget_class:type = ttk.Entry # Class of the connected widget
+    _tk_widget_class:type = tk.Entry # Class of the connected widget
     defaults = GlobalOptions.Input   # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
+
+    _transfer_keys = {
+        "background_color_disabled":"disabledbackground",
+        "background_color_readonly":"readonlybackground",
+        "background_color":"background",
+        "foreground_color":"foreground",
+        "text_color_disabled": "disabledforeground",
+        "highlightbackground_color": "highlightbackground",
+        "selectbackground_color": "selectbackground",
+        "select_text_color": "selectforeground",
+        "pass_char":"show",
+    }
 
     def __init__(
             self,
             # Add here
-            text:str = None,    # Has to be written into the variable (or not?)
+            text:str = None,
             key:any=None,
             width:int=None,
             #
@@ -256,18 +268,18 @@ class Input(BaseWidget):
             # Special Tkinter-options
             justify:Literal["left","right","center"] = None,
             background_color:str|Color = None,
-            background_color_disabled:str|Color = None, # Change to disabledbackground
-            background_color_readonly:str|Color = None, # Change to readonlybackground
+            background_color_disabled:str|Color = None,
+            background_color_readonly:str|Color = None,
             text_color:str|Color = None,
-            text_color_disabled:str|Color = None,   # Change to disabledforeground
-            highlightbackground_color:str|Color = None, # Change to highlightbackground
-            selectbackground_color:str|Color = None,    # Change to selectbackground
-            select_text_color:str|Color = None, # Change to selectforeground
+            text_color_disabled:str|Color = None,
+            highlightbackground_color:str|Color = None,
+            selectbackground_color:str|Color = None,
+            select_text_color:str|Color = None,
             selectborderwidth:int = None,
             highlightcolor:str|Color = None,
             highlightthickness:int = None,
-            pass_char:str = None,   # Change to show
-            disabled:bool = None,   # Set state to tk.Normal, ore 'disabled'
+            pass_char:str = None,
+            disabled:bool = None,   # Set state to tk.Normal, or 'disabled'
             relief:Literals.relief = None,
             exportselection:bool = None,
             validate:Literals.validate = None,
@@ -319,8 +331,6 @@ class Input(BaseWidget):
         }
         self.update(**_tk_kwargs)
 
-        self._text = text
-
     def _update_font(self):
         # self._tk_kwargs will be passed to tk_widget later
         self._tk_kwargs["font"] = font.Font(
@@ -354,10 +364,6 @@ class Input(BaseWidget):
             case "font_overstrike":
                 self._overstrike = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
-            case "background_color":
-                self._tk_kwargs["background"] = self.defaults.single(key,new_val)
-            case "text_color":
-                self._tk_kwargs["foreground"] = self.defaults.single(key,new_val)
             case _: # Not a match
                 return False
 

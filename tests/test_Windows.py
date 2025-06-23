@@ -8,7 +8,7 @@ layout = [
     ],[
         sg.T("Welt")
     ],[
-        sg.T("Amazing what you can accomplish\non a saturday",key="SomeText",text_color="green"),
+        sg.T("Amazing what you can accomplish\non a saturday",key="SomeText",text_color="green",background_color=sg.Color.SeaGreen1),
         sg.Frame([
             [
                 sg.T("I am",font_overstrike=True,key="IAM",background_color="red")
@@ -18,7 +18,7 @@ layout = [
         ])
     ],[
         sg.Button("Hallo Welt-Button",key="Hallo Welt"),
-        sg.In("Was geht",key="Input-Test"),
+        sg.In("Was geht",key="Input-Test",background_color="red"),
         sg.In("Was geht", key="Another-Input-Test"),
     ],[
         sg.Form(["Hallo","Welt","Das","Ist","Ein","Test"],key="Form")

@@ -2,7 +2,7 @@ from collections.abc import Iterable, Callable
 from typing import Literal, Self, Union
 import tkinter as tk
 
-from SwiftGUI import Event,GlobalOptions,Tools
+from SwiftGUI import Event,GlobalOptions
 from SwiftGUI.ElementFlags import ElementFlag
 
 
@@ -217,6 +217,8 @@ class BaseWidget(BaseElement):
     #_is_container:bool = False   # True, if this widget contains other widgets
     _contains:Iterable[Iterable[Self]] = []
 
+    _transfer_keys: dict[str:str] = dict()   # Rename a key from the update-function. from -> to; from_user -> to_widget
+
     # @property
     # def _is_container(self) -> bool:
     #     return False
@@ -356,7 +358,18 @@ class BaseWidget(BaseElement):
             return None
 
     def _update_default_keys(self,kwargs):
+        """
+        Transfers/renames keys in kwargs, then applies them
+        :param kwargs:
+        :return:
+        """
         kwargs = self.defaults.apply(kwargs)
+
+        transfer = set(filter(lambda a:a in kwargs.keys(),self._transfer_keys.keys()))
+
+        for key in transfer:
+            kwargs[self._transfer_keys[key]] = kwargs[key]
+            del kwargs[key]
 
         self._tk_kwargs.update(kwargs)
 
