@@ -2,7 +2,7 @@ from collections.abc import Iterable, Callable
 from typing import Literal, Self, Union
 import tkinter as tk
 
-from SwiftGUI import Event,GlobalOptions
+from SwiftGUI import Event,GlobalOptions,Tools
 from SwiftGUI.ElementFlags import ElementFlag
 
 
