@@ -148,6 +148,10 @@ class Text(Common,Common_Textual):
     padding:Literals.padding = 0
     width:int = None
 
+class Input(Common,Common_Textual):
+    exportselection: bool = False   # Automatically copy selection
+
+
 class Frame(Common):
     takefocus = False
     padding:Literals.padding = 3
