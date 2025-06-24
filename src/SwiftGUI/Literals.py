@@ -9,3 +9,5 @@ relief = Literal["raised", "sunken", "flat", "ridge", "solid", "groove"]
 padding = int|tuple[int,int]|tuple[int,int,int,int]
 
 validate = Literal["focus","focusin","focusout","key","all","none"]
+
+anchor = Literal["center","n","ne","e","se","s","sw","w","nw"]

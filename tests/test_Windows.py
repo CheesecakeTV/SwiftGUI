@@ -4,7 +4,7 @@ from SwiftGUI import Event, Color
 layout = [
     [
         sg.Example(text="It does work!"),
-        sg.T("Hallo",key="TestText")
+        sg.T("Hallo",key="TestText",width=25,anchor="center")
     ],[
         sg.T("Welt")
     ],[
@@ -18,7 +18,7 @@ layout = [
         ])
     ],[
         sg.Button("Hallo Welt-Button",key="Hallo Welt"),
-        sg.In("Was geht",key="Input-Test",background_color="red"),
+        sg.In("Was geht",key="Input-Test",background_color="red",justify="right"),
         sg.In("Was geht", key="Another-Input-Test",background_color=Color.AntiqueWhite2),
     ],[
         sg.Form(["Hallo","Welt","Das","Ist","Ein","Test"],key="Form")

@@ -36,10 +36,10 @@ class Text(BaseWidget):
 
             # Special Tkinter-options
             underline:int = None,
+            anchor:Literals.anchor = None,
             justify:Literal["left","right","center"] = None,
             background_color:str|Color = None,
             text_color:str|Color = None,
-            #borderwidth:int = None, # Todo: Check if this even exists
             relief:Literals.relief = None,
             padding:Literals.padding = None,
 
@@ -89,6 +89,7 @@ class Text(BaseWidget):
             "font_italic":font_italic,
             "font_underline":font_underline,
             "font_overstrike":font_overstrike,
+            "anchor":anchor,
         }
         self.update(**_tk_kwargs)
 

@@ -157,7 +157,7 @@ class Input(Common,Common_Textual):
     take_focus: bool = None
     #
     # Special Tkinter-options
-    justify: Literal["left", "right", "center"] = "left"
+    justify: Literal["left", "right", "center"] = None
     background_color: str | Color = None
     background_color_disabled: str | Color = None
     background_color_readonly: str | Color = None
