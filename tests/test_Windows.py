@@ -1,6 +1,8 @@
 import SwiftGUI as sg
 from SwiftGUI import Event, Color
 
+sg.GlobalOptions.Common_Textual.fontsize = 14
+
 layout = [
     [
         sg.Example(text="It does work!"),

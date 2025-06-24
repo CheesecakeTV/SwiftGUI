@@ -138,12 +138,10 @@ class Text(Common,Common_Textual):
     text:str = ""
     takefocus:bool = False
     underline:int = None
-    justify:Literal["left","right","center"] = "center"
+    justify:Literal["left","right","center"] = "left"
     background_color:Color|str = None
     text_color:Color|str = None
     #borderwidth:int = "5c" # Does not work
-
-    fontsize:int = 10
 
     padding:Literals.padding = 0
     width:int = None
@@ -177,12 +175,6 @@ class Input(Common,Common_Textual):
     validatecommand: callable = None
     #
     # Mixed options
-    fonttype: str = None
-    fontsize: int = None
-    font_bold: bool = None
-    font_italic: bool = None
-    font_underline: bool = None
-    font_overstrike: bool = None
 
 class Frame(Common):
     takefocus = False
