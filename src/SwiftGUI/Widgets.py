@@ -201,7 +201,22 @@ class Button(BaseWidget):
     _get_value  (determines the value returned by this widget)
     _init_widget_for_inherrit   (Initializes the widget)
     """
-    _tk_widget_class:type = ttk.Button # Class of the connected widget
+    _tk_widget_class:type = tk.Button # Class of the connected widget
+
+    _transfer_keys = {
+        # "background_color_disabled":"disabledbackground",
+        # "background_color_readonly":"readonlybackground",
+        # "background_color":"background",
+        # "foreground_color":"foreground",
+        # "text_color_disabled": "disabledforeground",
+        # "highlightbackground_color": "highlightbackground",
+        # "selectbackground_color": "selectbackground",
+        # "select_text_color": "selectforeground",
+        # "pass_char":"show",
+        "background_color_active" : "activebackground",
+        "text_color_active" : "activeforeground",
+
+    }
 
     def __init__(
             self,
@@ -209,7 +224,33 @@ class Button(BaseWidget):
             text:str = "",
             key:any = None,
             key_function:Callable|Iterable[Callable] = None,
-            tk_kwargs:dict[str:any]=None
+
+            background_color_active:str|Color = None,
+            text_color_active:str|Color = None,
+            # width: int = None,
+            #
+            # # Standard-Tkinter options
+            # cursor: Literals.cursor = None,
+            # take_focus: bool = None,
+            #
+            # # Special Tkinter-options
+            # underline: int = None,
+            # anchor: Literals.anchor = None,
+            # justify: Literal["left", "right", "center"] = None,
+            # background_color: str | Color = None,
+            # text_color: str | Color = None,
+            # relief: Literals.relief = None,
+            # padding: Literals.padding = None,
+            #
+            # # Mixed options
+            # fonttype: str = None,
+            # fontsize: int = None,
+            # font_bold: bool = None,
+            # font_italic: bool = None,
+            # font_underline: bool = None,
+            # font_overstrike: bool = None,
+
+            tk_kwargs: dict[str:any] = None
     ):
         super().__init__(key=key,tk_kwargs=tk_kwargs)
 
@@ -221,9 +262,11 @@ class Button(BaseWidget):
             # Insert named arguments for the widget here
             "text":text,
         })
-        #tk.Button(command=)
 
         self._key_function = key_function
+
+    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+        ...
 
     def _personal_init(self):
         self._tk_kwargs.update({

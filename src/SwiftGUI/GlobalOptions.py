@@ -133,6 +133,7 @@ class Common_Textual(DEFAULT_OPTIONS_CLASS):
     font_italic:bool = False
     font_underline:bool = False
     font_overstrike:bool = False
+    anchor:Literals.anchor = "w"
 
 class Text(Common,Common_Textual):
     text:str = ""
@@ -175,6 +176,9 @@ class Input(Common,Common_Textual):
     validatecommand: callable = None
     #
     # Mixed options
+
+class Button(Common,Common_Textual):
+    ...
 
 class Frame(Common):
     takefocus = False
