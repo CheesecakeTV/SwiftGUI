@@ -414,7 +414,9 @@ class Input(BaseWidget):
             # Add here
             text:str = None,
             key:any=None,
+            key_function:Callable|Iterable[Callable] = None,
             width:int=None,
+            default_event:bool = False,
             #
             # Standard-Tkinter options
             cursor:Literals.cursor = None,
@@ -434,7 +436,7 @@ class Input(BaseWidget):
             highlightcolor:str|Color = None,
             highlightthickness:int = None,
             pass_char:str = None,
-            disabled:bool = None,   # Set state to tk.Normal, or 'disabled'
+            readonly:bool = None,   # Set state to tk.Normal, or 'readonly'
             relief:Literals.relief = None,
             exportselection:bool = None,
             validate:Literals.validate = None,
@@ -463,9 +465,13 @@ class Input(BaseWidget):
         # :param underline: Which character to underline for alt+character selection of this element
 
         super().__init__(key=key,tk_kwargs=tk_kwargs)
+        self._key_function = key_function
 
         if tk_kwargs is None:
             tk_kwargs = dict()
+
+        if default_event:   # Todo: Exclude shift+ctrl+alt from default event-calls
+            self.bind_event("<KeyRelease>",key=self.key,key_function=self._key_function)
 
         _tk_kwargs = {
             **tk_kwargs,
@@ -474,7 +480,7 @@ class Input(BaseWidget):
             "background_color_disabled": background_color_disabled,
             "background_color_readonly": background_color_readonly,
             "cursor": cursor,
-            "disabled": disabled,
+            "readonly": readonly,
             "exportselection": exportselection,
             "font_bold": font_bold,
             "font_italic": font_italic,
@@ -533,7 +539,7 @@ class Input(BaseWidget):
             case "font_overstrike":
                 self._overstrike = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
-            case "disabled":
+            case "readonly":
                 self._tk_kwargs["state"] = "readonly" if new_val else "normal"
             case _: # Not a match
                 return False

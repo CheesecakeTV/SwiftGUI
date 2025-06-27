@@ -19,12 +19,16 @@ layout = [
         ])
     ],[
         sg.Button("Hallo Welt-Button",key="Hallo Welt",disabled = False,text_color="red",repeatdelay=1000,repeatinterval=100),
-        sg.In("Was geht",key="Input-Test",background_color="red",justify="right",text_color="green"),
-        sg.In("Was geht", key="Another-Input-Test",background_color=Color.AntiqueWhite2,disabled=True),
+        sg.In("Was geht", key="Input-Test", background_color="red", justify="right", text_color="green",
+              default_event=True),
+        sg.In("Was geht", key="Another-Input-Test",background_color=Color.AntiqueWhite2,readonly=True),
     ],[
         sg.Form(["Hallo","Welt","Das","Ist","Ein","Test"],key="Form")
     ],[
-        sg.Button("Another button!",key="Another Button")
+        sg.Button("Another button!",key="Another Button"),
+        sg.Button("Another button!", key="Another Button")
+    ],[
+        sg.Input("Haha", key_function=lambda elem: elem.set_value("Haha"), default_event=True)
     ]
 ]
 
@@ -36,13 +40,12 @@ w["Another-Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions
 print("Start:",w.values)
 print(w["IAM"].value)
 
-while True:
-    e,v = w.loop()
+for e,v in w:
     print(e,v)
     #w["Hallo Welt"].flash()
 
-    w["Input-Test"].value = e
-    w["Input-Test"].update(background_color=sg.Color.gold)
+    #w["Input-Test"].value = e
+    #w["Input-Test"].update(background_color=sg.Color.gold)
     #w["SomeText"].value = "Funktioniert"
 
     w["SomeText"].update(background="red")

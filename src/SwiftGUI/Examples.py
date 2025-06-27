@@ -12,7 +12,7 @@ def preview_all_colors() -> None:
 
     layout = [
         [
-            sg.Input(width=5,background_color=getattr(Color,name)),
+            sg.Input(width=5, background_color=getattr(Color, name)),
             sg.T(name,width=20,justify="right"),
             #sg.T(width=10)
         ] for name in dir(Color) if not name.startswith("_")
