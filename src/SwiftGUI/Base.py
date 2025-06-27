@@ -1,5 +1,4 @@
 from collections.abc import Iterable, Callable
-from functools import wraps
 from typing import Literal, Self, Union
 import tkinter as tk
 
@@ -416,6 +415,7 @@ class BaseWidget(BaseElement):
     def init_window_creation_done(self):
         for params in self._events_to_bind_later:
             self.bind_event(**params)
+        del self._events_to_bind_later  # Free some ram, because why not
 
 class BaseWidgetContainer(BaseWidget):
     """
