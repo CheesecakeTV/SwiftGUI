@@ -201,6 +201,7 @@ class Button(BaseWidget):
     _get_value  (determines the value returned by this widget)
     _init_widget_for_inherrit   (Initializes the widget)
     """
+    tk_widget:tk.Button
     _tk_widget_class:type = tk.Button # Class of the connected widget
     defaults = GlobalOptions.Button
 
@@ -231,7 +232,6 @@ class Button(BaseWidget):
 
             bitmap:Literals.bitmap = None,
             disabled:bool = None,
-            background_color_disabled: str | Color = None,
             text_color_disabled: str | Color = None,
             background_color_active: str | Color = None,
             text_color_active: str | Color = None,
@@ -296,10 +296,12 @@ class Button(BaseWidget):
             "disabled":disabled,
             "overrelief":overrelief,
             "takefocus":takefocus,
-            "background_color_disabled": background_color_disabled,
+            #"background_color_disabled": background_color_disabled,    # Todo: Add this manually since tk.Button has no option for it
             "text_color_disabled": text_color_disabled,
             "background_color_active": background_color_active,
             "text_color_active": text_color_active,
+            "repeatdelay":repeatdelay,
+            "repeatinterval":repeatinterval,
 
             "height": height,
             "padx": padx,
@@ -365,6 +367,27 @@ class Button(BaseWidget):
 
     def _personal_init_inherit(self):
         self._set_tk_target_variable(default_key="text")
+
+
+    def flash(self):
+        """
+        Flash the button visually
+        :return:
+        """
+        if self._window_is_dead():
+            return
+
+        self.tk_widget.flash()
+
+    def push_once(self):
+        """
+        "Push" the button virtually
+        :return:
+        """
+        if self._window_is_dead():
+            return
+
+        self.tk_widget.invoke()
 
 class Input(BaseWidget):
     """
