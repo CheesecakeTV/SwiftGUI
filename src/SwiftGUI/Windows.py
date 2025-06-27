@@ -1,7 +1,7 @@
 import tkinter as tk
 from collections.abc import Iterable,Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 from warnings import deprecated
 import inspect
 
@@ -57,6 +57,17 @@ class Window(BaseElement):
         self._sg_widget.window_entry_point(self._tk, self)
 
         self.refresh_values()
+
+    def __iter__(self) -> Self:
+        return self
+
+    def __next__(self) -> tuple[any,dict[any:any]]:
+        e,v = self.loop()
+
+        if not self.exists:
+            raise StopIteration
+
+        return e,v
 
     @property
     def parent_tk_widget(self) ->tk.Widget:

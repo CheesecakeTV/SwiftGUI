@@ -36,8 +36,7 @@ w["Another-Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions
 print("Start:",w.values)
 print(w["IAM"].value)
 
-while True:
-    e,v = w.loop()
+for e,v in w:
     print(e,v)
     #w["Hallo Welt"].flash()
 
