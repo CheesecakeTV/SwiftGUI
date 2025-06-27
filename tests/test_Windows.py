@@ -19,14 +19,16 @@ layout = [
         ])
     ],[
         sg.Button("Hallo Welt-Button",key="Hallo Welt",disabled = False,text_color="red",repeatdelay=1000,repeatinterval=100),
-        sg.In("Was geht",key="Input-Test",background_color="red",justify="right",text_color="green",enable_textchange_event=True),
-        sg.In("Was geht", key="Another-Input-Test",background_color=Color.AntiqueWhite2,disabled=True),
+        sg.In("Was geht", key="Input-Test", background_color="red", justify="right", text_color="green",
+              default_event=True),
+        sg.In("Was geht", key="Another-Input-Test",background_color=Color.AntiqueWhite2,readonly=True),
     ],[
         sg.Form(["Hallo","Welt","Das","Ist","Ein","Test"],key="Form")
     ],[
-        sg.Button("Another button!",key="Another Button")
+        sg.Button("Another button!",key="Another Button"),
+        sg.Button("Another button!", key="Another Button")
     ],[
-        sg.Input("Haha",key_function=lambda elem:elem.set_value("Haha"),enable_textchange_event=True)
+        sg.Input("Haha", key_function=lambda elem: elem.set_value("Haha"), default_event=True)
     ]
 ]
 

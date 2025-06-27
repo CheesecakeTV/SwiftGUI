@@ -416,7 +416,7 @@ class Input(BaseWidget):
             key:any=None,
             key_function:Callable|Iterable[Callable] = None,
             width:int=None,
-            enable_textchange_event:bool = False,
+            default_event:bool = False,
             #
             # Standard-Tkinter options
             cursor:Literals.cursor = None,
@@ -436,7 +436,7 @@ class Input(BaseWidget):
             highlightcolor:str|Color = None,
             highlightthickness:int = None,
             pass_char:str = None,
-            disabled:bool = None,   # Set state to tk.Normal, or 'disabled'
+            readonly:bool = None,   # Set state to tk.Normal, or 'readonly'
             relief:Literals.relief = None,
             exportselection:bool = None,
             validate:Literals.validate = None,
@@ -470,8 +470,8 @@ class Input(BaseWidget):
         if tk_kwargs is None:
             tk_kwargs = dict()
 
-        if enable_textchange_event:
-            self.add_flags(ElementFlag.ENABLE_STANDARD_EVENT)
+        if default_event:   # Todo: Exclude shift+ctrl+alt from default event-calls
+            self.bind_event("<KeyRelease>",key=self.key,key_function=self._key_function)
 
         _tk_kwargs = {
             **tk_kwargs,
@@ -480,7 +480,7 @@ class Input(BaseWidget):
             "background_color_disabled": background_color_disabled,
             "background_color_readonly": background_color_readonly,
             "cursor": cursor,
-            "disabled": disabled,
+            "readonly": readonly,
             "exportselection": exportselection,
             "font_bold": font_bold,
             "font_italic": font_italic,
@@ -539,7 +539,7 @@ class Input(BaseWidget):
             case "font_overstrike":
                 self._overstrike = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
-            case "disabled":
+            case "readonly":
                 self._tk_kwargs["state"] = "readonly" if new_val else "normal"
             case _: # Not a match
                 return False
@@ -555,9 +555,4 @@ class Input(BaseWidget):
 
     def _personal_init_inherit(self):
         self._set_tk_target_variable(default_key="text")
-
-    def init_window_creation_done(self):
-        if self.has_flag(ElementFlag.ENABLE_STANDARD_EVENT):
-            #self._tk_target_value.trace_add("write",self.window.get_event_function(self,key=self.key,key_function=self._key_function))
-            self.bind_event("<KeyRelease>",key=self.key,key_function=self._key_function)
 

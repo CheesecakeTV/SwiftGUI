@@ -230,11 +230,14 @@ class BaseWidget(BaseElement):
 
     _transfer_keys: dict[str:str] = dict()   # Rename a key from the update-function. from -> to; from_user -> to_widget
 
+    _events_to_bind_later: list[dict]
+
     # @property
     # def _is_container(self) -> bool:
     #     return False
 
     def __init__(self,key:any=None,tk_kwargs:dict[str:any]=None,**kwargs):
+        self._events_to_bind_later = list()
 
         if tk_kwargs is None:
             tk_kwargs = dict()
@@ -270,6 +273,15 @@ class BaseWidget(BaseElement):
         """
         new_key = None
 
+        if not self.has_flag(ElementFlag.IS_CREATED):
+            self._events_to_bind_later.append({
+                "tk_event":tk_event,
+                "key_extention":key_extention,
+                "key":key,
+                "key_function":key_function,
+            })
+            return self
+
         if hasattr(tk_event,"value"):
             tk_event = tk_event.value
 
@@ -284,7 +296,8 @@ class BaseWidget(BaseElement):
             case (True,False):
                 new_key = self.key + key_extention
             case (False,False):
-                pass
+                new_key = self.key
+                assert new_key, f"You forgot to add either a key or key_function to this element... {self}"
 
         temp = self.window.get_event_function(self, new_key, key_function=key_function)
 
@@ -399,6 +412,10 @@ class BaseWidget(BaseElement):
             self._tk_target_value.set(val)
         except AttributeError:
             pass
+
+    def init_window_creation_done(self):
+        for params in self._events_to_bind_later:
+            self.bind_event(**params)
 
 class BaseWidgetContainer(BaseWidget):
     """

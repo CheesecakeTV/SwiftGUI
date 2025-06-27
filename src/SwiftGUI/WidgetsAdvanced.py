@@ -23,9 +23,7 @@ class Form(BaseElement):
         self.layout = [
             [
                 Text(line),
-                Input(
-                    key=key + line if seperate_keys else None
-                ),
+                Input(key=key + line if seperate_keys else None),
             ] for line in texts
         ]
 
