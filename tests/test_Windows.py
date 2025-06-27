@@ -5,7 +5,6 @@ sg.GlobalOptions.Common_Textual.fontsize = 14
 
 layout = [
     [
-        sg.Example(text="It does work!"),
         sg.T("Hallo",key="TestText",width=25,anchor="center")
     ],[
         sg.T("Welt")

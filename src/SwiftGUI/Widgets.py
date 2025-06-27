@@ -147,9 +147,6 @@ class Text(BaseWidget):
     def _personal_init_inherit(self):
         self._set_tk_target_variable(default_value=self._text)
 
-# Aliases
-T = Text
-Label = Text
 
 
 class Frame(BaseWidgetContainer):
@@ -553,7 +550,3 @@ class Input(BaseWidget):
     def _personal_init_inherit(self):
         self._set_tk_target_variable(default_key="text")
 
-
-# Aliases
-In = Input
-Entry = Input
