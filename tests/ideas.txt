@@ -5,3 +5,5 @@ Instead of a global key-list, keep an option to make it a tree-like structure.
 That way it's possible to copy parts of the layout without changing its keys.
 
 Set_options function that takes a part of the layout and sets options for every containing element
+
+Simplified Elements/Widgets with less options for beginners

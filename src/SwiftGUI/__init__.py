@@ -4,14 +4,19 @@ from .Fonts import *
 from . import GlobalOptions, Literals, Tools
 from .ElementFlags import ElementFlag
 
-from .Events import *
-from .Base import *
-from .KeyManager import *
-from .Widgets import *
-from .Windows import *
-from .WidgetsAdvanced import *
+from .Events import Event
+from .Base import BaseElement,BaseWidget,BaseWidgetContainer,ElementFlag
+#from .KeyManager import Key,SEPARATOR,duplicate_warnings   # Todo: Make some decent key-manager
+
+from .Widgets import Button,Input,Text,Frame
+T = Text
+In = Input
+Entry = Input
+
+from .Windows import Window
+from .WidgetsAdvanced import Form
 
 from . import KeyFunctions
 from .AnyElement import AnyElement
 
-from . import Examples
+from .Examples import preview_all_colors

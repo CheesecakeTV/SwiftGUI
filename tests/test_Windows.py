@@ -1,10 +1,11 @@
 import SwiftGUI as sg
 from SwiftGUI import Event, Color
 
+sg.GlobalOptions.Common_Textual.fontsize = 14
+
 layout = [
     [
-        sg.Example(text="It does work!"),
-        sg.T("Hallo",key="TestText")
+        sg.T("Hallo",key="TestText",width=25,anchor="center")
     ],[
         sg.T("Welt")
     ],[
@@ -17,11 +18,13 @@ layout = [
             ]
         ])
     ],[
-        sg.Button("Hallo Welt-Button",key="Hallo Welt"),
-        sg.In("Was geht",key="Input-Test",background_color="red"),
-        sg.In("Was geht", key="Another-Input-Test",background_color=Color.AntiqueWhite2),
+        sg.Button("Hallo Welt-Button",key="Hallo Welt",disabled = False,text_color="red",repeatdelay=1000,repeatinterval=100),
+        sg.In("Was geht",key="Input-Test",background_color="red",justify="right",text_color="green"),
+        sg.In("Was geht", key="Another-Input-Test",background_color=Color.AntiqueWhite2,disabled=True),
     ],[
         sg.Form(["Hallo","Welt","Das","Ist","Ein","Test"],key="Form")
+    ],[
+        sg.Button("Another button!",key="Another Button")
     ]
 ]
 
@@ -36,6 +39,7 @@ print(w["IAM"].value)
 while True:
     e,v = w.loop()
     print(e,v)
+    #w["Hallo Welt"].flash()
 
     w["Input-Test"].value = e
     w["Input-Test"].update(background_color=sg.Color.gold)
@@ -46,6 +50,9 @@ while True:
 
     if not w.exists:
         break
+
+    if e == "Another Button":
+        w["Hallo Welt"].push_once()
 
     if e == "Hallo Welt":
         w["Form"].clear_all_values()

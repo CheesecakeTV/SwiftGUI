@@ -1,4 +1,5 @@
 from collections.abc import Iterable, Callable
+from functools import wraps
 from typing import Literal, Self, Union
 import tkinter as tk
 
@@ -234,6 +235,13 @@ class BaseWidget(BaseElement):
         self._insert_kwargs = {"side":tk.LEFT}
         self.key = key
 
+    def _window_is_dead(self) -> bool:
+        """
+        Returns True, if the window doesn't exist (anymore?)
+        :return:
+        """
+        return not self.window.has_flag(ElementFlag.IS_CREATED)
+
     @property
     def tk_widget(self) -> tk.Widget:
         return self._tk_widget
@@ -286,7 +294,6 @@ class BaseWidget(BaseElement):
         :param container:
         :return:
         """
-        pass
         return self._tk_widget_class(container, **self._tk_kwargs)
 
     def _personal_init_inherit(self):

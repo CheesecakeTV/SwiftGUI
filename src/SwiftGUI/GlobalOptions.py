@@ -133,17 +133,16 @@ class Common_Textual(DEFAULT_OPTIONS_CLASS):
     font_italic:bool = False
     font_underline:bool = False
     font_overstrike:bool = False
+    anchor:Literals.anchor = "w"
 
 class Text(Common,Common_Textual):
     text:str = ""
     takefocus:bool = False
     underline:int = None
-    justify:Literal["left","right","center"] = "center"
+    justify:Literal["left","right","center"] = "left"
     background_color:Color|str = None
     text_color:Color|str = None
     #borderwidth:int = "5c" # Does not work
-
-    fontsize:int = 10
 
     padding:Literals.padding = 0
     width:int = None
@@ -157,7 +156,7 @@ class Input(Common,Common_Textual):
     take_focus: bool = None
     #
     # Special Tkinter-options
-    justify: Literal["left", "right", "center"] = "left"
+    justify: Literal["left", "right", "center"] = None
     background_color: str | Color = None
     background_color_disabled: str | Color = None
     background_color_readonly: str | Color = None
@@ -177,12 +176,36 @@ class Input(Common,Common_Textual):
     validatecommand: callable = None
     #
     # Mixed options
-    fonttype: str = None
-    fontsize: int = None
-    font_bold: bool = None
-    font_italic: bool = None
-    font_underline: bool = None
-    font_overstrike: bool = None
+
+class Button(Common,Common_Textual):
+    fontsize:int = 9
+    anchor:Literals.anchor = "center"
+
+    borderwidth: int = None
+
+    bitmap: Literals.bitmap = None
+    disabled: bool = None
+    text_color_disabled: str | Color = None
+    background_color_active: str | Color = None
+    text_color_active: str | Color = None
+
+    width: int = None
+    height: int = None
+    padx: int = None
+    pady: int = None
+
+    underline: int = None
+    justify: Literal["left", "right", "center"] = None
+    background_color: str | Color = None
+    overrelief: Literals.relief = None
+    text_color: str | Color = None
+
+    relief: Literals.relief = None
+
+    repeatdelay: int = None
+    repeatinterval: int = None
+
+
 
 class Frame(Common):
     takefocus = False

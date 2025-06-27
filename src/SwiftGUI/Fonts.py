@@ -1,4 +1,3 @@
-from typing import Literal
 
 
 class font_windows:
