@@ -39,7 +39,7 @@ print(w["IAM"].value)
 while True:
     e,v = w.loop()
     print(e,v)
-    w["Hallo Welt"].flash()
+    #w["Hallo Welt"].flash()
 
     w["Input-Test"].value = e
     w["Input-Test"].update(background_color=sg.Color.gold)

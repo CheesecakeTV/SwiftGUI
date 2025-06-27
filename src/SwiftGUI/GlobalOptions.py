@@ -181,6 +181,32 @@ class Button(Common,Common_Textual):
     fontsize:int = 9
     anchor:Literals.anchor = "center"
 
+    borderwidth: int = None
+
+    bitmap: Literals.bitmap = None
+    disabled: bool = None
+    text_color_disabled: str | Color = None
+    background_color_active: str | Color = None
+    text_color_active: str | Color = None
+
+    width: int = None
+    height: int = None
+    padx: int = None
+    pady: int = None
+
+    underline: int = None
+    justify: Literal["left", "right", "center"] = None
+    background_color: str | Color = None
+    overrelief: Literals.relief = None
+    text_color: str | Color = None
+
+    relief: Literals.relief = None
+
+    repeatdelay: int = None
+    repeatinterval: int = None
+
+
+
 class Frame(Common):
     takefocus = False
     padding:Literals.padding = 3
