@@ -414,7 +414,9 @@ class Input(BaseWidget):
             # Add here
             text:str = None,
             key:any=None,
+            key_function:Callable|Iterable[Callable] = None,
             width:int=None,
+            enable_textchange_event:bool = False,
             #
             # Standard-Tkinter options
             cursor:Literals.cursor = None,
@@ -463,9 +465,13 @@ class Input(BaseWidget):
         # :param underline: Which character to underline for alt+character selection of this element
 
         super().__init__(key=key,tk_kwargs=tk_kwargs)
+        self._key_function = key_function
 
         if tk_kwargs is None:
             tk_kwargs = dict()
+
+        if enable_textchange_event:
+            self.add_flags(ElementFlag.ENABLE_STANDARD_EVENT)
 
         _tk_kwargs = {
             **tk_kwargs,
@@ -549,4 +555,9 @@ class Input(BaseWidget):
 
     def _personal_init_inherit(self):
         self._set_tk_target_variable(default_key="text")
+
+    def init_window_creation_done(self):
+        if self.has_flag(ElementFlag.ENABLE_STANDARD_EVENT):
+            #self._tk_target_value.trace_add("write",self.window.get_event_function(self,key=self.key,key_function=self._key_function))
+            self.bind_event("<KeyRelease>",key=self.key,key_function=self._key_function)
 

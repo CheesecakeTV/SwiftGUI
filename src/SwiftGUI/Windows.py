@@ -23,6 +23,7 @@ class Window(BaseElement):
     values:dict  # Key:Value of all named elements
 
     all_key_elements: dict[any, "AnyElement"]   # Key:Element, if key is present
+    all_elements: list["AnyElement"] = list()   # Every single element
 
     exists:bool = False # True, if this window exists at the moment
 
@@ -38,7 +39,7 @@ class Window(BaseElement):
         :param layout:
         # :param global_options: Options applied to every element in the window
         """
-        self.all_elements:list["AnyElement"] = list()   # Elemente will be registered in here
+        self.all_elements:list["AnyElement"] = list()   # Elements will be registered in here
         self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
         self.values = dict()
 
@@ -55,6 +56,9 @@ class Window(BaseElement):
 
         self._sg_widget:Frame = Frame(layout)
         self._sg_widget.window_entry_point(self._tk, self)
+
+        for elem in self.all_elements:
+            elem.init_window_creation_done()
 
         self.refresh_values()
 
@@ -101,7 +105,7 @@ class Window(BaseElement):
         """
         self.all_elements.append(elem)
 
-        if elem.key is not None:
+        if not elem.has_flag(ElementFlag.DONT_REGISTER_KEY) and elem.key is not None:
             if elem.key in self.all_key_elements:
                 print(f"WARNING! Key {elem.key} is defined multiple times!")
 

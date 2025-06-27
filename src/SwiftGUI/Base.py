@@ -201,6 +201,16 @@ class BaseElement:
         if self.has_flag(ElementFlag.IS_CREATED) and self.window.has_flag(ElementFlag.IS_CREATED):
             self._apply_update()
 
+    def init_window_creation_done(self):
+        """
+        ONLY FOR INHERITING CLASSES!!!
+        DON'T CALL!!!
+
+        Will be called oncce as soon as the element exists
+        :return:
+        """
+        ...
+
 
 class BaseWidget(BaseElement):
     """
