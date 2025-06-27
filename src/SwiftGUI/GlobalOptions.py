@@ -178,7 +178,8 @@ class Input(Common,Common_Textual):
     # Mixed options
 
 class Button(Common,Common_Textual):
-    ...
+    fontsize:int = 9
+    anchor:Literals.anchor = "center"
 
 class Frame(Common):
     takefocus = False

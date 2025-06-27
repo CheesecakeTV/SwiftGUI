@@ -19,9 +19,9 @@ layout = [
             ]
         ])
     ],[
-        sg.Button("Hallo Welt-Button",key="Hallo Welt"),
-        sg.In("Was geht",key="Input-Test",background_color="red",justify="right"),
-        sg.In("Was geht", key="Another-Input-Test",background_color=Color.AntiqueWhite2),
+        sg.Button("Hallo Welt-Button",key="Hallo Welt",disabled = False,text_color="red"),
+        sg.In("Was geht",key="Input-Test",background_color="red",justify="right",text_color="green"),
+        sg.In("Was geht", key="Another-Input-Test",background_color=Color.AntiqueWhite2,disabled=True),
     ],[
         sg.Form(["Hallo","Welt","Das","Ist","Ein","Test"],key="Form")
     ]
