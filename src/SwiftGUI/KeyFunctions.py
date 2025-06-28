@@ -38,9 +38,25 @@ def copy_value_from(from_key:any) -> Callable:
 
     return fkt
 
-def clear_str_value(elem:BaseElement):
+def set_value_to(new_value:any = "", elem_key:str = None) -> Callable:
     """
-    Clears the value of the element to an empty string
+    Sets the value of an element.
+
+    If you provide elem_key, that element will be changed.
+    If not, the calling element will be changed.
+
+    To clear the value of the calling element, just don't pass anything: set_value_to()
+
+    :param elem_key: This element will be changed
+    :param new_value: The element will be set to this value
     :return:
     """
-    elem.value = ""
+    if elem_key:
+        def temp(w):
+            w[elem_key].value = new_value
+    else:
+        def temp(elem):
+            elem.value = new_value
+
+    return temp
+
