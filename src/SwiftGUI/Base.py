@@ -296,7 +296,7 @@ class BaseWidget(BaseElement):
                 new_key = self.key + key_extention
             case (False,False):
                 new_key = self.key
-                assert new_key, f"You forgot to add either a key or key_function to this element... {self}"
+                assert new_key or key_function, f"You forgot to add either a key or key_function to this element... {self}"
 
         temp = self.window.get_event_function(self, new_key, key_function=key_function)
 
