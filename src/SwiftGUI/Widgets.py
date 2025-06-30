@@ -5,6 +5,7 @@ from collections.abc import Iterable, Callable
 from typing import Literal
 
 from SwiftGUI import BaseElement, ElementFlag, BaseWidget, BaseWidgetContainer, GlobalOptions, Literals, Color
+from SwiftGUI.KeyManager import SEPARATOR
 
 
 # Todo: Add docstrings to __init__ methods
@@ -159,7 +160,6 @@ class Frame(BaseWidgetContainer):
             self,
             layout:Iterable[Iterable[BaseElement]],
             # Add here
-            tk_args:tuple[any]=tuple(),
             tk_kwargs:dict[str:any]=None
     ):
         super().__init__(tk_kwargs=tk_kwargs)
@@ -555,4 +555,26 @@ class Input(BaseWidget):
 
     def _personal_init_inherit(self):
         self._set_tk_target_variable(default_key="text")
+
+
+class Separator(BaseWidget):
+    _tk_widget_class = ttk.Separator
+
+    def __init__(self,tk_kwargs):
+        super().__init__(key=None,tk_kwargs=tk_kwargs)
+
+class VerticalSeparator(Separator):
+    def __init__(self):
+        super().__init__(tk_kwargs={"orient":tk.VERTICAL})
+
+    def _personal_init_inherit(self):
+        self._insert_kwargs["fill"] = "y"
+
+class HorizontalSeparator(Separator):
+    def __init__(self):
+        super().__init__(tk_kwargs={"orient":tk.HORIZONTAL})
+
+    def _personal_init_inherit(self):
+        self._insert_kwargs["fill"] = "x"
+        self._insert_kwargs["expand"] = True
 

@@ -8,7 +8,7 @@ from .Events import Event
 from .Base import BaseElement,BaseWidget,BaseWidgetContainer,ElementFlag
 #from .KeyManager import Key,SEPARATOR,duplicate_warnings   # Todo: Make some decent key-manager
 
-from .Widgets import Button,Input,Text,Frame
+from .Widgets import Button,Input,Text,Frame,VerticalSeparator,HorizontalSeparator
 T = Text
 In = Input
 Entry = Input

@@ -1,5 +1,7 @@
 import SwiftGUI as sg
 from SwiftGUI import Event, Color
+import tkinter as tk
+from tkinter import ttk
 
 sg.GlobalOptions.Common_Textual.fontsize = 14
 
@@ -7,6 +9,14 @@ layout_left = [
     [
         sg.T("Hallo",key="TestText",width=25,anchor="center")
     ],[
+        sg.HorizontalSeparator()
+    ],[
+        sg.HorizontalSeparator()
+    ], [
+        sg.HorizontalSeparator()
+    ], [
+        sg.HorizontalSeparator()
+    ], [
         sg.T("Welt",anchor="w")
     ],[
         sg.T("Amazing what you can accomplish\non a saturday",key="SomeText",text_color="green",background_color=sg.Color.SeaGreen1),
@@ -28,6 +38,7 @@ layout_left = [
         sg.Button("Another button!",key="Another Button"),
         sg.Button("Another button!", key="Another Button")
     ],[
+    ],[
         sg.Input("Haha", key_function=lambda elem: elem.set_value("Haha"), default_event=True)
     ]
 ]
@@ -38,9 +49,13 @@ layout_right = [
     ]
 ]
 
+# s = ttk.Style()
+# s.configure("TSeparator",background="green")
+
 layout = [
     [
         sg.Frame(layout_left),
+        sg.VerticalSeparator(),
         sg.Frame(layout_right),
     ]
 ]
