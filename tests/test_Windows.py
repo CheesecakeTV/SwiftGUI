@@ -3,11 +3,11 @@ from SwiftGUI import Event, Color
 
 sg.GlobalOptions.Common_Textual.fontsize = 14
 
-layout = [
+layout_left = [
     [
         sg.T("Hallo",key="TestText",width=25,anchor="center")
     ],[
-        sg.T("Welt")
+        sg.T("Welt",anchor="w")
     ],[
         sg.T("Amazing what you can accomplish\non a saturday",key="SomeText",text_color="green",background_color=sg.Color.SeaGreen1),
         sg.Frame([
@@ -32,9 +32,22 @@ layout = [
     ]
 ]
 
+layout_right = [
+    [
+        sg.Button("I'm a button")
+    ]
+]
+
+layout = [
+    [
+        sg.Frame(layout_left),
+        sg.Frame(layout_right),
+    ]
+]
+
 w = sg.Window(layout)
 #w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value("TestText"))
-w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.clear_str_value)
+w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.set_value_to("Mouse entered"))
 w["Another-Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value_from("Input-Test"))
 
 print("Start:",w.values)

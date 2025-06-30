@@ -375,7 +375,7 @@ class BaseWidget(BaseElement):
             for k in i:
                 k._init(line_elem,self.window)
 
-            line.grid()
+            line.pack(side="top",fill="x")
 
     def _get_value(self) -> any:
         """

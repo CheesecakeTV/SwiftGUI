@@ -1,15 +1,16 @@
 
-# Not even close to being finished
-But I'd love to read your suggestions.
+# Still WIP
+But it works great so far.
 
-# swiftGUI
+# SwiftGUI
 
-A python-package to quickly create common user interfaces.
+A python-package to quickly create user-interfaces (GUIs).
 
 I really liked PySimpleGUI (before they went "premium"), 
 but their codebase is an utter mess.
 
-swiftGUI is more leightweight and aims at being faster to use and easier to expand.
+`SwiftGUI` adapts some concepts of `PySimpleGUI`, but it even simpler (in my opinion)
+and allows writing less offputting code.
 
 ## install
 
@@ -18,8 +19,8 @@ Install using pip:
 pip install SwiftGUI
 ```
 
-## Why sqiftGUI?
-I have a lot of experience with PySimpleGUI, used it for years.
+## Why SwiftGUI?
+I have a lot of experience with `PySimpleGUI`, used it for years.
 It is very useful, but has a lot of super annoying aspects.
 
 This is what I hate about it:
@@ -31,16 +32,16 @@ which are very annoying and time-consuming.
 If you want to copy it, you must copy code (or create a custom function).
 When you want to change certain aspects of all copied elements, 
 you need to change it in every copy. Very inefficient.
-- The only ways to convey events in PySimpleGUI is through breaking out of window.read(), or
+- The only ways to convey events in PySimpleGUI is through breaking out of `window.read()`, or
 writing events onto the tkinter-widget directly.
 Due to that, in bigger layouts, the code becomes cluttered quickly and has a lot of redundancy.
 
-swiftGUI is the answer to these negative aspects.
+`SwiftGUI` is the answer to these negative aspects.
 It allows you to create bigger GUIs, quickly and elegantly.
 
 ## Features and Differences to PySimpleGUI
 Disclaimer: I did not copy any code of PySimpleGUI.
-This library is completely independent from PySimpleGUI and aims at making it obsolete.
+This library is completely independent of PySimpleGUI and aims at making it obsolete.
 
 Some of these features haven't been implemented yet, but the package is created in a way 
 that all of these will be possible without any major hussle.
