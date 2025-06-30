@@ -10,8 +10,12 @@ from .Base import BaseElement,BaseWidget,BaseWidgetContainer,ElementFlag
 
 from .Widgets import Button,Input,Text,Frame,VerticalSeparator,HorizontalSeparator
 T = Text
+
 In = Input
 Entry = Input
+
+HSep = HorizontalSeparator
+VSep = VerticalSeparator
 
 from .Windows import Window
 from .WidgetsAdvanced import Form

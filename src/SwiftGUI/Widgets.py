@@ -560,19 +560,19 @@ class Input(BaseWidget):
 class Separator(BaseWidget):
     _tk_widget_class = ttk.Separator
 
-    def __init__(self,tk_kwargs):
-        super().__init__(key=None,tk_kwargs=tk_kwargs)
+    def __init__(self,orient:Literal["vertical","horizontal"]):
+        super().__init__(key=None,tk_kwargs={"orient":orient})
 
 class VerticalSeparator(Separator):
     def __init__(self):
-        super().__init__(tk_kwargs={"orient":tk.VERTICAL})
+        super().__init__(orient="vertical")
 
     def _personal_init_inherit(self):
         self._insert_kwargs["fill"] = "y"
 
 class HorizontalSeparator(Separator):
     def __init__(self):
-        super().__init__(tk_kwargs={"orient":tk.HORIZONTAL})
+        super().__init__(orient="horizontal")
 
     def _personal_init_inherit(self):
         self._insert_kwargs["fill"] = "x"
