@@ -77,6 +77,22 @@ class Window(BaseElement):
     def parent_tk_widget(self) ->tk.Widget:
         return self._sg_widget.parent_tk_widget
 
+    def close(self):
+        """
+        Kill the window
+        :return:
+        """
+        self._tk.destroy()
+
+    def loop_close(self) -> tuple[any,dict[any:any]]:
+        """
+        Loop once, then close
+        :return:
+        """
+        e,v = self.loop()
+        self.close()
+        return e,v
+
     def loop(self) -> tuple[any,dict[any:any]]:
         """
         Main loop

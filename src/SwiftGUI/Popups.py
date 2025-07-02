@@ -23,7 +23,7 @@ def popup_yes_no(
         ]
     ]
 
-    e,v = sg.Window(layout).loop()
+    e,v = sg.Window(layout).loop_close()
     return bool(e)
 
 def popup_button_menu(
@@ -47,7 +47,7 @@ def popup_button_menu(
         ]
     ]
 
-    e,v = sg.Window(layout).loop()
+    e,v = sg.Window(layout).loop_close()
     return e
 
 def popup_get_form() -> dict:
@@ -75,7 +75,7 @@ def popup_get_text(
         ]
     ]
 
-    e,v = sg.Window(layout).loop()
+    e,v = sg.Window(layout).loop_close()
 
     if e is None:
         return default
