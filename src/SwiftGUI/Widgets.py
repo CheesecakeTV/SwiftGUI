@@ -576,5 +576,5 @@ class HorizontalSeparator(Separator):
 
     def _personal_init_inherit(self):
         self._insert_kwargs["fill"] = "x"
-        self._insert_kwargs["expand"] = True
+        #self._insert_kwargs["expand"] = True
 

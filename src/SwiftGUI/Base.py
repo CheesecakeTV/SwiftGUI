@@ -244,7 +244,8 @@ class BaseWidget(BaseElement):
         tk_kwargs.update(kwargs)
         self._tk_kwargs = tk_kwargs
 
-        self._insert_kwargs = {"side":tk.LEFT}
+        #self._insert_kwargs = {"side":tk.LEFT}
+        self._insert_kwargs = dict()
         self.key = key
 
     def _window_is_dead(self) -> bool:
@@ -353,7 +354,10 @@ class BaseWidget(BaseElement):
 
         match mode:
             case "pack":
-                self._tk_widget.pack(**self._insert_kwargs)
+                #temp = {"expand":False,"side":"left"}
+                temp = {"side":"left"}
+                temp.update(self._insert_kwargs)
+                self._tk_widget.pack(**temp)
             case "grid":
                 self._tk_widget.grid(**self._insert_kwargs)
 

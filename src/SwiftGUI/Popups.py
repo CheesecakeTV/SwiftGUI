@@ -16,10 +16,10 @@ def popup_yes_no(
     """
     layout = [
         [
-            sg.T(text)
+            sg.T(text,anchor="center")
         ],[
-            sg.Button("Yes",key=True),
-            sg.Button("No",key=False),
+            sg.Button("Yes",key=True,justify="right"),
+            sg.Button("No",key=False,justify="left"),
         ]
     ]
 
@@ -71,7 +71,7 @@ def popup_get_text(
         ],[
             sg.In(width=50,key="In").bind_event(sg.Event.KeyEnter)
         ],[
-            sg.Button("Confirm",key="Confirm",anchor="center")
+            sg.Button("Confirm",key="Confirm",justify="center")
         ]
     ]
 

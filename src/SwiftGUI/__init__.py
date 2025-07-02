@@ -24,3 +24,5 @@ from . import KeyFunctions
 from .AnyElement import AnyElement
 
 from .Examples import preview_all_colors
+from .Popups import popup
+

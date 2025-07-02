@@ -1,6 +1,9 @@
 
+# Getting started
+[Start your journey here](https://github.com/CheesecakeTV/SwiftGUI/wiki/Getting-started#getting-started)
+
 # Still WIP
-But it works great so far.
+Already useful though!
 
 # SwiftGUI
 
