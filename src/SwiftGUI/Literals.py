@@ -14,3 +14,5 @@ anchor = Literal["center","n","ne","e","se","s","sw","w","nw"]
 alignment = Literal["left","right"] | None
 
 bitmap = str | Literal['error', 'gray75', 'gray50', 'gray25', 'gray12', 'hourglass', 'info', 'questhead', 'question', 'warning']
+
+transparency = float | Literal[0,1]

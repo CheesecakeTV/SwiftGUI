@@ -5,7 +5,6 @@ from collections.abc import Iterable, Callable
 from typing import Literal
 
 from SwiftGUI import BaseElement, ElementFlag, BaseWidget, BaseWidgetContainer, GlobalOptions, Literals, Color
-from SwiftGUI.KeyManager import SEPARATOR
 
 
 # Todo: Add docstrings to __init__ methods

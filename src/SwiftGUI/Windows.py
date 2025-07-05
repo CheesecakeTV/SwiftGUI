@@ -1,7 +1,7 @@
 import tkinter as tk
 from collections.abc import Iterable,Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, Self, Literal
 from warnings import deprecated
 import inspect
 
@@ -32,8 +32,20 @@ class Window(BaseElement):
     def __init__(
             self,
             layout:Iterable[Iterable[BaseElement]],
+            title = "Some awesome SwiftGUI Window",
             # global_options:dict[str:str] = None, # Todo: This conflicts with other global-options
             alignment: Literals.alignment = None,
+            titlebar:bool = True,   # Titlebar visible
+            resizeable_width = False,
+            resizeable_height = False,
+            fullscreen:bool = False,
+            transparency:Literals.transparency = 0, # 0-1, 1 meaning invisible
+            size:tuple[int,int] = (None,None),
+            position:tuple[int,int] = (None,None),  # Position on monitor
+            min_size:tuple[int,int] = (None,None),
+            max_size: tuple[int, int] = (None, None),
+            icon:str = None,    # .ico file
+            keep_on_top: bool = False,
     ):
         """
 
@@ -46,14 +58,7 @@ class Window(BaseElement):
 
         self._tk = tk.Tk()
 
-
-        # if global_options:
-        #     for key,val in global_options.items():
-        #         if not (key.startswith("*") or "." in key):
-        #             key = "*" + key
-        #
-        #         self._tk.option_add(key,val,priority=1)
-
+        self.update(title,titlebar, resizeable_width, resizeable_height, fullscreen, transparency, size, position, min_size, max_size, icon, keep_on_top)
 
         self._sg_widget:Frame = Frame(layout,alignment=alignment)
         self._sg_widget.window_entry_point(self._tk, self)
@@ -73,6 +78,62 @@ class Window(BaseElement):
             raise StopIteration
 
         return e,v
+
+    def update(
+            self,
+            title = None,
+            titlebar: bool = True,  # Titlebar visible
+            resizeable_width=False,
+            resizeable_height=False,
+            fullscreen: bool = False,
+            transparency: Literals.transparency = 0,  # 0-1, 1 meaning invisible
+            size: tuple[int, int] = (None, None),
+            position: tuple[int, int] = (None, None),  # Position on monitor # Todo: Center
+            min_size: tuple[int, int] = (None, None),
+            max_size: tuple[int, int] = (None, None),
+            icon: str = None,  # .ico file
+            keep_on_top: bool = False,
+    ):
+        self._tk.title(title)
+
+        self._tk.overrideredirect(not titlebar)
+
+        self._tk.resizable(resizeable_width,resizeable_height)
+        self._tk.state("zoomed" if fullscreen else "normal")
+
+        assert 0 <= transparency <= 1, "Window-Transparency must be between 0 and 1"
+        self._tk.attributes("-alpha",1 - transparency)
+
+        geometry = ""
+        if size[0]:
+            assert size[1], "Window-height was specified, but not its height"
+            geometry += str(size[0])
+        if size[1]:
+            assert size[0], "Window-height was specified, but not its width"
+            geometry += f"x{size[1]}"
+
+        # if position == "center":
+        #     position = (
+        #         self._tk.winfo_screenwidth() / 2 - self._tk.winfo_width() / 2,
+        #         self._tk.winfo_screenheight() / 2 - self._tk.winfo_height()
+        #     )
+        if position != (None,None):
+            assert len(position) == 2, "The window-position should be a tuple with x and y coordinate: (x, y)"
+            assert position[0] is not None, "No x-coordinate was given as window-position"
+            assert position[1] is not None, "No y-coordinate was given as window-position"
+
+            geometry += f"+{int(position[0])}+{int(position[1])}".replace("+-","-")
+
+        if geometry:
+            self._tk.geometry(geometry)
+
+        self._tk.minsize(*min_size)
+        self._tk.maxsize(*max_size)
+
+        assert icon is None or icon.endswith(".ico"), "The window-icon has to be the path to a .ico-file. Other filetypes are not supported."
+        self._tk.iconbitmap(icon)
+
+        self._tk.attributes("-topmost",keep_on_top)
 
     @property
     def parent_tk_widget(self) ->tk.Widget:
