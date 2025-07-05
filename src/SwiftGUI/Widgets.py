@@ -159,6 +159,8 @@ class Frame(BaseWidgetContainer):
     def __init__(
             self,
             layout:Iterable[Iterable[BaseElement]],
+            #anchor_containing:Literals.anchor = "w",
+            expand:bool = False,
             # Add here
             tk_kwargs:dict[str:any]=None
     ):
@@ -171,6 +173,12 @@ class Frame(BaseWidgetContainer):
         self._tk_kwargs.update({
             **tk_kwargs
             # Insert named arguments for the widget here
+        })
+
+        self._insert_kwargs["expand"] = expand
+
+        self._insert_kwargs_rows.update({
+            #"sticky":anchor_containing,
         })
 
     def window_entry_point(self,root:tk.Tk|tk.Widget,window:BaseElement):
@@ -576,5 +584,7 @@ class HorizontalSeparator(Separator):
 
     def _personal_init_inherit(self):
         self._insert_kwargs["fill"] = "x"
-        #self._insert_kwargs["expand"] = True
+        self._insert_kwargs["expand"] = True
+
+        self.add_flags(ElementFlag.EXPAND_ROW)
 

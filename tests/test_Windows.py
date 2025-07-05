@@ -3,7 +3,7 @@ from SwiftGUI import Event, Color
 import tkinter as tk
 from tkinter import ttk
 
-sg.popup.yes_no("Hallo Welt?")
+#sg.popup.yes_no("Hallo Welt?")
 
 #sg.GlobalOptions.Common_Textual.fontsize = 14
 
