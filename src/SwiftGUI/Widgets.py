@@ -149,20 +149,19 @@ class Text(BaseWidget):
         self._set_tk_target_variable(default_value=self._text)
 
 
-
 class Frame(BaseWidgetContainer):
     """
     Copy this class ot create your own Widget
     """
-    _tk_widget_class:type[ttk.Frame] = ttk.Frame # Class of the connected widget
+    _tk_widget_class:type[ttk.Frame] = tk.Frame # Class of the connected widget
 
     def __init__(
             self,
             layout:Iterable[Iterable[BaseElement]],
-            #anchor_containing:Literals.anchor = "w",
+            alignment:Literals.alignment = None,
             expand:bool = False,
             # Add here
-            tk_kwargs:dict[str:any]=None
+            tk_kwargs:dict[str:any]=None,
     ):
         super().__init__(tk_kwargs=tk_kwargs)
 
@@ -171,14 +170,14 @@ class Frame(BaseWidgetContainer):
         if tk_kwargs is None:
             tk_kwargs = dict()
         self._tk_kwargs.update({
-            **tk_kwargs
+            **tk_kwargs,
             # Insert named arguments for the widget here
         })
 
         self._insert_kwargs["expand"] = expand
 
         self._insert_kwargs_rows.update({
-            #"sticky":anchor_containing,
+            "side":alignment,
         })
 
     def window_entry_point(self,root:tk.Tk|tk.Widget,window:BaseElement):
@@ -194,6 +193,23 @@ class Frame(BaseWidgetContainer):
         self.add_flags(ElementFlag.IS_CONTAINER)
         self._init_widget(root)
 
+class Spacer(BaseWidget):
+    """
+    Spacer with a certain width in pixels
+    """
+    _tk_widget_class = tk.Frame
+
+    def __init__(
+            self,
+            width:int = None,
+            height:int = None,
+    ):
+        super().__init__()
+
+        self._tk_kwargs = {
+            "width":width,
+            "height":height,
+        }
 
 # Aliases
 Column = Frame

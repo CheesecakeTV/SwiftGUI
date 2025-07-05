@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Self
 from warnings import deprecated
 import inspect
 
-from SwiftGUI import BaseElement, Frame, ElementFlag
+from SwiftGUI import BaseElement, Frame, ElementFlag, Literals
 
 if TYPE_CHECKING:
     from SwiftGUI import AnyElement
@@ -33,6 +33,7 @@ class Window(BaseElement):
             self,
             layout:Iterable[Iterable[BaseElement]],
             # global_options:dict[str:str] = None, # Todo: This conflicts with other global-options
+            alignment: Literals.alignment = None,
     ):
         """
 
@@ -54,7 +55,7 @@ class Window(BaseElement):
         #         self._tk.option_add(key,val,priority=1)
 
 
-        self._sg_widget:Frame = Frame(layout)
+        self._sg_widget:Frame = Frame(layout,alignment=alignment)
         self._sg_widget.window_entry_point(self._tk, self)
 
         for elem in self.all_elements:

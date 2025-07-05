@@ -400,7 +400,7 @@ class BaseWidget(BaseElement):
             #line.pack(side="top",fill="both",expand=True)
             #line.grid(sticky="ew")
             line.pack(fill="x")
-            actual_line.pack(side="bottom",**ins_kwargs_rows)
+            actual_line.pack(**ins_kwargs_rows)
 
     def _get_value(self) -> any:
         """

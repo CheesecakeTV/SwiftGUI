@@ -57,12 +57,17 @@ layout_right = [
 layout = [
     [
         sg.Frame(layout_left),
+        sg.Spacer(width=150),
         sg.VerticalSeparator(),
         sg.Frame(layout_right),
+    ],[
+        sg.Spacer(height=50)
+    ],[
+        sg.Button("One button to rule them all!",relief="solid")
     ]
 ]
 
-w = sg.Window(layout)
+w = sg.Window(layout,alignment="left")
 #w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value("TestText"))
 w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.set_value_to("Mouse entered"))
 w["Another-Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value_from("Input-Test"))
