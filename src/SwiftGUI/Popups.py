@@ -2,6 +2,25 @@ from collections.abc import Iterable
 import SwiftGUI as sg
 
 
+# Note to myself:
+# New popups need to be "registered" at the end of the file!
+
+def popup_text(
+        text:str,
+):
+    """
+    Simple text-popup
+    :param text:
+    :return:
+    """
+    layout = [
+        [
+            sg.T(text)
+        ]
+    ]
+
+    sg.Window(layout).loop_close()
+
 def popup_yes_no(
         text:str,
 ) -> bool:
@@ -18,8 +37,8 @@ def popup_yes_no(
         [
             sg.T(text,anchor="center")
         ],[
-            sg.Button("Yes",key=True,justify="right"),
-            sg.Button("No",key=False,justify="left"),
+            sg.Button("Yes",key=True),
+            sg.Button("No",key=False),
         ]
     ]
 
@@ -86,5 +105,6 @@ class popup:
     yes_no = popup_yes_no
     button_menu = popup_button_menu
     get_text = popup_get_text
+    text = popup_text
 
 

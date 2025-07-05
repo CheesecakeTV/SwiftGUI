@@ -83,7 +83,8 @@ class Window(BaseElement):
         Kill the window
         :return:
         """
-        self._tk.destroy()
+        if self.has_flag(ElementFlag.IS_CREATED):
+            self._tk.destroy()
 
     def loop_close(self) -> tuple[any,dict[any:any]]:
         """
