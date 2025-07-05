@@ -49,8 +49,20 @@ class Window(BaseElement):
     ):
         """
 
-        :param layout:
-        # :param global_options: Options applied to every element in the window
+        :param layout: Double-List (or other iterable) of your elements, row by row
+        :param title: Window-title (seen in titlebar)
+        :param alignment: How the elements inside the main layout should be aligned
+        :param titlebar: False, if you want the window to have no titlebar
+        :param resizeable_width: True, if you want the user to be able to resize the window's width
+        :param resizeable_height: True, if you want the user to be able to resize the window's height
+        :param fullscreen: True, if the window should be in window-fullscreen mode
+        :param transparency: 0 - 1, with 1 being invisible, 0 fully visible
+        :param size: Size of the window in pixels. Leave this blank to determine this automatically
+        :param position: Position of the upper left corner of the window
+        :param min_size: Minimal size of the window, when the user can resize it
+        :param max_size: Maximum size of the window, when the user can resize it
+        :param icon: Icon of the window. Has to be .ico
+        :param keep_on_top: True, if the window should always be on top of any other window
         """
         self.all_elements:list["AnyElement"] = list()   # Elements will be registered in here
         self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
