@@ -3,7 +3,7 @@
 [Start your journey here](https://github.com/CheesecakeTV/SwiftGUI/wiki/Getting-started#getting-started)
 
 # Still WIP
-Already useful though!
+Doesn't have a lot of elements yet, but very useful already!
 
 # SwiftGUI
 
@@ -12,7 +12,7 @@ A python-package to quickly create user-interfaces (GUIs).
 I really liked PySimpleGUI (before they went "premium"), 
 but their codebase is an utter mess.
 
-`SwiftGUI` adapts some concepts of `PySimpleGUI`, but it even simpler (in my opinion)
+`SwiftGUI` adapts some concepts of `PySimpleGUI`, but is even simpler (in my opinion)
 and allows writing less offputting code.
 
 ## install
@@ -52,7 +52,7 @@ that all of these will be possible without any major hussle.
 ### Layout
 The way you create layouts is pretty much the same as in PySimpleGUI.
 
-However, in swiftGUI it is possible to copy parts of the layout.
+(Not yet) However, in swiftGUI it is possible to copy parts of the layout.
 
 ### Events
 In PySimpleGUI, every event has to have a key and always breaks out of `window.read()`,
@@ -66,9 +66,9 @@ In PySimpleGUI, you would need to give that button its own key, add an if-statem
 to the main loop, just to make the call `window["InputKey"]("")"`.
 
 In swiftGUI, the only thing you need to do is pass a lambda-function as a key-function to
-the button: `sg.Button(...,key_function=lambda w,*_:w["InputKey"].set_value("""))`.\
+the button: `sg.Button(...,key_function=lambda w:w["InputKey"].set_value(""))`.\
 Done.\
-No breaking out of window.loop(), no if-statement, no possible key used, 
+No breaking out of window.loop(), no if-statement, no key "used",
 not even an additional line of code.
 
 Additionally, there are a couple of pre-made "key-functions" you can configure and use.
@@ -88,13 +88,9 @@ This is something most layouts need to have, but with PySimpleGUI, you need to c
 every Element one by one, or create a wrapper (which is very janky due to PySimpleGUIs codebase).
 
 ### Expandability
-
 SwiftGUI aims at being as easy to expand as possible.
 
-For beginners, I recommend copying an element from `WidgetsAdvanced.py` that
-fits what you are looking to implement best.
+There will be tutorials on how to use the codebase.
 
-If you know, how to properly use inheritance, you should start with `Base.py`.
-
-The descriptions (docstrings) of all inherited methods can be found in `Base.py`
+Feel free to take a look at `Widgets.py` and `WidgetsAdvanced.py`.
 
