@@ -1,13 +1,23 @@
 import SwiftGUI as sg
 from SwiftGUI import Event, Color
+import tkinter as tk
+from tkinter import ttk
 
 sg.GlobalOptions.Common_Textual.fontsize = 14
 
-layout = [
+layout_left = [
     [
         sg.T("Hallo",key="TestText",width=25,anchor="center")
     ],[
-        sg.T("Welt")
+        sg.HorizontalSeparator()
+    ],[
+        sg.HorizontalSeparator()
+    ], [
+        sg.HorizontalSeparator()
+    ], [
+        sg.HorizontalSeparator()
+    ], [
+        sg.T("Welt",anchor="w")
     ],[
         sg.T("Amazing what you can accomplish\non a saturday",key="SomeText",text_color="green",background_color=sg.Color.SeaGreen1),
         sg.Frame([
@@ -28,13 +38,36 @@ layout = [
         sg.Button("Another button!",key="Another Button"),
         sg.Button("Another button!", key="Another Button")
     ],[
+    ],[
         sg.Input("Haha", key_function=lambda elem: elem.set_value("Haha"), default_event=True)
     ]
 ]
 
-w = sg.Window(layout)
+layout_right = [
+    [
+        sg.Button("I'm a button")
+    ]
+]
+
+# s = ttk.Style()
+# s.configure("TSeparator",background="green")
+
+layout = [
+    [
+        sg.Frame(layout_left),
+        sg.Spacer(width=150),
+        sg.VerticalSeparator(),
+        sg.Frame(layout_right),
+    ],[
+        sg.Spacer(height=50)
+    ],[
+        sg.Button("One button to rule them all!",relief="solid")
+    ]
+]
+
+w = sg.Window(layout,alignment="left")
 #w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value("TestText"))
-w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.clear_str_value)
+w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.set_value_to("Mouse entered"))
 w["Another-Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value_from("Input-Test"))
 
 print("Start:",w.values)

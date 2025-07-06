@@ -1,0 +1,18 @@
+
+Version erhöhen?
+python -m poetry version patch
+(Statt patch: patch, minor, major, prepatch, preminor, premajor, prerelease)
+
+Mit poetry veröffentlichen:
+python -m poetry build
+python -m poetry lock
+python -m poetry publish
+
+Bei PyPi mit API-Key einloggen:
+python -m poetry config pypi-token.pypi <token>
+
+
+Um dependancies hinzuzufügen:
+
+[tool.poetry.dependencies]
+makefun = "1.16.0"          (Bzw. welche Bibliothek auch immer)

@@ -222,7 +222,8 @@ class BaseWidget(BaseElement):
 
     _tk_target_value:tk.Variable = None # By default, the value of this is read when fetching the value
 
-    _insert_kwargs:dict = dict()    # kwargs for the packer/grid
+    _insert_kwargs:dict         # kwargs for the packer/grid
+    _insert_kwargs_rows:dict    # kwargs for the grid-rows
 
     #_is_container:bool = False   # True, if this widget contains other widgets
     _contains:Iterable[Iterable[Self]] = []
@@ -230,10 +231,6 @@ class BaseWidget(BaseElement):
     _transfer_keys: dict[str:str] = dict()   # Rename a key from the update-function. from -> to; from_user -> to_widget
 
     _events_to_bind_later: list[dict]
-
-    # @property
-    # def _is_container(self) -> bool:
-    #     return False
 
     def __init__(self,key:any=None,tk_kwargs:dict[str:any]=None,**kwargs):
         self._events_to_bind_later = list()
@@ -244,7 +241,11 @@ class BaseWidget(BaseElement):
         tk_kwargs.update(kwargs)
         self._tk_kwargs = tk_kwargs
 
-        self._insert_kwargs = {"side":tk.LEFT}
+        self._insert_kwargs = dict()
+        self._insert_kwargs_rows = {
+            #"sticky":"w"
+        }
+
         self.key = key
 
     def _window_is_dead(self) -> bool:
@@ -353,7 +354,10 @@ class BaseWidget(BaseElement):
 
         match mode:
             case "pack":
-                self._tk_widget.pack(**self._insert_kwargs)
+                #temp = {"expand":False,"side":"left"}
+                temp = {"side":"left"}
+                temp.update(self._insert_kwargs)
+                self._tk_widget.pack(**temp)
             case "grid":
                 self._tk_widget.grid(**self._insert_kwargs)
 
@@ -365,17 +369,38 @@ class BaseWidget(BaseElement):
         Initialize all containing widgets
         :return:
         """
+        ins_kwargs_rows = self._insert_kwargs_rows.copy()
+
         for i in self._contains:
-            #line = tk.Frame(self._tk_widget,background="red",relief="raised",borderwidth="3",border=3)
-            line = tk.Frame(self._tk_widget,relief="flat")
+            # line = tk.Frame(self._tk_widget,background="orange",relief="raised",borderwidth="3",border=3)
+            # actual_line = tk.Frame(line,background="lightBlue")
+
+            line = tk.Frame(self._tk_widget,relief="flat")  # This is the row
+            actual_line = tk.Frame(line)    # This is where the actual elements are put in
 
             line_elem = BaseElement()
-            line_elem._fake_tk_element = line
+            line_elem._fake_tk_element = actual_line
+
+            expand = False
 
             for k in i:
                 k._init(line_elem,self.window)
 
-            line.grid()
+                if not expand and k.has_flag(ElementFlag.EXPAND_ROW):
+                    expand = True
+
+            if expand:
+                ins_kwargs_rows["fill"] = "x"
+                ins_kwargs_rows["expand"] = True
+            else:
+                ins_kwargs_rows["fill"] = "none"
+                ins_kwargs_rows["expand"] = False
+            #self._insert_kwargs_rows["fill"] = "x"
+
+            #line.pack(side="top",fill="both",expand=True)
+            #line.grid(sticky="ew")
+            line.pack(fill="x")
+            actual_line.pack(**ins_kwargs_rows)
 
     def _get_value(self) -> any:
         """
@@ -421,7 +446,9 @@ class BaseWidgetContainer(BaseWidget):
     """
     Base for Widgets that contain other widgets
     """
+
     def _flag_init(self):
         super()._flag_init()
+        self._line_insert_kwargs = dict()
         self.add_flags(ElementFlag.IS_CONTAINER)
 

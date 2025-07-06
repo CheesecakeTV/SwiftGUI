@@ -6,6 +6,7 @@ class ElementFlag(Enum):
     DONT_REGISTER_KEY = 2   # Element isn't registered into the window
     UPDATE_FONT = 3     # Font has to be updated
     IS_CREATED = 4  # Element was created by _init
+    EXPAND_ROW = 5  # The row this element is in should be expanded
 
     # Flags 100-200 will never be used, so they are available for you to create custom flags
     # It's important to set an actual value for each flag so it can be saved/loaded correctly
