@@ -12,6 +12,8 @@ layout_left = [
         sg.HorizontalSeparator()
     ],[
         sg.HorizontalSeparator()
+    ],[
+        sg.Checkbox("Check me, mate!!!",key="Check!",default_event=True,key_function=lambda elem:elem.update(readonly=True))
     ], [
         sg.HorizontalSeparator()
     ], [

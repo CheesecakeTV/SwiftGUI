@@ -333,7 +333,7 @@ class BaseWidget(BaseElement):
     def _set_tk_target_variable(self,value_type:type=tk.StringVar,kwargs_key:str="textvariable",default_key:str=None,default_value:any=None):
         """
         Define a target variable for this widget
-        :param default_key: If given and in self._tk_args, self._tk_args[default_key] will be the default value
+        :param default_key: If given and in self._tk_args, self._tk_args[default_key] will be the default value. The key will be removed from the dict.
         :param value_type: Class of the needed variable
         :param kwargs_key: Key this value will be added into the tk-widget
         :param default_value: Passed to value
@@ -341,6 +341,7 @@ class BaseWidget(BaseElement):
         """
         if default_key is not None and default_key in self._tk_kwargs:
             default_value = self._tk_kwargs.get(default_key)
+            del self._tk_kwargs[default_key]
 
         self._tk_target_value = value_type(self.parent_tk_widget, value=default_value)
         self._tk_kwargs[kwargs_key] = self._tk_target_value

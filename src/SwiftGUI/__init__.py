@@ -8,7 +8,7 @@ from .Events import Event
 from .Base import BaseElement,BaseWidget,BaseWidgetContainer,ElementFlag
 #from .KeyManager import Key,SEPARATOR,duplicate_warnings   # Todo: Make some decent key-manager
 
-from .Widgets import Button,Input,Text,Frame,VerticalSeparator,HorizontalSeparator,Spacer
+from .Widgets import Button,Input,Text,Frame,VerticalSeparator,HorizontalSeparator,Spacer,Checkbox
 T = Text
 
 In = Input
@@ -16,6 +16,10 @@ Entry = Input
 
 HSep = HorizontalSeparator
 VSep = VerticalSeparator
+
+Check = Checkbox
+
+Column = Frame
 
 from .Windows import Window
 from .WidgetsAdvanced import Form

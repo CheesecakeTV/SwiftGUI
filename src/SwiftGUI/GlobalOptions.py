@@ -214,6 +214,8 @@ class Frame(Common):
     #background = "blue"
     alignment:Literals.alignment = None
 
+class Checkbox(Common,Common_Textual):
+    ...
 
 def _make_dict_format_because_lazy(the_class:DEFAULT_OPTIONS_CLASS):
     """
