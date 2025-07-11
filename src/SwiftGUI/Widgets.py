@@ -606,6 +606,7 @@ class HorizontalSeparator(Separator):
 class Checkbox(BaseWidget):
 
     _tk_widget_class:type = tk.Checkbutton # Class of the connected widget
+    tk_widget:tk.Checkbutton
     defaults = GlobalOptions.Checkbox   # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
     value:bool
 
@@ -741,3 +742,19 @@ class Checkbox(BaseWidget):
             self._update_font()
 
         super()._apply_update() # Actually apply the update
+
+    def toggle(self):
+        """
+        Toggle the button WITHOUT throwing an event.
+        :return:
+        """
+        self.tk_widget.toggle()
+
+    def flash(self):
+        """
+        Flash the Element a couple of times
+        :return:
+        """
+        self.tk_widget.flash()
+
+

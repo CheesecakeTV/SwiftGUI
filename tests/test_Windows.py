@@ -77,6 +77,7 @@ print(w["IAM"].value)
 
 for e,v in w:
     print(e,v)
+    w["Check!"].flash()
     #w["Hallo Welt"].flash()
 
     #w["Input-Test"].value = e
