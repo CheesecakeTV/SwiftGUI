@@ -153,6 +153,7 @@ class Frame(BaseWidgetContainer):
     Copy this class ot create your own Widget
     """
     _tk_widget_class:type[ttk.Frame] = tk.Frame # Class of the connected widget
+    defaults = GlobalOptions.Frame
 
     def __init__(
             self,
@@ -173,10 +174,10 @@ class Frame(BaseWidgetContainer):
             # Insert named arguments for the widget here
         })
 
-        self._insert_kwargs["expand"] = expand
+        self._insert_kwargs["expand"] = self.defaults.single("expand",expand)
 
         self._insert_kwargs_rows.update({
-            "side":alignment,
+            "side":self.defaults.single("alignment",alignment),
         })
 
     def window_entry_point(self,root:tk.Tk|tk.Widget,window:BaseElement):

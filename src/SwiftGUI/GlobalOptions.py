@@ -212,6 +212,7 @@ class Frame(Common):
     padding:Literals.padding = 3
     relief:Literals.relief = "flat"
     #background = "blue"
+    alignment:Literals.alignment = None
 
 
 def _make_dict_format_because_lazy(the_class:DEFAULT_OPTIONS_CLASS):
