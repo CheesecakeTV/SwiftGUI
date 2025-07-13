@@ -1,9 +1,13 @@
+
+# Still WIP!
+
 from collections.abc import Iterable
+from warnings import deprecated
+
 from SwiftGUI import BaseElement, Frame, Text, Input
 
-
 # Advanced / Combined elements
-
+@deprecated("WIP, not ready for usage")
 class Form(BaseElement):
     """
     Grid-Layout-Form with text-Input-combinations
