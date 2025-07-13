@@ -30,10 +30,11 @@ Check = Checkbox
 
 Column = Frame
 
+AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form
+
 from .Windows import Window
 
 from . import KeyFunctions
-from .AnyElement import AnyElement
 
 from .Examples import preview_all_colors
 from .Popups import popup
