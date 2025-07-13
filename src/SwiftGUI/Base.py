@@ -194,6 +194,7 @@ class BaseElement:
         :return:
         """
 
+        kwargs = self.defaults.apply(kwargs)
         kwargs = dict(filter(lambda a: not self._update_special_key(*a), kwargs.items()))
         self._update_default_keys(kwargs)
 
@@ -419,7 +420,6 @@ class BaseWidget(BaseElement):
         :param kwargs:
         :return:
         """
-        kwargs = self.defaults.apply(kwargs)
 
         transfer = set(filter(lambda a:a in kwargs.keys(),self._transfer_keys.keys()))
 

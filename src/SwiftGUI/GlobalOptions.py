@@ -215,7 +215,7 @@ class Frame(Common):
     alignment:Literals.alignment = None
 
 class Checkbox(Common,Common_Textual):
-    ...
+    check_type:Literals.indicatoron = "check"
 
 def _make_dict_format_because_lazy(the_class:DEFAULT_OPTIONS_CLASS):
     """

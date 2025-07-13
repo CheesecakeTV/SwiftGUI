@@ -611,7 +611,18 @@ class Checkbox(BaseWidget):
     value:bool
 
     _transfer_keys = {
-
+        # "background_color_disabled": "disabledbackground",
+        "background_color": "background",
+        "text_color_disabled": "disabledforeground",
+        "highlightbackground_color": "highlightbackground",
+        # "selectbackground_color": "selectbackground",
+        # "select_text_color": "selectforeground",
+        # "pass_char":"show",
+        "background_color_active": "activebackground",
+        "text_color_active": "activeforeground",
+        "text_color": "fg",
+        "bitmap_position":"compound",
+        "check_background_color":"selectcolor",
     }
 
     def __init__(
@@ -628,6 +639,34 @@ class Checkbox(BaseWidget):
             font_underline:bool = None,
             font_overstrike:bool = None,
             readonly:bool = None,
+            # borderwidth:int = None,
+            #
+            bitmap:Literals.bitmap = None,
+            text_color_disabled: str | Color = None,
+            check_background_color: str | Color = None,
+            bitmap_position:Literals.compound = None,
+            background_color_active: str | Color = None,
+            text_color_active: str | Color = None,
+            check_type: Literals.indicatoron = None,
+            #
+            width: int = None,
+            height: int = None,
+            padx:int = None,
+            pady:int = None,
+            #
+            cursor: Literals.cursor = None,
+            takefocus: bool = None,
+            #
+            underline: int = None,
+            anchor: Literals.anchor = None,
+            justify: Literal["left", "right", "center"] = None,
+            background_color: str | Color = None,
+            overrelief: Literals.relief = None,
+            offrelief: Literals.relief = None,
+            text_color: str | Color = None,
+            relief: Literals.relief = None,
+            # hilightbackground_color: str | Color = None,
+            # highlightcolor: str | Color = None,
             tk_kwargs:dict = None,
     ):
         super().__init__(key,tk_kwargs=tk_kwargs)
@@ -648,34 +687,32 @@ class Checkbox(BaseWidget):
             "fontsize": fontsize,
             "fonttype": fonttype,
             "readonly": readonly,
-            # "takefocus":takefocus,
-            # "background_color":background_color,
-            # "background_color_disabled": background_color_disabled,
-            # "background_color_readonly": background_color_readonly,
-            # "cursor": cursor,
-            # "readonly": readonly,
-            # "exportselection": exportselection,
-            # "font_bold": font_bold,
-            # "font_italic": font_italic,
-            # "font_overstrike": font_overstrike,
-            # "font_underline": font_underline,
-            # "fontsize": fontsize,
-            # "fonttype": fonttype,
-            # "highlightbackground_color": highlightbackground_color,
-            # "highlightcolor": highlightcolor,
-            # "highlightthickness": highlightthickness,
-            # "justify": justify,
-            # "pass_char": pass_char,
-            # "relief": relief,
-            # "select_text_color": select_text_color,
-            # "selectbackground_color": selectbackground_color,
-            # "selectborderwidth": selectborderwidth,
+            "bitmap_position":bitmap_position,
+            "bitmap":bitmap,
+            "check_background_color":check_background_color,
+
+            "check_type":check_type,
+            "cursor":cursor,
+            "underline":underline,
+            "justify":justify,
+            "background_color":background_color,
+            "highlightthickness":5,
+            "highlightcolor":"purple",
+            "relief":relief,
+            "text_color":text_color,
+            "width":width,
+            "anchor":anchor,
+            "overrelief":overrelief,
+            "offrelief":offrelief,
+            "takefocus":takefocus,
+            "text_color_disabled": text_color_disabled,
+            "background_color_active": background_color_active,
+            "text_color_active": text_color_active,
+
+            "height": height,
+            "padx": padx,
+            "pady": pady,
             "text": text,
-            # "text_color": text_color,
-            # "text_color_disabled": text_color_disabled,
-            # "validate": validate,
-            # "validatecommand": validatecommand,
-            # "width": width,
         }
 
         self._default_event = default_event
@@ -731,6 +768,8 @@ class Checkbox(BaseWidget):
                 self.add_flags(ElementFlag.UPDATE_FONT)
             case "readonly":
                 self._tk_kwargs["state"] = "disabled" if new_val else "normal"
+            case "check_type":
+                self._tk_kwargs["indicatoron"] = int(new_val == "check")
             case _: # Not a match
                 return False
 
