@@ -12,6 +12,8 @@ layout_left = [
         sg.HorizontalSeparator()
     ],[
         sg.HorizontalSeparator()
+    ],[
+        sg.Checkbox("Check me, mate!!!",key="Check!",default_event=True,key_function=lambda elem:elem.update(readonly=True))
     ], [
         sg.HorizontalSeparator()
     ], [
@@ -75,6 +77,7 @@ print(w["IAM"].value)
 
 for e,v in w:
     print(e,v)
+    #w["Check!"].flash()
     #w["Hallo Welt"].flash()
 
     #w["Input-Test"].value = e

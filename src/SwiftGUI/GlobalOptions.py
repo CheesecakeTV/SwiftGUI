@@ -212,6 +212,45 @@ class Frame(Common):
     padding:Literals.padding = 3
     relief:Literals.relief = "flat"
     #background = "blue"
+    alignment:Literals.alignment = None
+
+class Checkbox(Common,Common_Textual):
+    key: any = None
+    default_value: bool = False
+    fonttype: str = None
+    fontsize: int = None
+    font_bold: bool = None
+    font_italic: bool = None
+    font_underline: bool = None
+    font_overstrike: bool = None
+    readonly: bool = None
+    # borderwidth:int = None
+    #
+    text_color_disabled: str | Color = None
+    check_background_color: str | Color = None
+    bitmap_position: Literals.compound = None
+    background_color_active: str | Color = None
+    text_color_active: str | Color = None
+    check_type: Literals.indicatoron = "check"
+    #
+    width: int = None
+    height: int = None
+    padx: int = None
+    pady: int = None
+    #
+    cursor: Literals.cursor = None
+    takefocus: bool = None
+    #
+    underline: int = None
+    anchor: Literals.anchor = None
+    justify: Literal["left", "right", "center"] = None
+    background_color: str | Color = None
+    overrelief: Literals.relief = None
+    offrelief: Literals.relief = None
+    text_color: str | Color = None
+    relief: Literals.relief = None
+    # hilightbackground_color: str | Color = None
+    # highlightcolor: str | Color = None
 
 
 def _make_dict_format_because_lazy(the_class:DEFAULT_OPTIONS_CLASS):

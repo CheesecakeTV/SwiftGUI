@@ -1,0 +1,204 @@
+import tkinter as tk
+import tkinter.font as font
+import tkinter.ttk as ttk
+from collections.abc import Iterable, Callable
+from typing import Literal
+
+from SwiftGUI import BaseElement, ElementFlag, BaseWidget, BaseWidgetContainer, GlobalOptions, Literals, Color
+
+
+class Button(BaseWidget):
+    """
+    Copy this class ot create your own Widget
+
+    The following methods are to be overwritten if needed:
+    _get_value  (determines the value returned by this widget)
+    _init_widget_for_inherrit   (Initializes the widget)
+    """
+    tk_widget:tk.Button
+    _tk_widget_class:type = tk.Button # Class of the connected widget
+    defaults = GlobalOptions.Button
+
+    _transfer_keys = {
+        "background_color_disabled":"disabledbackground",
+        "background_color":"background",
+        "text_color_disabled": "disabledforeground",
+        "highlightbackground_color": "highlightbackground",
+        # "selectbackground_color": "selectbackground",
+        # "select_text_color": "selectforeground",
+        # "pass_char":"show",
+        "background_color_active" : "activebackground",
+        "text_color_active" : "activeforeground",
+        "text_color":"fg",
+
+    }
+
+    def __init__(
+            # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/button.html
+
+            self,
+            # Add here
+            text:str = "",
+            key:any = None,
+            key_function:Callable|Iterable[Callable] = None,
+
+            borderwidth:int = None,
+
+            bitmap:Literals.bitmap = None,
+            disabled:bool = None,
+            text_color_disabled: str | Color = None,
+            background_color_active: str | Color = None,
+            text_color_active: str | Color = None,
+
+            width: int = None,
+            height: int = None,
+            padx:int = None,
+            pady:int = None,
+
+            cursor: Literals.cursor = None,
+            takefocus: bool = None,
+
+            underline: int = None,
+            anchor: Literals.anchor = None,
+            justify: Literal["left", "right", "center"] = None,
+            background_color: str | Color = None,
+            overrelief: Literals.relief = None,
+            text_color: str | Color = None,
+            # Todo: image
+            relief: Literals.relief = None,
+
+            repeatdelay:int = None,
+            repeatinterval:int = None,
+
+            # # Mixed options
+            fonttype: str = None,
+            fontsize: int = None,
+            font_bold: bool = None,
+            font_italic: bool = None,
+            font_underline: bool = None,
+            font_overstrike: bool = None,
+
+            tk_kwargs: dict[str:any] = None
+    ):
+        super().__init__(key=key,tk_kwargs=tk_kwargs)
+
+        if tk_kwargs is None:
+            tk_kwargs = dict()
+
+        _tk_kwargs = {
+            **tk_kwargs,
+            "text":text,
+            "cursor":cursor,
+            "underline":underline,
+            "justify":justify,
+            "background_color":background_color,
+            "highlightbackground_color":"red",
+            "highlightthickness":5,
+            "highlightcolor":"purple",
+            "relief":relief,
+            "text_color":text_color,
+            "width":width,
+            "fonttype":fonttype,
+            "fontsize":fontsize,
+            "font_bold":font_bold,
+            "font_italic":font_italic,
+            "font_underline":font_underline,
+            "font_overstrike":font_overstrike,
+            "anchor":anchor,
+            "bitmap":bitmap,
+            "borderwidth":borderwidth,
+            "disabled":disabled,
+            "overrelief":overrelief,
+            "takefocus":takefocus,
+            #"background_color_disabled": background_color_disabled,    # Todo: Add this manually since tk.Button has no option for it
+            "text_color_disabled": text_color_disabled,
+            "background_color_active": background_color_active,
+            "text_color_active": text_color_active,
+            "repeatdelay":repeatdelay,
+            "repeatinterval":repeatinterval,
+
+            "height": height,
+            "padx": padx,
+            "pady": pady,
+        }
+        self.update(**_tk_kwargs)
+
+        self._key_function = key_function
+
+    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+        match key:
+
+            case "disabled":
+                self._tk_kwargs["state"] = "disabled" if new_val else "normal"
+            case "fonttype":
+                self._fonttype = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "fontsize":
+                self._fontsize = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "font_bold":
+                self._bold = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "font_italic":
+                self._italic = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "font_underline":
+                self._underline = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "font_overstrike":
+                self._overstrike = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case _:
+                return False
+
+        return True
+
+    def _apply_update(self):
+        # If the font changed, apply them to self._tk_kwargs
+        if self.has_flag(ElementFlag.UPDATE_FONT):
+            self._update_font()
+
+        super()._apply_update() # Actually apply the update
+
+    def _personal_init(self):
+        self._tk_kwargs.update({
+            "command": self.window.get_event_function(self, self.key, self._key_function)
+        })
+
+        super()._personal_init()
+
+    def _update_font(self):
+        # self._tk_kwargs will be passed to tk_widget later
+        self._tk_kwargs["font"] = font.Font(
+            self.window.parent_tk_widget,
+            family=self._fonttype,
+            size=self._fontsize,
+            weight="bold" if self._bold else "normal",
+            slant="italic" if self._italic else "roman",
+            underline=bool(self._underline),
+            overstrike=bool(self._overstrike),
+        )
+
+    def _personal_init_inherit(self):
+        self._set_tk_target_variable(default_key="text")
+
+
+    def flash(self):
+        """
+        Flash the button visually
+        :return:
+        """
+        if self._window_is_dead():
+            return
+
+        self.tk_widget.flash()
+
+    def push_once(self):
+        """
+        "Push" the button virtually
+        :return:
+        """
+        if self._window_is_dead():
+            return
+
+        self.tk_widget.invoke()
