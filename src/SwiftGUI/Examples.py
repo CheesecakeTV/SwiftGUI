@@ -41,3 +41,35 @@ def preview_all_fonts_windows() -> None:
 
     w.loop_close()
 
+def preview_all_themes() -> None:
+    """
+    Have a look at all possible (prebuilt) themes
+    :return:
+    """
+    layout = list()
+    all_themes = sg.themes.__dict__.items()
+
+    for n,(key,val) in enumerate(all_themes):
+        if key.startswith("_"):
+            continue
+
+        sg.GlobalOptions.reset_all_options()
+        val() # Apply theme
+
+        layout.append([sg.Frame([
+            [
+                sg.T(f"Theme: {key}"),
+            ],[
+                sg.T("Input:",width=18),
+                sg.Input("Hello!"),
+            ],[
+                sg.T("Disabled Input:",width=18),
+                sg.Input("Hello, I'm readonly!",readonly=True),
+            ],[
+                sg.Check("Button clicked!",key=f"c{key}"),
+                sg.Button("Click me, please!",key_function=sg.KeyFunctions.set_value_to(True,f"c{key}")),
+            ]
+        ],tk_kwargs={"padx":50,"pady":50})])
+
+
+    sg.Window(layout).loop_close()

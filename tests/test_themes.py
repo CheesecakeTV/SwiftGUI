@@ -1,5 +1,8 @@
 import SwiftGUI as sg
 
+sg.Examples.preview_all_themes()
+exit()
+
 sg.themes.Hacker()
 
 layout = [

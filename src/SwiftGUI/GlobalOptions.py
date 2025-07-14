@@ -237,7 +237,7 @@ class Frame(Common):
     relief:Literals.relief = "flat"
     #background = "blue"
     alignment:Literals.alignment = None
-    background_color: Color | str = ""
+    background_color: Color | str = None
 
 class Checkbox(Common,Common_Textual):
     key: any = None
@@ -277,7 +277,7 @@ class Checkbox(Common,Common_Textual):
     # hilightbackground_color: str | Color = None
     # highlightcolor: str | Color = None
 
-class Window(Common):
+class Window(DEFAULT_OPTIONS_CLASS):
     title = None
     titlebar: bool = True  # Titlebar visible
     resizeable_width = False
