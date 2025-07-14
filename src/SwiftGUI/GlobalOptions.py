@@ -1,12 +1,12 @@
 #import tkinter as tk    # Not needed, but helpful to figure out default vals
 #from tkinter import ttk
 from collections.abc import Iterable
-from typing import Literal
+from typing import Literal, Union
 
 from SwiftGUI import Literals, Color, font_windows, Font
 
 # Every option-class will be stored in here
-all_option_classes:list["_DefaultOptionsMeta"|type] = list()
+all_option_classes:list[Union["_DefaultOptionsMeta",type]] = list()
 
 class _DefaultOptionsMeta(type):
 
