@@ -45,7 +45,7 @@ class Input(BaseWidget):
             # Special Tkinter-options
             justify:Literal["left","right","center"] = None,
             background_color:str|Color = None,
-            background_color_disabled:str|Color = None,
+            #background_color_disabled:str|Color = None,    # It's never disabled, only readonly
             background_color_readonly:str|Color = None,
             text_color:str|Color = None,
             text_color_disabled:str|Color = None,
@@ -97,7 +97,7 @@ class Input(BaseWidget):
             **tk_kwargs,
             "takefocus":takefocus,
             "background_color":background_color,
-            "background_color_disabled": background_color_disabled,
+            # "background_color_disabled": background_color_disabled,
             "background_color_readonly": background_color_readonly,
             "cursor": cursor,
             "readonly": readonly,

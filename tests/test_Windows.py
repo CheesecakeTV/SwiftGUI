@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import ttk
 
 sg.GlobalOptions.Common_Textual.fontsize = 14
-sg.GlobalOptions.Common_Textual.fonttype = sg.font_windows.Comic_Sans_MS
+sg.themes.FacebookMom()
 
 layout_left = [
     [

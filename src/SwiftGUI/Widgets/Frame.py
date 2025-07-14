@@ -13,11 +13,16 @@ class Frame(BaseWidgetContainer):
     _tk_widget_class:type[ttk.Frame] = tk.Frame # Class of the connected widget
     defaults = GlobalOptions.Frame
 
+    _transfer_keys = {
+        "background_color":"background"
+    }
+
     def __init__(
             self,
             layout:Iterable[Iterable[BaseElement]],
             alignment:Literals.alignment = None,
             expand:bool = False,
+            background_color:Color = None,
             # Add here
             tk_kwargs:dict[str:any]=None,
     ):
@@ -27,10 +32,13 @@ class Frame(BaseWidgetContainer):
 
         if tk_kwargs is None:
             tk_kwargs = dict()
-        self._tk_kwargs.update({
+
+        _tk_kwargs = {
             **tk_kwargs,
             # Insert named arguments for the widget here
-        })
+            "background_color":background_color,
+        }
+        self.update(**_tk_kwargs)
 
         self._insert_kwargs["expand"] = self.defaults.single("expand",expand)
 

@@ -377,8 +377,8 @@ class BaseWidget(BaseElement):
             # line = tk.Frame(self._tk_widget,background="orange",relief="raised",borderwidth="3",border=3)
             # actual_line = tk.Frame(line,background="lightBlue")
 
-            line = tk.Frame(self._tk_widget,relief="flat")  # This is the row
-            actual_line = tk.Frame(line)    # This is where the actual elements are put in
+            line = tk.Frame(self._tk_widget,relief="flat",background="")  # This is the row
+            actual_line = tk.Frame(line,background="")    # This is where the actual elements are put in
 
             line_elem = BaseElement()
             line_elem._fake_tk_element = actual_line

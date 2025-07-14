@@ -39,3 +39,4 @@ from . import KeyFunctions
 from .Examples import preview_all_colors
 from .Popups import popup
 
+from .Themes import themes

@@ -122,6 +122,7 @@ class Common(DEFAULT_OPTIONS_CLASS):
     """
     cursor:Literals.cursor = None   # Find available cursors here (2025): https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/cursors.html
     takefocus:bool = True
+    background_color:Color|str = "#F0F0F0"
 
 class Common_Textual(DEFAULT_OPTIONS_CLASS):
     """
@@ -158,7 +159,7 @@ class Input(Common,Common_Textual):
     # Special Tkinter-options
     justify: Literal["left", "right", "center"] = None
     background_color: str | Color = None
-    background_color_disabled: str | Color = None
+    # background_color_disabled: str | Color = None
     background_color_readonly: str | Color = None
     text_color: str | Color = None
     text_color_disabled: str | Color = None
@@ -213,6 +214,7 @@ class Frame(Common):
     relief:Literals.relief = "flat"
     #background = "blue"
     alignment:Literals.alignment = None
+    background_color: Color | str = ""
 
 class Checkbox(Common,Common_Textual):
     key: any = None
@@ -251,6 +253,21 @@ class Checkbox(Common,Common_Textual):
     relief: Literals.relief = None
     # hilightbackground_color: str | Color = None
     # highlightcolor: str | Color = None
+
+class Window(Common):
+    title = None
+    titlebar: bool = True  # Titlebar visible
+    resizeable_width = False
+    resizeable_height = False
+    fullscreen: bool = False
+    transparency: Literals.transparency = 0  # 0-1, 1 meaning invisible
+    size: tuple[int, int] = (None, None)
+    position: tuple[int, int] = (None, None)  # Position on monitor # Todo: Center
+    min_size: tuple[int, int] = (None, None)
+    max_size: tuple[int, int] = (None, None)
+    icon: str = None  # .ico file
+    keep_on_top: bool = False
+    background_color: Color = None
 
 
 def _make_dict_format_because_lazy(the_class:DEFAULT_OPTIONS_CLASS):
