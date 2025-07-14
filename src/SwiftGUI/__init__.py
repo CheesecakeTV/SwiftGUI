@@ -36,7 +36,7 @@ from .Windows import Window
 
 from . import KeyFunctions
 
-from .Examples import preview_all_colors
+from .Examples import preview_all_colors, preview_all_themes, preview_all_fonts_windows
 from .Popups import popup
 
 from .Themes import themes
