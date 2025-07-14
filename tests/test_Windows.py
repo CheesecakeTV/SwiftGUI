@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk
 
 sg.GlobalOptions.Common_Textual.fontsize = 14
+sg.GlobalOptions.Common_Textual.fonttype = sg.font_windows.Comic_Sans_MS
 
 layout_left = [
     [
@@ -30,7 +31,7 @@ layout_left = [
             ]
         ])
     ],[
-        sg.Button("Hallo Welt-Button",key="Hallo Welt",disabled = False,text_color="red",repeatdelay=1000,repeatinterval=100),
+        sg.Button("Hallo Welt-Button",key="Hallo Welt",disabled = False,height=2,text_color="red",repeatdelay=1000,repeatinterval=100,borderwidth=5),
         sg.In("Was geht", key="Input-Test", background_color="red", justify="right", text_color="green",
               default_event=True),
         sg.In("Was geht", key="Another-Input-Test",background_color=Color.AntiqueWhite2,readonly=True),
@@ -42,6 +43,10 @@ layout_left = [
     ],[
     ],[
         sg.Input("Haha", key_function=lambda elem: elem.set_value("Haha"), default_event=True)
+    ],[
+        sg.Button("This is a test!", key="TestButton", width=50, padx=50),
+    ],[
+        sg.Button("This is a test!", key="TestButton1", width=50, padx=50),
     ]
 ]
 

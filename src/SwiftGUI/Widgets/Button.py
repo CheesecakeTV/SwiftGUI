@@ -80,6 +80,41 @@ class Button(BaseWidget):
 
             tk_kwargs: dict[str:any] = None
     ):
+        """
+        A button that throws an event every time it is pushed
+
+        :param text: Text the button displays
+        :param key: (See docs for more details)
+        :param key_function: (See docs for more details)
+        :param borderwidth: Border-Thickness in pixels. Default is 2
+        :param bitmap: The are a couple of icons builtin. If you are using PyCharm, they should be suggested when pressing "ctrl+space"
+        :param disabled: True, if this button should not be pressable
+        :param text_color_disabled: Text color, if disabled = True
+        :param background_color_active: Background color shown only when the button is held down
+        :param text_color_active: Text color only shown when the button is held down
+        :param width: Button-size in x-direction in text-characters
+        :param height: Button-height in text-rows
+        :param padx: Adds space to both sides not filled with text. Should not be combined with "width". The value is given in characters
+        :param pady: Adds space to the top and bottom not filled with text. Should not be combined with "height". The value is given in rows
+        :param cursor: How the cursor should look when hovering over this element.
+        :param takefocus: True, if this element should be able to get focus (e.g. by pressing tab)
+        :param underline: Underlines the single character at this index
+        :param anchor: Specifies, where the text in this element should be placed (See docs for more details)
+        :param justify: When the text is multiple rows long, this will specify where the new rows begin.
+        :param background_color: Background-color for the non-pressed state
+        :param overrelief: Relief when the mouse hovers over the element
+        :param text_color: Text-color in non-pressed state
+        :param relief: Relief in non-pressed state
+        :param repeatdelay: How long to hold the button until repeation starts (doesn't work without "repeatinterval")
+        :param repeatinterval: How long to wait between repetitions (doesn't work without "repeatdelay")
+        :param fonttype: Use sg.font_windows. ... to select some fancy font. Personally, I like sg.font_windows.Small_Fonts
+        :param fontsize: Size (height) of the font in pixels
+        :param font_bold: True, if thicc text
+        :param font_italic: True, if italic text
+        :param font_underline: True, if the text should be underlined
+        :param font_overstrike: True, if the text should be overstruck
+        :param tk_kwargs: (Only if you know tkinter) Pass more kwargs directly to the tk-widget
+        """
         super().__init__(key=key,tk_kwargs=tk_kwargs)
 
         if tk_kwargs is None:
