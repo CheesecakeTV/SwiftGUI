@@ -9,17 +9,24 @@ from SwiftGUI import Literals, Color, font_windows, Font
 class _DefaultOptionsMeta(type):
 
     def __new__(mcs, name, bases, namespace):
+        _all_defaults = dict(filter(lambda a: not a[0].startswith("_") and not a[0] in ["apply","reset_to_default","single","persist_changes"], namespace.items()))
+
         # Remove NONE-values so they don't overwrite non-None-values of higher classes
         namespace = dict(filter(lambda a: a[1] is not None, namespace.items()))
         cls:"DEFAULT_OPTIONS_CLASS"|type = super().__new__(mcs, name, bases, namespace)
 
+        cls._all_defaults = _all_defaults # All attributes with None-Attributes
+
         prev = cls.__mro__[1]
         cls._dict = dict(cls.__dict__)
+        cls._reset_all = False
+
         if hasattr(prev,"_dict"):
             cls._dict.update(dict(prev.__dict__))
 
         cls.made_changes = True
         cls._persist_changes()
+
 
         return cls
 
@@ -32,6 +39,15 @@ class _DefaultOptionsMeta(type):
         if value is None:
             delattr(self,key)
 
+    def reset_to_default(self):
+        """
+        Reset all configuration done to any options inside this class
+        :return:
+        """
+        # I know this is very inefficient, but it's not used that often.
+        # Don't speed up a function that only runs once every program execution...
+        for key,val in self._all_defaults.items():
+            setattr(self,key,val)
 
 class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
     """
@@ -42,6 +58,7 @@ class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
 
     _prev_dict:dict = None
     _prev_class_dict:dict = None
+
     @classmethod
     def _persist_changes(cls):
         """
@@ -57,7 +74,7 @@ class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
         for i in cls.__mro__[-1::-1]:
             collected.update(i.__dict__)
 
-        cls._dict = dict(filter(lambda a: not a[0].startswith("_") and not a[0] in ["_dict","apply","single","persist_changes"], collected.items()))
+        cls._dict = dict(filter(lambda a: not a[0].startswith("_") and not a[0] in ["_dict","reset_to_default","apply","single","persist_changes"], collected.items()))
 
     @classmethod
     def _check_for_changes(cls):
@@ -115,6 +132,8 @@ class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
             return getattr(cls,key)
 
         return default
+
+
 
 class Common(DEFAULT_OPTIONS_CLASS):
     """
@@ -281,7 +300,7 @@ def _make_dict_format_because_lazy(the_class:DEFAULT_OPTIONS_CLASS):
     :return:
     """
     for key in dir(the_class):
-        if key in ("made_changes","apply","single","persist_changes","key"):
+        if key in ("made_changes","apply","single","persist_changes","key","reset_to_default"):
             continue
 
         if key.startswith("_"):

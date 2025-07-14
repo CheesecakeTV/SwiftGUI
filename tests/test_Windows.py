@@ -6,6 +6,10 @@ from tkinter import ttk
 sg.GlobalOptions.Common_Textual.fontsize = 14
 sg.themes.FacebookMom()
 
+# sg.GlobalOptions.Common_Textual.reset_to_default()
+# sg.GlobalOptions.Button.reset_to_default()
+
+
 layout_left = [
     [
         sg.T("Hallo",key="TestText",width=25,anchor="center")
