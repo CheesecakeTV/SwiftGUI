@@ -37,8 +37,25 @@ class FacebookMom(BaseTheme):
         go.Common.background_color = Color.light_goldenrod_yellow
         go.Button.background_color = Color.green2
 
+class Hacker(BaseTheme):
 
+    def apply(self) -> None:
+        go.Common_Textual.fonttype = font_windows.Fixedsys
+        go.Common_Textual.text_color = "lime"
 
+        go.Input.text_color = "black"
+        go.Input.background_color = "lime"
+        go.Input.background_color_readonly = Color.orange_red
+        go.Input.selectbackground_color = Color.royal_blue
+        go.Input.select_text_color = "black"
+
+        go.Button.background_color_active = "lime"
+        go.Button.text_color_active = "black"
+
+        go.Checkbox.background_color_active = "lime"
+        go.Checkbox.check_background_color = "black"
+
+        go.Common.background_color = "black"
 
 
 
@@ -47,4 +64,5 @@ class themes:
     All available Themes
     """
     FacebookMom = FacebookMom
+    Hacker = Hacker
 

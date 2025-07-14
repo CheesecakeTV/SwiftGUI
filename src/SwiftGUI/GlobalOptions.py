@@ -157,6 +157,7 @@ class Common_Textual(DEFAULT_OPTIONS_CLASS):
     font_underline:bool = False
     font_overstrike:bool = False
     anchor:Literals.anchor = "w"
+    text_color:Color|str = None
 
 class Text(Common,Common_Textual):
     text:str = ""

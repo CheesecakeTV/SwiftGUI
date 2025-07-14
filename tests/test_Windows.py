@@ -3,9 +3,7 @@ from SwiftGUI import Event, Color
 import tkinter as tk
 from tkinter import ttk
 
-sg.Examples.preview_all_fonts_windows()
 
-exit()
 sg.GlobalOptions.Common_Textual.fontsize = 14
 sg.themes.Hacker()
 
