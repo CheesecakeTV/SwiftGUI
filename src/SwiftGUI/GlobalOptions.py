@@ -6,7 +6,7 @@ from typing import Literal
 from SwiftGUI import Literals, Color, font_windows, Font
 
 # Every option-class will be stored in here
-all_option_classes:list["_DefaultOptionsMeta"] = list()
+all_option_classes:list["_DefaultOptionsMeta"|type] = list()
 
 class _DefaultOptionsMeta(type):
 
