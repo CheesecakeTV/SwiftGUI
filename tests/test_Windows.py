@@ -9,6 +9,7 @@ sg.themes.FacebookMom()
 # sg.GlobalOptions.Common_Textual.reset_to_default()
 # sg.GlobalOptions.Button.reset_to_default()
 
+#sg.GlobalOptions.reset_all_options()
 
 layout_left = [
     [

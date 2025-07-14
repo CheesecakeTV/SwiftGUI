@@ -1,10 +1,12 @@
-import tkinter as tk    # Not needed, but helpful to figure out default vals
-from tkinter import ttk
+#import tkinter as tk    # Not needed, but helpful to figure out default vals
+#from tkinter import ttk
 from collections.abc import Iterable
 from typing import Literal
 
 from SwiftGUI import Literals, Color, font_windows, Font
 
+# Every option-class will be stored in here
+all_option_classes:list["_DefaultOptionsMeta"] = list()
 
 class _DefaultOptionsMeta(type):
 
@@ -27,6 +29,7 @@ class _DefaultOptionsMeta(type):
         cls.made_changes = True
         cls._persist_changes()
 
+        all_option_classes.append(cls)
 
         return cls
 
@@ -288,6 +291,15 @@ class Window(Common):
     keep_on_top: bool = False
     background_color: Color = None
 
+def reset_all_options():
+    """
+    Reset everything done to the global options on runtime.
+
+    If you applied a theme, it is also reset, so you might want to reapply it.
+    :return:
+    """
+    for cls in all_option_classes:
+        cls.reset_to_default()
 
 def _make_dict_format_because_lazy(the_class:DEFAULT_OPTIONS_CLASS):
     """
