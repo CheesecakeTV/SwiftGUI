@@ -3,8 +3,11 @@ from SwiftGUI import Event, Color
 import tkinter as tk
 from tkinter import ttk
 
+sg.Examples.preview_all_fonts_windows()
+
+exit()
 sg.GlobalOptions.Common_Textual.fontsize = 14
-sg.themes.FacebookMom()
+sg.themes.Hacker()
 
 # sg.GlobalOptions.Common_Textual.reset_to_default()
 # sg.GlobalOptions.Button.reset_to_default()

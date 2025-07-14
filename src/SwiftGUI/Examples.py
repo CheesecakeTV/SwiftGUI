@@ -1,7 +1,7 @@
 from itertools import batched, starmap, chain
 
 import SwiftGUI as sg
-from SwiftGUI import Color
+from SwiftGUI import Color,font_windows
 
 
 def preview_all_colors() -> None:
@@ -24,4 +24,20 @@ def preview_all_colors() -> None:
 
     w.loop()
 
+def preview_all_fonts_windows() -> None:
+    """
+    Have a look at all possible fonts on Windows
+    :return:
+    """
+    layout = [
+        [
+            sg.Input(text=name,fonttype=getattr(font_windows, name),readonly=True),
+        ] for name in dir(font_windows) if not name.startswith("_")
+    ]
+
+    layout = starmap(chain,batched(layout, 8))  # Just wanted to show of my itertools-skills
+
+    w = sg.Window(layout)
+
+    w.loop_close()
 
