@@ -3,7 +3,14 @@ from SwiftGUI import Event, Color
 import tkinter as tk
 from tkinter import ttk
 
-sg.GlobalOptions.Common_Textual.fontsize = 14
+
+sg.GlobalOptions.Common_Textual.fontsize = 10
+#sg.themes.Hacker()
+
+# sg.GlobalOptions.Common_Textual.reset_to_default()
+# sg.GlobalOptions.Button.reset_to_default()
+
+#sg.GlobalOptions.reset_all_options()
 
 layout_left = [
     [
@@ -30,7 +37,7 @@ layout_left = [
             ]
         ])
     ],[
-        sg.Button("Hallo Welt-Button",key="Hallo Welt",disabled = False,text_color="red",repeatdelay=1000,repeatinterval=100),
+        sg.Button("Hallo Welt-Button",key="Hallo Welt",disabled = False,height=2,text_color="red",repeatdelay=1000,repeatinterval=100,borderwidth=5),
         sg.In("Was geht", key="Input-Test", background_color="red", justify="right", text_color="green",
               default_event=True),
         sg.In("Was geht", key="Another-Input-Test",background_color=Color.AntiqueWhite2,readonly=True),
@@ -42,6 +49,10 @@ layout_left = [
     ],[
     ],[
         sg.Input("Haha", key_function=lambda elem: elem.set_value("Haha"), default_event=True)
+    ],[
+        sg.Button("This is a test!", key="TestButton", width=50, padx=50),
+    ],[
+        sg.Button("This is a test!", key="TestButton1", width=50, padx=50),
     ]
 ]
 
@@ -64,19 +75,28 @@ layout = [
         sg.Spacer(height=50)
     ],[
         sg.Button("One button to rule them all!",relief="solid")
+    ],[
+        sg.Listbox(["Hallo", "Welt"], key="List", default_event=True, height=5, expand=True)
     ]
 ]
 
 w = sg.Window(layout,alignment="left")
-#w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value("TestText"))
+w["List"].list_elements = ["Hi","Hi","Hallo", "Hi", "Welt", "World"]
+print(w["List"].get_all_indexes_of("Hi"))
+
+w["List"].color_rows(["Hi"],background_color="gold")
+w["List"].delete_element("Hi")
+
 w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.set_value_to("Mouse entered"))
 w["Another-Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value_from("Input-Test"))
 
 print("Start:",w.values)
-print(w["IAM"].value)
 
 for e,v in w:
     print(e,v)
+    w["List"].append_front(e)
+    print(w["List"].list_elements)
+    print(w["List"].index)
     #w["Check!"].flash()
     #w["Hallo Welt"].flash()
 

@@ -30,6 +30,7 @@ class Checkbox(BaseWidget):
     def __init__(
             self,
             text: str = None,
+            /,
             key: any = None,
             default_event: bool = False,
             key_function: Callable | Iterable[Callable] = None,
@@ -69,9 +70,10 @@ class Checkbox(BaseWidget):
             relief: Literals.relief = None,
             # hilightbackground_color: str | Color = None,
             # highlightcolor: str | Color = None,
+            expand: bool = None,
             tk_kwargs: dict = None,
     ):
-        super().__init__(key, tk_kwargs=tk_kwargs)
+        super().__init__(key, tk_kwargs=tk_kwargs, expand=expand)
 
         self._key_function = key_function
 

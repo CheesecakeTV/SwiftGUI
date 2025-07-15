@@ -24,9 +24,11 @@ class Form(BaseElement):
         self.key = key
         self.texts = texts
 
+        max_len = max(map(len,texts))
+
         self.layout = [
             [
-                Text(line),
+                Text(line,width=max_len),
                 Input(key=key + line if seperate_keys else None),
             ] for line in texts
         ]

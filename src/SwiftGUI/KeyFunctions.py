@@ -1,5 +1,4 @@
 from collections.abc import Callable
-from SwiftGUI import BaseElement, Window
 
 ### HOW TO CREATE KEY-FUNCTION ###
 #

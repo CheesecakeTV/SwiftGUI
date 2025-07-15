@@ -17,4 +17,5 @@ class Spacer(BaseWidget):
         self._tk_kwargs = {
             "width":width,
             "height":height,
+            "background":"",
         }

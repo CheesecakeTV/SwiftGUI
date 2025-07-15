@@ -1,11 +1,11 @@
 import tkinter as tk
 from collections.abc import Iterable,Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Self, Literal
+from typing import TYPE_CHECKING, Self
 from warnings import deprecated
 import inspect
 
-from SwiftGUI import BaseElement, Frame, ElementFlag, Literals
+from SwiftGUI import BaseElement, Frame, ElementFlag, Literals, GlobalOptions, Color
 
 if TYPE_CHECKING:
     from SwiftGUI import AnyElement
@@ -32,20 +32,22 @@ class Window(BaseElement):
     def __init__(
             self,
             layout:Iterable[Iterable[BaseElement]],
-            title = "Some awesome SwiftGUI Window",
+            title:str = None,
+            /,
             # global_options:dict[str:str] = None, # Todo: This conflicts with other global-options
             alignment: Literals.alignment = None,
-            titlebar:bool = True,   # Titlebar visible
-            resizeable_width = False,
-            resizeable_height = False,
-            fullscreen:bool = False,
-            transparency:Literals.transparency = 0, # 0-1, 1 meaning invisible
-            size:tuple[int,int] = (None,None),
-            position:tuple[int,int] = (None,None),  # Position on monitor
-            min_size:tuple[int,int] = (None,None),
+            titlebar: bool = None,  # Titlebar visible
+            resizeable_width=None,
+            resizeable_height=None,
+            fullscreen: bool = None,
+            transparency: Literals.transparency = None,  # 0-1, 1 meaning invisible
+            size: tuple[int, int] = (None, None),
+            position: tuple[int, int] = (None, None),  # Position on monitor # Todo: Center
+            min_size: tuple[int, int] = (None, None),
             max_size: tuple[int, int] = (None, None),
-            icon:str = None,    # .ico file
-            keep_on_top: bool = False,
+            icon: str = None,  # .ico file
+            keep_on_top: bool = None,
+            background_color:Color | str = None,
     ):
         """
 
@@ -70,9 +72,10 @@ class Window(BaseElement):
 
         self._tk = tk.Tk()
 
-        self.update(title,titlebar, resizeable_width, resizeable_height, fullscreen, transparency, size, position, min_size, max_size, icon, keep_on_top)
-
         self._sg_widget:Frame = Frame(layout,alignment=alignment)
+
+        self.update(title,titlebar, resizeable_width, resizeable_height, fullscreen, transparency, size, position, min_size, max_size, icon, keep_on_top, background_color,_first_update=True)
+
         self._sg_widget.window_entry_point(self._tk, self)
 
         for elem in self.all_elements:
@@ -94,27 +97,50 @@ class Window(BaseElement):
     def update(
             self,
             title = None,
-            titlebar: bool = True,  # Titlebar visible
-            resizeable_width=False,
-            resizeable_height=False,
-            fullscreen: bool = False,
-            transparency: Literals.transparency = 0,  # 0-1, 1 meaning invisible
+            titlebar: bool = None,  # Titlebar visible
+            resizeable_width=None,
+            resizeable_height=None,
+            fullscreen: bool = None,
+            transparency: Literals.transparency = None,  # 0-1, 1 meaning invisible
             size: tuple[int, int] = (None, None),
             position: tuple[int, int] = (None, None),  # Position on monitor # Todo: Center
             min_size: tuple[int, int] = (None, None),
             max_size: tuple[int, int] = (None, None),
             icon: str = None,  # .ico file
-            keep_on_top: bool = False,
+            keep_on_top: bool = None,
+            background_color: Color | str = None,
+            _first_update: bool = False,
     ):
-        self._tk.title(title)
+        if _first_update:
+            title = GlobalOptions.Window.single("title",title)
+            titlebar = GlobalOptions.Window.single("titlebar",titlebar)
+            resizeable_width = GlobalOptions.Window.single("resizeable_width",resizeable_width)
+            resizeable_height = GlobalOptions.Window.single("resizeable_height",resizeable_height)
+            fullscreen = GlobalOptions.Window.single("fullscreen",fullscreen)
+            transparency = GlobalOptions.Window.single("transparency",transparency)
+            size = GlobalOptions.Window.single("size",size)
+            position = GlobalOptions.Window.single("position",position)
+            min_size = GlobalOptions.Window.single("min_size",min_size)
+            max_size = GlobalOptions.Window.single("max_size",max_size)
+            icon = GlobalOptions.Window.single("icon",icon)
+            keep_on_top = GlobalOptions.Window.single("keep_on_top",keep_on_top)
+            background_color = GlobalOptions.Window.single("background_color",background_color)
 
-        self._tk.overrideredirect(not titlebar)
+        if background_color is not None:
+            self._sg_widget.update(background_color=background_color)
+
+        if title is not None:
+            self._tk.title(title)
+
+        if titlebar is not None:
+            self._tk.overrideredirect(not titlebar)
 
         self._tk.resizable(resizeable_width,resizeable_height)
         self._tk.state("zoomed" if fullscreen else "normal")
 
-        assert 0 <= transparency <= 1, "Window-Transparency must be between 0 and 1"
-        self._tk.attributes("-alpha",1 - transparency)
+        if transparency is not None:
+            assert 0 <= transparency <= 1, "Window-Transparency must be between 0 and 1"
+            self._tk.attributes("-alpha",1 - transparency)
 
         geometry = ""
         if size[0]:
@@ -139,13 +165,17 @@ class Window(BaseElement):
         if geometry:
             self._tk.geometry(geometry)
 
-        self._tk.minsize(*min_size)
-        self._tk.maxsize(*max_size)
+        if min_size != (None,None):
+            self._tk.minsize(*min_size)
+
+        if max_size != (None,None):
+            self._tk.maxsize(*max_size)
 
         assert icon is None or icon.endswith(".ico"), "The window-icon has to be the path to a .ico-file. Other filetypes are not supported."
         self._tk.iconbitmap(icon)
 
-        self._tk.attributes("-topmost",keep_on_top)
+        if keep_on_top is not None:
+            self._tk.attributes("-topmost",keep_on_top)
 
     @property
     def parent_tk_widget(self) ->tk.Widget:

@@ -1,25 +1,35 @@
-import tkinter as tk    # Not needed, but helpful to figure out default vals
-from tkinter import ttk
+#import tkinter as tk    # Not needed, but helpful to figure out default vals
+#from tkinter import ttk
 from collections.abc import Iterable
-from typing import Literal
+from typing import Literal, Union
 
 from SwiftGUI import Literals, Color, font_windows, Font
 
+# Every option-class will be stored in here
+all_option_classes:list[Union["_DefaultOptionsMeta",type]] = list()
 
 class _DefaultOptionsMeta(type):
 
     def __new__(mcs, name, bases, namespace):
+        _all_defaults = dict(filter(lambda a: not a[0].startswith("_") and not a[0] in ["apply","reset_to_default","single","persist_changes"], namespace.items()))
+
         # Remove NONE-values so they don't overwrite non-None-values of higher classes
         namespace = dict(filter(lambda a: a[1] is not None, namespace.items()))
         cls:"DEFAULT_OPTIONS_CLASS"|type = super().__new__(mcs, name, bases, namespace)
 
+        cls._all_defaults = _all_defaults # All attributes with None-Attributes
+
         prev = cls.__mro__[1]
         cls._dict = dict(cls.__dict__)
+        cls._reset_all = False
+
         if hasattr(prev,"_dict"):
             cls._dict.update(dict(prev.__dict__))
 
         cls.made_changes = True
         cls._persist_changes()
+
+        all_option_classes.append(cls)
 
         return cls
 
@@ -32,6 +42,15 @@ class _DefaultOptionsMeta(type):
         if value is None:
             delattr(self,key)
 
+    def reset_to_default(self):
+        """
+        Reset all configuration done to any options inside this class
+        :return:
+        """
+        # I know this is very inefficient, but it's not used that often.
+        # Don't speed up a function that only runs once every program execution...
+        for key,val in self._all_defaults.items():
+            setattr(self,key,val)
 
 class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
     """
@@ -42,6 +61,7 @@ class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
 
     _prev_dict:dict = None
     _prev_class_dict:dict = None
+
     @classmethod
     def _persist_changes(cls):
         """
@@ -57,7 +77,7 @@ class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
         for i in cls.__mro__[-1::-1]:
             collected.update(i.__dict__)
 
-        cls._dict = dict(filter(lambda a: not a[0].startswith("_") and not a[0] in ["_dict","apply","single","persist_changes"], collected.items()))
+        cls._dict = dict(filter(lambda a: not a[0].startswith("_") and not a[0] in ["_dict","reset_to_default","apply","single","persist_changes"], collected.items()))
 
     @classmethod
     def _check_for_changes(cls):
@@ -116,12 +136,16 @@ class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
 
         return default
 
+
+
 class Common(DEFAULT_OPTIONS_CLASS):
     """
     Every widget
     """
     cursor:Literals.cursor = None   # Find available cursors here (2025): https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/cursors.html
     takefocus:bool = True
+    background_color:Color|str = "#F0F0F0"
+    expand:bool = False
 
 class Common_Textual(DEFAULT_OPTIONS_CLASS):
     """
@@ -134,6 +158,7 @@ class Common_Textual(DEFAULT_OPTIONS_CLASS):
     font_underline:bool = False
     font_overstrike:bool = False
     anchor:Literals.anchor = "w"
+    text_color:Color|str = None
 
 class Text(Common,Common_Textual):
     text:str = ""
@@ -158,7 +183,7 @@ class Input(Common,Common_Textual):
     # Special Tkinter-options
     justify: Literal["left", "right", "center"] = None
     background_color: str | Color = None
-    background_color_disabled: str | Color = None
+    # background_color_disabled: str | Color = None
     background_color_readonly: str | Color = None
     text_color: str | Color = None
     text_color_disabled: str | Color = None
@@ -213,6 +238,7 @@ class Frame(Common):
     relief:Literals.relief = "flat"
     #background = "blue"
     alignment:Literals.alignment = None
+    background_color: Color | str = None
 
 class Checkbox(Common,Common_Textual):
     key: any = None
@@ -252,6 +278,57 @@ class Checkbox(Common,Common_Textual):
     # hilightbackground_color: str | Color = None
     # highlightcolor: str | Color = None
 
+class Window(DEFAULT_OPTIONS_CLASS):
+    title = None
+    titlebar: bool = True  # Titlebar visible
+    resizeable_width = False
+    resizeable_height = False
+    fullscreen: bool = False
+    transparency: Literals.transparency = 0  # 0-1, 1 meaning invisible
+    size: tuple[int, int] = (None, None)
+    position: tuple[int, int] = (None, None)  # Position on monitor # Todo: Center
+    min_size: tuple[int, int] = (None, None)
+    max_size: tuple[int, int] = (None, None)
+    icon: str = None  # .ico file
+    keep_on_top: bool = False
+    background_color: Color = None
+
+class Listbox(Common,Common_Textual):
+    activestyle:Literals.activestyle = "none"
+    default_list: Iterable[str] = None
+    fonttype: str = None
+    fontsize: int = None
+    font_bold: bool = None
+    font_italic: bool = None
+    font_underline: bool = None
+    font_overstrike: bool = None
+    disabled: bool = None
+    borderwidth: int = None
+    background_color: str | Color = None
+    background_color_selected: str | Color = None
+    selectborderwidth: int = None
+    text_color: str | Color = None
+    text_color_selected: str | Color = None
+    text_color_disabled: str | Color = None
+    selectmode: Literals.selectmode_single = "browse"
+    width: int = None
+    height: int = None
+    cursor: Literals.cursor = None
+    takefocus: bool = False
+    relief: Literals.relief = None
+    highlightbackground_color: str | Color = None
+    highlightcolor: str | Color = None
+    highlightthickness: int = None
+
+def reset_all_options():
+    """
+    Reset everything done to the global options on runtime.
+
+    If you applied a theme, it is also reset, so you might want to reapply it.
+    :return:
+    """
+    for cls in all_option_classes:
+        cls.reset_to_default()
 
 def _make_dict_format_because_lazy(the_class:DEFAULT_OPTIONS_CLASS):
     """
@@ -264,7 +341,7 @@ def _make_dict_format_because_lazy(the_class:DEFAULT_OPTIONS_CLASS):
     :return:
     """
     for key in dir(the_class):
-        if key in ("made_changes","apply","single","persist_changes","key"):
+        if key in ("made_changes","apply","single","persist_changes","key","reset_to_default"):
             continue
 
         if key.startswith("_"):

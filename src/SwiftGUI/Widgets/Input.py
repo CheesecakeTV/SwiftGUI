@@ -1,10 +1,9 @@
 import tkinter as tk
 import tkinter.font as font
-import tkinter.ttk as ttk
 from collections.abc import Iterable, Callable
 from typing import Literal
 
-from SwiftGUI import BaseElement, ElementFlag, BaseWidget, BaseWidgetContainer, GlobalOptions, Literals, Color
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
 class Input(BaseWidget):
     """
@@ -33,6 +32,7 @@ class Input(BaseWidget):
             self,   # Todo: Test all options
             # Add here
             text:str = None,
+            /,
             key:any=None,
             key_function:Callable|Iterable[Callable] = None,
             width:int=None,
@@ -45,7 +45,7 @@ class Input(BaseWidget):
             # Special Tkinter-options
             justify:Literal["left","right","center"] = None,
             background_color:str|Color = None,
-            background_color_disabled:str|Color = None,
+            #background_color_disabled:str|Color = None,    # It's never disabled, only readonly
             background_color_readonly:str|Color = None,
             text_color:str|Color = None,
             text_color_disabled:str|Color = None,
@@ -70,6 +70,7 @@ class Input(BaseWidget):
             font_underline:bool = None,
             font_overstrike:bool = None,
             #
+            expand: bool = None,
             tk_kwargs:dict[str:any]=None
     ):
         """
@@ -84,7 +85,7 @@ class Input(BaseWidget):
         # Not used:
         # :param underline: Which character to underline for alt+character selection of this element
 
-        super().__init__(key=key,tk_kwargs=tk_kwargs)
+        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand)
         self._key_function = key_function
 
         if tk_kwargs is None:
@@ -97,7 +98,7 @@ class Input(BaseWidget):
             **tk_kwargs,
             "takefocus":takefocus,
             "background_color":background_color,
-            "background_color_disabled": background_color_disabled,
+            # "background_color_disabled": background_color_disabled,
             "background_color_readonly": background_color_readonly,
             "cursor": cursor,
             "readonly": readonly,
