@@ -145,6 +145,7 @@ class Common(DEFAULT_OPTIONS_CLASS):
     cursor:Literals.cursor = None   # Find available cursors here (2025): https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/cursors.html
     takefocus:bool = True
     background_color:Color|str = "#F0F0F0"
+    expand:bool = False
 
 class Common_Textual(DEFAULT_OPTIONS_CLASS):
     """

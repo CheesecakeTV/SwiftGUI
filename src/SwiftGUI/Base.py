@@ -233,7 +233,7 @@ class BaseWidget(BaseElement):
 
     _events_to_bind_later: list[dict]
 
-    def __init__(self,key:any=None,tk_kwargs:dict[str:any]=None,**kwargs):
+    def __init__(self,key:any=None,tk_kwargs:dict[str:any]=None,expand:bool = False,**kwargs):
         self._events_to_bind_later = list()
 
         if tk_kwargs is None:
@@ -248,6 +248,10 @@ class BaseWidget(BaseElement):
         }
 
         self.key = key
+
+        expand = self.defaults.single("expand",expand,False)
+        if expand:
+            self.add_flags(ElementFlag.EXPAND_ROW)
 
     def _window_is_dead(self) -> bool:
         """
@@ -358,7 +362,13 @@ class BaseWidget(BaseElement):
             case "pack":
                 #temp = {"expand":False,"side":"left"}
                 temp = {"side":"left"}
+
                 temp.update(self._insert_kwargs)
+
+                if self.has_flag(ElementFlag.EXPAND_ROW):
+                    temp["expand"] = temp.get("expand",True)
+                    temp["fill"] = temp.get("fill","both")
+
                 self._tk_widget.pack(**temp)
             case "grid":
                 self._tk_widget.grid(**self._insert_kwargs)

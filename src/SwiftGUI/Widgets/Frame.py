@@ -20,6 +20,7 @@ class Frame(BaseWidgetContainer):
     def __init__(
             self,
             layout:Iterable[Iterable[BaseElement]],
+            /,
             alignment:Literals.alignment = None,
             expand:bool = False,
             background_color:Color = None,

@@ -26,6 +26,7 @@ class Listbox(BaseWidget):
     def __init__(
             self,
             default_list: Iterable[str] = None,
+            /,
             key: any = None,
             default_event: bool = False,
             key_function: Callable | Iterable[Callable] = None,
@@ -53,9 +54,10 @@ class Listbox(BaseWidget):
             highlightbackground_color: str | Color = None,
             highlightcolor: str | Color = None,
             highlightthickness: int = None,
+            expand:bool = None,
             tk_kwargs: dict = None,
     ):
-        super().__init__(key, tk_kwargs=tk_kwargs)
+        super().__init__(key, tk_kwargs=tk_kwargs, expand=expand)
 
         self._key_function = key_function
         self._list_elements = list(default_list)
@@ -95,8 +97,6 @@ class Listbox(BaseWidget):
 
         if default_event:
             self.bind_event("<<ListboxSelect>>",key=key,key_function=key_function)
-
-        # self.bind_event("<KeyRelease>",key=self.key,key_function=self._key_function)
 
         self.update(**_tk_kwargs)
 

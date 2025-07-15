@@ -33,6 +33,7 @@ class Window(BaseElement):
             self,
             layout:Iterable[Iterable[BaseElement]],
             title:str = None,
+            /,
             # global_options:dict[str:str] = None, # Todo: This conflicts with other global-options
             alignment: Literals.alignment = None,
             titlebar: bool = None,  # Titlebar visible

@@ -39,6 +39,7 @@ class Button(BaseWidget):
             self,
             # Add here
             text:str = "",
+            /,
             key:any = None,
             key_function:Callable|Iterable[Callable] = None,
 
@@ -78,6 +79,7 @@ class Button(BaseWidget):
             font_underline: bool = None,
             font_overstrike: bool = None,
 
+            expand: bool = None,
             tk_kwargs: dict[str:any] = None
     ):
         """
@@ -115,7 +117,7 @@ class Button(BaseWidget):
         :param font_overstrike: True, if the text should be overstruck
         :param tk_kwargs: (Only if you know tkinter) Pass more kwargs directly to the tk-widget
         """
-        super().__init__(key=key,tk_kwargs=tk_kwargs)
+        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand)
 
         if tk_kwargs is None:
             tk_kwargs = dict()
