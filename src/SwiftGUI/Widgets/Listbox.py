@@ -265,6 +265,27 @@ class Listbox(BaseWidget):
         self.tk_widget.insert(0,*element)
         self._list_elements = list(element) + self._list_elements
 
+    def delete_index(self,*index:int):
+        """
+        Delete some indexes from the list
+        :param index:
+        :return:
+        """
+        index = sorted(index,reverse=True)
+        for i in index:
+            self.tk_widget.delete(i)
+            del self._list_elements[i]
+
+    def delete_element(self,*element:str):
+        """
+        Delete certain element(s) by their value
+        :param element:
+        :return:
+        """
+        element = map(self.get_index_of, element)
+        element = filter(lambda a:a is not None, element)
+        self.delete_index(*element)
+
     def get_index_of(self,value:str,default:int = None) -> int|None:
         """
         Returns the index of a given string
@@ -324,7 +345,7 @@ class Listbox(BaseWidget):
         rows = set(rows)
         rows_str = set(filter(lambda a:isinstance(a,str),rows))  # Get all rows passed as a string
         rows = rows - rows_str  # Remove those strings
-        rows_str = filter(lambda a:a,map(self.get_index_of,rows_str))   # Get indexes and remove None(s)
+        rows_str = filter(lambda a:a is not None,map(self.get_index_of,rows_str))   # Get indexes and remove None(s)
         rows.update(rows_str)   # Add those indexes
 
         try:

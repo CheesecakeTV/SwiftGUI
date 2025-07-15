@@ -81,7 +81,9 @@ layout = [
 ]
 
 w = sg.Window(layout,alignment="left")
-w["List"].list_elements = ["Hi","Hallo", "Welt"]
+w["List"].list_elements = ["Hi","Hallo", "Welt", "World"]
+w["List"].delete_element("Hi","Welt")
+print(w["List"].list_elements)
 w["List"].color_row(1,background_color="red",background_color_selected="lime")
 #w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value("TestText"))
 w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.set_value_to("Mouse entered"))
