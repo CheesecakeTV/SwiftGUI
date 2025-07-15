@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Union, Self
+from typing import Self
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
@@ -51,10 +51,8 @@ class Listbox(BaseWidget):
             # text_color_active: str | Color = None,
             # check_type: Literals.indicatoron = None,
             # #
-            # width: int = None,
-            # height: int = None,
-            # padx: int = None,
-            # pady: int = None,
+            width: int = None,
+            height: int = None,
             # #
             # cursor: Literals.cursor = None,
             # takefocus: bool = None,
@@ -82,7 +80,6 @@ class Listbox(BaseWidget):
         _tk_kwargs = {
             **tk_kwargs,
             "default_list": default_list,
-            "width":100,
             "activestyle":activestyle,
             # "selectmode":tk.MULTIPLE, # Todo: Selectmode
             # "font_bold": font_bold,
@@ -105,7 +102,6 @@ class Listbox(BaseWidget):
             # "highlightcolor": "purple",
             # "relief": relief,
             # "text_color": text_color,
-            # "width": width,
             # "anchor": anchor,
             # "overrelief": overrelief,
             # "offrelief": offrelief,
@@ -114,9 +110,8 @@ class Listbox(BaseWidget):
             # "background_color_active": background_color_active,
             # "text_color_active": text_color_active,
             #
-            # "height": height,
-            # "padx": padx,
-            # "pady": pady,
+            "width": width,
+            "height": height,
             # "text": text,
         }
 
@@ -282,13 +277,12 @@ class Listbox(BaseWidget):
         :param element:
         :return:
         """
-        element = map(self.get_index_of, element)
-        element = filter(lambda a:a is not None, element)
+        element = self.get_all_indexes_of(*element)
         self.delete_index(*element)
 
     def get_index_of(self,value:str,default:int = None) -> int|None:
         """
-        Returns the index of a given string
+        Returns the first index of a given string
         :param default: Returned if it doesn't contain the value
         :param value:
         :return:
@@ -297,6 +291,14 @@ class Listbox(BaseWidget):
             return self._list_elements.index(value)
 
         return default
+
+    def get_all_indexes_of(self,*value:str) -> tuple[int, ...]:
+        """
+        Returns all indexes of the passed value(s)
+        :param value: Content of the searched row
+        :return:
+        """
+        return tuple(n for n,v in enumerate(self._list_elements) if v in value)
 
     def color_row(
             self,
@@ -345,7 +347,7 @@ class Listbox(BaseWidget):
         rows = set(rows)
         rows_str = set(filter(lambda a:isinstance(a,str),rows))  # Get all rows passed as a string
         rows = rows - rows_str  # Remove those strings
-        rows_str = filter(lambda a:a is not None,map(self.get_index_of,rows_str))   # Get indexes and remove None(s)
+        rows_str = self.get_all_indexes_of(*rows_str)
         rows.update(rows_str)   # Add those indexes
 
         try:

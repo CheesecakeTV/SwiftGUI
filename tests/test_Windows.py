@@ -76,16 +76,17 @@ layout = [
     ],[
         sg.Button("One button to rule them all!",relief="solid")
     ],[
-        sg.Listbox(["Hallo", "Welt"], key="List")
+        sg.Listbox(["Hallo", "Welt"], key="List", width=100, height=5)
     ]
 ]
 
 w = sg.Window(layout,alignment="left")
-w["List"].list_elements = ["Hi","Hallo", "Welt", "World"]
-w["List"].delete_element("Hi","Welt")
-print(w["List"].list_elements)
-w["List"].color_row(1,background_color="red",background_color_selected="lime")
-#w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value("TestText"))
+w["List"].list_elements = ["Hi","Hi","Hallo", "Hi", "Welt", "World"]
+print(w["List"].get_all_indexes_of("Hi"))
+
+w["List"].color_rows(["Hi"],background_color="gold")
+w["List"].delete_element("Hi")
+
 w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.set_value_to("Mouse entered"))
 w["Another-Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value_from("Input-Test"))
 
