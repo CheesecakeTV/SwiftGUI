@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Union
+from typing import Union, Self
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
@@ -247,9 +247,107 @@ class Listbox(BaseWidget):
 
         super()._apply_update()  # Actually apply the update
 
-    def append(self,element:str):
+    def append(self,*element:str):
         """
-        Append a single
+        Append a single element
         :param element:
         :return:
         """
+        self.tk_widget.insert(tk.END,*element)
+        self._list_elements.extend(element)
+
+    def append_front(self,*element:str):
+        """
+        Append to the beginning
+        :param element:
+        :return:
+        """
+        self.tk_widget.insert(0,*element)
+        self._list_elements = list(element) + self._list_elements
+
+    def get_index_of(self,value:str,default:int = None) -> int|None:
+        """
+        Returns the index of a given string
+        :param default: Returned if it doesn't contain the value
+        :param value:
+        :return:
+        """
+        if value in self._list_elements:
+            return self._list_elements.index(value)
+
+        return default
+
+    def color_row(
+            self,
+            row: int | str,
+            background_color: Color | str = None,
+            text_color: Color | str = None,
+            background_color_selected: Color | str = None,
+            text_color_selected: Color | str = None
+    ) -> Self:
+        """
+        Change colors on a single row
+        :param row:
+        :param background_color:
+        :param text_color:
+        :param background_color_selected:
+        :param text_color_selected:
+        :return: The instance itself, so it can be called inline
+        """
+        self.color_rows(
+            (row,),
+            background_color=background_color,
+            text_color=text_color,
+            background_color_selected=background_color_selected,
+            text_color_selected=text_color_selected
+        )
+
+        return self
+
+    def color_rows(
+            self,
+            rows:Iterable[int|str],
+            background_color:Color | str = None,
+            text_color:Color | str = None,
+            background_color_selected: Color|str = None,
+            text_color_selected: Color|str = None
+    ) -> Self:
+        """
+        Change colors on certain rows
+        :param rows:
+        :param background_color:
+        :param text_color:
+        :param background_color_selected:
+        :param text_color_selected:
+        :return: The instance itself, so it can be called inline
+        """
+        rows = set(rows)
+        rows_str = set(filter(lambda a:isinstance(a,str),rows))  # Get all rows passed as a string
+        rows = rows - rows_str  # Remove those strings
+        rows_str = filter(lambda a:a,map(self.get_index_of,rows_str))   # Get indexes and remove None(s)
+        rows.update(rows_str)   # Add those indexes
+
+        try:
+            for i in rows:
+                self.tk_widget.itemconfig(
+                    i,
+                    background=background_color,
+                    foreground=text_color,
+                    selectbackground=background_color_selected,
+                    selectforeground=text_color_selected
+                )
+        except AttributeError:
+            raise SyntaxError(f"You cannot change row-colors before creating the window. You probably tried to on some Listbox-element.")
+
+        return self
+
+
+    # def extend(self,elements:Iterable[str]):
+    #     """
+    #     Extend by a list instead of single elements
+    #     :param elements:
+    #     :return:
+    #     """
+    #     self.append(*elements)
+
+

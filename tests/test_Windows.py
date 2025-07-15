@@ -82,6 +82,7 @@ layout = [
 
 w = sg.Window(layout,alignment="left")
 w["List"].list_elements = ["Hi","Hallo", "Welt"]
+w["List"].color_row(1,background_color="red",background_color_selected="lime")
 #w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value("TestText"))
 w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.set_value_to("Mouse entered"))
 w["Another-Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value_from("Input-Test"))
@@ -90,6 +91,7 @@ print("Start:",w.values)
 
 for e,v in w:
     print(e,v)
+    w["List"].append_front(e)
     print(w["List"].list_elements)
     print(w["List"].index)
     #w["Check!"].flash()
