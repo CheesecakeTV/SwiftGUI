@@ -82,18 +82,16 @@ layout = [
 
 w = sg.Window(layout,alignment="left")
 w["List"].list_elements = ["Hi","Hallo", "Welt"]
-print(w["List"].value)
 #w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value("TestText"))
 w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.set_value_to("Mouse entered"))
 w["Another-Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value_from("Input-Test"))
 
 print("Start:",w.values)
-print(w["IAM"].value)
 
 for e,v in w:
     print(e,v)
-    print(w["List"].value)
-    w["List"].set_value(2)
+    print(w["List"].list_elements)
+    print(w["List"].index)
     #w["Check!"].flash()
     #w["Hallo Welt"].flash()
 

@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
+from typing import Union
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
@@ -147,14 +148,45 @@ class Listbox(BaseWidget):
         self._list_elements = list(new_val)
         super().set_value(new_val)
 
+    @property
+    def index(self) -> int | None:
+        """
+        Returnes the index of the selected row
+        :return:
+        """
+        index = self.tk_widget.curselection()
+        if index:
+            return index[0]
+        return None
+
+    @index.setter
+    def index(self, new_val:int):
+        """
+        Select a specified row
+        :return:
+        """
+        self.tk_widget.selection_set(new_val)
+
+    def get_index(self,default:int = -1) -> int:
+        """
+        Returns the index.
+        If nothing is selected, returns default
+        :return:
+        """
+        index = self.index
+        if index is None:
+            return default
+
+        return index
+
     def _get_value(self) -> str:
         """
         Returns the selection.
         :return:
         """
-        index = self.tk_widget.curselection()
+        index = self.index
         if index:
-            return self._list_elements[index[0]]
+            return self._list_elements[index]
 
         return ""
 
@@ -165,13 +197,8 @@ class Listbox(BaseWidget):
         :param val: Either the index, or whatever element you want to select
         :return:
         """
-        # Todo: Doesn't work yet
-        if isinstance(val,int):
-            self.tk_widget.activate(val)
-            return
-
         if val in self._list_elements:
-            self.tk_widget.activate(self._list_elements.index(val))
+            self.tk_widget.selection_set(self._list_elements.index(val))
 
     def _update_font(self):
         # self._tk_kwargs will be passed to tk_widget later
@@ -220,3 +247,9 @@ class Listbox(BaseWidget):
 
         super()._apply_update()  # Actually apply the update
 
+    def append(self,element:str):
+        """
+        Append a single
+        :param element:
+        :return:
+        """
