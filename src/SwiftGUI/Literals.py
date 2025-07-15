@@ -18,3 +18,5 @@ compound = Literal["bottom","top","left","right","center"]
 indicatoron = Literal["check","button"]
 
 transparency = float | Literal[0,1]
+
+activestyle = Literal["none","underline","dotbox"]

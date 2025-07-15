@@ -292,6 +292,9 @@ class Window(DEFAULT_OPTIONS_CLASS):
     keep_on_top: bool = False
     background_color: Color = None
 
+class Listbox(Common):
+    activestyle:Literals.activestyle = "none"
+
 def reset_all_options():
     """
     Reset everything done to the global options on runtime.

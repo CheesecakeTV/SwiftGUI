@@ -4,8 +4,8 @@ import tkinter as tk
 from tkinter import ttk
 
 
-sg.GlobalOptions.Common_Textual.fontsize = 14
-sg.themes.Hacker()
+sg.GlobalOptions.Common_Textual.fontsize = 10
+#sg.themes.Hacker()
 
 # sg.GlobalOptions.Common_Textual.reset_to_default()
 # sg.GlobalOptions.Button.reset_to_default()
@@ -75,10 +75,14 @@ layout = [
         sg.Spacer(height=50)
     ],[
         sg.Button("One button to rule them all!",relief="solid")
+    ],[
+        sg.Listbox(["Hallo", "Welt"], key="List")
     ]
 ]
 
 w = sg.Window(layout,alignment="left")
+w["List"].list_elements = ["Hi","Hallo", "Welt"]
+print(w["List"].value)
 #w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value("TestText"))
 w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.set_value_to("Mouse entered"))
 w["Another-Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value_from("Input-Test"))
@@ -88,6 +92,8 @@ print(w["IAM"].value)
 
 for e,v in w:
     print(e,v)
+    print(w["List"].value)
+    w["List"].set_value(2)
     #w["Check!"].flash()
     #w["Hallo Welt"].flash()
 
