@@ -13,18 +13,14 @@ class Listbox(BaseWidget):
     value: list
 
     _transfer_keys = {
-        # "background_color_disabled": "disabledbackground",
         "background_color": "background",
+        "text_color": "fg",
         "text_color_disabled": "disabledforeground",
         "highlightbackground_color": "highlightbackground",
-        # "selectbackground_color": "selectbackground",
-        # "select_text_color": "selectforeground",
-        # "pass_char":"show",
+        "text_color_selected": "selectforeground",
         "background_color_active": "activebackground",
         "text_color_active": "activeforeground",
-        "text_color": "fg",
-        "bitmap_position": "compound",
-        "check_background_color": "selectcolor",
+        "background_color_selected": "selectbackground",
     }
 
     def __init__(
@@ -34,39 +30,29 @@ class Listbox(BaseWidget):
             default_event: bool = False,
             key_function: Callable | Iterable[Callable] = None,
             activestyle: Literals.activestyle = None,
-            # fonttype: str = None,
-            # fontsize: int = None,
-            # font_bold: bool = None,
-            # font_italic: bool = None,
-            # font_underline: bool = None,
-            # font_overstrike: bool = None,
-            # readonly: bool = None,
-            # # borderwidth:int = None,
-            # #
-            # bitmap: Literals.bitmap = None,
-            # text_color_disabled: str | Color = None,
-            # check_background_color: str | Color = None,
-            # bitmap_position: Literals.compound = None,
-            # background_color_active: str | Color = None,
-            # text_color_active: str | Color = None,
-            # check_type: Literals.indicatoron = None,
-            # #
+            fonttype: str = None,
+            fontsize: int = None,
+            font_bold: bool = None,
+            font_italic: bool = None,
+            font_underline: bool = None,
+            font_overstrike: bool = None,
+            disabled: bool = None,
+            borderwidth:int = None,
+            background_color: str | Color = None,
+            background_color_selected: str | Color = None,
+            selectborderwidth: int = None,
+            text_color: str | Color = None,
+            text_color_selected: str | Color = None,
+            text_color_disabled: str | Color = None,
+            selectmode: Literals.selectmode_single = None,
             width: int = None,
             height: int = None,
-            # #
-            # cursor: Literals.cursor = None,
-            # takefocus: bool = None,
-            # #
-            # underline: int = None,
-            # anchor: Literals.anchor = None,
-            # justify: Literal["left", "right", "center"] = None,
-            # background_color: str | Color = None,
-            # overrelief: Literals.relief = None,
-            # offrelief: Literals.relief = None,
-            # text_color: str | Color = None,
-            # relief: Literals.relief = None,
-            # hilightbackground_color: str | Color = None,
-            # highlightcolor: str | Color = None,
+            cursor: Literals.cursor = None,
+            takefocus: bool = None,
+            relief: Literals.relief = None,
+            highlightbackground_color: str | Color = None,
+            highlightcolor: str | Color = None,
+            highlightthickness: int = None,
             tk_kwargs: dict = None,
     ):
         super().__init__(key, tk_kwargs=tk_kwargs)
@@ -81,37 +67,29 @@ class Listbox(BaseWidget):
             **tk_kwargs,
             "default_list": default_list,
             "activestyle":activestyle,
-            # "selectmode":tk.MULTIPLE, # Todo: Selectmode
-            # "font_bold": font_bold,
-            # "font_italic": font_italic,
-            # "font_overstrike": font_overstrike,
-            # "font_underline": font_underline,
-            # "fontsize": fontsize,
-            # "fonttype": fonttype,
-            # "readonly": readonly,
-            # "bitmap_position": bitmap_position,
-            # "bitmap": bitmap,
-            # "check_background_color": check_background_color,
-            #
-            # "check_type": check_type,
-            # "cursor": cursor,
-            # "underline": underline,
-            # "justify": justify,
-            # "background_color": background_color,
-            # "highlightthickness": 5,
-            # "highlightcolor": "purple",
-            # "relief": relief,
-            # "text_color": text_color,
-            # "anchor": anchor,
-            # "overrelief": overrelief,
-            # "offrelief": offrelief,
-            # "takefocus": takefocus,
-            # "text_color_disabled": text_color_disabled,
-            # "background_color_active": background_color_active,
-            # "text_color_active": text_color_active,
-            #
+            "borderwidth":borderwidth,
+            "font_bold": font_bold,
+            "font_italic": font_italic,
+            "font_overstrike": font_overstrike,
+            "font_underline": font_underline,
+            "fontsize": fontsize,
+            "fonttype": fonttype,
+            "disabled": disabled,
+            "highlightbackground_color":highlightbackground_color,
+            "highlightthickness":highlightthickness,
+            "selectborderwidth":selectborderwidth,
+            "cursor": cursor,
+            "background_color": background_color,
+            "text_color": text_color,
+            "highlightcolor": highlightcolor,
+            "relief": relief,
+            "takefocus": takefocus,
+            "text_color_disabled": text_color_disabled,
             "width": width,
             "height": height,
+            "background_color_selected":background_color_selected,
+            "text_color_selected":text_color_selected,
+            "selectmode":selectmode,
             # "text": text,
         }
 
@@ -229,8 +207,11 @@ class Listbox(BaseWidget):
             case "font_overstrike":
                 self._overstrike = self.defaults.single(key, new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
-            case "readonly":
+            case "disabled":
                 self._tk_kwargs["state"] = "disabled" if new_val else "normal"
+            case "selectmode":
+                assert not new_val or new_val in ["single","browse"], "Invalid value for 'selectmode' in some Listbox element. Multi-Selection is not possible for normal Listboxe. Use ListboxMulti instead, if the class exists by now..."
+                return False # Still handle this normally please
             case _:  # Not a match
                 return False
 

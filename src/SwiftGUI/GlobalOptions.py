@@ -292,8 +292,32 @@ class Window(DEFAULT_OPTIONS_CLASS):
     keep_on_top: bool = False
     background_color: Color = None
 
-class Listbox(Common):
+class Listbox(Common,Common_Textual):
     activestyle:Literals.activestyle = "none"
+    default_list: Iterable[str] = None
+    fonttype: str = None
+    fontsize: int = None
+    font_bold: bool = None
+    font_italic: bool = None
+    font_underline: bool = None
+    font_overstrike: bool = None
+    disabled: bool = None
+    borderwidth: int = None
+    background_color: str | Color = None
+    background_color_selected: str | Color = None
+    selectborderwidth: int = None
+    text_color: str | Color = None
+    text_color_selected: str | Color = None
+    text_color_disabled: str | Color = None
+    selectmode: Literals.selectmode_single = "browse"
+    width: int = None
+    height: int = None
+    cursor: Literals.cursor = None
+    takefocus: bool = None
+    relief: Literals.relief = None
+    highlightbackground_color: str | Color = None
+    highlightcolor: str | Color = None
+    highlightthickness: int = None
 
 def reset_all_options():
     """

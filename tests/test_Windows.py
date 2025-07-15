@@ -76,7 +76,7 @@ layout = [
     ],[
         sg.Button("One button to rule them all!",relief="solid")
     ],[
-        sg.Listbox(["Hallo", "Welt"], key="List", width=100, height=5, default_event=True)
+        sg.Listbox(["Hallo", "Welt"], key="List", default_event=True, width=100, height=5)
     ]
 ]
 
