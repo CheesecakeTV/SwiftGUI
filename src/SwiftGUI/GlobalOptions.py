@@ -313,7 +313,7 @@ class Listbox(Common,Common_Textual):
     width: int = None
     height: int = None
     cursor: Literals.cursor = None
-    takefocus: bool = None
+    takefocus: bool = False
     relief: Literals.relief = None
     highlightbackground_color: str | Color = None
     highlightcolor: str | Color = None

@@ -57,6 +57,11 @@ class Hacker(BaseTheme):
 
         go.Common.background_color = "black"
 
+        go.Listbox.highlightbackground_color = "lime"
+        go.Listbox.highlightcolor = "lime"
+        go.Listbox.text_color_selected = "black"
+        go.Listbox.background_color_selected = "lime"
+
 
 
 class themes:

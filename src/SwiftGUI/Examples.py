@@ -70,7 +70,9 @@ def preview_all_themes() -> None:
 
         layout.append([sg.Frame([
             [
-                sg.T(f"Theme: {key}"),
+                sg.T(f"Theme: {key}",underline=True),
+            ],[
+                sg.Spacer(height=10)
             ],[
                 sg.T("Input:",width=18),
                 sg.Input("Hello!"),
@@ -80,6 +82,8 @@ def preview_all_themes() -> None:
             ],[
                 sg.Check("Button clicked!",key=f"c{key}"),
                 sg.Button("Click me, please!",key_function=sg.KeyFunctions.set_value_to(True,f"c{key}")),
+            ],[
+                sg.Listbox(["Listbox","with","some","elements"],width=30,height=3)
             ]
         ],tk_kwargs={"padx":50,"pady":50})])
 
