@@ -1,7 +1,7 @@
 import tkinter as tk
 from collections.abc import Iterable,Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Self, Literal
+from typing import TYPE_CHECKING, Self
 from warnings import deprecated
 import inspect
 
@@ -46,8 +46,7 @@ class Window(BaseElement):
             max_size: tuple[int, int] = (None, None),
             icon: str = None,  # .ico file
             keep_on_top: bool = None,
-            # Todo: Background-Color
-            background_color:Color = None,
+            background_color:Color | str = None,
     ):
         """
 
@@ -74,7 +73,7 @@ class Window(BaseElement):
 
         self._sg_widget:Frame = Frame(layout,alignment=alignment)
 
-        self.update(title,titlebar, resizeable_width, resizeable_height, fullscreen, transparency, size, position, min_size, max_size, icon, keep_on_top, _first_update=True)
+        self.update(title,titlebar, resizeable_width, resizeable_height, fullscreen, transparency, size, position, min_size, max_size, icon, keep_on_top, background_color,_first_update=True)
 
         self._sg_widget.window_entry_point(self._tk, self)
 
@@ -108,7 +107,7 @@ class Window(BaseElement):
             max_size: tuple[int, int] = (None, None),
             icon: str = None,  # .ico file
             keep_on_top: bool = None,
-            background_color: Color = None,
+            background_color: Color | str = None,
             _first_update: bool = False,
     ):
         if _first_update:
