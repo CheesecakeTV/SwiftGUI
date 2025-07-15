@@ -115,7 +115,8 @@ class Listbox(BaseWidget):
             # "text": text,
         }
 
-        self._default_event = default_event
+        if default_event:
+            self.bind_event("<<ListboxSelect>>",key=key,key_function=key_function)
 
         # self.bind_event("<KeyRelease>",key=self.key,key_function=self._key_function)
 
