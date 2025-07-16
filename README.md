@@ -3,7 +3,7 @@
 [Start your journey here](https://github.com/CheesecakeTV/SwiftGUI/wiki/Getting-started#getting-started)
 
 # Still WIP
-Doesn't have a lot of elements yet, but very useful already!
+But growing quickly. Give it 1-2 month and you will use it for every GUI you create.
 
 # SwiftGUI
 
@@ -15,7 +15,15 @@ but their codebase is an utter mess.
 `SwiftGUI` adapts some concepts of `PySimpleGUI`, but is even simpler (in my opinion)
 and allows writing less offputting code.
 
-## install
+## Legal disclaimer
+
+I did not copy any code from the (once) popular Python-package PySimpleGUI.
+
+Even though some of the concepts are simmilar, everything was written bei me or a contributor.
+Element-names like `Table` and `Input` are common and not owned by PySimpleGUI.
+Even if they were, they got published a long time ago under a different license.
+
+# installation
 
 Install using pip:
 ```bash
