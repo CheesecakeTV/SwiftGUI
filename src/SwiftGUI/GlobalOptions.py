@@ -165,8 +165,6 @@ class Text(Common,Common_Textual):
     takefocus:bool = False
     underline:int = None
     justify:Literal["left","right","center"] = "left"
-    background_color:Color|str = None
-    text_color:Color|str = None
     #borderwidth:int = "5c" # Does not work
 
     padding:Literals.padding = 0
@@ -177,15 +175,12 @@ class Input(Common,Common_Textual):
     width: int = None
     #
     # Standard-Tkinter options
-    cursor: Literals.cursor = None
     take_focus: bool = None
     #
     # Special Tkinter-options
     justify: Literal["left", "right", "center"] = None
-    background_color: str | Color = None
     # background_color_disabled: str | Color = None
     background_color_readonly: str | Color = None
-    text_color: str | Color = None
     text_color_disabled: str | Color = None
     highlightbackground_color: str | Color = None
     selectbackground_color: str | Color = None
@@ -221,9 +216,7 @@ class Button(Common,Common_Textual):
 
     underline: int = None
     justify: Literal["left", "right", "center"] = None
-    background_color: str | Color = None
     overrelief: Literals.relief = None
-    text_color: str | Color = None
 
     relief: Literals.relief = None
 
@@ -238,17 +231,10 @@ class Frame(Common):
     relief:Literals.relief = "flat"
     #background = "blue"
     alignment:Literals.alignment = None
-    background_color: Color | str = None
 
 class Checkbox(Common,Common_Textual):
     key: any = None
     default_value: bool = False
-    fonttype: str = None
-    fontsize: int = None
-    font_bold: bool = None
-    font_italic: bool = None
-    font_underline: bool = None
-    font_overstrike: bool = None
     readonly: bool = None
     # borderwidth:int = None
     #
@@ -264,16 +250,11 @@ class Checkbox(Common,Common_Textual):
     padx: int = None
     pady: int = None
     #
-    cursor: Literals.cursor = None
-    takefocus: bool = None
     #
     underline: int = None
-    anchor: Literals.anchor = None
     justify: Literal["left", "right", "center"] = None
-    background_color: str | Color = None
     overrelief: Literals.relief = None
     offrelief: Literals.relief = None
-    text_color: str | Color = None
     relief: Literals.relief = None
     # hilightbackground_color: str | Color = None
     # highlightcolor: str | Color = None
@@ -296,25 +277,15 @@ class Window(DEFAULT_OPTIONS_CLASS):
 class Listbox(Common,Common_Textual):
     activestyle:Literals.activestyle = "none"
     default_list: Iterable[str] = None
-    fonttype: str = None
-    fontsize: int = None
-    font_bold: bool = None
-    font_italic: bool = None
-    font_underline: bool = None
-    font_overstrike: bool = None
     disabled: bool = None
     borderwidth: int = None
-    background_color: str | Color = None
     background_color_selected: str | Color = None
     selectborderwidth: int = None
-    text_color: str | Color = None
     text_color_selected: str | Color = None
     text_color_disabled: str | Color = None
     selectmode: Literals.selectmode_single = "browse"
     width: int = None
     height: int = None
-    cursor: Literals.cursor = None
-    takefocus: bool = False
     relief: Literals.relief = None
     highlightbackground_color: str | Color = None
     highlightcolor: str | Color = None
