@@ -18,6 +18,7 @@ from .Widgets.Spacer import Spacer
 from .Widgets.Listbox import Listbox
 
 from .WidgetsAdvanced.Form import Form
+from .WidgetsAdvanced.FileBrowseButton import FileBrowseButton
 
 T = Text
 
@@ -31,7 +32,7 @@ Check = Checkbox
 
 Column = Frame
 
-AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox
+AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton
 
 from .Windows import Window
 
