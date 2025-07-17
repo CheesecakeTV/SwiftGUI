@@ -291,6 +291,11 @@ class Listbox(Common,Common_Textual):
     highlightcolor: str | Color = None
     highlightthickness: int = None
 
+class FileBrowseButton(Button):
+    file_browse_type: Literals.file_browse_types = "open_single"
+    file_browse_filetypes: Literals.file_browse_filetypes = (("All files","*"),)
+    dont_change_on_abort: bool = False
+
 def reset_all_options():
     """
     Reset everything done to the global options on runtime.

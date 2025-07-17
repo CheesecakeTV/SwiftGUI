@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from typing import Literal
 
 # Not only literals, but typehints in General...
@@ -24,3 +25,5 @@ activestyle = Literal["none","underline","dotbox"]
 selectmode_single = Literal["browse","single"]
 selectmode_multiple = Literal["browse","single","multiple","extended"]
 
+file_browse_types = Literal["open_single","open_multiple","open_directory","save_single"]
+file_browse_filetypes = Iterable[tuple[str, str | list[str] | tuple[str, ...]]]

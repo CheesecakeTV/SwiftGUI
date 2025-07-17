@@ -278,31 +278,38 @@ class Window(BaseElement):
         if (key_function is not None) and not hasattr(key_function, "__iter__"):
             key_function = (key_function,)
 
-        ftks = []
-        if key_function: # Call key-functions
-            kwargs = {  # Possible parameters for function
-                "w": self,  # Reference to main window
-                "e": key,   # Event-key, if there is one
-                "v": self.values,   # All values
-                "val": me.value,    # Value of element that caused the event
-                "elem": me,
-            }
-
-            for fkt in key_function:
-                wanted = set(inspect.signature(fkt).parameters.keys())
-                offers = kwargs.fromkeys(kwargs.keys() & wanted)
-                args = {i:kwargs[i] for i in offers}
-                ftks.append(lambda: fkt(**args))
-
-            self.refresh_values() # In case you change values with the key-functions
-
         def single_event(*_):
-            self.refresh_values()
+            did_refresh = False
 
-            for x in ftks:
-                x()
+            if key_function: # Call key-functions
+                self.refresh_values()
+
+                kwargs = {  # Possible parameters for function
+                    "w": self,  # Reference to main window
+                    "e": key,   # Event-key, if there is one
+                    "v": self.values,   # All values
+                    "val": me.value,    # Value of element that caused the event
+                    "elem": me,
+                }
+
+                for fkt in key_function:
+                    wanted = set(inspect.signature(fkt).parameters.keys())
+                    offers = kwargs.fromkeys(kwargs.keys() & wanted)
+                    did_refresh = False
+
+                    if fkt(**{i:kwargs[i] for i in offers}) is not None:
+                        kwargs["val"] = me.value
+                        self.refresh_values()
+                        did_refresh = True
+
+                if not did_refresh:
+                    self.refresh_values() # In case you change values with the key-functions
+                    did_refresh = True
 
             if key is not None: # Call named event
+                if not did_refresh: # Not redundant, keep it!
+                    self.refresh_values()
+
                 self._receive_event(key)
 
         return single_event
