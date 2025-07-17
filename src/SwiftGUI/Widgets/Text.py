@@ -30,6 +30,7 @@ class Text(BaseWidget):
             anchor:Literals.anchor = None,
             justify:Literal["left","right","center"] = None,
             background_color:str|Color = None,
+            apply_parent_background_color:bool = None,
             text_color:str|Color = None,
             relief:Literals.relief = None,
             padding:Literals.padding = None,
@@ -62,6 +63,9 @@ class Text(BaseWidget):
         if tk_kwargs is None:
             tk_kwargs = dict()
 
+        if background_color and not apply_parent_background_color:
+            apply_parent_background_color = False
+
         _tk_kwargs = {
             **tk_kwargs,
             "cursor":cursor,
@@ -82,6 +86,7 @@ class Text(BaseWidget):
             "font_underline":font_underline,
             "font_overstrike":font_overstrike,
             "anchor":anchor,
+            "apply_parent_background_color": apply_parent_background_color,
         }
         self.update(**_tk_kwargs)
 
@@ -124,6 +129,11 @@ class Text(BaseWidget):
                 self._tk_kwargs["background"] = self.defaults.single(key,new_val)
             case "text_color":
                 self._tk_kwargs["foreground"] = self.defaults.single(key,new_val)
+            case "apply_parent_background_color":
+                if new_val:
+                    self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
+                else:
+                    self.remove_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
             case _: # Not a match
                 return False
 

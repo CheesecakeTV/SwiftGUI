@@ -1,6 +1,7 @@
 #import tkinter as tk    # Not needed, but helpful to figure out default vals
 #from tkinter import ttk
 from collections.abc import Iterable
+from os import PathLike
 from typing import Literal, Union
 
 from SwiftGUI import Literals, Color, font_windows, Font
@@ -166,6 +167,7 @@ class Text(Common,Common_Textual):
     underline:int = None
     justify:Literal["left","right","center"] = "left"
     #borderwidth:int = "5c" # Does not work
+    apply_parent_background_color:bool = True
 
     padding:Literals.padding = 0
     width:int = None
@@ -227,15 +229,17 @@ class Button(Common,Common_Textual):
 
 class Frame(Common):
     takefocus = False
-    padding:Literals.padding = 3
-    relief:Literals.relief = "flat"
+    padding: Literals.padding = 3
+    relief: Literals.relief = "flat"
     #background = "blue"
-    alignment:Literals.alignment = None
+    alignment: Literals.alignment = None
+    apply_parent_background_color: bool = True
 
 class Checkbox(Common,Common_Textual):
     key: any = None
     default_value: bool = False
     readonly: bool = None
+    apply_parent_background_color: bool = True
     # borderwidth:int = None
     #
     text_color_disabled: str | Color = None
@@ -295,6 +299,13 @@ class FileBrowseButton(Button):
     file_browse_type: Literals.file_browse_types = "open_single"
     file_browse_filetypes: Literals.file_browse_filetypes = (("All files","*"),)
     dont_change_on_abort: bool = False
+    file_browse_initial_dir: PathLike | str = None,  # initialdir
+    file_browse_initial_file: str = None,  # initialfile
+    file_browse_title: str = None,  # title
+    file_browse_save_defaultextension: str = None,  # defaultextension
+
+class ColorChooserButton(Button):
+    color_chooser_title: str = None
 
 def reset_all_options():
     """

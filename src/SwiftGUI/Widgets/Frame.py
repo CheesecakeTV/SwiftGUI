@@ -1,10 +1,8 @@
 import tkinter as tk
-import tkinter.font as font
 import tkinter.ttk as ttk
-from collections.abc import Iterable, Callable
-from typing import Literal
+from collections.abc import Iterable
 
-from SwiftGUI import BaseElement, ElementFlag, BaseWidget, BaseWidgetContainer, GlobalOptions, Literals, Color
+from SwiftGUI import BaseElement, ElementFlag, BaseWidgetContainer, GlobalOptions, Literals, Color
 
 class Frame(BaseWidgetContainer):
     """
@@ -19,17 +17,21 @@ class Frame(BaseWidgetContainer):
 
     def __init__(
             self,
-            layout:Iterable[Iterable[BaseElement]],
+            layout: Iterable[Iterable[BaseElement]],
             /,
-            alignment:Literals.alignment = None,
-            expand:bool = False,
-            background_color:Color = None,
+            alignment: Literals.alignment = None,
+            expand: bool = False,
+            background_color: str | Color = None,
+            apply_parent_background_color: bool = None,
             # Add here
-            tk_kwargs:dict[str:any]=None,
+            tk_kwargs: dict[str:any]=None,
     ):
         super().__init__(tk_kwargs=tk_kwargs)
 
         self._contains = layout
+
+        if background_color and not apply_parent_background_color:
+            apply_parent_background_color = False
 
         if tk_kwargs is None:
             tk_kwargs = dict()
@@ -38,6 +40,7 @@ class Frame(BaseWidgetContainer):
             **tk_kwargs,
             # Insert named arguments for the widget here
             "background_color":background_color,
+            "apply_parent_background_color": apply_parent_background_color,
         }
         self.update(**_tk_kwargs)
 
@@ -59,3 +62,27 @@ class Frame(BaseWidgetContainer):
         self.window.add_flags(ElementFlag.IS_CREATED)
         self.add_flags(ElementFlag.IS_CONTAINER)
         self._init_widget(root)
+
+    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+
+        match key:
+            case "apply_parent_background_color":
+                if new_val:
+                    self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
+                else:
+                    self.remove_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
+
+            case "background_color":
+                for row in self._containing_row_frame_widgets:
+                    row.configure(background=new_val)
+
+                for i in self._contains:
+                    for elem in i:
+                        if elem.has_flag(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR):
+                            elem.update(background_color = new_val)
+
+                return True
+            case _:
+                return False
+
+        return True

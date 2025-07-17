@@ -35,7 +35,7 @@ layout_left = [
             ],[
                 sg.T("Inside of another Frame!")
             ]
-        ])
+        ],background_color="blue")
     ],[
         sg.Button("Hallo Welt-Button",key="Hallo Welt",disabled = False,height=2,text_color="red",repeatdelay=1000,repeatinterval=100,borderwidth=5),
         sg.In("Was geht", key="Input-Test", background_color="red", justify="right", text_color="green",
@@ -58,7 +58,7 @@ layout_left = [
 
 layout_right = [
     [
-        sg.Button("I'm a button")
+        sg.Button("I'm a button",key_function=lambda :w.update(background_color = "red"))
     ]
 ]
 
@@ -67,7 +67,7 @@ layout_right = [
 
 layout = [
     [
-        sg.Frame(layout_left),
+        the_frame := sg.Frame(layout_left),
         sg.Spacer(width=150),
         sg.VerticalSeparator(),
         sg.Frame(layout_right),
@@ -81,6 +81,9 @@ layout = [
 ]
 
 w = sg.Window(layout,alignment="left")
+#the_frame.update(background_color = "red")
+#w.update(background_color="red")
+
 w["List"].list_elements = ["Hi","Hi","Hallo", "Hi", "Welt", "World"]
 print(w["List"].get_all_indexes_of("Hi"))
 

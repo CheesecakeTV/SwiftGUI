@@ -19,6 +19,7 @@ from .Widgets.Listbox import Listbox
 
 from .WidgetsAdvanced.Form import Form
 from .WidgetsAdvanced.FileBrowseButton import FileBrowseButton
+from .WidgetsAdvanced.ColorChooserButton import ColorChooserButton
 
 T = Text
 
@@ -32,7 +33,7 @@ Check = Checkbox
 
 Column = Frame
 
-AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton
+AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton
 
 from .Windows import Window
 
