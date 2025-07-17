@@ -16,3 +16,9 @@ Um dependancies hinzuzufügen:
 
 [tool.poetry.dependencies]
 makefun = "1.16.0"          (Bzw. welche Bibliothek auch immer)
+
+Alles:
+python -m poetry version patch
+python -m poetry build
+python -m poetry lock
+python -m poetry publish
