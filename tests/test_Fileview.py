@@ -1,5 +1,6 @@
 from tkinter import filedialog as fd
 import SwiftGUI as sg
+from SwiftGUI import Color
 
 layout = [
     [
@@ -13,16 +14,21 @@ layout = [
             file_browse_initial_file="vcs.xml",
             #file_browse_type="save_single",
         )
+    ],[
+        sg.ColorChooserButton(
+            "Choose Color",
+            key="Color",
+            fontsize=24,
+            initial_color=Color.SeaGreen1,
+            key_function=lambda val:w["MyButton"].update(background_color = val)
+        )
     ]
 ]
 
 w = sg.Window(layout)
-w["MyButton"].push_once()
-w["MyButton"].push_once()
-w.close()
 
-# for e,v in w:
-#     print(e,v)
+for e,v in w:
+    print(e,v)
 
 #print(fd.askopenfilename(filetypes=(("Image","png"),("JPEG","jpg")))) # Single file
 #print(fd.askopenfilenames()) # Multiple files (name)

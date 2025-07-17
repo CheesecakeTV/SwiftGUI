@@ -1,6 +1,7 @@
 #import tkinter as tk    # Not needed, but helpful to figure out default vals
 #from tkinter import ttk
 from collections.abc import Iterable
+from os import PathLike
 from typing import Literal, Union
 
 from SwiftGUI import Literals, Color, font_windows, Font
@@ -295,6 +296,13 @@ class FileBrowseButton(Button):
     file_browse_type: Literals.file_browse_types = "open_single"
     file_browse_filetypes: Literals.file_browse_filetypes = (("All files","*"),)
     dont_change_on_abort: bool = False
+    file_browse_initial_dir: PathLike | str = None,  # initialdir
+    file_browse_initial_file: str = None,  # initialfile
+    file_browse_title: str = None,  # title
+    file_browse_save_defaultextension: str = None,  # defaultextension
+
+class ColorChooserButton(Button):
+    color_chooser_title: str = None
 
 def reset_all_options():
     """
