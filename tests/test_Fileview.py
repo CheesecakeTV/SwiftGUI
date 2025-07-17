@@ -5,7 +5,7 @@ from SwiftGUI import Color
 layout = [
     [
         sg.FileBrowseButton(
-            "Test",
+            "File",
             fontsize=24,
             key="MyButton",
             key_function=lambda val:print(repr(val)),
@@ -22,6 +22,14 @@ layout = [
             initial_color=Color.SeaGreen1,
             key_function=lambda val:w.update(background_color = val)
         )
+    ],[
+        sg.Button(
+            "Puny little normal button",
+            fontsize=12,
+            key_function=sg.KeyFunctions.cycle_values("Text","Option 1","Option 2","Option 3")
+        )
+    ],[
+        sg.T("Some Text",key="Text")
     ]
 ]
 

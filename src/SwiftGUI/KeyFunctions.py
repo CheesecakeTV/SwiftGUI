@@ -1,4 +1,6 @@
 from collections.abc import Callable
+from typing import Any
+
 
 ### HOW TO CREATE KEY-FUNCTION ###
 #
@@ -59,3 +61,27 @@ def set_value_to(new_value:any = "", elem_key:str = None) -> Callable:
 
     return temp
 
+def cycle_values(key:Any, *values:Any) -> Callable:
+    """
+    Every time this gets called, the next value is written to key
+    IT WILL START AT THE SECOND VALUE, so it's a good idea to set the initial element-value as the first value.
+
+    :param key: Element to change
+    :param values: values you want to cycle
+    :return:
+    """
+    n = 0
+    val_len = len(values)
+
+    assert val_len > 1, "You did not provide enough values for your cycle_values key-function"
+
+    def temp(w):
+        nonlocal n
+        n += 1
+
+        if n == val_len:
+            n = 0
+
+        w[key].value = values[n]
+
+    return temp
