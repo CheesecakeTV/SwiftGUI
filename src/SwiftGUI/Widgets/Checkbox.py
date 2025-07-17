@@ -64,6 +64,7 @@ class Checkbox(BaseWidget):
             anchor: Literals.anchor = None,
             justify: Literal["left", "right", "center"] = None,
             background_color: str | Color = None,
+            apply_parent_background_color: bool = None,
             overrelief: Literals.relief = None,
             offrelief: Literals.relief = None,
             text_color: str | Color = None,
@@ -79,6 +80,9 @@ class Checkbox(BaseWidget):
 
         if tk_kwargs is None:
             tk_kwargs = dict()
+
+        if background_color and not apply_parent_background_color:
+            apply_parent_background_color = False
 
         _tk_kwargs = {
             **tk_kwargs,
@@ -99,6 +103,7 @@ class Checkbox(BaseWidget):
             "underline": underline,
             "justify": justify,
             "background_color": background_color,
+            "apply_parent_background_color": apply_parent_background_color,
             "highlightthickness": 5,
             "highlightcolor": "purple",
             "relief": relief,
@@ -174,6 +179,11 @@ class Checkbox(BaseWidget):
                 self._tk_kwargs["state"] = "disabled" if new_val else "normal"
             case "check_type":
                 self._tk_kwargs["indicatoron"] = int(new_val == "check")
+            case "apply_parent_background_color":
+                if new_val:
+                    self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
+                else:
+                    self.remove_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
             case _:  # Not a match
                 return False
 

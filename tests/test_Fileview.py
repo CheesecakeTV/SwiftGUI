@@ -20,7 +20,7 @@ layout = [
             key="Color",
             fontsize=24,
             initial_color=Color.SeaGreen1,
-            key_function=lambda val:w["MyButton"].update(background_color = val)
+            key_function=lambda val:w.update(background_color = val)
         )
     ]
 ]

@@ -2,7 +2,7 @@ from collections.abc import Iterable, Callable
 from typing import Literal, Self, Union
 import tkinter as tk
 
-from SwiftGUI import Event,GlobalOptions
+from SwiftGUI import Event, GlobalOptions, Color
 from SwiftGUI.ElementFlags import ElementFlag
 
 
@@ -227,7 +227,7 @@ class BaseWidget(BaseElement):
     _insert_kwargs_rows:dict    # kwargs for the grid-rows
 
     #_is_container:bool = False   # True, if this widget contains other widgets
-    _contains:Iterable[Iterable[Self]] = []
+    _contains:Iterable[Iterable["BaseElement"]] = []
 
     _transfer_keys: dict[str:str] = dict()   # Rename a key from the update-function. from -> to; from_user -> to_widget
 
@@ -376,6 +376,8 @@ class BaseWidget(BaseElement):
         if self.has_flag(ElementFlag.IS_CONTAINER):
             self._init_containing()
 
+    _containing_row_frame_widgets: list[tk.Frame]
+    _background_color: str | Color
     def _init_containing(self):
         """
         Initialize all containing widgets
@@ -387,8 +389,9 @@ class BaseWidget(BaseElement):
             # line = tk.Frame(self._tk_widget,background="orange",relief="raised",borderwidth="3",border=3)
             # actual_line = tk.Frame(line,background="lightBlue")
 
-            line = tk.Frame(self._tk_widget,relief="flat",background="")  # This is the row
-            actual_line = tk.Frame(line,background="")    # This is where the actual elements are put in
+            line = tk.Frame(self._tk_widget,relief="flat",background=self._background_color)  # This is the row
+            actual_line = tk.Frame(line,background=self._background_color)    # This is where the actual elements are put in
+            self._containing_row_frame_widgets.extend((line,actual_line))
 
             line_elem = BaseElement()
             line_elem._fake_tk_element = actual_line
@@ -457,6 +460,11 @@ class BaseWidgetContainer(BaseWidget):
     """
     Base for Widgets that contain other widgets
     """
+    def __init__(self,key:any=None,tk_kwargs:dict[str:any]=None,expand:bool = False,**kwargs):
+        super().__init__(key,tk_kwargs,expand,**kwargs)
+
+        self._containing_row_frame_widgets = list()
+        self._background_color: str | Color = self.defaults.single("background_color",None)
 
     def _flag_init(self):
         super()._flag_init()

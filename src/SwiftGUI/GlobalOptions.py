@@ -167,6 +167,7 @@ class Text(Common,Common_Textual):
     underline:int = None
     justify:Literal["left","right","center"] = "left"
     #borderwidth:int = "5c" # Does not work
+    apply_parent_background_color:bool = True
 
     padding:Literals.padding = 0
     width:int = None
@@ -228,15 +229,17 @@ class Button(Common,Common_Textual):
 
 class Frame(Common):
     takefocus = False
-    padding:Literals.padding = 3
-    relief:Literals.relief = "flat"
+    padding: Literals.padding = 3
+    relief: Literals.relief = "flat"
     #background = "blue"
-    alignment:Literals.alignment = None
+    alignment: Literals.alignment = None
+    apply_parent_background_color: bool = True
 
 class Checkbox(Common,Common_Textual):
     key: any = None
     default_value: bool = False
     readonly: bool = None
+    apply_parent_background_color: bool = True
     # borderwidth:int = None
     #
     text_color_disabled: str | Color = None
