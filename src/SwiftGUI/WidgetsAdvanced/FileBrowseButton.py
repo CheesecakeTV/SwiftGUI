@@ -1,4 +1,6 @@
+import inspect
 import tkinter as tk
+from os import PathLike
 from tkinter import filedialog as fd
 import tkinter.font as font
 from collections.abc import Iterable, Callable
@@ -30,7 +32,14 @@ class FileBrowseButton(Button):
             key:any = None,
             key_function:Callable|Iterable[Callable] = None,
 
-            file_browse_type:Literals.file_browse_types = None,
+            file_browse_type:Literals.file_browse_types = None, #{"defaultextension","parent","title"}
+            file_browse_initial_dir: PathLike|str = None, # initialdir
+            file_browse_filetypes: Literals.file_browse_filetypes = None, # filetypes
+            file_browse_initial_file: str = None, # initialfile
+            file_browse_title: str = None,  # title
+            file_browse_save_defaultextension: str = None, # defaultextension
+            # Todo: parent
+            dont_change_on_abort: bool = None,
 
             borderwidth:int = None,
 
@@ -77,6 +86,15 @@ class FileBrowseButton(Button):
         :param text: Text the button displays
         :param key: (See docs for more details)
         :param key_function: (See docs for more details)
+
+        :param file_browse_type: Type of filebrowser (e.g. getting a single file, saving a file, etc.)
+        :param file_browse_initial_dir: Directory to start browsing in. "." to start in the working dir, ".." for the dir above.
+        :param file_browse_filetypes: Possible types when reading files. Format like this: (("Description1":".extension1"), ("Description2":".extension2"))
+        :param file_browse_initial_file: IT WON'T SELECT THE FILE, just put the filename inside the box on the bottom
+        :param file_browse_title: Title of the file-browse-window
+        :param file_browse_save_defaultextension: When saving, this extension will be added if the user doesn't provide an extension
+        :param dont_change_on_abort: If True, the value will not change when the user cancels/closes the file-browse
+
         :param borderwidth: Border-Thickness in pixels. Default is 2
         :param bitmap: The are a couple of icons builtin. If you are using PyCharm, they should be suggested when pressing "ctrl+space"
         :param disabled: True, if this button should not be pressable
@@ -148,23 +166,39 @@ class FileBrowseButton(Button):
             tk_kwargs=tk_kwargs,
         )
 
+        self._file_function_kwargs = dict()
+
         self.update(
             file_browse_type = file_browse_type,
+            file_browse_initial_dir = file_browse_initial_dir,
+            file_browse_filetypes = file_browse_filetypes,
+            file_browse_initial_file = file_browse_initial_file,
+            file_browse_title = file_browse_title,
+            file_browse_save_defaultextension = file_browse_save_defaultextension,
+
+            dont_change_on_abort=dont_change_on_abort,
         )
 
     _prev_val:str|tuple[str] = None
+    _file_function_wanted = None
+    _dont_change_on_abort = None    # If the value should be unchanged if the user just closes the window
     def _button_callback(self):
         if self._file_function is None:
             return
 
-        temp = self._file_function()
+        # Only provide arguments the file-function actually wants
+        kwargs = self._file_function_kwargs
+        offers = kwargs.fromkeys(kwargs.keys() & self._file_function_wanted)
+        offers = {i:kwargs[i] for i in offers}
 
-        if temp is None:
+        # Call the file-dialogue
+        temp = self._file_function(**offers)
+
+        if self._dont_change_on_abort and not temp:
             return
 
         self._prev_val = temp
         return True # Refresh values for coming key_functions
-        #self.window.refresh_values()
 
     def _get_value(self) -> any:
         return self._prev_val
@@ -172,7 +206,8 @@ class FileBrowseButton(Button):
     def set_value(self,val:any):
         self._prev_val = val
 
-    _file_function:Callable = None
+    _file_function: Callable = None
+    _file_function_kwargs: dict
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         if super()._update_special_key(key,new_val):
             return True
@@ -185,11 +220,30 @@ class FileBrowseButton(Button):
                     "open_directory": fd.askdirectory,
                     "save_single": fd.asksaveasfilename,
                 }[new_val]
+                self._file_function_wanted = {
+                    "open_single": {"defaultextension","filetypes","initialdir","initialfile","parent","title"},
+                    "open_multiple": {"defaultextension","filetypes","initialdir","initialfile","parent","title"},
+                    "open_directory": {"initialdir","mustexist","parent","title"},
+                    "save_single": {"defaultextension","filetypes","initialdir","initialfile","parent","title"},
+                }[new_val]
+
+            case "file_browse_initial_dir":
+                self._file_function_kwargs["initialdir"] = new_val
+            case "file_browse_filetypes":
+                self._file_function_kwargs["filetypes"] = new_val
+            case "file_browse_initial_file":
+                self._file_function_kwargs["initialfile"] = new_val
+            case "dont_change_on_abort":
+                self._dont_change_on_abort = new_val
+            case "file_browse_title":
+                self._file_function_kwargs["title"] = new_val
+            case "file_browse_save_defaultextension":
+                self._file_function_kwargs["file_browse_save_defaultextension"] = new_val
             case _:
                 return False
 
         return True
 
     def _personal_init_inherit(self):
-        self._set_tk_target_variable(default_key="text")
+        pass    # Avoid creating a target variable for this button, so the text can be changed with .update(text="...")
 

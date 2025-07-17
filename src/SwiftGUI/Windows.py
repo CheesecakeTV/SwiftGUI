@@ -279,9 +279,11 @@ class Window(BaseElement):
             key_function = (key_function,)
 
         def single_event(*_):
-            self.refresh_values()
+            did_refresh = False
 
             if key_function: # Call key-functions
+                self.refresh_values()
+
                 kwargs = {  # Possible parameters for function
                     "w": self,  # Reference to main window
                     "e": key,   # Event-key, if there is one
@@ -293,14 +295,21 @@ class Window(BaseElement):
                 for fkt in key_function:
                     wanted = set(inspect.signature(fkt).parameters.keys())
                     offers = kwargs.fromkeys(kwargs.keys() & wanted)
+                    did_refresh = False
 
-                    if fkt(**{i:kwargs[i] for i in offers}):
+                    if fkt(**{i:kwargs[i] for i in offers}) is not None:
                         kwargs["val"] = me.value
                         self.refresh_values()
+                        did_refresh = True
 
-                self.refresh_values() # In case you change values with the key-functions
+                if not did_refresh:
+                    self.refresh_values() # In case you change values with the key-functions
+                    did_refresh = True
 
             if key is not None: # Call named event
+                if not did_refresh: # Not redundant, keep it!
+                    self.refresh_values()
+
                 self._receive_event(key)
 
         return single_event
