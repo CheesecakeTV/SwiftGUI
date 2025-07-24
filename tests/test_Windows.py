@@ -59,6 +59,8 @@ layout_left = [
 layout_right = [
     [
         sg.Button("I'm a button",key_function=lambda :w.update(background_color = "red"))
+    ],[
+        sg.TKContainer(tk.Button, key="ContainerTest", expand=True, bg="red")
     ]
 ]
 
@@ -81,11 +83,11 @@ layout = [
 ]
 
 w = sg.Window(layout,alignment="left")
+w["ContainerTest"].update(text="blue")
 #the_frame.update(background_color = "red")
 #w.update(background_color="red")
 
 w["List"].list_elements = ["Hi","Hi","Hallo", "Hi", "Welt", "World"]
-print(w["List"].get_all_indexes_of("Hi"))
 
 w["List"].color_rows(["Hi"],background_color="gold")
 w["List"].delete_element("Hi")

@@ -138,14 +138,12 @@ class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
         return default
 
 
-
 class Common(DEFAULT_OPTIONS_CLASS):
     """
     Every widget
     """
     cursor:Literals.cursor = None   # Find available cursors here (2025): https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/cursors.html
     takefocus:bool = True
-    background_color:Color|str = "#F0F0F0"
     expand:bool = False
 
 class Common_Textual(DEFAULT_OPTIONS_CLASS):
@@ -161,7 +159,7 @@ class Common_Textual(DEFAULT_OPTIONS_CLASS):
     anchor:Literals.anchor = "w"
     text_color:Color|str = None
 
-class Text(Common,Common_Textual):
+class Text(Common, Common_Textual):
     text:str = ""
     takefocus:bool = False
     underline:int = None
@@ -225,8 +223,6 @@ class Button(Common,Common_Textual):
     repeatdelay: int = None
     repeatinterval: int = None
 
-
-
 class Frame(Common):
     takefocus = False
     padding: Literals.padding = 3
@@ -265,6 +261,7 @@ class Checkbox(Common,Common_Textual):
 
 class Window(DEFAULT_OPTIONS_CLASS):
     title = None
+    background_color:Color|str = "#F0F0F0"
     titlebar: bool = True  # Titlebar visible
     resizeable_width = False
     resizeable_height = False
@@ -276,7 +273,6 @@ class Window(DEFAULT_OPTIONS_CLASS):
     max_size: tuple[int, int] = (None, None)
     icon: str = None  # .ico file
     keep_on_top: bool = False
-    background_color: Color = None
 
 class Listbox(Common,Common_Textual):
     activestyle:Literals.activestyle = "none"
@@ -307,6 +303,36 @@ class FileBrowseButton(Button):
 class ColorChooserButton(Button):
     color_chooser_title: str = None
 
+class TextField(Common,Common_Textual):
+    borderwidth: int = None
+    width: int = None
+    height: int = None
+    insertbackground: str | Color = None
+    highlightbackground_color: str | Color = None
+    selectbackground_color: str | Color = None
+    select_text_color: str | Color = None
+    selectborderwidth: int = None
+    highlightcolor: str | Color = None
+    highlightthickness: int = None
+    readonly: bool = False  # Set state to tk.Normal, or 'readonly'
+    relief: Literals.relief = None
+    exportselection: bool = False
+    padx: int = None
+    pady: int = None
+
+    # Text spacing
+    paragraph_spacing: int = None
+    paragraph_spacing_above: int = None
+    autoline_spacing: int = None
+    tabs: int = 4  # Size of tabs in characters
+    wrap: Literals.wrap = "word"
+
+    # undo-stack
+    undo: bool = False
+    can_reset_value_changes: bool = False
+    maxundo: int | Literal[-1] = 1024 # -1 means infinite
+
+
 def reset_all_options():
     """
     Reset everything done to the global options on runtime.
@@ -327,7 +353,7 @@ def _make_dict_format_because_lazy(the_class:DEFAULT_OPTIONS_CLASS):
     :param the_class:
     :return:
     """
-    for key in dir(the_class):
+    for key in the_class._all_defaults:
         if key in ("made_changes","apply","single","persist_changes","key","reset_to_default"):
             continue
 
@@ -335,6 +361,3 @@ def _make_dict_format_because_lazy(the_class:DEFAULT_OPTIONS_CLASS):
             continue
 
         print(f'"{key}" : {key},')
-
-# _make_dict_format_because_lazy(Input)
-# exit()
