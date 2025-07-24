@@ -59,6 +59,8 @@ layout_left = [
 layout_right = [
     [
         sg.Button("I'm a button",key_function=lambda :w.update(background_color = "red"))
+    ],[
+        sg.TKContainer(tk.Button,key="ContainerTest",bg="red",expand=True)
     ]
 ]
 
@@ -81,6 +83,7 @@ layout = [
 ]
 
 w = sg.Window(layout,alignment="left")
+w["ContainerTest"].update(text="blue")
 #the_frame.update(background_color = "red")
 #w.update(background_color="red")
 

@@ -16,6 +16,7 @@ from .Widgets.Input import Input
 from .Widgets.Separator import VerticalSeparator,HorizontalSeparator
 from .Widgets.Spacer import Spacer
 from .Widgets.Listbox import Listbox
+from .Widgets.TKContainer import TKContainer
 
 from .WidgetsAdvanced.Form import Form
 from .WidgetsAdvanced.FileBrowseButton import FileBrowseButton
@@ -33,7 +34,9 @@ Check = Checkbox
 
 Column = Frame
 
-AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton
+TKWidget = TKContainer
+
+AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer
 
 from .Windows import Window
 
