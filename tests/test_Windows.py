@@ -60,7 +60,7 @@ layout_right = [
     [
         sg.Button("I'm a button",key_function=lambda :w.update(background_color = "red"))
     ],[
-        sg.TKContainer(tk.Button,key="ContainerTest",bg="red",expand=True)
+        sg.TKContainer(tk.Button, key="ContainerTest", expand=True, bg="red")
     ]
 ]
 
