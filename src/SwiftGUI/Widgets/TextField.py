@@ -1,10 +1,9 @@
 import tkinter as tk
 import tkinter.font as font
-import tkinter.ttk as ttk
 from collections.abc import Iterable, Callable
-from typing import Literal
+from typing import Literal, Any
 
-from SwiftGUI import BaseElement, ElementFlag, BaseWidget, BaseWidgetContainer, GlobalOptions, Literals, Color
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
 
 class TextField(BaseWidget):
@@ -14,102 +13,116 @@ class TextField(BaseWidget):
     defaults = GlobalOptions.TextField
 
     _transfer_keys = {
-        "background_color_disabled":"disabledbackground",
+        # "background_color_disabled":"disabledbackground",
         "background_color":"background",
-        "text_color_disabled": "disabledforeground",
+        # "text_color_disabled": "disabledforeground",
         "highlightbackground_color": "highlightbackground",
-        # "selectbackground_color": "selectbackground",
-        # "select_text_color": "selectforeground",
+        "selectbackground_color": "selectbackground",
+        "select_text_color": "selectforeground",
         # "pass_char":"show",
         "background_color_active" : "activebackground",
         "text_color_active" : "activeforeground",
         "text_color":"fg",
-
+        "paragraph_spacing_above": "spacing1",
+        "autoline_spacing": "spacing2",
+        "paragraph_spacing": "spacing3",
     }
 
+    # Todo: There are a ton of additional methods and options to add
+    # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/text.html
     def __init__(
-            # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/button.html
-
             self,
             # Add here
-            text:str = "",  # Has to be added later
+            text:str = None,
             /,
-            key:any = None,
-            key_function:Callable|Iterable[Callable] = None,
-            #
-            # borderwidth:int = None,
-            #
-            # bitmap:Literals.bitmap = None,
-            # disabled:bool = None,
-            # text_color_disabled: str | Color = None,
-            # background_color_active: str | Color = None,
-            # text_color_active: str | Color = None,
-            #
-            # width: int = None,
-            # height: int = None,
-            # padx:int = None,
-            # pady:int = None,
-            #
-            # cursor: Literals.cursor = None,
-            # takefocus: bool = None,
-            #
-            # underline: int = None,
-            # anchor: Literals.anchor = None,
-            # justify: Literal["left", "right", "center"] = None,
-            # background_color: str | Color = None,
-            # overrelief: Literals.relief = None,
-            # text_color: str | Color = None,
-            # # Todo: image
-            # relief: Literals.relief = None,
-            #
-            # repeatdelay:int = None,
-            # repeatinterval:int = None,
-            #
-            # # # Mixed options
-            # fonttype: str = None,
-            # fontsize: int = None,
-            # font_bold: bool = None,
-            # font_italic: bool = None,
-            # font_underline: bool = None,
-            # font_overstrike: bool = None,
-            #
+            key: Any = None,
+            key_function: Callable|Iterable[Callable] = None,
+            borderwidth: int = None,
+            width: int=None,
+            height: int = None,
+            default_event:bool = False,
+            cursor:Literals.cursor = None,
+            takefocus:bool = None,
+            background_color:str|Color = None,
+            insertbackground: str|Color = None,
+            text_color: str|Color = None,
+            highlightbackground_color:str|Color = None,
+            selectbackground_color:str|Color = None,
+            select_text_color:str|Color = None,
+            selectborderwidth:int = None,
+            highlightcolor:str|Color = None,
+            highlightthickness:int = None,
+            readonly: bool = None,   # Set state to tk.Normal, or 'readonly'
+            relief: Literals.relief = None,
+            exportselection:bool = None,
+            padx: int = None,
+            pady: int = None,
+
+            # Font
+            fonttype:str = None,
+            fontsize:int = None,
+            font_bold:bool = None,
+            font_italic:bool = None,
+            font_underline:bool = None,
+            font_overstrike:bool = None,
+
+            # Text spacing
+            paragraph_spacing: int = None,
+            paragraph_spacing_above: int = None,
+            autoline_spacing: int = None,
+            tabs: int = None,   # Size of tabs in characters
+            wrap: Literals.wrap = None,
+
+            # undo-stack
+            undo: bool = None,
+            can_reset_value_changes: bool = None,
+            maxundo: int | Literal[-1] = None,
+
             expand: bool = None,
-            tk_kwargs: dict[str:any] = None
+            tk_kwargs: dict[str:any]=None
     ):
         """
-        A button that throws an event every time it is pushed
+        An Input-Element with multiple rows
 
-        :param text: Text the button displays
-        :param key: (See docs for more details)
-        :param key_function: (See docs for more details)
-        :param borderwidth: Border-Thickness in pixels. Default is 2
-        :param bitmap: The are a couple of icons builtin. If you are using PyCharm, they should be suggested when pressing "ctrl+space"
-        :param disabled: True, if this button should not be pressable
-        :param text_color_disabled: Text color, if disabled = True
-        :param background_color_active: Background color shown only when the button is held down
-        :param text_color_active: Text color only shown when the button is held down
-        :param width: Button-size in x-direction in text-characters
-        :param height: Button-height in text-rows
-        :param padx: Adds space to both sides not filled with text. Should not be combined with "width". The value is given in characters
-        :param pady: Adds space to the top and bottom not filled with text. Should not be combined with "height". The value is given in rows
-        :param cursor: How the cursor should look when hovering over this element.
-        :param takefocus: True, if this element should be able to get focus (e.g. by pressing tab)
-        :param underline: Underlines the single character at this index
-        :param anchor: Specifies, where the text in this element should be placed (See docs for more details)
-        :param justify: When the text is multiple rows long, this will specify where the new rows begin.
-        :param background_color: Background-color for the non-pressed state
-        :param overrelief: Relief when the mouse hovers over the element
-        :param text_color: Text-color in non-pressed state
-        :param relief: Relief in non-pressed state
-        :param repeatdelay: How long to hold the button until repeation starts (doesn't work without "repeatinterval")
-        :param repeatinterval: How long to wait between repetitions (doesn't work without "repeatdelay")
-        :param fonttype: Use sg.font_windows. ... to select some fancy font. Personally, I like sg.font_windows.Small_Fonts
+        :param text:
+        :param key: See docs for more details
+        :param key_function: See docs for more details
+        :param borderwidth: Thickness of the border around the element
+        :param width: Width in characters
+        :param height: Height in rows
+        :param default_event: True, to throw an event when a key is lifted up (text changed is included)
+        :param cursor: Type of cursor when the cursor hovers over this element
+        :param takefocus: True, if you want to be able to select this element by pressing "tab"
+        :param background_color:
+        :param insertbackground: Color of the text-cursor
+        :param text_color: font-color
+        :param highlightcolor: Color of the outer border (highlightthickness must be > 0) when in focus
+        :param highlightbackground_color: Color of the outer border (highlightthickness must be > 0) when not in focus
+        :param selectbackground_color: Color behind text that is selected
+        :param select_text_color: Text-Color of text that is selected
+        :param selectborderwidth: (Might not work on Windows or Mac) Size of the border around selected text
+        :param highlightthickness: Thickness of the outer border that displays if this element is selected
+        :param readonly: True, if this widget should not accept any input or changes
+        :param relief: 3d-shape of this element
+        :param exportselection: True, if selected text should be automatically copied to clipboard. (Might not work on Windows)
+        :param padx: Space left and right of the text-box. Increase this to 5-10, to make it look a bit better.
+        :param pady: Space on top and bottom of the text-box. Increase this to 5-10, to make it look a bit better.
+        :param fonttype: Type of font. See sg.font_windows for available fonts on Windows
         :param fontsize: Size (height) of the font in pixels
-        :param font_bold: True, if thicc text
-        :param font_italic: True, if italic text
-        :param font_underline: True, if the text should be underlined
-        :param font_overstrike: True, if the text should be overstruck
-        :param tk_kwargs: (Only if you know tkinter) Pass more kwargs directly to the tk-widget
+        :param font_bold: Bold text
+        :param font_italic: Italic text
+        :param font_underline: Underlined text
+        :param font_overstrike: Overstrucken text
+        :param paragraph_spacing: Adds some space after a paragraph (When the user presses enter)
+        :param paragraph_spacing_above: Adds some space BEFORE a paragraph. I wouldn't use this, because the whole text starts a bit lower then.
+        :param autoline_spacing: When a line is full, the next one begins automatically. This option adds some space for these "auto-linebreaks".
+        :param tabs: Pressing tab aligns text vertically. This option sets the maximum width of a single "tab".
+        :param wrap: When a line is full, the next one begins automatically. Set to "none" if you want to disable this behavior. Set to "word" (default) to break lines at new words. Set to "char" to break lines, but ignore words.
+        :param undo: True (default), if you want to enable "Ctrl+z" (undo) and "Ctrl+y" (redo).
+        :param can_reset_value_changes: True, if the user should also be able to undo changes made by the program. Default is False.
+        :param maxundo: How many changes should be recorded so they can be undone.
+        :param expand: True, if this widget should span over the whole row.
+        :param tk_kwargs: Additional kwargs for the tk_widget. Don't use it if you don't know tkinter.
         """
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand)
 
@@ -118,48 +131,55 @@ class TextField(BaseWidget):
 
         _tk_kwargs = {
             **tk_kwargs,
-            # "cursor":cursor,
-            # "underline":underline,
-            # "justify":justify,
-            # "background_color":background_color,
-            # # "highlightbackground_color":"red",
-            # # "highlightthickness":5,
-            # "highlightcolor":"purple",
-            # "relief":relief,
-            # "text_color":text_color,
-            # "width":width,
-            # "fonttype":fonttype,
-            # "fontsize":fontsize,
-            # "font_bold":font_bold,
-            # "font_italic":font_italic,
-            # "font_underline":font_underline,
-            # "font_overstrike":font_overstrike,
-            # "anchor":anchor,
-            # "bitmap":bitmap,
-            # "borderwidth":borderwidth,
-            # "disabled":disabled,
-            # "overrelief":overrelief,
-            # "takefocus":takefocus,
-            # #"background_color_disabled": background_color_disabled,    # Todo: Add this manually since tk.Button has no option for it
-            # "text_color_disabled": text_color_disabled,
-            # "background_color_active": background_color_active,
-            # "text_color_active": text_color_active,
-            # "repeatdelay":repeatdelay,
-            # "repeatinterval":repeatinterval,
-            #
-            # "height": height,
-            # "padx": padx,
-            # "pady": pady,
+            "borderwidth": borderwidth,
+            "width": width,
+            "height": height,
+            "insertbackground": insertbackground,
+            "highlightbackground_color": highlightbackground_color,
+            "selectbackground_color": selectbackground_color,
+            "select_text_color": select_text_color,
+            "selectborderwidth": selectborderwidth,
+            "highlightcolor": highlightcolor,
+            "highlightthickness": highlightthickness,
+            "readonly": readonly,
+            "relief": relief,
+            "exportselection": exportselection,
+            "padx": padx,
+            "pady": pady,
+            "paragraph_spacing": paragraph_spacing,
+            "paragraph_spacing_above": paragraph_spacing_above,
+            "autoline_spacing": autoline_spacing,
+            "tabs": tabs,
+            "wrap": wrap,
+            "undo": undo,
+            "can_reset_value_changes": can_reset_value_changes,
+            "maxundo": maxundo,
+            "cursor":cursor,
+            "background_color":background_color,
+            "text_color":text_color,
+            "fonttype":fonttype,
+            "fontsize":fontsize,
+            "font_bold":font_bold,
+            "font_italic":font_italic,
+            "font_underline":font_underline,
+            "font_overstrike":font_overstrike,
+            "takefocus":takefocus,
         }
         self.update(**_tk_kwargs)
 
         self._key_function = key_function
         self._initial_text = text
 
+        # self._tabsize = self.defaults.single("tabs",tabs,4)
+
+        if default_event:
+            self.bind_event("<KeyRelease>",key=key,key_function=key_function)
+
+    can_reset_value_changes = False
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         match key:
 
-            case "disabled":
+            case "readonly":
                 self._tk_kwargs["state"] = "disabled" if new_val else "normal"
             case "fonttype":
                 self._fonttype = self.defaults.single(key,new_val)
@@ -181,6 +201,11 @@ class TextField(BaseWidget):
                 self.add_flags(ElementFlag.UPDATE_FONT)
             case "text":
                 self.value = new_val
+            case "tabs":
+                self._tabsize = new_val
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "can_reset_value_changes":
+                self.can_reset_value_changes = new_val
             case _:
                 return False
 
@@ -202,7 +227,7 @@ class TextField(BaseWidget):
 
     def _update_font(self):
         # self._tk_kwargs will be passed to tk_widget later
-        self._tk_kwargs["font"] = font.Font(
+        temp = font.Font(
             self.window.parent_tk_widget,
             family=self._fonttype,
             size=self._fontsize,
@@ -211,17 +236,20 @@ class TextField(BaseWidget):
             underline=bool(self._underline),
             overstrike=bool(self._overstrike),
         )
+        self._tk_kwargs["font"] = temp
 
-    def _personal_init_inherit(self):
-        #self._set_tk_target_variable(default_key="text")
-        ...
+        if self._tabsize is not None:
+            self._tk_kwargs["tabs"] = self._tabsize * temp.measure(" ")
 
     def _get_value(self) -> any:
-        return self.tk_widget.get("1.0")
+        return self.tk_widget.get("1.0","end")[:-1]
 
     def set_value(self,val:any):
-        self.tk_widget.delete("1.0")
+        self.tk_widget.delete("1.0","end")
         self.tk_widget.insert("1.0",val)
+
+        if self.can_reset_value_changes:
+            self.tk_widget.edit_reset()
 
     def init_window_creation_done(self):
         super().init_window_creation_done()
