@@ -307,6 +307,9 @@ class FileBrowseButton(Button):
 class ColorChooserButton(Button):
     color_chooser_title: str = None
 
+class TextField(Common,Common_Textual):
+    ...
+
 def reset_all_options():
     """
     Reset everything done to the global options on runtime.

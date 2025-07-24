@@ -88,7 +88,6 @@ w["ContainerTest"].update(text="blue")
 #w.update(background_color="red")
 
 w["List"].list_elements = ["Hi","Hi","Hallo", "Hi", "Welt", "World"]
-print(w["List"].get_all_indexes_of("Hi"))
 
 w["List"].color_rows(["Hi"],background_color="gold")
 w["List"].delete_element("Hi")
