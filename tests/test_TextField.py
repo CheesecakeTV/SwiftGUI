@@ -10,15 +10,17 @@ layout = [
         sg.Button("Event",key="Event"),
         sg.In(),
     ],[
-        sg.Treeview(headings=["Hallo","Welt","Wie","Gehts?"])
+        sg.Treeview(headings=["Hallo","Welt","Wie","Gehts?"], key="tree")
     ]
 ]
 
 
 
 w = sg.Window(layout)
+w["tree"].selection = ('Test!', 'Hallo', 'Nächste Ebene')
+#w["tree"].selection = None
 
 for e,v in w:
     print(e,v)
-
+    print(w["tree"].value)
 

@@ -56,7 +56,7 @@ class Treeview(BaseWidget):
     def __init__(
             self,
             # Add here
-            elements: dict = None,
+            #elements: dict|Iterable[Iterable[str]] = None,
             /,
             key: Any = None,
             key_function: Callable|Iterable[Callable] = None,
@@ -69,18 +69,20 @@ class Treeview(BaseWidget):
     ):
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand)
 
-        if elements is None:
-            elements = dict()
-        self._element_tree = DictBidirect(elements)
+        # if elements is None:
+        #     elements = dict()
+        self._element_tree = DictBidirect()
 
         self._headings = tuple(headings)
+        self._headings_len = len(self._headings)
 
         if tk_kwargs is None:
             tk_kwargs = dict()
 
         self.update(
-            columns = self._headings[1:],
-            **tk_kwargs
+            columns = self._headings,
+            **tk_kwargs,
+            selectmode= "browse",
         )
 
         # if default_event:
@@ -152,11 +154,47 @@ class Treeview(BaseWidget):
         if self._tabsize is not None:
             self._tk_kwargs["tabs"] = self._tabsize * temp.measure(" ")
 
-    def _get_value(self) -> any:
-        ...
+    def get_full_selection(self) -> dict | None:
+        """
+        Return the full selection-dict
+        :return:
+        """
+        temp = self.selection
+        if not temp:
+            return None
+
+        return self.tk_widget.item(self._element_tree[temp])
+
+    def _get_value(self) -> tuple[str,...]:
+        temp = self.get_full_selection()
+
+        if temp is None:
+            return ("",) * self._headings_len
+
+        return tuple(temp["values"])
 
     def set_value(self,val:any):
-        ...
+        print("Warning!","It is not possible to set Values of sg.Treeview (yet)!")
+
+    selection:tuple[str]
+
+    @property
+    def selection(self) -> tuple:
+        temp = self.tk_widget.focus()
+        if temp:
+            return self._element_tree.rev[temp]
+        return tuple()
+
+    @selection.setter
+    def selection(self, new_val):
+        if not new_val:
+            self.tk_widget.selection_set()
+            self.tk_widget.focus("")
+            return
+
+        temp = self._element_tree[new_val]
+        self.tk_widget.selection_set((temp,))
+        self.tk_widget.focus(temp)
 
     def init_window_creation_done(self):
         """Don't touch!"""
@@ -164,7 +202,7 @@ class Treeview(BaseWidget):
 
         if self._headings:
             headings = iter(self._headings)
-            self.tk_widget.heading("#0",text=next(headings))
+            #self.tk_widget.heading("#0",text=next(headings))
 
             for h in headings:  # Deploy the remaining ones
                 self.tk_widget.heading(h,text=h)
@@ -174,14 +212,14 @@ class Treeview(BaseWidget):
 
         # self.tk_widget["show"] = "headings"   # Removes first column
 
-        # self.insert((
-        #     ("Hallo", "Welt"),
-        # ), name="Me!")
-        # self.insert((
-        #     ("Hi", "Wel-d"),
-        # ), name="Another", parent="Me!")
+        self.insert((
+            ("Hallo", "Welt"),
+        ), name="Me!")
+        self.insert((
+            ("Hi", "Wel-d"),
+        ), name="Another", parent="Me!")
 
-        self.insert({
+        self.insert_subtree({
             "Hallo":{
                 "":("Das","Funktioniert","Endlich :C"),
                 "Nächste Ebene":("Hellow",),
@@ -191,26 +229,54 @@ class Treeview(BaseWidget):
         print(self._element_tree)
 
 
-    def _insert_single(self,element: tuple[str] | Any, name: str = None, parent: tuple[str] = None):
+    def insert(self,element: list[str]|tuple[str] | Any, name: str = "", parent: str|tuple[str] = None) -> tuple[str,...]:
         """
+        Insert a single element (row) into the treeview.
 
-        :param element:
-        :param name:
-        :param parent:
-        :return:
+        :param element: Element-values. Should be a list/tuple of strings that get displayed under the corresponding column
+        :param name: Identifier. Gets displayed in the first (0-th) column
+        :param parent: Set this to put the element "inside" another element
+        :return: path to that element
         """
+        if isinstance(parent,str):
+            parent = (parent,)
+
         if parent:
             parent_obj = self._element_tree[parent]
+            elem_path = parent + (name,)
         else:
             parent_obj = ""
+            elem_path = (name,)
 
-        elem_path = parent + (name,)
+        if len(element) < self._headings_len:
+            element += ("",) * (self._headings_len - len(element))
 
         self._element_tree[elem_path] = self.tk_widget.insert(parent_obj, text=name, index="end", values=element, open=True)
+        return elem_path
 
-    def insert(self,elements: dict|Iterable[Iterable[str]], name: str = None, parent: str|tuple[str|tuple,...] = tuple()):
+    def insert_subtree(self,elements: dict|Iterable[Iterable[str]], name: str = None, parent: str|tuple[str|tuple,...] = tuple()) -> None:
         """
-        Insert a new element into the tree
+        Insert multiple elements or a subtree into the tree.
+
+        You may insert the following as "elements":
+        - A single element, like ("first_col", "second_col")
+        - Multiple elements, like (("first_col", "second_col"), ("Second_elem1", "Second_elem2")
+        - A dict, built like a folder hierarchy. Keys are the "folders", inside may be a different form of elements or another dict.
+            - The dict key "" may contain a single of element that sets the values for this folder.
+
+        example:
+
+        elements = {
+            "": ("folderinfo_col1", "folderinfo_col2"),
+            "Subfolder": (
+                ("File inside","Subfolder"),
+                ("Another File inside","")
+            )
+            "Subtree": {
+                "Subsubfolder": ("Single file","inside subsubfolder")
+            }
+        }
+
         :param name: First column
         :param elements: Row or sub-tree
         :param parent: Element-key where to add this. Separate "folders" using dots.
@@ -218,9 +284,6 @@ class Treeview(BaseWidget):
         """
         if isinstance(parent,str):
             parent = (parent,)
-
-        if not elements:
-            return
 
         if isinstance(elements, dict):
             elements = (elements,)
@@ -235,12 +298,12 @@ class Treeview(BaseWidget):
                 if "" in elem.keys():
                     values = tuple(elem[""])
 
-                self._insert_single(values,name,parent)
+                self.insert(values,name,parent)
 
                 for key,val in elem.items():
                     if not key:
                         continue
-                    self.insert(val, name = key, parent = parent + (name,))
+                    self.insert_subtree(val, name = key, parent = parent + (name,))
 
                 continue    # Skip tuple insertion
 
@@ -253,6 +316,6 @@ class Treeview(BaseWidget):
                 name = str(counter)
                 counter += 1
 
-            self._insert_single(elem, name=name, parent=parent)
+            self.insert(elem, name=name, parent=parent)
 
 
