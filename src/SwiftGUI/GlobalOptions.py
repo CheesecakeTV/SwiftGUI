@@ -332,6 +332,8 @@ class TextField(Common,Common_Textual):
     can_reset_value_changes: bool = False
     maxundo: int | Literal[-1] = 1024 # -1 means infinite
 
+class Treeview(DEFAULT_OPTIONS_CLASS):
+    ...
 
 def reset_all_options():
     """

@@ -218,13 +218,6 @@ class TextField(BaseWidget):
 
         super()._apply_update() # Actually apply the update
 
-    def _personal_init(self):
-        # self._tk_kwargs.update({
-        #     "command": self.window.get_event_function(self, self.key, self._key_function)
-        # })
-
-        super()._personal_init()
-
     def _update_font(self):
         # self._tk_kwargs will be passed to tk_widget later
         temp = font.Font(

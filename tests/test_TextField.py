@@ -1,14 +1,5 @@
 import SwiftGUI as sg
-from SwiftGUI import Color
-
-# for _, name in enumerate(dir(sg.Color)):
-#     if name.startswith("_"):
-#         continue
-#
-#     print(f"{name} = \"{getattr(Color, name).replace(' ','')}\"")
-#
-# #sg.Examples.preview_all_colors()
-# exit()
+import tkinter.ttk as ttk
 
 layout = [
     [
@@ -18,6 +9,8 @@ layout = [
     ],[
         sg.Button("Event",key="Event"),
         sg.In(),
+    ],[
+        sg.Treeview(headings=["Hallo","Welt","Wie","Gehts?"])
     ]
 ]
 

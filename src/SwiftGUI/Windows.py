@@ -127,8 +127,6 @@ class Window(BaseElement):
             background_color = GlobalOptions.Window.single("background_color",background_color)
 
         if background_color is not None:
-            if _first_update:
-                print("Warning! It is not possible to change background_color on an already created window (yet)...")
             self._sg_widget.update(background_color=background_color)
 
         if title is not None:
