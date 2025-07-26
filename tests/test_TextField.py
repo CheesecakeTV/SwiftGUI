@@ -1,6 +1,9 @@
 import SwiftGUI as sg
 import tkinter.ttk as ttk
 
+sg.Examples.preview_all_fonts_windows()
+exit()
+
 layout = [
     [
         sg.Spacer(15),
