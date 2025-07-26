@@ -9,16 +9,18 @@ from SwiftGUI import Literals, Color, font_windows, Font
 # Every option-class will be stored in here
 all_option_classes:list[Union["_DefaultOptionsMeta",type]] = list()
 
+_ignore_keys = ["apply","reset_to_default","single","persist_changes","made_changes"]
+
 class _DefaultOptionsMeta(type):
 
     def __new__(mcs, name, bases, namespace):
-        _all_defaults = dict(filter(lambda a: not a[0].startswith("_") and not a[0] in ["apply","reset_to_default","single","persist_changes"], namespace.items()))
+        _all_defaults = dict(filter(lambda a: not a[0].startswith("_") and not a[0] in _ignore_keys, namespace.items()))
 
         # Remove NONE-values so they don't overwrite non-None-values of higher classes
         namespace = dict(filter(lambda a: a[1] is not None, namespace.items()))
         cls:"DEFAULT_OPTIONS_CLASS"|type = super().__new__(mcs, name, bases, namespace)
 
-        cls._all_defaults = _all_defaults # All attributes with None-Attributes
+        cls._all_defaults = _all_defaults # All attributes including None-Attributes
 
         prev = cls.__mro__[1]
         cls._dict = dict(cls.__dict__)
@@ -50,8 +52,13 @@ class _DefaultOptionsMeta(type):
         """
         # I know this is very inefficient, but it's not used that often.
         # Don't speed up a function that only runs once every program execution...
+        attributes = set(filter(lambda a: not a.startswith("_") and not a in _ignore_keys, self.__dict__.keys()))
+
         for key,val in self._all_defaults.items():
             setattr(self,key,val)
+
+        for key in attributes.difference(self._all_defaults.keys()):
+            delattr(self,key)
 
 class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
     """
@@ -78,7 +85,7 @@ class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
         for i in cls.__mro__[-1::-1]:
             collected.update(i.__dict__)
 
-        cls._dict = dict(filter(lambda a: not a[0].startswith("_") and not a[0] in ["_dict","reset_to_default","apply","single","persist_changes"], collected.items()))
+        cls._dict = dict(filter(lambda a: not a[0].startswith("_") and not a[0] in _ignore_keys, collected.items()))
 
     @classmethod
     def _check_for_changes(cls):
@@ -136,7 +143,6 @@ class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
             return getattr(cls,key)
 
         return default
-
 
 class Common(DEFAULT_OPTIONS_CLASS):
     """
@@ -261,7 +267,7 @@ class Checkbox(Common,Common_Textual):
 
 class Window(DEFAULT_OPTIONS_CLASS):
     title = None
-    background_color:Color|str = "#F0F0F0"
+    background_color:Color|str = None
     titlebar: bool = True  # Titlebar visible
     resizeable_width = False
     resizeable_height = False
@@ -356,7 +362,7 @@ def _make_dict_format_because_lazy(the_class:DEFAULT_OPTIONS_CLASS):
     :return:
     """
     for key in the_class._all_defaults:
-        if key in ("made_changes","apply","single","persist_changes","key","reset_to_default"):
+        if key in _ignore_keys:
             continue
 
         if key.startswith("_"):

@@ -23,6 +23,8 @@ class BaseTheme:
 
 class FacebookMom(BaseTheme):
     def apply(self) -> None:
+        go.Common.background_color = Color.light_goldenrod_yellow
+
         go.Common_Textual.fonttype = font_windows.Comic_Sans_MS
         go.Common_Textual.fontsize = 14
 
@@ -34,7 +36,6 @@ class FacebookMom(BaseTheme):
         go.Input.text_color = Color.dark_green
         go.Input.background_color_readonly = Color.orange_red
 
-        go.Common.background_color = Color.light_goldenrod_yellow
         go.Button.background_color = Color.green2
 
 class Hacker(BaseTheme):

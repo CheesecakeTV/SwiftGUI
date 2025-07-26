@@ -1,4 +1,5 @@
 from itertools import batched, starmap, chain
+from warnings import deprecated
 
 import SwiftGUI as sg
 from SwiftGUI import Color,font_windows
@@ -63,11 +64,15 @@ def preview_all_fonts_windows() -> None:
 
     w.loop_close()
 
+@deprecated("WIP")
 def preview_all_themes() -> None:
     """
     Have a look at all possible (prebuilt) themes
     :return:
     """
+    # Todo: This function sucks and I have no idea why...
+    #  Suggestions are very welcome...
+
     layout = list()
     all_themes = sg.themes.__dict__.items()
 
@@ -80,7 +85,7 @@ def preview_all_themes() -> None:
 
         layout.append([sg.Frame([
             [
-                sg.T(f"Theme: {key}",underline=True),
+                sg.T(f"Theme: {key}",font_underline=True),
             ],[
                 sg.Spacer(height=10)
             ],[
