@@ -27,7 +27,7 @@ for i in range(15):
 for k in range(5):
     table.insert(["Element","Sniper",k],random.randint(0,15))
 
-table.selection = 5
+table.index = 5
 #table[5][1] = None
 table[5][0] = "Funktioniert!!!"
 table[5] += ["Hmmmm"]

@@ -122,7 +122,7 @@ class Table(BaseWidget):
     }
 
     _elements: list[TableRow[Any]]  # Elements the Table contains atm
-    elements: tuple[TableRow[Any]]   # Prevent users from tampering with _elements...
+    table_elements: tuple[TableRow[Any]]   # Prevent users from tampering with _elements...
     _element_dict: dict[int:TableRow[Any]] # Hash:Element ~ Elements as a dict to find them quicker
 
     _headings: tuple    # Column headings
@@ -164,12 +164,12 @@ class Table(BaseWidget):
             self.bind_event("<<TreeviewSelect>>",key=key,key_function=key_function)
 
     @property
-    def elements(self):
+    def table_elements(self):
         return tuple(self._elements)
 
-    @elements.setter
-    def elements(self,new_val):
-        raise AttributeError("You tried to set elements directly on a sg.Table. Don't do that.\nsg.Table has a lot of functions you can use to change elements.")
+    @table_elements.setter
+    def table_elements(self, new_val):
+        raise AttributeError("You tried to set table_elements directly on a sg.Table. Don't do that.\nsg.Table has a lot of functions you can use to change elements.")
 
     can_reset_value_changes = False
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
@@ -236,7 +236,7 @@ class Table(BaseWidget):
             self._tk_kwargs["tabs"] = self._tabsize * temp.measure(" ")
 
     def _get_value(self) -> TableRow[str,...] | None:
-        temp = self.selection
+        temp = self.index
 
         if temp is None:
             return None
@@ -245,9 +245,7 @@ class Table(BaseWidget):
 
     def set_value(self,val:any):
         print("Warning!","It is not possible to set Values of sg.Table (yet)!")
-        print("     use .selection to set the selected item")
-
-    selection:tuple[str]
+        print("     use .index to set the selected item")
 
     def __getitem__(self, item: int):
         """
@@ -299,7 +297,7 @@ class Table(BaseWidget):
         for n,val in zip(range(self._headings_len), other):
             self.tk_widget.set(tag, column=n, value=val)
 
-    def index(self, item: TableRow | Iterable[Any]) -> int | None:
+    def find_index(self, item: TableRow | Iterable[Any]) -> int | None:
         """
         Finds the index of a given item.
         :param item: Can be an actual TableRow, or any iterable.
@@ -315,7 +313,7 @@ class Table(BaseWidget):
         return len(self._elements)
 
     @property
-    def selection(self) -> int | None:
+    def index(self) -> int | None:
         """
         Selected row (index)
         :return:
@@ -327,8 +325,8 @@ class Table(BaseWidget):
 
         return None
 
-    @selection.setter
-    def selection(self, new_val: int):
+    @index.setter
+    def index(self, new_val: int):
         if not new_val:
             self.tk_widget.selection_set()
             self.tk_widget.focus("")

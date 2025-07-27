@@ -253,6 +253,7 @@ class Listbox(BaseWidget):
             self.tk_widget.delete(i)
             del self._list_elements[i]
 
+    # Todo: Do that with del x[...]. Also for the setter and getter.
     def delete_element(self,*element:str):
         """
         Delete certain element(s) by their value

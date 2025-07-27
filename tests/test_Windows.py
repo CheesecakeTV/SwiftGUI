@@ -99,7 +99,7 @@ for e,v in w:
     print(e,v)
     w["List"].append_front(e)
     print(w["List"].list_elements)
-    print(w["List"].index)
+    print(w["List"].find_index)
     #w["Check!"].flash()
     #w["Hallo Welt"].flash()
 
