@@ -30,7 +30,7 @@ class DictBidirect(dict):
         del self.rev[self[key]]
         super().__delitem__(key)
 
-@deprecated("WIP, doesn't work yet!")
+@deprecated("WIP, Treeview does work, but still a long way to go. Probably shouldn't use it atm...")
 class Treeview(BaseWidget):
     tk_widget:ttk.Treeview
     _tk_widget:ttk.Treeview

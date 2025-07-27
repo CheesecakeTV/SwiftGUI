@@ -19,6 +19,7 @@ from .Widgets.Listbox import Listbox
 from .Widgets.TKContainer import TKContainer
 from .Widgets.TextField import TextField
 from .Widgets.Treeview import Treeview
+from .Widgets.Table import Table
 
 from .WidgetsAdvanced.Form import Form
 from .WidgetsAdvanced.FileBrowseButton import FileBrowseButton
@@ -40,7 +41,7 @@ TKWidget = TKContainer
 
 Multiline = TextField
 
-AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview
+AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table
 
 from .Windows import Window
 

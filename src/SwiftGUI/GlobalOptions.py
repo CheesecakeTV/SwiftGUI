@@ -341,6 +341,9 @@ class TextField(Common,Common_Textual):
 class Treeview(DEFAULT_OPTIONS_CLASS):
     ...
 
+class Table(DEFAULT_OPTIONS_CLASS):
+    ...
+
 def reset_all_options():
     """
     Reset everything done to the global options on runtime.
