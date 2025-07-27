@@ -1,9 +1,7 @@
-import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
 from typing import Literal, Any
-from warnings import deprecated
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
@@ -23,29 +21,86 @@ class TableRow(list):
 
     def __setitem__(self, key, value):
         super().__setitem__(key,value)
-        self.refresh_my_tablerow()
+
+        if value is None:
+            value = ""
+
+        self.attached_table.tk_widget.set( # Change value in Treeview
+            str(hash(self)),
+            column=key,
+            value=value,
+        )
+        # No need to refresh the whole tablerow (Hope this doesn't bite me in the butt later...)
 
     def __delitem__(self, key):
         super().__delitem__(key)
-        self.refresh_my_tablerow()
+        self._refresh_my_tablerow()
 
     def __iadd__(self, other):
         super().__iadd__(other)
-        self.refresh_my_tablerow()
+        self._refresh_my_tablerow()
 
     def __imul__(self, other):
         super().__imul__(other)
-        self.refresh_my_tablerow()
+        self._refresh_my_tablerow()
 
     def __hash__(self):
         return self._id
 
-    def refresh_my_tablerow(self):
+    def append(self, __object):
+        super().append(__object)
+        self._refresh_my_tablerow()
+
+    def extend(self, __iterable):
+        super().extend(__iterable)
+        self._refresh_my_tablerow()
+
+    def insert(self, __index, __object):
+        super().insert(__index, __object)
+        self._refresh_my_tablerow()
+
+    def pop(self, __index = -1):
+        r = super().pop(__index)
+        return r
+
+    def remove(self, __value):
+        super().remove(__value)
+        self._refresh_my_tablerow()
+
+    def clear(self):
+        super().clear()
+        self._refresh_my_tablerow()
+
+    def sort(self, *, key = None, reverse = False):
+        super().sort(key = key, reverse = reverse)
+        self._refresh_my_tablerow()
+
+    def _refresh_my_tablerow(self):
         """
         Refresh this row in the connected sg.Table
         :return:
         """
-        ...
+        self.attached_table @ self  # Refresh table (at me)
+
+    def overwrite(self, new_vals: Iterable[Any]):
+        """
+        Basically replace this list with another but keeping its reference (id) intact
+        :param new_vals: Guess.
+        :return:
+        """
+        new_vals = tuple(new_vals)
+
+        while len(self) < len(new_vals):
+            super().append(None)
+
+        while len(self) > len(new_vals):
+            super().__delitem__(-1)
+
+        for i in range(len(new_vals)):
+            super().__setitem__(i, new_vals[i])
+
+        self._refresh_my_tablerow()
+
 
 class Table(BaseWidget):
     tk_widget:ttk.Treeview
@@ -66,7 +121,8 @@ class Table(BaseWidget):
         # "text_color":"fg",
     }
 
-    elements: list[TableRow[Any]]  # Elements the Table contains atm
+    _elements: list[TableRow[Any]]  # Elements the Table contains atm
+    elements: tuple[TableRow[Any]]   # Prevent users from tampering with _elements...
     _element_dict: dict[int:TableRow[Any]] # Hash:Element ~ Elements as a dict to find them quicker
 
     _headings: tuple    # Column headings
@@ -89,7 +145,7 @@ class Table(BaseWidget):
 
         # if elements is None:
         #     elements = dict()
-        self.elements = list()
+        self._elements = list()
         self._element_dict = dict()
 
         self._headings = tuple(headings)
@@ -106,6 +162,14 @@ class Table(BaseWidget):
 
         if default_event:
             self.bind_event("<<TreeviewSelect>>",key=key,key_function=key_function)
+
+    @property
+    def elements(self):
+        return tuple(self._elements)
+
+    @elements.setter
+    def elements(self,new_val):
+        raise AttributeError("You tried to set elements directly on a sg.Table. Don't do that.\nsg.Table has a lot of functions you can use to change elements.")
 
     can_reset_value_changes = False
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
@@ -180,9 +244,75 @@ class Table(BaseWidget):
         return self._element_dict[str(temp)]
 
     def set_value(self,val:any):
-        print("Warning!","It is not possible to set Values of sg.Treeview (yet)!")
+        print("Warning!","It is not possible to set Values of sg.Table (yet)!")
+        print("     use .selection to set the selected item")
 
     selection:tuple[str]
+
+    def __getitem__(self, item: int):
+        """
+        Get the item at specified index
+        :param item:
+        :return:
+        """
+        return self._elements[item]
+
+    def __setitem__(self, index: int, row: Iterable[Any]):
+        """
+        Overwrite the whole row at said position.
+        :param index: Element to edit
+        :param row: Values of the new row. WARNING! IF YOU PASS A TABLE-ROW, ITS REFERENCE WILL BE DETACHED!
+        :return:
+        """
+        old_row = self._elements[index]
+
+        if row is None: # No idea why this is necessary, but somehow it is...
+            return
+
+        old_row.overwrite(row)
+
+    def __delitem__(self, index: int):
+        """
+        Remove an entire row from the list
+        :param index:
+        :return:
+        """
+        row = self._elements[index]
+        del self._elements[index]
+
+        iid = str(hash(row))
+        del self._element_dict[iid]
+
+        self.tk_widget.delete(iid)
+
+    def __matmul__(self, other: TableRow):
+        """
+        Refresh some row.
+        Don't use, it's just for me!
+        :param other:
+        :return:
+        """
+        tag = str(hash(other))
+        if len(other) < self._headings_len:
+            other = other + [""] * (self._headings_len - len(other))
+
+        for n,val in zip(range(self._headings_len), other):
+            self.tk_widget.set(tag, column=n, value=val)
+
+    def index(self, item: TableRow | Iterable[Any]) -> int | None:
+        """
+        Finds the index of a given item.
+        :param item: Can be an actual TableRow, or any iterable.
+        :return:
+        """
+        if isinstance(item, TableRow):
+            return self._element_dict.get(str(hash(item)))
+
+        return self._elements.index(TableRow(self, item))
+
+    def __len__(self):
+        """Item-Count"""
+        return len(self._elements)
 
     @property
     def selection(self) -> int | None:
@@ -204,7 +334,7 @@ class Table(BaseWidget):
             self.tk_widget.focus("")
             return
 
-        temp = str(hash(self.elements[new_val]))
+        temp = str(hash(self._elements[new_val]))
         self.tk_widget.selection_set(temp)
         self.tk_widget.focus(temp)
 
@@ -215,24 +345,64 @@ class Table(BaseWidget):
         if self._headings:
             headings = iter(self._headings)
 
-            for h in headings:  # Deploy the remaining ones
-                self.tk_widget.heading(h,text=h)
+            for n,h in enumerate(headings):
+                self.tk_widget.heading(n,text=h)
 
         self.tk_widget["show"] = "headings"   # Removes first column
+
+    def insert(self,row: Iterable[Any], index: int) -> TableRow:
+        """
+        Append a single row to the Table.
+        The returned object can be used to modify that row.
+        :param index: Item will be added BEFORE this. Pass "end" for it to work like .append
+        :param row: The element to add
+        :return: Added element. You may edit this to edit the row itself.
+        """
+        row = TableRow(self,row)
+
+        self._elements.insert(index, row)
+        self._element_dict[str(hash(row))] = row
+        self.tk_widget.insert("",index=index,values=row,iid=hash(row))
+
+        return row
+
+    def insert_multiple(self,rows:Iterable[Iterable[Any]], index: int) -> tuple[TableRow, ...]:
+        """
+        Insert multiple rows at once.
+        They will be ordered like the list you pass, starting at the index you pass
+        :param rows:
+        :param index:
+        :return: Tuple of all the rows you added
+        """
+        r = []
+        for row in rows:
+            r.append(self.insert(row,index))
+            index += 1
+
+        return tuple(r)
 
     def append(self,row: Iterable[Any]) -> TableRow:
         """
         Append a single row to the Table.
         The returned object can be used to modify that row.
         :param row:
-        :return:
+        :return: Added element. You may edit this to edit the row itself.
         """
         row = TableRow(self,row)
-        self.elements.append(row)
+        self._elements.append(row)
         self._element_dict[str(hash(row))] = row
 
-        type(self.tk_widget.insert("","end",values=row,iid=hash(row)))
-
+        self.tk_widget.insert("",index = "end",values=row,iid=hash(row))
         return row
 
+    def extend(self,rows: Iterable[Iterable[Any]]) -> tuple[TableRow,...]:
+        """
+        Append multiple rows at once (like extend)
+        :param rows:
+        :return: Tuple of all added elements
+        """
+        r = []
+        for row in rows:
+            r.append(self.append(row))
 
+        return tuple(r)
