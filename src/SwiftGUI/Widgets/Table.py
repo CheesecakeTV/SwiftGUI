@@ -246,7 +246,7 @@ class Table(BaseWidget):
         if temp is None:
             return None
 
-        return self._element_dict[str(temp)]
+        return self._element_dict[str(hash(self._elements[temp]))]
 
     def set_value(self,val:any):
         print("Warning!","It is not possible to set Values of sg.Table (yet)!")
@@ -394,6 +394,27 @@ class Table(BaseWidget):
 
         return tuple(r)
 
+    def clear_whole_table(self):
+        """
+        Clear the whole table leaving it blank
+        :return:
+        """
+        iids = map(str, map(hash, self._elements))
+
+        self.tk_widget.delete(*iids)
+
+        self._elements = list()
+        self._element_dict = dict()
+
+    def overwrite_table(self, new_table: Iterable[Iterable[Any]]):
+        """
+        Clear the whole table and replace its elements with a new table.
+        :param new_table:
+        :return:
+        """
+        self.clear_whole_table()
+        self.insert_multiple(new_table, 0)
+
     def append(self,row: Iterable[Any]) -> TableRow:
         """
         Append a single row to the Table.
@@ -481,5 +502,12 @@ class Table(BaseWidget):
         self.move(index2, index1 + 1)
         self.move(index1, index2)
 
+    def see(self, index: int = 0):
+        """
+        Scroll through the list to see a certain index.
+        :param index: Row to view
+        :return:
+        """
+        self.tk_widget.see(str(hash(self._elements[index])))
 
 

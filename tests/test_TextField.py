@@ -13,17 +13,18 @@ layout = [
         sg.Button("Event",key="Event"),
         sg.In(),
     ],[
-        table := sg.Table(headings=["Hallo","Welt","Wie","Gehts?"], key="table", default_event=True, key_function=lambda val:val.__setitem__(0,"Clicked!"))
+        #table := sg.Table(headings=["Hallo","Welt","Wie","Gehts?"], key="table", default_event=True, key_function=lambda val:val.__setitem__(0,"Clicked!")),
+        table := sg.Table(headings=["Hallo", "Welt", "Wie", "Gehts?"], key="table", default_event=True)
     ]
 ]
 
 
 w = sg.Window(layout)
 
-for i in range(5):
+for i in range(50):
     table.append(["Hallo","Welt",i, "Letztes Feld!!!"])
 
-table.index = 3
+#table.index = 3
 #table[5][1] = None
 # table[5][0] = "Funktioniert!!!"
 # table[5] += ["Hmmmm"]
@@ -44,4 +45,5 @@ for e,v in w:
     #del table[0]
     print(table.index, table.value)
     print("")
+    #table.overwrite_table([[i] for i in range(15)])
 
