@@ -3,6 +3,7 @@ import random
 import SwiftGUI as sg
 import tkinter.ttk as ttk
 
+from SwiftGUI import Color
 
 layout = [
     [
@@ -14,12 +15,13 @@ layout = [
         sg.In(),
     ],[
         #table := sg.Table(headings=["Hallo","Welt","Wie","Gehts?"], key="table", default_event=True, key_function=lambda val:val.__setitem__(0,"Clicked!")),
-        table := sg.Table(headings=["Hallo", "Welt", "Wie", "Gehts?"], key="table", default_event=True)
+        table := sg.Table(headings=["Hallo", "Welt", "Wie", "Gehts?"], key="table", default_event=True, tk_kwargs={"style":"t.Treeview"})
     ]
 ]
 
 
 w = sg.Window(layout)
+w.style.configure("t.Treeview",background = sg.Color.indian_red)
 
 for i in range(50):
     table.append(["Hallo","Welt",i, "Letztes Feld!!!"])

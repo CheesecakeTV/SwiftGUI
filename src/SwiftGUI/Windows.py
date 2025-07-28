@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from collections.abc import Iterable,Callable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Self
@@ -34,7 +35,6 @@ class Window(BaseElement):
             layout:Iterable[Iterable[BaseElement]],
             title:str = None,
             /,
-            # global_options:dict[str:str] = None, # Todo: This conflicts with other global-options
             alignment: Literals.alignment = None,
             titlebar: bool = None,  # Titlebar visible
             resizeable_width=None,
@@ -82,6 +82,7 @@ class Window(BaseElement):
             elem.init_window_creation_done()
 
         self.refresh_values()
+        self.style: ttk.Style = ttk.Style()
 
     def __iter__(self) -> Self:
         return self

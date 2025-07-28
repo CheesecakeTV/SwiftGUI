@@ -113,6 +113,8 @@ class Table(BaseWidget):
     _tk_widget_class:type = ttk.Treeview # Class of the connected widget
     defaults = GlobalOptions.Table
 
+    _styletype:str = "Treeview"
+
     _transfer_keys = {
         # # "background_color_disabled":"disabledbackground",
         # "background_color":"background",
@@ -132,10 +134,11 @@ class Table(BaseWidget):
 
     _headings: tuple    # Column headings
 
+    # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Treeview.html
     def __init__(
             self,
             # Add here
-            #elements: dict|Iterable[Iterable[str]] = None,
+            elements: Iterable[Iterable[Any]] = None,
             /,
             key: Any = None,
             key_function: Callable|Iterable[Callable] = None,
@@ -148,10 +151,12 @@ class Table(BaseWidget):
     ):
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand)
 
-        # if elements is None:
-        #     elements = dict()
         self._elements = list()
         self._element_dict = dict()
+
+        if elements is None:
+            elements = list()
+        self._elements_initial = elements
 
         self._headings = tuple(headings)
         self._headings_len = len(self._headings)
@@ -362,6 +367,9 @@ class Table(BaseWidget):
                 self.tk_widget.heading(n,text=h)
 
         self.tk_widget["show"] = "headings"   # Removes first column
+
+        self.insert_multiple(self._elements_initial,0)
+        del self._elements_initial
 
     def insert(self,row: Iterable[Any], index: int) -> TableRow:
         """
