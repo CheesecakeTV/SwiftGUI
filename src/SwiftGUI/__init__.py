@@ -5,7 +5,7 @@ from . import GlobalOptions, Literals, Tools
 from .ElementFlags import ElementFlag
 
 from .Events import Event
-from .Base import BaseElement,BaseWidget,BaseWidgetContainer,ElementFlag
+from .Base import BaseElement,BaseWidget,BaseWidgetContainer,ElementFlag,BaseWidgetTTK
 #from .KeyManager import Key,SEPARATOR,duplicate_warnings   # Todo: Make some decent key-manager
 
 from .Widgets.Text import Text

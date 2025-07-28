@@ -77,12 +77,16 @@ class Window(BaseElement):
         self.update(title,titlebar, resizeable_width, resizeable_height, fullscreen, transparency, size, position, min_size, max_size, icon, keep_on_top, background_color,_first_update=True)
 
         self._sg_widget.window_entry_point(self._tk, self)
+        self._config_ttk_queue = list()
 
+        self.ttk_style: ttk.Style = ttk.Style()
         for elem in self.all_elements:
             elem.init_window_creation_done()
+        self.init_window_creation_done()
 
         self.refresh_values()
-        self.style: ttk.Style = ttk.Style()
+
+
 
     def __iter__(self) -> Self:
         return self

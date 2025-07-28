@@ -427,18 +427,29 @@ class BaseWidget(BaseElement):
         except AttributeError:  # _tk_target_value isn't used
             return None
 
-    def _update_default_keys(self,kwargs):
+    def _transfer_kwargs_keys(self,kwargs: dict):
         """
-        Transfers/renames keys in kwargs, then applies them
+        Transfer/rename keys in kwargs
         :param kwargs:
         :return:
         """
-
         transfer = set(filter(lambda a:a in kwargs.keys(),self._transfer_keys.keys()))
 
         for key in transfer:
             kwargs[self._transfer_keys[key]] = kwargs[key]
             del kwargs[key]
+
+        return kwargs
+
+    def _update_default_keys(self,kwargs: dict,transfer_keys: bool = True):
+        """
+        Transfers/renames keys in kwargs, then applies them
+        :param transfer_keys: Simple way to bypass key-transfer
+        :param kwargs:
+        :return:
+        """
+        if transfer_keys:
+            self._transfer_kwargs_keys(kwargs)
 
         self._tk_kwargs.update(kwargs)
 
@@ -470,4 +481,89 @@ class BaseWidgetContainer(BaseWidget):
         super()._flag_init()
         self._line_insert_kwargs = dict()
         self.add_flags(ElementFlag.IS_CONTAINER)
+
+class BaseWidgetTTK(BaseWidget):
+    _styletype: str = None  # Style will be named n.styletype
+    _style: str = None  # Registered style of this widget
+    _stylecounter: int = 0   # This ensures every style has an unique number
+
+    _transfer_keys = {  # Usual couple of keys
+        # "background_color_disabled":"disabledbackground",
+        "background_color":"background",
+        # "text_color_disabled": "disabledforeground",
+        "highlightbackground_color": "highlightbackground",
+        "selectbackground_color": "selectbackground",
+        "select_text_color": "selectforeground",
+        # "pass_char":"show",
+        "background_color_active" : "activebackground",
+        "text_color_active" : "activeforeground",
+        "text_color":"foreground",
+    }
+
+    _tk_kwargs_for_style: list = [  # These will not pass through to the widget, but to its style
+        "background_color",
+        "text_color",
+        #"relief",
+        #"font",
+    ]
+
+    def __init__(self, *args, **kwargs):
+        self._style = str(BaseWidgetTTK._stylecounter) + "." + self._styletype
+        self._config_ttk_queue = list()
+
+        if not "style" in kwargs:
+            kwargs["style"] = self._style
+
+        super().__init__(*args, **kwargs)
+
+    def _update_default_keys(self, kwargs, transfer_keys:bool = True):
+        transfer = set(filter(lambda a:a in kwargs.keys(), self._tk_kwargs_for_style))   # All keys that go to the style
+        style_kwargs = dict()
+
+        for key in transfer:
+            style_kwargs[key] = kwargs[key]
+            del kwargs[key]
+
+        if transfer_keys:
+            self._transfer_kwargs_keys(kwargs)
+            self._transfer_kwargs_keys(style_kwargs)
+
+        if style_kwargs:
+
+            self._config_ttk_style(**style_kwargs)
+
+        self._tk_kwargs.update(kwargs)
+
+        super()._update_default_keys(kwargs, transfer_keys = False)
+
+    def init_window_creation_done(self):
+        super().init_window_creation_done()
+
+        for kwargs in self._config_ttk_queue:
+            self._config_ttk_style(**kwargs)
+        self._config_ttk_queue = list()
+
+    _uses_style: bool = False
+    _config_ttk_queue: list[dict]  # kwargs     (Will configure the ttk themes after the window is created)
+    def _config_ttk_style(self, **kwargs):
+        """
+        Don't use unless you create your own ttk-widget, which you probably won't do.
+        Changes the configuration of a ttk-style.
+
+        :param kwargs: passed to the style
+        :return:
+        """
+        if not self.has_flag(ElementFlag.IS_CREATED):
+            self._config_ttk_queue.append(kwargs)
+            return
+
+        if not self._uses_style:    # Todo: Doesn't work as expected yet...
+            self._uses_style = True
+
+            self.window.ttk_style.map(self._style, **self.window.ttk_style.map(self._styletype))
+
+        self.window.ttk_style.configure(self._style, **kwargs)
+
+
+
 

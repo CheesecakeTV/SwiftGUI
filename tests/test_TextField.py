@@ -5,6 +5,8 @@ import tkinter.ttk as ttk
 
 from SwiftGUI import Color
 
+sg.Themes.Hacker()
+
 layout = [
     [
         sg.Spacer(15),
@@ -15,13 +17,15 @@ layout = [
         sg.In(),
     ],[
         #table := sg.Table(headings=["Hallo","Welt","Wie","Gehts?"], key="table", default_event=True, key_function=lambda val:val.__setitem__(0,"Clicked!")),
-        table := sg.Table(headings=["Hallo", "Welt", "Wie", "Gehts?"], key="table", default_event=True, tk_kwargs={"style":"t.Treeview"})
+        table := sg.Table(headings=["Hallo", "Welt", "Wie", "Gehts?"], key="table", default_event=True)
     ]
 ]
 
-
 w = sg.Window(layout)
-w.style.configure("t.Treeview",background = sg.Color.indian_red)
+#table.update(background_color = "red")
+print("style",w.ttk_style.map("Treeview"))
+#table.update(background_color = sg.Color.cadet_blue)
+#table.update(text_color = "red")
 
 for i in range(50):
     table.append(["Hallo","Welt",i, "Letztes Feld!!!"])

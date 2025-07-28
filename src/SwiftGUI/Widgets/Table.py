@@ -3,7 +3,8 @@ import tkinter.font as font
 from collections.abc import Iterable, Callable
 from typing import Literal, Any
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, BaseWidgetTTK
+
 
 class TableRow(list):
     """
@@ -107,7 +108,7 @@ class TableRow(list):
 
         return super().__eq__(other)
 
-class Table(BaseWidget):
+class Table(BaseWidgetTTK):
     tk_widget:ttk.Treeview
     _tk_widget:ttk.Treeview
     _tk_widget_class:type = ttk.Treeview # Class of the connected widget
@@ -116,16 +117,16 @@ class Table(BaseWidget):
     _styletype:str = "Treeview"
 
     _transfer_keys = {
-        # # "background_color_disabled":"disabledbackground",
-        # "background_color":"background",
-        # # "text_color_disabled": "disabledforeground",
-        # "highlightbackground_color": "highlightbackground",
-        # "selectbackground_color": "selectbackground",
-        # "select_text_color": "selectforeground",
-        # # "pass_char":"show",
-        # "background_color_active" : "activebackground",
-        # "text_color_active" : "activeforeground",
-        # "text_color":"fg",
+        # "background_color_disabled":"disabledbackground",
+        "background_color":"background",
+        # "text_color_disabled": "disabledforeground",
+        "highlightbackground_color": "highlightbackground",
+        "selectbackground_color": "selectbackground",
+        "select_text_color": "selectforeground",
+        # "pass_char":"show",
+        "background_color_active" : "activebackground",
+        "text_color_active" : "activeforeground",
+        "text_color":"foreground",
     }
 
     _elements: list[TableRow[Any]]  # Elements the Table contains atm
@@ -168,6 +169,8 @@ class Table(BaseWidget):
             columns = self._headings,
             **tk_kwargs,
             selectmode= "browse",
+            #text_color = "red",
+            #font = ("Heveteca",12)
         )
 
         if default_event:
@@ -205,11 +208,8 @@ class Table(BaseWidget):
             case "font_overstrike":
                 self._overstrike = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
-            case "text":
-                self.value = new_val
-            case "tabs":
-                self._tabsize = new_val
-                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "elements":
+                self.overwrite_table(new_val)
             case _:
                 return False
 
