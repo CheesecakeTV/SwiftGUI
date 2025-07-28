@@ -263,7 +263,7 @@ class Listbox(BaseWidget):
         element = self.get_all_indexes_of(*element)
         self.delete_index(*element)
 
-    def get_index_of(self,value:str,default:int = None) -> int|None:
+    def index_of(self,value:str,default:int = None) -> int|None:
         """
         Returns the first index of a given string
         :param default: Returned if it doesn't contain the value

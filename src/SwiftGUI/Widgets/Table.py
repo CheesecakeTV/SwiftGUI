@@ -101,6 +101,11 @@ class TableRow(list):
 
         self._refresh_my_tablerow()
 
+    def __eq__(self, other):
+        if isinstance(other,TableRow):  # Make comparisons a little quicker (hopefully)
+            return hash(self) == hash(other)
+
+        return super().__eq__(other)
 
 class Table(BaseWidget):
     tk_widget:ttk.Treeview
@@ -297,7 +302,7 @@ class Table(BaseWidget):
         for n,val in zip(range(self._headings_len), other):
             self.tk_widget.set(tag, column=n, value=val)
 
-    def find_index(self, item: TableRow | Iterable[Any]) -> int | None:
+    def index_of(self, item: TableRow | Iterable[Any]) -> int | None:
         """
         Finds the index of a given item.
         :param item: Can be an actual TableRow, or any iterable.
@@ -320,19 +325,29 @@ class Table(BaseWidget):
         """
         temp = self.tk_widget.focus()
 
-        if temp:
-            return int(temp)
+        if not temp:
+            return None
 
-        return None
+        return self._elements.index(self._element_dict[temp])
 
     @index.setter
-    def index(self, new_val: int):
-        if not new_val:
+    def index(self, new_index: int):
+        self.set_index(new_index)
+
+    def set_index(self, new_index: int):
+        """
+        Select a specified row of the table
+
+        Same as .index = new_index
+        :param new_index: Index of the row to select
+        :return:
+        """
+        if not new_index:
             self.tk_widget.selection_set()
             self.tk_widget.focus("")
             return
 
-        temp = str(hash(self._elements[new_val]))
+        temp = str(hash(self._elements[new_index]))
         self.tk_widget.selection_set(temp)
         self.tk_widget.focus(temp)
 
@@ -404,3 +419,67 @@ class Table(BaseWidget):
             r.append(self.append(row))
 
         return tuple(r)
+
+    def move(self,from_index: int, to_index: int) -> None:
+        """
+        Move a row from one index to another.
+        Pass negative values to index the last n elements like you do with lists.
+
+        :param from_index:
+        :param to_index: Item will have this index afterwards.
+        :return:
+        """
+        row_from = self._elements[from_index]
+        if to_index < 0:
+            to_index = len(self) + to_index
+
+        self.tk_widget.move(str(hash(row_from)), "", to_index)
+
+        row_from = self._elements.pop(from_index)
+        self._elements.insert(to_index, row_from)
+
+    def move_up(self, index: int, n: int = 1):
+        """
+        Move one row up n places
+        :param index: What row to move
+        :param n: How many rows
+        :return:
+        """
+        index_new = max(index - n, 0)
+        self.move(index, index_new)
+
+    def move_down(self, index: int, n: int = 1):
+        """
+        Move one row down n places
+        :param index: What row to move
+        :param n: How many rows
+        :return:
+        """
+        index_new = min(index + n, len(self._elements) - 1)
+        self.move(index, index_new)
+
+    def swap(self, index1: int, index2: int):
+        """
+        Swap two rows
+
+        :param index1:
+        :param index2:
+        :return:
+        """
+        if index1 == index2:
+            return
+
+        if index1 < 0:
+            index1 = len(self._elements) + index1
+
+        if index2 < 0:
+            index2 = len(self._elements) + index2
+
+        if index1 > index2: # Force index1 < index2
+            index2, index1 = index1, index2
+
+        self.move(index2, index1 + 1)
+        self.move(index1, index2)
+
+
+
