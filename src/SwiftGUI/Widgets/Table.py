@@ -1,6 +1,7 @@
 import tkinter.ttk as ttk
-from collections.abc import Iterable, Callable
-from typing import Literal, Any
+from collections.abc import Iterable, Callable, Mapping, Iterator
+from functools import partial
+from typing import Literal, Any, Self, Generator
 
 from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK
 
@@ -132,6 +133,9 @@ class Table(BaseWidgetTTK):
             default_event: bool = False,
 
             headings: Iterable[str] = ("Forgot to add headings?",),
+            column_width: int | Iterable[int] = None,
+
+            sort_col_by_clicking: bool = None,
 
             # Fonts
             fonttype: str = None,
@@ -152,6 +156,8 @@ class Table(BaseWidgetTTK):
             background_color_headings: str | Color = None,
             text_color: str | Color = None,
             text_color_headings: str | Color = None,
+
+            sort_on_col_click: bool = None,
 
             expand: bool = None,
             tk_kwargs: dict[str:any]=None
@@ -195,25 +201,92 @@ class Table(BaseWidgetTTK):
             font_italic_headings=font_italic_headings,
             font_underline_headings=font_underline_headings,
             font_overstrike_headings=font_overstrike_headings,
-        )
 
-        #self._config_ttk_style("Heading", foreground=Color.cadet_blue, background = Color.gold)
-        # self._config_ttk_style("Heading", font=("Helvetica", 12, "italic"), foreground="red", background = "blue")
-        # self._config_ttk_style("Heading", font=(font_windows.Small_Fonts, 12))
-        # self._config_ttk_style(sticky="e", styletype="Treeheading.text")
-        # self._map_ttk_style(
-        #     "Heading",
-        #           background=[("active", "red"), ("!active", "darkblue")],
-        #           foreground=[("active", "black"), ("!active", "blue")]
-        # )
-        # self._map_ttk_style(
-        #     "Heading",
-        #     background=[("active", "red"), ("!active", "lightblue")],
-        #     foreground=[("active", "black"), ("!active", "blue")]
-        # )
+            sort_col_by_clicking=sort_col_by_clicking,
+        )
 
         if default_event:
             self.bind_event("<<TreeviewSelect>>",key=key,key_function=key_function)
+
+    _last_sort_direction: bool = None  # True, if sorted non-reversed, False if sorted reversed
+    _last_sort_col: int = -1    # Col that got sorted last time
+    def _col_click_callback(self, column: int, *_):
+        """
+        Gets called when a column is clicked
+        :param column:
+        :return:
+        """
+        if self._sort_col_by_clicking:
+            if self._last_sort_col != column:
+                self._last_sort_direction = True
+                self._last_sort_col = column
+
+            self._last_sort_direction = not self._last_sort_direction
+            self.sort(
+                column,
+                empty_to_back=not self._last_sort_direction,
+                reverse=self._last_sort_direction
+            )
+
+    def sort(self, by_column:int | str = None, key: Callable = None, reverse: bool = False, empty_to_back: bool = True) -> Self:
+        """
+        Sort the whole table either:
+        - The normal way (First column takes priority, then second, ...)
+        - By a column (normal sort method on that column)
+        - By a function (key) that gets passed the whole row
+        - By a function (key) that gets passed only the value of the by_column-column
+
+        :param empty_to_back: True, if empty (None or "") values should get the lowest priority. by_column MUST BE DEFINED!
+        :param by_column: Pass a string (name of the column) or its index. If multiple columns have the same name, first one will be used.
+        :param key: Key function. Same as .sort on lists. If you pass by_column, this function will receive ONLY THE VALUE OF THAT COLUMN
+        :param reverse: True, if order should be reversed
+        :return: sg.Table-Element for inline calls
+        """
+        if isinstance(by_column, str):
+            assert by_column in self._headings, "You tried to sort a Table by a column that doesn't exist. Recheck your arguments, column-names are case-sensitive."
+            by_column = self._headings.index(by_column)
+
+        if not self._elements:
+            return self
+
+        if by_column is None and key is None:
+            sort_fkt = lambda a:a   # Normal sort.
+
+        elif by_column is None:
+            sort_fkt = key
+
+        elif key is None:
+            sort_fkt = lambda a:a[by_column]
+
+        else:
+            sort_fkt = lambda a:key(a[by_column])
+
+        if by_column is not None:
+            def sort_fkt_final(a):
+                if a[by_column] is None or a[by_column] == "":
+                    return (empty_to_back,)  # 1 will be on the end
+
+                return not empty_to_back, sort_fkt(a)   # 0 will be on the start
+        else:
+            sort_fkt_final = sort_fkt
+
+        self._elements.sort(key= sort_fkt_final, reverse=reverse)
+
+        iids = list(self._get_all_iids(self._elements))
+        #self.tk_widget.detach(*iids)   # Not necessary and might clear selection. Just moving is more elegant
+        for n,iid in enumerate(iids):
+            self.tk_widget.move(iid, "", n)
+
+        return self
+
+    @staticmethod
+    def _get_all_iids(elements: Iterable[TableRow]) -> Iterator[str]:
+        """
+        Returns a generator with all iids of the passed elements
+        :param elements:
+        :return:
+        """
+        return map(str, map(hash, elements))
 
     @property
     def table_elements(self):
@@ -226,7 +299,8 @@ class Table(BaseWidgetTTK):
     can_reset_value_changes = False
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         match key:
-
+            case "sort_col_by_clicking":
+                self._sort_col_by_clicking = new_val
             case "readonly":
                 self._tk_kwargs["state"] = "disabled" if new_val else "normal"
             case "text_color":
@@ -452,7 +526,7 @@ class Table(BaseWidgetTTK):
             headings = iter(self._headings)
 
             for n,h in enumerate(headings):
-                self.tk_widget.heading(n,text=h)
+                self.tk_widget.heading(n,text=h,command=partial(self._col_click_callback, n))   # Set callback to always pass the col-ID
 
         self.tk_widget["show"] = "headings"   # Removes first column
 

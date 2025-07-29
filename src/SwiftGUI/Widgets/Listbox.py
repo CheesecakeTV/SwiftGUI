@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Self
+from typing import Self, Any
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
@@ -25,7 +25,7 @@ class Listbox(BaseWidget):
 
     def __init__(
             self,
-            default_list: Iterable[str] = None,
+            default_list: Iterable[Any] = None,
             /,
             key: any = None,
             default_event: bool = False,
@@ -60,6 +60,8 @@ class Listbox(BaseWidget):
         super().__init__(key, tk_kwargs=tk_kwargs, expand=expand)
 
         self._key_function = key_function
+        if default_list is None:
+            default_list = list()
         self._list_elements = list(default_list)
 
         if tk_kwargs is None:

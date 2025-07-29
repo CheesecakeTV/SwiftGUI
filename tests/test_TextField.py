@@ -64,8 +64,13 @@ print(s.theme_names())
 # pprint(w.ttk_style.layout("0.Treeview"))
 
 
-for i in range(50):
+for i in range(5):
     table.append(["Hallo","Welt",i, "Letztes Feld!!!"])
+
+for i in range(5):
+    table.insert(["", "", "", "rand"], random.randint(0,5))
+
+#table.sort(empty_to_back=True, key=lambda a:a[0] != "Hallo")
 
 #table.index = 3
 #table[5][1] = None
@@ -76,7 +81,7 @@ for i in range(50):
 # table.move(3,0)
 # table.move_up(3,2)
 # table.move_down(1,5)
-table.swap(0,-1)
+#table.swap(0,-1)
 
 #table.insert_multiple([[n] for n in range(5)],2)
 

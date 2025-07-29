@@ -358,6 +358,7 @@ class Table(Common, Common_Textual):
     background_color_headings: str | Color = None
     text_color_headings: str | Color = None
 
+    sort_col_by_clicking: bool = True
 
 def reset_all_options():
     """
