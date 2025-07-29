@@ -66,6 +66,7 @@ class Window(BaseElement):
         :param icon: Icon of the window. Has to be .ico
         :param keep_on_top: True, if the window should always be on top of any other window
         """
+        super().__init__()
         self.all_elements:list["AnyElement"] = list()   # Elements will be registered in here
         self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
         self.values = dict()

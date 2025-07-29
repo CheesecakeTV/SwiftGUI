@@ -1,4 +1,5 @@
 import random
+from pprint import pprint
 
 import SwiftGUI as sg
 import tkinter.ttk as ttk
@@ -17,15 +18,45 @@ layout = [
         sg.In(),
     ],[
         #table := sg.Table(headings=["Hallo","Welt","Wie","Gehts?"], key="table", default_event=True, key_function=lambda val:val.__setitem__(0,"Clicked!")),
-        table := sg.Table(headings=["Hallo", "Welt", "Wie", "Gehts?"], key="table", default_event=True)
+        table := sg.Table(headings=["Hallo", "Welt", "Wie", "Gehts?"], key="table", default_event=True)#.bind_event(sg.Event.MouseEnter, key_function=lambda :print("Klappt"))
+    ],[
+        sg.TKContainer(ttk.Button, text = "Hallo Welt")
     ]
 ]
 
 w = sg.Window(layout)
+
+s = w.ttk_style
+#s.theme_use("default")
+pprint(s.layout("Treeview.Heading"))
+#pprint(s.layout("Treeview.treearea"))
+
+# pprint(s.layout("TButton"))
+# print(s.element_options("TButton"))
+# #s.configure("TButton.label",background = "red")
+# s.configure("TButton.focus",background = "red")
+
+# pprint(s.layout("TButton"))
+
+#sg.Literals.relief
+
 #table.update(background_color = "red")
-print("style",w.ttk_style.map("Treeview"))
+# pprint(
+#     #w.ttk_style.layout("TButton"),
+#     w.ttk_style.element_options("Treeview.padding")
+# )
+#w.ttk_style.layout("Treeview", [("Treeview.field",{"border": 5})])
 #table.update(background_color = sg.Color.cadet_blue)
 #table.update(text_color = "red")
+
+
+# pprint(w.ttk_style.layout("0.Treeview"))
+# temp = w.ttk_style.layout("0.Treeview")
+# temp[0][1]["border"] = 5
+# #w.ttk_style.configure("0.Treeview.padding",sticky="n")
+# w.ttk_style.layout("0.Treeview",temp)
+# pprint(w.ttk_style.layout("0.Treeview"))
+
 
 for i in range(50):
     table.append(["Hallo","Welt",i, "Letztes Feld!!!"])

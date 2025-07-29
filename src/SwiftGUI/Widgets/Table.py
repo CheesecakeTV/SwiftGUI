@@ -3,7 +3,7 @@ import tkinter.font as font
 from collections.abc import Iterable, Callable
 from typing import Literal, Any
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, BaseWidgetTTK
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, BaseWidgetTTK, font_windows
 
 
 class TableRow(list):
@@ -172,6 +172,11 @@ class Table(BaseWidgetTTK):
             #text_color = "red",
             #font = ("Heveteca",12)
         )
+
+        #self._config_ttk_style(foreground="red",background="blue")
+        # self._config_ttk_style(font=("Helvetica",12))
+        # self._config_ttk_style("Heading", font=("Helvetica", 12, "italic"), foreground="red", background = "blue")
+        # self._config_ttk_style("Heading", font=(font_windows.Small_Fonts, 12))
 
         if default_event:
             self.bind_event("<<TreeviewSelect>>",key=key,key_function=key_function)

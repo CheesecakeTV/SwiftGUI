@@ -21,6 +21,7 @@ class Form(BaseElement):
             key:any = "",
             seperate_keys:bool=False,   # Key for every input
     ):
+        super().__init__()
         self.key = key
         self.texts = texts
 
