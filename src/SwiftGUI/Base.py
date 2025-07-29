@@ -549,7 +549,6 @@ class BaseWidgetTTK(BaseWidget):
 
     def __init__(self, *args, **kwargs):
         self._style = str(BaseWidgetTTK._stylecounter)
-        self._map_ttk_queue: list[tuple] = list()
 
         if not "style" in kwargs:
             kwargs["style"] = self._style + "." + self._styletype
@@ -581,20 +580,25 @@ class BaseWidgetTTK(BaseWidget):
 
         self.window.ttk_style.configure(self._style + "." + styletype + style_ext, **kwargs)
 
-    # @run_after_window_creation
-    # def _map_ttk_style(self, style_ext: str = "", **kwargs):
-    #     """
-    #     Don't use unless you create your own ttk-widget, which you probably won't do.
-    #     Changes the configuration of a ttk-style.
-    #
-    #     :param style_ext:   Appended to the element-style
-    #     :param kwargs: passed to the style
-    #     :return:
-    #     """
-    #     if style_ext:
-    #         style_ext = f".{style_ext}"
-    #
-    #     self.window.ttk_style.configure(self._style + "." + self._styletype + style_ext, **kwargs)
+    @run_after_window_creation
+    def _map_ttk_style(self, style_ext: str = "", styletype: str = None, **kwargs):
+        """
+        Don't use unless you create your own ttk-widget, which you probably won't do.
+        Changes the configuration of a ttk-style.
+
+        :param style_ext:   Appended to the element-style
+        :param styletype:   Pass this to overwrite the default styletype (self._styletype)
+        :param kwargs: passed to the style
+        :return:
+        """
+
+        if style_ext:
+            style_ext = f".{style_ext}"
+
+        if not styletype:
+            styletype = self._styletype
+
+        self.window.ttk_style.map(self._style + "." + styletype + style_ext, **kwargs)
 
 
 

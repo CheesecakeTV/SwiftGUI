@@ -80,7 +80,8 @@ class Window(BaseElement):
         self._sg_widget.window_entry_point(self._tk, self)
         self._config_ttk_queue = list()
 
-        self.ttk_style: ttk.Style = ttk.Style()
+        self.ttk_style: ttk.Style = ttk.Style(self._tk)
+        self.ttk_style.theme_use("clam")
         for elem in self.all_elements:
             elem.init_window_creation_done()
         self.init_window_creation_done()

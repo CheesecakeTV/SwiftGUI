@@ -169,14 +169,25 @@ class Table(BaseWidgetTTK):
             columns = self._headings,
             **tk_kwargs,
             selectmode= "browse",
-            #text_color = "red",
+            text_color = None,
+            background_color = None,
             #font = ("Heveteca",12)
         )
 
         #self._config_ttk_style(foreground="red",background="blue")
-        # self._config_ttk_style(font=("Helvetica",12))
-        # self._config_ttk_style("Heading", font=("Helvetica", 12, "italic"), foreground="red", background = "blue")
+        self._config_ttk_style("Heading", font=("Helvetica", 12, "italic"), foreground="red", background = "blue")
         # self._config_ttk_style("Heading", font=(font_windows.Small_Fonts, 12))
+        # self._config_ttk_style(sticky="e", styletype="Treeheading.text")
+        self._map_ttk_style(
+            "Heading",
+                  background=[("active", "red"), ("!active", "darkblue")],
+                  foreground=[("active", "black"), ("!active", "blue")]
+        )
+        self._map_ttk_style(
+            "Heading",
+            background=[("active", "red"), ("!active", "lightblue")],
+            foreground=[("active", "black"), ("!active", "blue")]
+        )
 
         if default_event:
             self.bind_event("<<TreeviewSelect>>",key=key,key_function=key_function)
@@ -195,6 +206,10 @@ class Table(BaseWidgetTTK):
 
             case "readonly":
                 self._tk_kwargs["state"] = "disabled" if new_val else "normal"
+            case "text_color":
+                self._config_ttk_style(foreground = new_val)
+            case "background_color":
+                self._config_ttk_style(background = new_val)
             case "fonttype":
                 self._fonttype = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
@@ -228,27 +243,27 @@ class Table(BaseWidgetTTK):
         super()._apply_update() # Actually apply the update
 
     def _personal_init(self):
-        # self._tk_kwargs.update({
-        #     "command": self.window.get_event_function(self, self.key, self._key_function)
-        # })
-
         super()._personal_init()
 
     def _update_font(self):
         # self._tk_kwargs will be passed to tk_widget later
-        temp = font.Font(
-            self.window.parent_tk_widget,
-            family=self._fonttype,
-            size=self._fontsize,
-            weight="bold" if self._bold else "normal",
-            slant="italic" if self._italic else "roman",
-            underline=bool(self._underline),
-            overstrike=bool(self._overstrike),
-        )
-        self._tk_kwargs["font"] = temp
+        # temp = font.Font(
+        #     self.window.parent_tk_widget,
+        #     family=self._fonttype,
+        #     size=self._fontsize,
+        #     weight="bold" if self._bold else "normal",
+        #     slant="italic" if self._italic else "roman",
+        #     underline=bool(self._underline),
+        #     overstrike=bool(self._overstrike),
+        # )
+        # self._tk_kwargs["font"] = temp
 
-        if self._tabsize is not None:
-            self._tk_kwargs["tabs"] = self._tabsize * temp.measure(" ")
+        font_options = [
+            self._fonttype,
+            self._fontsize,
+        ]
+
+        self._config_ttk_style(font=font_options)
 
     def _get_value(self) -> TableRow[str,...] | None:
         temp = self.index

@@ -6,7 +6,7 @@ import tkinter.ttk as ttk
 
 from SwiftGUI import Color
 
-sg.Themes.Hacker()
+#sg.Themes.Hacker()
 
 layout = [
     [
@@ -27,7 +27,7 @@ layout = [
 w = sg.Window(layout)
 
 s = w.ttk_style
-#s.theme_use("default")
+s.theme_use("clam")
 pprint(s.layout("Treeview.Heading"))
 #pprint(s.layout("Treeview.treearea"))
 

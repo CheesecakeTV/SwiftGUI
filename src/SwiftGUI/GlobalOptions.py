@@ -152,6 +152,12 @@ class Common(DEFAULT_OPTIONS_CLASS):
     takefocus:bool = True
     expand:bool = False
 
+class Common_Background(DEFAULT_OPTIONS_CLASS):
+    """
+    Common background-color
+    """
+    background_color: str | Color = "#FEFEFE"
+
 class Common_Textual(DEFAULT_OPTIONS_CLASS):
     """
     Widgets with texts
@@ -165,7 +171,7 @@ class Common_Textual(DEFAULT_OPTIONS_CLASS):
     anchor:Literals.anchor = "w"
     text_color:Color|str = None
 
-class Text(Common, Common_Textual):
+class Text(Common, Common_Textual, Common_Background):
     text:str = ""
     takefocus:bool = False
     underline:int = None
@@ -229,7 +235,7 @@ class Button(Common,Common_Textual):
     repeatdelay: int = None
     repeatinterval: int = None
 
-class Frame(Common):
+class Frame(Common, Common_Background):
     takefocus = False
     padding: Literals.padding = 3
     relief: Literals.relief = "flat"
@@ -237,7 +243,7 @@ class Frame(Common):
     alignment: Literals.alignment = None
     apply_parent_background_color: bool = True
 
-class Checkbox(Common,Common_Textual):
+class Checkbox(Common,Common_Textual, Common_Background):
     key: any = None
     default_value: bool = False
     readonly: bool = None
@@ -265,7 +271,7 @@ class Checkbox(Common,Common_Textual):
     # hilightbackground_color: str | Color = None
     # highlightcolor: str | Color = None
 
-class Window(DEFAULT_OPTIONS_CLASS):
+class Window(Common_Background):
     title = None
     background_color:Color|str = None
     titlebar: bool = True  # Titlebar visible
@@ -341,7 +347,7 @@ class TextField(Common,Common_Textual):
 class Treeview(DEFAULT_OPTIONS_CLASS):
     ...
 
-class Table(DEFAULT_OPTIONS_CLASS):
+class Table(Common, Common_Textual):
     ...
 
 def reset_all_options():

@@ -5,7 +5,6 @@ from tkinter import ttk
 
 
 sg.GlobalOptions.Common_Textual.fontsize = 10
-sg.themes.Hacker()
 #sg.GlobalOptions.reset_all_options()
 #sg.themes.FacebookMom()
 
@@ -81,6 +80,7 @@ layout = [
 ]
 
 w = sg.Window(layout,alignment="left")
+#w.update(background_color = "red")
 w["ContainerTest"].update(text="blue")
 #the_frame.update(background_color = "red")
 #w.update(background_color="red")
