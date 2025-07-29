@@ -1,9 +1,8 @@
 import tkinter.ttk as ttk
-import tkinter.font as font
 from collections.abc import Iterable, Callable
 from typing import Literal, Any
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, BaseWidgetTTK, font_windows
+from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK
 
 
 class TableRow(list):
@@ -116,19 +115,6 @@ class Table(BaseWidgetTTK):
 
     _styletype:str = "Treeview"
 
-    _transfer_keys = {
-        # "background_color_disabled":"disabledbackground",
-        "background_color":"background",
-        # "text_color_disabled": "disabledforeground",
-        "highlightbackground_color": "highlightbackground",
-        "selectbackground_color": "selectbackground",
-        "select_text_color": "selectforeground",
-        # "pass_char":"show",
-        "background_color_active" : "activebackground",
-        "text_color_active" : "activeforeground",
-        "text_color":"foreground",
-    }
-
     _elements: list[TableRow[Any]]  # Elements the Table contains atm
     table_elements: tuple[TableRow[Any]]   # Prevent users from tampering with _elements...
     _element_dict: dict[int:TableRow[Any]] # Hash:Element ~ Elements as a dict to find them quicker
@@ -146,6 +132,26 @@ class Table(BaseWidgetTTK):
             default_event: bool = False,
 
             headings: Iterable[str] = ("Forgot to add headings?",),
+
+            # Fonts
+            fonttype: str = None,
+            fontsize: int = None,
+            font_bold: bool = None,
+            font_italic: bool = None,
+            font_underline: bool = None,
+            font_overstrike: bool = None,
+
+            fonttype_headings: str = None,
+            fontsize_headings: int = None,
+            font_bold_headings: bool = None,
+            font_italic_headings: bool = None,
+            font_underline_headings: bool = None,
+            font_overstrike_headings: bool = None,
+
+            background_color: str | Color = None,
+            background_color_headings: str | Color = None,
+            text_color: str | Color = None,
+            text_color_headings: str | Color = None,
 
             expand: bool = None,
             tk_kwargs: dict[str:any]=None
@@ -169,25 +175,42 @@ class Table(BaseWidgetTTK):
             columns = self._headings,
             **tk_kwargs,
             selectmode= "browse",
-            text_color = None,
-            background_color = None,
-            #font = ("Heveteca",12)
+
+            background_color = background_color,
+            background_color_headings = background_color_headings,
+
+            text_color=text_color,
+            text_color_headings=text_color_headings,
+
+            fonttype = fonttype,
+            fontsize = fontsize,
+            font_bold = font_bold,
+            font_italic = font_italic,
+            font_underline = font_underline,
+            font_overstrike = font_overstrike,
+
+            fonttype_headings=fonttype_headings,
+            fontsize_headings=fontsize_headings,
+            font_bold_headings=font_bold_headings,
+            font_italic_headings=font_italic_headings,
+            font_underline_headings=font_underline_headings,
+            font_overstrike_headings=font_overstrike_headings,
         )
 
-        #self._config_ttk_style(foreground="red",background="blue")
-        self._config_ttk_style("Heading", font=("Helvetica", 12, "italic"), foreground="red", background = "blue")
+        #self._config_ttk_style("Heading", foreground=Color.cadet_blue, background = Color.gold)
+        # self._config_ttk_style("Heading", font=("Helvetica", 12, "italic"), foreground="red", background = "blue")
         # self._config_ttk_style("Heading", font=(font_windows.Small_Fonts, 12))
         # self._config_ttk_style(sticky="e", styletype="Treeheading.text")
-        self._map_ttk_style(
-            "Heading",
-                  background=[("active", "red"), ("!active", "darkblue")],
-                  foreground=[("active", "black"), ("!active", "blue")]
-        )
-        self._map_ttk_style(
-            "Heading",
-            background=[("active", "red"), ("!active", "lightblue")],
-            foreground=[("active", "black"), ("!active", "blue")]
-        )
+        # self._map_ttk_style(
+        #     "Heading",
+        #           background=[("active", "red"), ("!active", "darkblue")],
+        #           foreground=[("active", "black"), ("!active", "blue")]
+        # )
+        # self._map_ttk_style(
+        #     "Heading",
+        #     background=[("active", "red"), ("!active", "lightblue")],
+        #     foreground=[("active", "black"), ("!active", "blue")]
+        # )
 
         if default_event:
             self.bind_event("<<TreeviewSelect>>",key=key,key_function=key_function)
@@ -208,8 +231,13 @@ class Table(BaseWidgetTTK):
                 self._tk_kwargs["state"] = "disabled" if new_val else "normal"
             case "text_color":
                 self._config_ttk_style(foreground = new_val)
+            case "text_color_headings":
+                self._config_ttk_style("Heading", foreground = new_val)
             case "background_color":
                 self._config_ttk_style(background = new_val)
+            case "background_color_headings":
+                self._config_ttk_style("Heading", background = new_val)
+
             case "fonttype":
                 self._fonttype = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
@@ -228,6 +256,26 @@ class Table(BaseWidgetTTK):
             case "font_overstrike":
                 self._overstrike = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
+
+            case "fonttype_headings":
+                self._fonttype_headings = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "fontsize_headings":
+                self._fontsize_headings = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "font_bold_headings":
+                self._bold_headings = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "font_italic_headings":
+                self._italic_headings = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "font_underline_headings":
+                self._underline_headings = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "font_overstrike_headings":
+                self._overstrike_headings = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+
             case "elements":
                 self.overwrite_table(new_val)
             case _:
@@ -246,24 +294,44 @@ class Table(BaseWidgetTTK):
         super()._personal_init()
 
     def _update_font(self):
-        # self._tk_kwargs will be passed to tk_widget later
-        # temp = font.Font(
-        #     self.window.parent_tk_widget,
-        #     family=self._fonttype,
-        #     size=self._fontsize,
-        #     weight="bold" if self._bold else "normal",
-        #     slant="italic" if self._italic else "roman",
-        #     underline=bool(self._underline),
-        #     overstrike=bool(self._overstrike),
-        # )
-        # self._tk_kwargs["font"] = temp
-
         font_options = [
             self._fonttype,
             self._fontsize,
         ]
 
+        if self._bold:
+            font_options.append("bold")
+
+        if self._italic:
+            font_options.append("italic")
+
+        if self._underline:
+            font_options.append("underline")
+
+        if self._overstrike:
+            font_options.append("overstrike")
+
         self._config_ttk_style(font=font_options)
+
+        # And now for the headings
+        font_options = [
+            self._fonttype_headings if self._fontsize_headings else self._fonttype,
+            self._fontsize_headings if self._fontsize_headings else self._fontsize,
+        ]
+
+        if self._bold_headings:
+            font_options.append("bold")
+
+        if self._italic_headings:
+            font_options.append("italic")
+
+        if self._underline_headings:
+            font_options.append("underline")
+
+        if self._overstrike_headings:
+            font_options.append("overstrike")
+
+        self._config_ttk_style("Heading",font=font_options)
 
     def _get_value(self) -> TableRow[str,...] | None:
         temp = self.index

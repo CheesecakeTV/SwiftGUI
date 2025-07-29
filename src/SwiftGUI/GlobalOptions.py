@@ -273,7 +273,6 @@ class Checkbox(Common,Common_Textual, Common_Background):
 
 class Window(Common_Background):
     title = None
-    background_color:Color|str = None
     titlebar: bool = True  # Titlebar visible
     resizeable_width = False
     resizeable_height = False
@@ -285,6 +284,7 @@ class Window(Common_Background):
     max_size: tuple[int, int] = (None, None)
     icon: str = None  # .ico file
     keep_on_top: bool = False
+    ttk_theme: str = "default"
 
 class Listbox(Common,Common_Textual):
     activestyle:Literals.activestyle = "none"
@@ -348,7 +348,16 @@ class Treeview(DEFAULT_OPTIONS_CLASS):
     ...
 
 class Table(Common, Common_Textual):
-    ...
+    fonttype_headings: str = None
+    fontsize_headings: int = None
+    font_bold_headings: bool = None
+    font_italic_headings: bool = None
+    font_underline_headings: bool = None
+    font_overstrike_headings: bool = None
+
+    background_color_headings: str | Color = None
+    text_color_headings: str | Color = None
+
 
 def reset_all_options():
     """

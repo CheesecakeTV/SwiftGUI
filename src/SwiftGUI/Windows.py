@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from collections.abc import Iterable,Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, Self, Literal
 from warnings import deprecated
 import inspect
 
@@ -48,6 +48,7 @@ class Window(BaseElement):
             icon: str = None,  # .ico file
             keep_on_top: bool = None,
             background_color:Color | str = None,
+            ttk_theme: str = None,
     ):
         """
 
@@ -75,13 +76,12 @@ class Window(BaseElement):
 
         self._sg_widget:Frame = Frame(layout,alignment=alignment)
 
-        self.update(title,titlebar, resizeable_width, resizeable_height, fullscreen, transparency, size, position, min_size, max_size, icon, keep_on_top, background_color,_first_update=True)
+        self.ttk_style: ttk.Style = ttk.Style(self._tk)
+        self.update(title,titlebar, resizeable_width, resizeable_height, fullscreen, transparency, size, position, min_size, max_size, icon, keep_on_top, background_color, ttk_theme, _first_update=True)
 
         self._sg_widget.window_entry_point(self._tk, self)
         self._config_ttk_queue = list()
 
-        self.ttk_style: ttk.Style = ttk.Style(self._tk)
-        self.ttk_style.theme_use("clam")
         for elem in self.all_elements:
             elem.init_window_creation_done()
         self.init_window_creation_done()
@@ -116,6 +116,7 @@ class Window(BaseElement):
             icon: str = None,  # .ico file
             keep_on_top: bool = None,
             background_color: Color | str = None,
+            ttk_theme: str = None,
             _first_update: bool = False,
     ):
         if _first_update:
@@ -132,6 +133,10 @@ class Window(BaseElement):
             icon = GlobalOptions.Window.single("icon",icon)
             keep_on_top = GlobalOptions.Window.single("keep_on_top",keep_on_top)
             background_color = GlobalOptions.Window.single("background_color",background_color)
+            ttk_theme = GlobalOptions.Window.single("ttk_theme", ttk_theme)
+
+        if ttk_theme:
+            self.ttk_style.theme_use(ttk_theme)
 
         if background_color is not None:
             self._sg_widget.update(background_color=background_color)

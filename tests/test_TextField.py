@@ -18,17 +18,23 @@ layout = [
         sg.In(),
     ],[
         #table := sg.Table(headings=["Hallo","Welt","Wie","Gehts?"], key="table", default_event=True, key_function=lambda val:val.__setitem__(0,"Clicked!")),
-        table := sg.Table(headings=["Hallo", "Welt", "Wie", "Gehts?"], key="table", default_event=True)#.bind_event(sg.Event.MouseEnter, key_function=lambda :print("Klappt"))
+        table := sg.Table(
+            headings=["Hallo", "Welt", "Wie", "Gehts?"],
+            key="table",
+            default_event=True,
+        )#.bind_event(sg.Event.MouseEnter, key_function=lambda :print("Klappt"))
     ],[
         sg.TKContainer(ttk.Button, text = "Hallo Welt")
     ]
 ]
 
-w = sg.Window(layout)
+w = sg.Window(layout, ttk_theme="alt")
 
 s = w.ttk_style
-s.theme_use("clam")
-pprint(s.layout("Treeview.Heading"))
+print(s.theme_names())
+
+#s.theme_use("clam")
+#pprint(s.layout("Treeview.Heading"))
 #pprint(s.layout("Treeview.treearea"))
 
 # pprint(s.layout("TButton"))
