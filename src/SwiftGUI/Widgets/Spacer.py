@@ -1,5 +1,5 @@
 import tkinter as tk
-from SwiftGUI import BaseWidget, ElementFlag
+from SwiftGUI import BaseWidget, ElementFlag, GlobalOptions
 
 
 class Spacer(BaseWidget):
@@ -7,6 +7,7 @@ class Spacer(BaseWidget):
     Spacer with a certain width in pixels
     """
     _tk_widget_class = tk.Frame
+    defaults = GlobalOptions.Common_Background
 
     _transfer_keys = {
         "background_color":"bg"

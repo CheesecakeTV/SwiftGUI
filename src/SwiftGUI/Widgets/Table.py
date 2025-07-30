@@ -1,9 +1,10 @@
 import tkinter.ttk as ttk
 from collections.abc import Iterable, Callable, Mapping, Iterator
 from functools import partial
+from tkinter import font
 from typing import Literal, Any, Self, Generator
 
-from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK
+from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement
 
 
 class TableRow(list):
@@ -129,13 +130,13 @@ class Table(BaseWidgetTTK):
             elements: Iterable[Iterable[Any]] = None,
             /,
             key: Any = None,
-            key_function: Callable|Iterable[Callable] = None,
             default_event: bool = False,
+            key_function: Callable|Iterable[Callable] = None,
 
             headings: Iterable[str] = ("Forgot to add headings?",),
             column_width: int | Iterable[int] = None,
 
-            sort_col_by_clicking: bool = None,
+            sort_col_by_click: bool = None,
 
             # Fonts
             fonttype: str = None,
@@ -157,8 +158,6 @@ class Table(BaseWidgetTTK):
             text_color: str | Color = None,
             text_color_headings: str | Color = None,
 
-            sort_on_col_click: bool = None,
-
             expand: bool = None,
             tk_kwargs: dict[str:any]=None
     ):
@@ -169,7 +168,7 @@ class Table(BaseWidgetTTK):
 
         if elements is None:
             elements = list()
-        self._elements_initial = elements
+        self.insert_multiple(elements, 0)
 
         self._headings = tuple(headings)
         self._headings_len = len(self._headings)
@@ -179,6 +178,7 @@ class Table(BaseWidgetTTK):
 
         self.update(
             columns = self._headings,
+            column_width = column_width,
             **tk_kwargs,
             selectmode= "browse",
 
@@ -202,7 +202,7 @@ class Table(BaseWidgetTTK):
             font_underline_headings=font_underline_headings,
             font_overstrike_headings=font_overstrike_headings,
 
-            sort_col_by_clicking=sort_col_by_clicking,
+            sort_col_by_click=sort_col_by_click,
         )
 
         if default_event:
@@ -216,7 +216,7 @@ class Table(BaseWidgetTTK):
         :param column:
         :return:
         """
-        if self._sort_col_by_clicking:
+        if self._sort_col_by_click:
             if self._last_sort_col != column:
                 self._last_sort_direction = True
                 self._last_sort_col = column
@@ -228,6 +228,22 @@ class Table(BaseWidgetTTK):
                 reverse=self._last_sort_direction
             )
 
+    @BaseElement._run_after_window_creation
+    def resize_column(self, column: str | int, new_width: int) -> Self:
+        """
+        Resize a single column's width
+        :param column: index of the column or its name
+        :param new_width:
+        :return:
+        """
+        if isinstance(column, str):
+            assert column in self._headings, "You tried to resize a Table-Column that doesn't exist. Remember that column names are case-sensitive"
+            column = self._headings.index(column)
+
+        self.tk_widget.column(column, width= new_width * self._font_size_multiplier)
+        return self
+
+    @BaseElement._run_after_window_creation
     def sort(self, by_column:int | str = None, key: Callable = None, reverse: bool = False, empty_to_back: bool = True) -> Self:
         """
         Sort the whole table either:
@@ -294,13 +310,23 @@ class Table(BaseWidgetTTK):
 
     @table_elements.setter
     def table_elements(self, new_val):
-        raise AttributeError("You tried to set table_elements directly on a sg.Table. Don't do that.\nsg.Table has a lot of functions you can use to change elements.")
+        raise AttributeError("You tried to set table_elements directly on an sg.Table. Don't do that.\nsg.Table has a lot of methods you can use to change elements.")
 
-    can_reset_value_changes = False
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         match key:
-            case "sort_col_by_clicking":
-                self._sort_col_by_clicking = new_val
+            case "column_width":
+                if new_val is None:
+                    return True
+
+                if isinstance(new_val, int):
+                    new_val = (new_val, ) * self._headings_len
+
+                self._col_width_requested = new_val
+
+                for n,val in enumerate(new_val):
+                    self.resize_column(n, val)
+            case "sort_col_by_click":
+                self._sort_col_by_click = new_val
             case "readonly":
                 self._tk_kwargs["state"] = "disabled" if new_val else "normal"
             case "text_color":
@@ -318,6 +344,7 @@ class Table(BaseWidgetTTK):
             case "fontsize":
                 self._fontsize = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
+                self._config_ttk_style(rowheight= new_val + 10)
             case "font_bold":
                 self._bold = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
@@ -367,6 +394,9 @@ class Table(BaseWidgetTTK):
     def _personal_init(self):
         super()._personal_init()
 
+    _font_size_multiplier: int = 1  # Size of a single character in pixels
+    _font_size_multiplier_applied: int = 1  # Applied value so to catch changes
+    _col_width_requested: int | Iterable[int] = None    # What the user wants as col-width
     def _update_font(self):
         font_options = [
             self._fonttype,
@@ -386,6 +416,19 @@ class Table(BaseWidgetTTK):
             font_options.append("overstrike")
 
         self._config_ttk_style(font=font_options)
+
+        self._font_size_multiplier = font.Font(
+            self.window.parent_tk_widget,
+            family=self._fonttype,
+            size=self._fontsize,
+            weight="bold" if self._bold else "normal",
+            slant="italic" if self._italic else "roman",
+            underline=bool(self._underline),
+            overstrike=bool(self._overstrike),
+        ).measure("X_") // 2
+        if self._col_width_requested and self._font_size_multiplier != self._font_size_multiplier_applied:
+            self._font_size_multiplier_applied = self._font_size_multiplier
+            self.update(column_width=self._col_width_requested)
 
         # And now for the headings
         font_options = [
@@ -530,9 +573,6 @@ class Table(BaseWidgetTTK):
 
         self.tk_widget["show"] = "headings"   # Removes first column
 
-        self.insert_multiple(self._elements_initial,0)
-        del self._elements_initial
-
     def insert(self,row: Iterable[Any], index: int) -> TableRow:
         """
         Append a single row to the Table.
@@ -549,6 +589,7 @@ class Table(BaseWidgetTTK):
 
         return row
 
+    @BaseElement._run_after_window_creation
     def insert_multiple(self,rows:Iterable[Iterable[Any]], index: int) -> tuple[TableRow, ...]:
         """
         Insert multiple rows at once.

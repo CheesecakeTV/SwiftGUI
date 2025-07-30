@@ -12,7 +12,7 @@ def run_after_window_creation(w_fkt: Callable) -> Callable:
     Only use on methods, not functions!
 
     If you call it before, the call will be buffered and ran later.
-    :return:
+    :return: If the decorated function doesn't execute, Self is returned for inline calls.
     """
     buffer: list[tuple[tuple, dict]] = list()
 
@@ -34,6 +34,7 @@ def run_after_window_creation(w_fkt: Callable) -> Callable:
             self._run_when_window_exists.append(run_after)  # Tell the element to call run_after, after window is created
 
         buffer.append((args, kwargs))
+        return self
 
     return fkt
 
@@ -54,6 +55,9 @@ class BaseElement:
     _key_function: Callable | Iterable[Callable] = None  # Called as an event
 
     defaults:type[GlobalOptions.DEFAULT_OPTIONS_CLASS] = GlobalOptions.Common  # Change this to apply a different default configuration
+
+    # So you can use it on inheriting classes without importing it
+    _run_after_window_creation = run_after_window_creation
 
     _run_when_window_exists: list[Callable]
     def __init__(self):

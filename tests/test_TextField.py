@@ -7,6 +7,7 @@ import tkinter.ttk as ttk
 from SwiftGUI import Color
 
 #sg.Themes.Hacker()
+sg.Themes.FacebookMom()
 
 layout = [
     [
@@ -19,10 +20,12 @@ layout = [
     ],[
         #table := sg.Table(headings=["Hallo","Welt","Wie","Gehts?"], key="table", default_event=True, key_function=lambda val:val.__setitem__(0,"Clicked!")),
         table := sg.Table(
+            ((i,random.randint(10000,100000), "123456789_123456789", "") for i in range(15)),
             headings=["Hallo", "Welt", "Wie", "Gehts?"],
             key="table",
             default_event=True,
-        )#.bind_event(sg.Event.MouseEnter, key_function=lambda :print("Klappt"))
+            column_width=12,
+        ).sort(1)
     ],[
         sg.TKContainer(ttk.Button, text = "Hallo Welt")
     ]
@@ -64,11 +67,11 @@ print(s.theme_names())
 # pprint(w.ttk_style.layout("0.Treeview"))
 
 
-for i in range(5):
-    table.append(["Hallo","Welt",i, "Letztes Feld!!!"])
-
-for i in range(5):
-    table.insert(["", "", "", "rand"], random.randint(0,5))
+# for i in range(5):
+#     table.append(["Hallo","Welt",i, "Letztes Feld!!!"])
+#
+# for i in range(5):
+#     table.insert(["", "", "", "rand"], random.randint(0,5))
 
 #table.sort(empty_to_back=True, key=lambda a:a[0] != "Hallo")
 
