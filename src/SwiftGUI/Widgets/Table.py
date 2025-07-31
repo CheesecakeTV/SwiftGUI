@@ -154,7 +154,9 @@ class Table(BaseWidgetTTK):
             font_overstrike_headings: bool = None,
 
             background_color: str | Color = None,
+            background_color_active: str | Color = None,
             background_color_headings: str | Color = None,
+            background_color_active_headings: str | Color = None,
             text_color: str | Color = None,
             text_color_headings: str | Color = None,
 
@@ -183,7 +185,10 @@ class Table(BaseWidgetTTK):
             selectmode= "browse",
 
             background_color = background_color,
+            background_color_active = background_color_active,
+
             background_color_headings = background_color_headings,
+            background_color_active_headings = background_color_active_headings,
 
             text_color=text_color,
             text_color_headings=text_color_headings,
@@ -329,14 +334,29 @@ class Table(BaseWidgetTTK):
                 self._sort_col_by_click = new_val
             case "readonly":
                 self._tk_kwargs["state"] = "disabled" if new_val else "normal"
+
             case "text_color":
                 self._config_ttk_style(foreground = new_val)
             case "text_color_headings":
                 self._config_ttk_style("Heading", foreground = new_val)
+
             case "background_color":
-                self._config_ttk_style(background = new_val)
+                self._map_ttk_style(background = [
+                    ("!selected",new_val)]
+                )
+            case "background_color_active":
+                self._map_ttk_style(background = [
+                    ("selected",new_val)]
+                )
+
             case "background_color_headings":
-                self._config_ttk_style("Heading", background = new_val)
+                self._map_ttk_style(background=[
+                    ("!pressed", new_val)]
+                , style_ext="Heading")
+            case "background_color_active_headings":
+                self._map_ttk_style(background=[
+                    ("pressed", new_val)]
+                , style_ext = "Heading")
 
             case "fonttype":
                 self._fonttype = self.defaults.single(key,new_val)

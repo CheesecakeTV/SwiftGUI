@@ -355,6 +355,9 @@ class Table(Common, Common_Textual):
     font_underline_headings: bool = None
     font_overstrike_headings: bool = None
 
+    background_color_active: str | Color = None,
+    background_color_active_headings: str | Color = None,
+
     background_color_headings: str | Color = None
     text_color_headings: str | Color = None
 

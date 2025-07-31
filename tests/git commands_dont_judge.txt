@@ -12,7 +12,7 @@ Bei PyPi mit API-Key einloggen:
 python -m poetry config pypi-token.pypi <token>
 
 
-Um dependancies hinzuzufügen:
+Um dependencies hinzuzufügen:
 
 [tool.poetry.dependencies]
 makefun = "1.16.0"          (Bzw. welche Bibliothek auch immer)

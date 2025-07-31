@@ -7,7 +7,7 @@ import tkinter.ttk as ttk
 from SwiftGUI import Color
 
 #sg.Themes.Hacker()
-sg.Themes.FacebookMom()
+#sg.Themes.FacebookMom()
 
 layout = [
     [
@@ -25,7 +25,11 @@ layout = [
             key="table",
             default_event=True,
             column_width=12,
-        ).sort(1)
+            background_color = "red",
+            background_color_active = Color.orange_red,
+            background_color_headings= "yellow",
+            background_color_active_headings = "green",
+).sort(1)
     ],[
         sg.TKContainer(ttk.Button, text = "Hallo Welt")
     ]
@@ -34,7 +38,6 @@ layout = [
 w = sg.Window(layout, ttk_theme="alt")
 
 s = w.ttk_style
-print(s.theme_names())
 
 #s.theme_use("clam")
 #pprint(s.layout("Treeview.Heading"))

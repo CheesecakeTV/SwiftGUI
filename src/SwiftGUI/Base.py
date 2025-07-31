@@ -585,7 +585,7 @@ class BaseWidgetTTK(BaseWidget):
         self.window.ttk_style.configure(self._style + "." + styletype + style_ext, **kwargs)
 
     @run_after_window_creation
-    def _map_ttk_style(self, style_ext: str = "", styletype: str = None, **kwargs):
+    def _map_ttk_style(self, style_ext: str = "", styletype: str = None, overwrite_all: bool = False, **kwargs):
         """
         Don't use unless you create your own ttk-widget, which you probably won't do.
         Changes the configuration of a ttk-style.
@@ -593,6 +593,7 @@ class BaseWidgetTTK(BaseWidget):
         :param style_ext:   Appended to the element-style
         :param styletype:   Pass this to overwrite the default styletype (self._styletype)
         :param kwargs: passed to the style
+        :param overwrite_all: True, if not only kwargs-keys should be changed, but everything should be mapped. Might overwrite other options.
         :return:
         """
 
@@ -602,7 +603,24 @@ class BaseWidgetTTK(BaseWidget):
         if not styletype:
             styletype = self._styletype
 
-        self.window.ttk_style.map(self._style + "." + styletype + style_ext, **kwargs)
+        stylename = self._style + "." + styletype + style_ext
+
+        if not overwrite_all:
+            new_kwargs = dict()
+            for key,val in kwargs.items():
+                current = dict(self.window.ttk_style.map(stylename).get(key, []))   # Current mapping converted to dict
+
+                # Apply passed arguments
+                # for inner_key, inner_val in val:  # Readable equivalence
+                #     current[inner_key] = inner_val
+                current.update(dict(val))   # Faster (probably)
+
+                new_kwargs[key] = list(current.items()) # Convert the mapping back to list for ttk
+        else:
+            new_kwargs = kwargs
+
+
+        self.window.ttk_style.map(stylename, **new_kwargs)
 
 
 
