@@ -33,19 +33,25 @@ layout = [
             text_color=Color.navy,
             text_color_headings=Color.cadet_blue,
             text_color_active_headings="white",
-).sort(1)
+        ).sort(1)
     ],[
         sg.TKContainer(ttk.Button, text = "Hallo Welt")
     ],[
+        sg.HSep()
+    ],
+    [
         sg.Table(
             (("Hi","Welt") for i in range(15))
-        )
+        ),
+        sg.Spacer(25),
+        sg.VSep()
     ]
 ]
 
 w = sg.Window(layout, ttk_theme="alt")
 
 s = w.ttk_style
+#print(s.layout("TSeparator.Line"))
 
 #s.theme_use("clam")
 #pprint(s.layout("Treeview.Heading"))

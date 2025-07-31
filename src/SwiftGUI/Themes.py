@@ -70,6 +70,8 @@ class Hacker(BaseTheme):
 
         go.TextField.highlightbackground_color = "lime"
 
+        go.Separator.color = "red"
+
 
 
 class themes:

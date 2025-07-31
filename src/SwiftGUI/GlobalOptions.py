@@ -365,6 +365,16 @@ class Table(Common, Common_Textual):
 
     sort_col_by_click: bool = True
 
+class Separator(Common_Background):
+    color: str | Color = Color.light_grey
+    weight: int = 2
+
+class SeparatorHorizontal(Separator):
+    ...
+
+class SeparatorVertical(Separator):
+    ...
+
 def reset_all_options():
     """
     Reset everything done to the global options on runtime.
