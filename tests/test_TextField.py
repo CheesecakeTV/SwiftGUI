@@ -36,6 +36,10 @@ layout = [
 ).sort(1)
     ],[
         sg.TKContainer(ttk.Button, text = "Hallo Welt")
+    ],[
+        sg.Table(
+            (("Hi","Welt") for i in range(15))
+        )
     ]
 ]
 

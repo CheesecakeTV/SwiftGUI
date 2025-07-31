@@ -553,6 +553,7 @@ class BaseWidgetTTK(BaseWidget):
 
     def __init__(self, *args, **kwargs):
         self._style = str(BaseWidgetTTK._stylecounter)
+        BaseWidgetTTK._stylecounter += 1
 
         if not "style" in kwargs:
             kwargs["style"] = self._style + "." + self._styletype
