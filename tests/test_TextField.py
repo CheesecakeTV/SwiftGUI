@@ -25,10 +25,14 @@ layout = [
             key="table",
             default_event=True,
             column_width=12,
-            background_color = "red",
-            background_color_active = Color.orange_red,
+            background_color_active = "red",
+            background_color= Color.orange_red,
             background_color_headings= "yellow",
             background_color_active_headings = "green",
+            text_color_active="lime",  # Most nasty color-choices of them all...
+            text_color=Color.navy,
+            text_color_headings=Color.cadet_blue,
+            text_color_active_headings="white",
 ).sort(1)
     ],[
         sg.TKContainer(ttk.Button, text = "Hallo Welt")

@@ -158,13 +158,16 @@ class Table(BaseWidgetTTK):
             background_color_headings: str | Color = None,
             background_color_active_headings: str | Color = None,
             text_color: str | Color = None,
+            text_color_active: str | Color = None,
             text_color_headings: str | Color = None,
+            text_color_active_headings: str | Color = None,
 
             expand: bool = None,
             tk_kwargs: dict[str:any]=None
     ):
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand)
 
+        # Todo: self._default_elements: list[TableRow] = list() # When you reset the list-filter, this will act as a backup of the table before filtering.
         self._elements = list()
         self._element_dict = dict()
 
@@ -190,8 +193,10 @@ class Table(BaseWidgetTTK):
             background_color_headings = background_color_headings,
             background_color_active_headings = background_color_active_headings,
 
-            text_color=text_color,
-            text_color_headings=text_color_headings,
+            text_color= text_color,
+            text_color_active= text_color_active,
+            text_color_headings= text_color_headings,
+            text_color_active_headings = text_color_active_headings,
 
             fonttype = fonttype,
             fontsize = fontsize,
@@ -336,9 +341,22 @@ class Table(BaseWidgetTTK):
                 self._tk_kwargs["state"] = "disabled" if new_val else "normal"
 
             case "text_color":
-                self._config_ttk_style(foreground = new_val)
+                self._map_ttk_style(foreground = [
+                    ("!selected",new_val)]
+                )
             case "text_color_headings":
-                self._config_ttk_style("Heading", foreground = new_val)
+                self._map_ttk_style(foreground=[
+                    ("!pressed", new_val)]
+                    , style_ext = "Heading")
+
+            case "text_color_active":
+                self._map_ttk_style(foreground = [
+                    ("selected",new_val)]
+                )
+            case "text_color_active_headings":
+                self._map_ttk_style(foreground=[
+                    ("pressed", new_val)]
+                    , style_ext = "Heading")
 
             case "background_color":
                 self._map_ttk_style(background = [
@@ -644,6 +662,7 @@ class Table(BaseWidgetTTK):
         :return:
         """
         self.clear_whole_table()
+        # self._default_elements = list(self.insert_multiple(new_table, 0))
         self.insert_multiple(new_table, 0)
 
     def append(self,row: Iterable[Any]) -> TableRow:

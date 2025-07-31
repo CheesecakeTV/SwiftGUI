@@ -605,10 +605,14 @@ class BaseWidgetTTK(BaseWidget):
 
         stylename = self._style + "." + styletype + style_ext
 
+        kwargs: dict[str, tuple]
         if not overwrite_all:
             new_kwargs = dict()
             for key,val in kwargs.items():
                 current = dict(self.window.ttk_style.map(stylename).get(key, []))   # Current mapping converted to dict
+
+                # Remove None-values while we are iterating anyways
+                val = filter(lambda a:a[1] is not None, val)
 
                 # Apply passed arguments
                 # for inner_key, inner_val in val:  # Readable equivalence
