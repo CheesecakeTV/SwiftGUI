@@ -49,7 +49,7 @@ layout = [
     ]
 ]
 
-w = sg.Window(layout, ttk_theme="alt")
+w = sg.Window(layout)
 table.sort(0)
 table.all_indexes = 0, 5, 2
 
