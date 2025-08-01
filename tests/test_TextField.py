@@ -33,6 +33,7 @@ layout = [
             text_color=Color.navy,
             text_color_headings=Color.cadet_blue,
             text_color_active_headings="white",
+            selectmode="extended",
         ).sort(1)
     ],[
         sg.TKContainer(ttk.Button, text = "Hallo Welt")
@@ -49,69 +50,17 @@ layout = [
 ]
 
 w = sg.Window(layout, ttk_theme="alt")
+table.sort(0)
+table.all_indexes = 0, 5, 2
 
 s = w.ttk_style
-#print(s.layout("TSeparator.Line"))
-
-#s.theme_use("clam")
-#pprint(s.layout("Treeview.Heading"))
-#pprint(s.layout("Treeview.treearea"))
-
-# pprint(s.layout("TButton"))
-# print(s.element_options("TButton"))
-# #s.configure("TButton.label",background = "red")
-# s.configure("TButton.focus",background = "red")
-
-# pprint(s.layout("TButton"))
-
-#sg.Literals.relief
-
-#table.update(background_color = "red")
-# pprint(
-#     #w.ttk_style.layout("TButton"),
-#     w.ttk_style.element_options("Treeview.padding")
-# )
-#w.ttk_style.layout("Treeview", [("Treeview.field",{"border": 5})])
-#table.update(background_color = sg.Color.cadet_blue)
-#table.update(text_color = "red")
-
-
-# pprint(w.ttk_style.layout("0.Treeview"))
-# temp = w.ttk_style.layout("0.Treeview")
-# temp[0][1]["border"] = 5
-# #w.ttk_style.configure("0.Treeview.padding",sticky="n")
-# w.ttk_style.layout("0.Treeview",temp)
-# pprint(w.ttk_style.layout("0.Treeview"))
-
-
-# for i in range(5):
-#     table.append(["Hallo","Welt",i, "Letztes Feld!!!"])
-#
-# for i in range(5):
-#     table.insert(["", "", "", "rand"], random.randint(0,5))
-
-#table.sort(empty_to_back=True, key=lambda a:a[0] != "Hallo")
-
-#table.index = 3
-#table[5][1] = None
-# table[5][0] = "Funktioniert!!!"
-# table[5] += ["Hmmmm"]
-# #del table[5][2]
-# table[5] = [1,2,3]
-# table.move(3,0)
-# table.move_up(3,2)
-# table.move_down(1,5)
-#table.swap(0,-1)
-
-#table.insert_multiple([[n] for n in range(5)],2)
-
-#w["tree"].selection = ('Test!', 'Hallo', 'Nächste Ebene')
-#w["tree"].selection = None
 
 for e,v in w:
     print(e,v)
     #del table[0]
     print(table.index, table.value)
-    print("")
+    print(table.all_indexes)
+    print(table.all_values)
+    print()
     #table.overwrite_table([[i] for i in range(15)])
 

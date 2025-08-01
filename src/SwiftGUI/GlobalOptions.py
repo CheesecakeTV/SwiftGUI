@@ -364,6 +364,10 @@ class Table(Common, Common_Textual):
     text_color_active_headings: str | Color = None
 
     sort_col_by_click: bool = True
+    takefocus:bool = False
+
+    selectmode: Literals.selectmode_tree = "browse"
+
 
 class Separator(Common_Background):
     color: str | Color = Color.light_grey

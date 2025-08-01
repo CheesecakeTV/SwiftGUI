@@ -137,6 +137,7 @@ class Table(BaseWidgetTTK):
             column_width: int | Iterable[int] = None,
 
             sort_col_by_click: bool = None,
+            selectmode: Literals.selectmode_tree = None,
 
             # Fonts
             fonttype: str = None,
@@ -162,6 +163,7 @@ class Table(BaseWidgetTTK):
             text_color_headings: str | Color = None,
             text_color_active_headings: str | Color = None,
 
+            takefocus: bool = None,
             expand: bool = None,
             tk_kwargs: dict[str:any]=None
     ):
@@ -185,7 +187,7 @@ class Table(BaseWidgetTTK):
             columns = self._headings,
             column_width = column_width,
             **tk_kwargs,
-            selectmode= "browse",
+            selectmode = selectmode,
 
             background_color = background_color,
             background_color_active = background_color_active,
@@ -213,6 +215,8 @@ class Table(BaseWidgetTTK):
             font_overstrike_headings=font_overstrike_headings,
 
             sort_col_by_click=sort_col_by_click,
+
+            takefocus = takefocus,
         )
 
         if default_event:
@@ -582,15 +586,62 @@ class Table(BaseWidgetTTK):
     def index(self, new_index: int):
         self.set_index(new_index)
 
-    def set_index(self, new_index: int):
+    @property
+    def all_indexes(self) -> tuple[int, ...]:
+        """
+        Returns a tuple of all selected indexes
+        :return:
+        """
+        selections = self.tk_widget.selection()
+        selections = map(self._element_dict.get, selections)
+        selections = map(self._elements.index, selections)
+        return tuple(selections)
+
+    @all_indexes.setter
+    def all_indexes(self, new_vals: Iterable[int]):
+        """
+        Select all the passed indexes
+        :param new_vals:
+        :return:
+        """
+        self.set_all_indexes(new_vals)
+
+    def set_all_indexes(self, new_vals: Iterable[int]):
+        """
+        Select all the passed indexes
+        :param new_vals:
+        :return:
+        """
+        new_vals = tuple(new_vals)
+
+        if new_vals:
+            self.set_index(new_vals[0])
+        else:
+            self.set_index(None)
+
+        new_vals = map(self._elements.__getitem__, new_vals)
+        new_vals = tuple(self._get_all_iids(new_vals))
+        self.tk_widget.selection_add(new_vals)
+
+    @property
+    def all_values(self) -> tuple[TableRow, ...]:
+        """
+        Returns a tuple of all selected indexes
+        :return:
+        """
+        selections = self.tk_widget.selection()
+        selections = map(self._element_dict.get, selections)
+        return tuple(selections)
+
+    def set_index(self, new_index: int | None):
         """
         Select a specified row of the table
 
         Same as .index = new_index
-        :param new_index: Index of the row to select
+        :param new_index: Index of the row to select. To clear the selection, pass None
         :return:
         """
-        if not new_index:
+        if new_index is None:
             self.tk_widget.selection_set()
             self.tk_widget.focus("")
             return
