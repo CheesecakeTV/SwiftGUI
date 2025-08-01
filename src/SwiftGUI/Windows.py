@@ -1,7 +1,8 @@
 import tkinter as tk
+from tkinter import ttk
 from collections.abc import Iterable,Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, Self, Literal
 from warnings import deprecated
 import inspect
 
@@ -34,7 +35,6 @@ class Window(BaseElement):
             layout:Iterable[Iterable[BaseElement]],
             title:str = None,
             /,
-            # global_options:dict[str:str] = None, # Todo: This conflicts with other global-options
             alignment: Literals.alignment = None,
             titlebar: bool = None,  # Titlebar visible
             resizeable_width=None,
@@ -48,6 +48,7 @@ class Window(BaseElement):
             icon: str = None,  # .ico file
             keep_on_top: bool = None,
             background_color:Color | str = None,
+            ttk_theme: str = None,
     ):
         """
 
@@ -66,6 +67,7 @@ class Window(BaseElement):
         :param icon: Icon of the window. Has to be .ico
         :param keep_on_top: True, if the window should always be on top of any other window
         """
+        super().__init__()
         self.all_elements:list["AnyElement"] = list()   # Elements will be registered in here
         self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
         self.values = dict()
@@ -74,14 +76,19 @@ class Window(BaseElement):
 
         self._sg_widget:Frame = Frame(layout,alignment=alignment)
 
-        self.update(title,titlebar, resizeable_width, resizeable_height, fullscreen, transparency, size, position, min_size, max_size, icon, keep_on_top, background_color,_first_update=True)
+        self.ttk_style: ttk.Style = ttk.Style(self._tk)
+        self.update(title,titlebar, resizeable_width, resizeable_height, fullscreen, transparency, size, position, min_size, max_size, icon, keep_on_top, background_color, ttk_theme, _first_update=True)
 
         self._sg_widget.window_entry_point(self._tk, self)
+        self._config_ttk_queue = list()
 
         for elem in self.all_elements:
             elem.init_window_creation_done()
+        self.init_window_creation_done()
 
         self.refresh_values()
+
+
 
     def __iter__(self) -> Self:
         return self
@@ -109,6 +116,7 @@ class Window(BaseElement):
             icon: str = None,  # .ico file
             keep_on_top: bool = None,
             background_color: Color | str = None,
+            ttk_theme: str = None,
             _first_update: bool = False,
     ):
         if _first_update:
@@ -125,10 +133,12 @@ class Window(BaseElement):
             icon = GlobalOptions.Window.single("icon",icon)
             keep_on_top = GlobalOptions.Window.single("keep_on_top",keep_on_top)
             background_color = GlobalOptions.Window.single("background_color",background_color)
+            ttk_theme = GlobalOptions.Window.single("ttk_theme", ttk_theme)
+
+        if ttk_theme:
+            self.ttk_style.theme_use(ttk_theme)
 
         if background_color is not None:
-            if _first_update:
-                print("Warning! It is not possible to change background_color on an already created window (yet)...")
             self._sg_widget.update(background_color=background_color)
 
         if title is not None:

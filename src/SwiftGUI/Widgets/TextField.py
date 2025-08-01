@@ -175,7 +175,7 @@ class TextField(BaseWidget):
         if default_event:
             self.bind_event("<KeyRelease>",key=key,key_function=key_function)
 
-    can_reset_value_changes = False
+    _can_reset_value_changes = False
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         match key:
 
@@ -205,7 +205,7 @@ class TextField(BaseWidget):
                 self._tabsize = new_val
                 self.add_flags(ElementFlag.UPDATE_FONT)
             case "can_reset_value_changes":
-                self.can_reset_value_changes = new_val
+                self._can_reset_value_changes = new_val
             case _:
                 return False
 
@@ -217,13 +217,6 @@ class TextField(BaseWidget):
             self._update_font()
 
         super()._apply_update() # Actually apply the update
-
-    def _personal_init(self):
-        # self._tk_kwargs.update({
-        #     "command": self.window.get_event_function(self, self.key, self._key_function)
-        # })
-
-        super()._personal_init()
 
     def _update_font(self):
         # self._tk_kwargs will be passed to tk_widget later
@@ -248,7 +241,7 @@ class TextField(BaseWidget):
         self.tk_widget.delete("1.0","end")
         self.tk_widget.insert("1.0",val)
 
-        if self.can_reset_value_changes:
+        if self._can_reset_value_changes:
             self.tk_widget.edit_reset()
 
     def init_window_creation_done(self):

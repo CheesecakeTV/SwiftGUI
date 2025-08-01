@@ -5,12 +5,9 @@ from tkinter import ttk
 
 
 sg.GlobalOptions.Common_Textual.fontsize = 10
-#sg.themes.Hacker()
-
-# sg.GlobalOptions.Common_Textual.reset_to_default()
-# sg.GlobalOptions.Button.reset_to_default()
-
 #sg.GlobalOptions.reset_all_options()
+#sg.themes.FacebookMom()
+
 
 layout_left = [
     [
@@ -28,19 +25,19 @@ layout_left = [
     ], [
         sg.T("Welt",anchor="w")
     ],[
-        sg.T("Amazing what you can accomplish\non a saturday",key="SomeText",text_color="green",background_color=sg.Color.SeaGreen1),
+        sg.T("Amazing what you can accomplish\non a saturday",key="SomeText"),
         sg.Frame([
             [
-                sg.T("I am",font_overstrike=True,key="IAM",background_color="red")
+                sg.T("I am",font_overstrike=True,key="IAM")
             ],[
                 sg.T("Inside of another Frame!")
             ]
-        ],background_color="blue")
+        ])
     ],[
         sg.Button("Hallo Welt-Button",key="Hallo Welt",disabled = False,height=2,text_color="red",repeatdelay=1000,repeatinterval=100,borderwidth=5),
-        sg.In("Was geht", key="Input-Test", background_color="red", justify="right", text_color="green",
+        sg.In("Was geht", key="Input-Test", justify="right", text_color="green",
               default_event=True),
-        sg.In("Was geht", key="Another-Input-Test",background_color=Color.AntiqueWhite2,readonly=True),
+        sg.In("Was geht", key="Another-Input-Test",readonly=True),
     ],[
         sg.Form(["Hallo","Welt","Das","Ist","Ein","Test"],key="Form")
     ],[
@@ -83,6 +80,7 @@ layout = [
 ]
 
 w = sg.Window(layout,alignment="left")
+#w.update(background_color = "red")
 w["ContainerTest"].update(text="blue")
 #the_frame.update(background_color = "red")
 #w.update(background_color="red")
@@ -101,7 +99,7 @@ for e,v in w:
     print(e,v)
     w["List"].append_front(e)
     print(w["List"].list_elements)
-    print(w["List"].index)
+    print(w["List"].index_of)
     #w["Check!"].flash()
     #w["Hallo Welt"].flash()
 

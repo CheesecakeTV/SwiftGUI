@@ -9,16 +9,18 @@ from SwiftGUI import Literals, Color, font_windows, Font
 # Every option-class will be stored in here
 all_option_classes:list[Union["_DefaultOptionsMeta",type]] = list()
 
+_ignore_keys = ["apply","reset_to_default","single","persist_changes","made_changes"]
+
 class _DefaultOptionsMeta(type):
 
     def __new__(mcs, name, bases, namespace):
-        _all_defaults = dict(filter(lambda a: not a[0].startswith("_") and not a[0] in ["apply","reset_to_default","single","persist_changes"], namespace.items()))
+        _all_defaults = dict(filter(lambda a: not a[0].startswith("_") and not a[0] in _ignore_keys, namespace.items()))
 
         # Remove NONE-values so they don't overwrite non-None-values of higher classes
         namespace = dict(filter(lambda a: a[1] is not None, namespace.items()))
         cls:"DEFAULT_OPTIONS_CLASS"|type = super().__new__(mcs, name, bases, namespace)
 
-        cls._all_defaults = _all_defaults # All attributes with None-Attributes
+        cls._all_defaults = _all_defaults # All attributes including None-Attributes
 
         prev = cls.__mro__[1]
         cls._dict = dict(cls.__dict__)
@@ -50,8 +52,13 @@ class _DefaultOptionsMeta(type):
         """
         # I know this is very inefficient, but it's not used that often.
         # Don't speed up a function that only runs once every program execution...
+        attributes = set(filter(lambda a: not a.startswith("_") and not a in _ignore_keys, self.__dict__.keys()))
+
         for key,val in self._all_defaults.items():
             setattr(self,key,val)
+
+        for key in attributes.difference(self._all_defaults.keys()):
+            delattr(self,key)
 
 class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
     """
@@ -78,7 +85,7 @@ class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
         for i in cls.__mro__[-1::-1]:
             collected.update(i.__dict__)
 
-        cls._dict = dict(filter(lambda a: not a[0].startswith("_") and not a[0] in ["_dict","reset_to_default","apply","single","persist_changes"], collected.items()))
+        cls._dict = dict(filter(lambda a: not a[0].startswith("_") and not a[0] in _ignore_keys, collected.items()))
 
     @classmethod
     def _check_for_changes(cls):
@@ -137,7 +144,6 @@ class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
 
         return default
 
-
 class Common(DEFAULT_OPTIONS_CLASS):
     """
     Every widget
@@ -145,6 +151,12 @@ class Common(DEFAULT_OPTIONS_CLASS):
     cursor:Literals.cursor = None   # Find available cursors here (2025): https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/cursors.html
     takefocus:bool = True
     expand:bool = False
+
+class Common_Background(DEFAULT_OPTIONS_CLASS):
+    """
+    Common background-color
+    """
+    background_color: str | Color = "#FEFEFE"
 
 class Common_Textual(DEFAULT_OPTIONS_CLASS):
     """
@@ -159,7 +171,7 @@ class Common_Textual(DEFAULT_OPTIONS_CLASS):
     anchor:Literals.anchor = "w"
     text_color:Color|str = None
 
-class Text(Common, Common_Textual):
+class Text(Common, Common_Textual, Common_Background):
     text:str = ""
     takefocus:bool = False
     underline:int = None
@@ -223,7 +235,7 @@ class Button(Common,Common_Textual):
     repeatdelay: int = None
     repeatinterval: int = None
 
-class Frame(Common):
+class Frame(Common, Common_Background):
     takefocus = False
     padding: Literals.padding = 3
     relief: Literals.relief = "flat"
@@ -231,7 +243,7 @@ class Frame(Common):
     alignment: Literals.alignment = None
     apply_parent_background_color: bool = True
 
-class Checkbox(Common,Common_Textual):
+class Checkbox(Common,Common_Textual, Common_Background):
     key: any = None
     default_value: bool = False
     readonly: bool = None
@@ -259,9 +271,8 @@ class Checkbox(Common,Common_Textual):
     # hilightbackground_color: str | Color = None
     # highlightcolor: str | Color = None
 
-class Window(DEFAULT_OPTIONS_CLASS):
+class Window(Common_Background):
     title = None
-    background_color:Color|str = "#F0F0F0"
     titlebar: bool = True  # Titlebar visible
     resizeable_width = False
     resizeable_height = False
@@ -273,6 +284,7 @@ class Window(DEFAULT_OPTIONS_CLASS):
     max_size: tuple[int, int] = (None, None)
     icon: str = None  # .ico file
     keep_on_top: bool = False
+    ttk_theme: str = "default"
 
 class Listbox(Common,Common_Textual):
     activestyle:Literals.activestyle = "none"
@@ -332,6 +344,40 @@ class TextField(Common,Common_Textual):
     can_reset_value_changes: bool = False
     maxundo: int | Literal[-1] = 1024 # -1 means infinite
 
+class Treeview(DEFAULT_OPTIONS_CLASS):
+    ...
+
+class Table(Common, Common_Textual):
+    fonttype_headings: str = None
+    fontsize_headings: int = None
+    font_bold_headings: bool = None
+    font_italic_headings: bool = None
+    font_underline_headings: bool = None
+    font_overstrike_headings: bool = None
+
+    background_color_active: str | Color = Color.light_blue
+    background_color_active_headings: str | Color = Color.light_blue
+
+    background_color_headings: str | Color = None
+    text_color_headings: str | Color = None
+    text_color_active: str | Color = None
+    text_color_active_headings: str | Color = None
+
+    sort_col_by_click: bool = True
+    takefocus:bool = False
+
+    selectmode: Literals.selectmode_tree = "browse"
+
+
+class Separator(Common_Background):
+    color: str | Color = Color.light_grey
+    weight: int = 2
+
+class SeparatorHorizontal(Separator):
+    ...
+
+class SeparatorVertical(Separator):
+    ...
 
 def reset_all_options():
     """
@@ -354,7 +400,7 @@ def _make_dict_format_because_lazy(the_class:DEFAULT_OPTIONS_CLASS):
     :return:
     """
     for key in the_class._all_defaults:
-        if key in ("made_changes","apply","single","persist_changes","key","reset_to_default"):
+        if key in _ignore_keys:
             continue
 
         if key.startswith("_"):

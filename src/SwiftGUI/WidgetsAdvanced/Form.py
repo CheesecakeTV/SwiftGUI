@@ -4,7 +4,8 @@
 from collections.abc import Iterable
 from warnings import deprecated
 
-from SwiftGUI import BaseElement, Frame, Text, Input
+from SwiftGUI import BaseElement, Frame, Text, Input, ElementFlag
+
 
 # Advanced / Combined elements
 @deprecated("WIP, not ready for usage")
@@ -21,6 +22,7 @@ class Form(BaseElement):
             key:any = "",
             seperate_keys:bool=False,   # Key for every input
     ):
+        super().__init__()
         self.key = key
         self.texts = texts
 
@@ -35,6 +37,8 @@ class Form(BaseElement):
 
         self._sg_widget = Frame(self.layout)
 
+        self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
+
     def _personal_init(self):
         self._sg_widget._init(self,self.window)
 
@@ -42,6 +46,16 @@ class Form(BaseElement):
         return {
             line:elem[1].value for line,elem in zip(self.texts,self.layout)
         }
+
+    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+        match key:
+            case "background_color":
+                for text,*_ in self.layout:
+                    text.update(background_color = new_val)
+            case _:
+                return False
+
+        return True
 
     def set_value(self,val:dict[str:str]):
         """

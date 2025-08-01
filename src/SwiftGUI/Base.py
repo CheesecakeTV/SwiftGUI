@@ -1,9 +1,42 @@
 from collections.abc import Iterable, Callable
+from functools import wraps
 from typing import Literal, Self, Union
 import tkinter as tk
 
 from SwiftGUI import Event, GlobalOptions, Color
 from SwiftGUI.ElementFlags import ElementFlag
+
+def run_after_window_creation(w_fkt: Callable) -> Callable:
+    """
+    Decorated methods will run if the window exists.
+    Only use on methods, not functions!
+
+    If you call it before, the call will be buffered and ran later.
+    :return: If the decorated function doesn't execute, Self is returned for inline calls.
+    """
+    buffer: list[tuple[tuple, dict]] = list()
+
+    def run_after():    # Actually run the functions
+        nonlocal buffer
+        for args,kwargs in buffer:
+            w_fkt(*args, **kwargs)
+
+        buffer = list() # Not needed anymore
+
+    @wraps(w_fkt)
+    def fkt(*args, **kwargs):
+        self = args[0]
+
+        if self.has_flag(ElementFlag.IS_CREATED):    # Window is already created
+            return w_fkt(*args, **kwargs)
+
+        if not buffer:  # If this is the first buffered call
+            self._run_when_window_exists.append(run_after)  # Tell the element to call run_after, after window is created
+
+        buffer.append((args, kwargs))
+        return self
+
+    return fkt
 
 
 class BaseElement:
@@ -22,6 +55,13 @@ class BaseElement:
     _key_function: Callable | Iterable[Callable] = None  # Called as an event
 
     defaults:type[GlobalOptions.DEFAULT_OPTIONS_CLASS] = GlobalOptions.Common  # Change this to apply a different default configuration
+
+    # So you can use it on inheriting classes without importing it
+    _run_after_window_creation = run_after_window_creation
+
+    _run_when_window_exists: list[Callable]
+    def __init__(self):
+        self._run_when_window_exists = list()
 
     def _init(self,parent:"BaseElement",window):
         """
@@ -209,7 +249,8 @@ class BaseElement:
         Will be called oncce as soon as the element exists
         :return:
         """
-        ...
+        for fkt in self._run_when_window_exists:    # Call all those buffered functions
+            fkt()
 
 
 class BaseWidget(BaseElement):
@@ -234,6 +275,7 @@ class BaseWidget(BaseElement):
     _events_to_bind_later: list[dict]
 
     def __init__(self,key:any=None,tk_kwargs:dict[str:any]=None,expand:bool = False,**kwargs):
+        super().__init__()
         self._events_to_bind_later = list()
 
         if tk_kwargs is None:
@@ -427,18 +469,29 @@ class BaseWidget(BaseElement):
         except AttributeError:  # _tk_target_value isn't used
             return None
 
-    def _update_default_keys(self,kwargs):
+    def _transfer_kwargs_keys(self,kwargs: dict):
         """
-        Transfers/renames keys in kwargs, then applies them
+        Transfer/rename keys in kwargs
         :param kwargs:
         :return:
         """
-
         transfer = set(filter(lambda a:a in kwargs.keys(),self._transfer_keys.keys()))
 
         for key in transfer:
             kwargs[self._transfer_keys[key]] = kwargs[key]
             del kwargs[key]
+
+        return kwargs
+
+    def _update_default_keys(self,kwargs: dict,transfer_keys: bool = True):
+        """
+        Transfers/renames keys in kwargs, then applies them
+        :param transfer_keys: Simple way to bypass key-transfer
+        :param kwargs:
+        :return:
+        """
+        if transfer_keys:
+            self._transfer_kwargs_keys(kwargs)
 
         self._tk_kwargs.update(kwargs)
 
@@ -452,6 +505,8 @@ class BaseWidget(BaseElement):
             pass
 
     def init_window_creation_done(self):
+        super().init_window_creation_done()
+
         for params in self._events_to_bind_later:
             self.bind_event(**params)
         del self._events_to_bind_later  # Free some ram, because why not
@@ -470,4 +525,107 @@ class BaseWidgetContainer(BaseWidget):
         super()._flag_init()
         self._line_insert_kwargs = dict()
         self.add_flags(ElementFlag.IS_CONTAINER)
+
+class BaseWidgetTTK(BaseWidget):
+    _styletype: str = None  # Style will be named n.styletype
+    _style: str = None  # Registered style of this widget
+    _stylecounter: int = 0   # This ensures every style has an unique number
+
+    _transfer_keys = {  # Usual couple of keys
+        # "background_color_disabled":"disabledbackground",
+        "background_color":"background",
+        # "text_color_disabled": "disabledforeground",
+        "highlightbackground_color": "highlightbackground",
+        "selectbackground_color": "selectbackground",
+        "select_text_color": "selectforeground",
+        # "pass_char":"show",
+        "background_color_active" : "activebackground",
+        "text_color_active" : "activeforeground",
+        "text_color":"foreground",
+    }
+
+    _tk_kwargs_for_style: list = [  # These will not pass through to the widget, but to its style
+        "background_color",
+        "text_color",
+        #"relief",
+        #"font",
+    ]
+
+    def __init__(self, *args, **kwargs):
+        self._style = str(BaseWidgetTTK._stylecounter)
+        BaseWidgetTTK._stylecounter += 1
+
+        if not "style" in kwargs:
+            kwargs["style"] = self._style + "." + self._styletype
+
+        super().__init__(*args, **kwargs)
+
+    def init_window_creation_done(self):
+        super().init_window_creation_done()
+
+        #self.window.ttk_style.map(self._style, **self.window.ttk_style.map(self._styletype))
+
+    @run_after_window_creation
+    def _config_ttk_style(self, style_ext: str = "", styletype: str = None, **kwargs):
+        """
+        Don't use unless you create your own ttk-widget, which you probably won't do.
+        Changes the configuration of a ttk-style.
+
+        :param style_ext:   Appended to the element-style
+        :param styletype:   Pass this to overwrite the default styletype (self._styletype)
+        :param kwargs: passed to the style
+        :return:
+        """
+
+        if style_ext:
+            style_ext = f".{style_ext}"
+
+        if not styletype:
+            styletype = self._styletype
+
+        self.window.ttk_style.configure(self._style + "." + styletype + style_ext, **kwargs)
+
+    @run_after_window_creation
+    def _map_ttk_style(self, style_ext: str = "", styletype: str = None, overwrite_all: bool = False, **kwargs):
+        """
+        Don't use unless you create your own ttk-widget, which you probably won't do.
+        Changes the configuration of a ttk-style.
+
+        :param style_ext:   Appended to the element-style
+        :param styletype:   Pass this to overwrite the default styletype (self._styletype)
+        :param kwargs: passed to the style
+        :param overwrite_all: True, if not only kwargs-keys should be changed, but everything should be mapped. Might overwrite other options.
+        :return:
+        """
+
+        if style_ext:
+            style_ext = f".{style_ext}"
+
+        if not styletype:
+            styletype = self._styletype
+
+        stylename = self._style + "." + styletype + style_ext
+
+        kwargs: dict[str, tuple]
+        if not overwrite_all:
+            new_kwargs = dict()
+            for key,val in kwargs.items():
+                current = dict(self.window.ttk_style.map(stylename).get(key, []))   # Current mapping converted to dict
+
+                # Remove None-values while we are iterating anyways
+                val = filter(lambda a:a[1] is not None, val)
+
+                # Apply passed arguments
+                # for inner_key, inner_val in val:  # Readable equivalence
+                #     current[inner_key] = inner_val
+                current.update(dict(val))   # Faster (probably)
+
+                new_kwargs[key] = list(current.items()) # Convert the mapping back to list for ttk
+        else:
+            new_kwargs = kwargs
+
+
+        self.window.ttk_style.map(stylename, **new_kwargs)
+
+
 

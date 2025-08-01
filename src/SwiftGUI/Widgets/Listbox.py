@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Self
+from typing import Self, Any
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
@@ -25,7 +25,7 @@ class Listbox(BaseWidget):
 
     def __init__(
             self,
-            default_list: Iterable[str] = None,
+            default_list: Iterable[Any] = None,
             /,
             key: any = None,
             default_event: bool = False,
@@ -60,6 +60,8 @@ class Listbox(BaseWidget):
         super().__init__(key, tk_kwargs=tk_kwargs, expand=expand)
 
         self._key_function = key_function
+        if default_list is None:
+            default_list = list()
         self._list_elements = list(default_list)
 
         if tk_kwargs is None:
@@ -253,6 +255,7 @@ class Listbox(BaseWidget):
             self.tk_widget.delete(i)
             del self._list_elements[i]
 
+    # Todo: Do that with del x[...]. Also for the setter and getter.
     def delete_element(self,*element:str):
         """
         Delete certain element(s) by their value
@@ -262,7 +265,7 @@ class Listbox(BaseWidget):
         element = self.get_all_indexes_of(*element)
         self.delete_index(*element)
 
-    def get_index_of(self,value:str,default:int = None) -> int|None:
+    def index_of(self,value:str,default:int = None) -> int|None:
         """
         Returns the first index of a given string
         :param default: Returned if it doesn't contain the value

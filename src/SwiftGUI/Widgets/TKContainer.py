@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 
 from SwiftGUI import BaseWidget, GlobalOptions
 
@@ -13,7 +14,7 @@ class TKContainer(BaseWidget):
     def __init__(
             self,
             # Add here
-            widget_type:type[tk.Widget],
+            widget_type:type[tk.Widget | ttk.Widget],
             /,
             key:str = None,
             pack_kwargs:dict = None,

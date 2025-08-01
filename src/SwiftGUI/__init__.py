@@ -5,7 +5,7 @@ from . import GlobalOptions, Literals, Tools
 from .ElementFlags import ElementFlag
 
 from .Events import Event
-from .Base import BaseElement,BaseWidget,BaseWidgetContainer,ElementFlag
+from .Base import BaseElement,BaseWidget,BaseWidgetContainer,ElementFlag,BaseWidgetTTK
 #from .KeyManager import Key,SEPARATOR,duplicate_warnings   # Todo: Make some decent key-manager
 
 from .Widgets.Text import Text
@@ -18,6 +18,8 @@ from .Widgets.Spacer import Spacer
 from .Widgets.Listbox import Listbox
 from .Widgets.TKContainer import TKContainer
 from .Widgets.TextField import TextField
+from .Widgets.Treeview import Treeview
+from .Widgets.Table import Table
 
 from .WidgetsAdvanced.Form import Form
 from .WidgetsAdvanced.FileBrowseButton import FileBrowseButton
@@ -39,7 +41,7 @@ TKWidget = TKContainer
 
 Multiline = TextField
 
-AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField
+AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table
 
 from .Windows import Window
 

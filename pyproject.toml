@@ -1,6 +1,6 @@
 [project]
 name = "SwiftGUI"
-version = "0.3.0"
+version = "0.3.2"
 packages = [
     { include = "SwiftGUI", from = "src" }
 ]
@@ -9,7 +9,7 @@ authors = [
 ]
 description = "An easy-to-use package for creating and using simple GUIs"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
