@@ -370,6 +370,9 @@ class Table(Common, Common_Textual):
     takefocus:bool = False
 
     selectmode: Literals.selectmode_tree = "browse"
+    cursor: Literals.cursor = None
+    height: int = None
+    padding: int | tuple[int, ...] = None
 
 
 class Separator(Common_Background):

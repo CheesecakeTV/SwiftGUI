@@ -159,10 +159,15 @@ class Table(BaseWidgetTTK):
             background_color_active_rows: str | Color = None,
             background_color_headings: str | Color = None,
             background_color_active_headings: str | Color = None,
+
             text_color: str | Color = None,
             text_color_active: str | Color = None,
             text_color_headings: str | Color = None,
             text_color_active_headings: str | Color = None,
+
+            cursor: Literals.cursor = None,
+            height: int = None,
+            padding: int | tuple[int, ...] = None,
 
             takefocus: bool = None,
             expand: bool = None,
@@ -217,8 +222,13 @@ class Table(BaseWidgetTTK):
             font_overstrike_headings=font_overstrike_headings,
 
             sort_col_by_click=sort_col_by_click,
+            takefocus=takefocus,
 
-            takefocus = takefocus,
+            # New ones
+            height = height,
+            cursor = cursor,
+            padding = padding,
+
         )
 
         if default_event:
