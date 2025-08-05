@@ -272,7 +272,7 @@ class Checkbox(Common,Common_Textual, Common_Background):
     # highlightcolor: str | Color = None
 
 class Window(Common_Background):
-    title = None
+    title = "SwiftGUI Window"
     titlebar: bool = True  # Titlebar visible
     resizeable_width = False
     resizeable_height = False
