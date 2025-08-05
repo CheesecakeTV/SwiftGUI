@@ -23,9 +23,12 @@ class Notebook(BaseWidgetTTK):
             # Add here
             *tabs: Frame,
 
+            default_event: bool = None,
+
             tab_texts: dict[Any, str] = None,
 
             key: str = None,
+            key_function: Callable | Iterable[Callable] = None,
 
             background_color: str | Color = None,
             apply_parent_background_color: bool = None,
@@ -52,6 +55,8 @@ class Notebook(BaseWidgetTTK):
         self._elements: tuple[Frame, ...] = tabs
         self._element_keys: tuple[Any, ...] = tuple(map(lambda a:a.key, tabs))
 
+        self._tab_event_functions: list[Callable | None] = [None] * len(self._elements) # The functions that will be called when the corresponding tab is selected
+
         if background_color and not apply_parent_background_color:
             apply_parent_background_color = False
 
@@ -75,9 +80,7 @@ class Notebook(BaseWidgetTTK):
 
         #self._config_ttk_style("Tab", background = "red")
 
-
-        # if default_event:
-        #     self.bind_event("<<TreeviewSelect>>",key=key,key_function=key_function)
+        self._default_event = default_event
 
     _tab_texts: dict[Any, str]
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
@@ -201,7 +204,11 @@ class Notebook(BaseWidgetTTK):
 
     def _init_containing(self):
         for tab in self._elements:
-            container = Frame([[tab], [Spacer(expand_y=True)]], background_color="red", pass_down_background_color=False)
+            container = Frame(
+                [[tab], [the_spacer := Spacer(expand_y=True)]],
+                pass_down_background_color=False
+            )
+            container.link_background_color(the_spacer)
             container._init(self, self.window)
 
             tab.link_background_color(container)
@@ -211,24 +218,55 @@ class Notebook(BaseWidgetTTK):
 
             self.tk_widget.add(container.tk_widget, text=str(title))
 
+    _default_event_callback_function: Callable = None
     def init_window_creation_done(self):
         """Don't touch!"""
         super().init_window_creation_done()
 
+        self._default_event_callback_function = self.window.get_event_function(self, self.key, key_function=self._key_function)
         self.tk_widget.bind("<<NotebookTabChanged>>", self._tab_change_callback)
 
     def _tab_change_callback(self, *_):
         """Called when the tab changes"""
-        ...
+        index = self.index
+        if self._tab_event_functions[index]:
+            self._tab_event_functions[index]()
+            return
+
+        if self._default_event_callback_function:
+            self._default_event_callback_function()
 
     @BaseElement._run_after_window_creation
-    def bind_event_to_tab(self, tab_key:str, key_extention:Union[str,any]=None, key:any=None, key_function:Callable|Iterable[Callable]=None) ->Self:
+    def bind_event_to_tab(self, tab_key:Any = None, tab_index:int = None, key_extention:str | Any=None, key:any=None, key_function:Callable|Iterable[Callable]=None) ->Self:
         """
-        This event will be called when tab_key-tab is opened
-        :param tab_key:
+        This event will be called when tab_key-tab is opened.
+        Keep in mind, that setting this disables the default event for that tab
+
+        :param tab_index: Pass this to apply the event to the index-ths tab
+        :param tab_key: Pass this to apply the event to the tab with this key
         :param key_extention:
         :param key:
         :param key_function:
         :return:
         """
-        ...
+
+        new_key = ""
+        match (key_extention is not None,key is not None):
+            case (True,True):
+                new_key = key + key_extention
+            case (False,True):
+                new_key = key
+            case (True,False):
+                new_key = self.key + key_extention
+            case (False,False):
+                new_key = self.key
+                assert new_key or key_function, f"You forgot to add either a key or key_function to this element... {self}"
+
+        assert bool(tab_key) ^ bool(tab_index), f"You can only pass either tab_key, or tab_index to .bind_event_to_tab on Element {self}"
+
+        if tab_key:
+            tab_index = self._element_keys.index(tab_key)
+
+        self._tab_event_functions[tab_index] = self.window.get_event_function(self, new_key, key_function=key_function)
+
+        return self

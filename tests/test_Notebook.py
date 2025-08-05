@@ -16,7 +16,7 @@ Tab1 = sg.Frame([
             #expand=True,
         )
     ]
-], expand=True)
+])
 
 Tab2 = sg.Frame([
     [
@@ -28,11 +28,18 @@ Tab2 = sg.Frame([
     ],[
         sg.Button("Button", key="Button")
     ]
-], key="Rechts", background_color="green", expand = True)
+], key="Rechts", background_color="green")
 
 layout = [
     [
-        nb := sg.Notebook(Tab1, Tab2, tab_texts={"Links":"Left", None: "Noname"}, padding=15)
+        nb := sg.Notebook(
+            Tab1,
+            Tab2,
+            tab_texts={"Links":"Left", None: "Noname"},
+            padding=15,
+            default_event=True,
+            key="Notebook"
+        ).bind_event_to_tab(tab_key="Rechts", key_function=lambda :print("FUNCTIONAL!!!"))
     ]
 ]
 
@@ -40,8 +47,6 @@ w = sg.Window(layout, "Notebook test", background_color=sg.Color.light_blue)
 s = w.ttk_style
 
 #Tab1.update(background_color = "lightgreen")
-
-print(s.element_options("TNotebook.Tab"))
 
 for e,v in w:
     print(e,v)
