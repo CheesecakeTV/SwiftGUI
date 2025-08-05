@@ -85,7 +85,7 @@ def preview_all_themes() -> None:
     #  Suggestions are very welcome...
 
     layout = list()
-    all_themes = sg.themes.__dict__.items()
+    all_themes = sg.Themes.__dict__.items()
 
     for n,(key,val) in enumerate(all_themes):
         if key.startswith("_"):

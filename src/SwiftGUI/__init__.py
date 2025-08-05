@@ -8,25 +8,27 @@ from .Events import Event
 from .Base import BaseElement,BaseWidget,BaseWidgetContainer,ElementFlag,BaseWidgetTTK
 #from .KeyManager import Key,SEPARATOR,duplicate_warnings   # Todo: Make some decent key-manager
 
-from .Widgets.Text import Text
-from .Widgets.Button import Button
-from .Widgets.Checkbox import Checkbox
-from .Widgets.Frame import Frame
-from .Widgets.Input import Input
-from .Widgets.Separator import VerticalSeparator,HorizontalSeparator
-from .Widgets.Spacer import Spacer
-from .Widgets.Listbox import Listbox
-from .Widgets.TKContainer import TKContainer
-from .Widgets.TextField import TextField
-from .Widgets.Treeview import Treeview
-from .Widgets.Table import Table
-from .Widgets.Notebook import Notebook
+from .Widget_Elements.Text import Text
+from .Widget_Elements.Button import Button
+from .Widget_Elements.Checkbox import Checkbox
+from .Widget_Elements.Frame import Frame
+from .Widget_Elements.Input import Input
+from .Widget_Elements.Separator import VerticalSeparator,HorizontalSeparator
+from .Widget_Elements.Spacer import Spacer
+from .Widget_Elements.Listbox import Listbox
+from .Widget_Elements.TKContainer import TKContainer
+from .Widget_Elements.TextField import TextField
+from .Widget_Elements.Treeview import Treeview
+from .Widget_Elements.Table import Table
+from .Widget_Elements.Notebook import Notebook
 
-from .WidgetsAdvanced.Form import Form
-from .WidgetsAdvanced.FileBrowseButton import FileBrowseButton
-from .WidgetsAdvanced.ColorChooserButton import ColorChooserButton
+from .Combined_Elements.Form import Form
+
+from .Extended_Elements.FileBrowseButton import FileBrowseButton
+from .Extended_Elements.ColorChooserButton import ColorChooserButton
 
 T = Text
+Label = Text
 
 In = Input
 Entry = Input
@@ -35,8 +37,11 @@ HSep = HorizontalSeparator
 VSep = VerticalSeparator
 
 Check = Checkbox
+Checkbutton = Checkbox
 
 Column = Frame
+
+S = Spacer
 
 TKWidget = TKContainer
 
@@ -53,4 +58,4 @@ from . import KeyFunctions
 from .Examples import preview_all_colors, preview_all_themes, preview_all_fonts_windows
 from .Popups import popup
 
-from .Themes import themes
+from .Themes import Themes

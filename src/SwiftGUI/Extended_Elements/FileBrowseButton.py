@@ -1,19 +1,24 @@
 import tkinter as tk
-from tkinter import colorchooser
+from os import PathLike
+from tkinter import filedialog as fd
 from collections.abc import Iterable, Callable
 from typing import Literal
 
 from SwiftGUI import GlobalOptions, Literals, Color
-from SwiftGUI.Widgets.Button import Button
+from SwiftGUI.Widget_Elements.Button import Button
 
 
-class ColorChooserButton(Button):
+class FileBrowseButton(Button):
     """
-    Small Element to create a button that lets you chose a color
+    Copy this class ot create your own Widget
+
+    The following methods are to be overwritten if needed:
+    _get_value  (determines the value returned by this widget)
+    _init_widget_for_inherrit   (Initializes the widget)
     """
     tk_widget:tk.Button
     _tk_widget_class:type = tk.Button # Class of the connected widget
-    defaults = GlobalOptions.ColorChooserButton
+    defaults = GlobalOptions.FileBrowseButton
 
     def __init__(
             # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/button.html
@@ -25,8 +30,14 @@ class ColorChooserButton(Button):
             key:any = None,
             key_function:Callable|Iterable[Callable] = None,
 
-            initial_color: str | Color = None,
-            color_chooser_title: str = None,
+            file_browse_type:Literals.file_browse_types = None, #{"defaultextension","parent","title"}
+            file_browse_initial_dir: PathLike|str = None, # initialdir
+            file_browse_filetypes: Literals.file_browse_filetypes = None, # filetypes
+            file_browse_initial_file: str = None, # initialfile
+            file_browse_title: str = None,  # title
+            file_browse_save_defaultextension: str = None, # defaultextension
+            # Todo: parent
+            dont_change_on_abort: bool = None,
 
             borderwidth:int = None,
 
@@ -47,9 +58,10 @@ class ColorChooserButton(Button):
             underline: int = None,
             anchor: Literals.anchor = None,
             justify: Literal["left", "right", "center"] = None,
-            #background_color: str | Color = None,
+            background_color: str | Color = None,
             overrelief: Literals.relief = None,
             text_color: str | Color = None,
+            # Todo: image
             relief: Literals.relief = None,
 
             repeatdelay:int = None,
@@ -73,8 +85,13 @@ class ColorChooserButton(Button):
         :param key: (See docs for more details)
         :param key_function: (See docs for more details)
 
-        :param initial_color: Color that should be displayed in the beginning
-
+        :param file_browse_type: Type of filebrowser (e.g. getting a single file, saving a file, etc.)
+        :param file_browse_initial_dir: Directory to start browsing in. "." to start in the working dir, ".." for the dir above.
+        :param file_browse_filetypes: Possible types when reading files. Format like this: (("Description1":".extension1"), ("Description2":".extension2"))
+        :param file_browse_initial_file: IT WON'T SELECT THE FILE, just put the filename inside the box on the bottom
+        :param file_browse_title: Title of the file-browse-window
+        :param file_browse_save_defaultextension: When saving, this extension will be added if the user doesn't provide an extension
+        :param dont_change_on_abort: If True, the value will not change when the user cancels/closes the file-browse
 
         :param borderwidth: Border-Thickness in pixels. Default is 2
         :param bitmap: The are a couple of icons builtin. If you are using PyCharm, they should be suggested when pressing "ctrl+space"
@@ -91,6 +108,7 @@ class ColorChooserButton(Button):
         :param underline: Underlines the single character at this index
         :param anchor: Specifies, where the text in this element should be placed (See docs for more details)
         :param justify: When the text is multiple rows long, this will specify where the new rows begin.
+        :param background_color: Background-color for the non-pressed state
         :param overrelief: Relief when the mouse hovers over the element
         :param text_color: Text-color in non-pressed state
         :param relief: Relief in non-pressed state
@@ -130,7 +148,7 @@ class ColorChooserButton(Button):
             underline=underline,
             anchor=anchor,
             justify=justify,
-            #background_color=background_color,
+            background_color=background_color,
             overrelief=overrelief,
             text_color=text_color,
             relief=relief,
@@ -149,20 +167,35 @@ class ColorChooserButton(Button):
         self._file_function_kwargs = dict()
 
         self.update(
-            initial_color = initial_color,
-            color_chooser_title = color_chooser_title,
+            file_browse_type = file_browse_type,
+            file_browse_initial_dir = file_browse_initial_dir,
+            file_browse_filetypes = file_browse_filetypes,
+            file_browse_initial_file = file_browse_initial_file,
+            file_browse_title = file_browse_title,
+            file_browse_save_defaultextension = file_browse_save_defaultextension,
+
+            dont_change_on_abort=dont_change_on_abort,
         )
 
-    _prev_val:str = None
+    _prev_val:str|tuple[str] = None
+    _file_function_wanted = None
+    _dont_change_on_abort = None    # If the value should be unchanged if the user just closes the window
     def _button_callback(self):
-        # Call the file-dialogue
-        _,temp = colorchooser.askcolor(initialcolor=self._prev_val,title=self._title)
-
-        if temp is None:
+        if self._file_function is None:
             return
 
-        self.value = str(temp)
+        # Only provide arguments the file-function actually wants
+        kwargs = self._file_function_kwargs
+        offers = kwargs.fromkeys(kwargs.keys() & self._file_function_wanted)
+        offers = {i:kwargs[i] for i in offers}
 
+        # Call the file-dialogue
+        temp = self._file_function(**offers)
+
+        if self._dont_change_on_abort and not temp:
+            return
+
+        self._prev_val = temp
         return True # Refresh values for coming key_functions
 
     def _get_value(self) -> any:
@@ -170,18 +203,40 @@ class ColorChooserButton(Button):
 
     def set_value(self,val:any):
         self._prev_val = val
-        self.update(background_color = val)
 
-    _title:str = None
+    _file_function: Callable = None
+    _file_function_kwargs: dict
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         if super()._update_special_key(key,new_val):
             return True
 
         match key:
-            case "initial_color":
-                self.value = new_val
-            case "color_chooser_title":
-                self._title = new_val
+            case "file_browse_type":
+                self._file_function = {
+                    "open_single": fd.askopenfilename,
+                    "open_multiple": fd.askopenfilenames,
+                    "open_directory": fd.askdirectory,
+                    "save_single": fd.asksaveasfilename,
+                }[new_val]
+                self._file_function_wanted = {
+                    "open_single": {"defaultextension","filetypes","initialdir","initialfile","parent","title"},
+                    "open_multiple": {"defaultextension","filetypes","initialdir","initialfile","parent","title"},
+                    "open_directory": {"initialdir","mustexist","parent","title"},
+                    "save_single": {"defaultextension","filetypes","initialdir","initialfile","parent","title"},
+                }[new_val]
+
+            case "file_browse_initial_dir":
+                self._file_function_kwargs["initialdir"] = new_val
+            case "file_browse_filetypes":
+                self._file_function_kwargs["filetypes"] = new_val
+            case "file_browse_initial_file":
+                self._file_function_kwargs["initialfile"] = new_val
+            case "dont_change_on_abort":
+                self._dont_change_on_abort = new_val
+            case "file_browse_title":
+                self._file_function_kwargs["title"] = new_val
+            case "file_browse_save_defaultextension":
+                self._file_function_kwargs["file_browse_save_defaultextension"] = new_val
             case _:
                 return False
 

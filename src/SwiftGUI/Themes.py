@@ -19,7 +19,7 @@ class BaseTheme:
         Configurations belong in here
         :return:
         """
-        pass
+        raise NotImplementedError("You tried to apply BaseTheme. BaseTheme should not be applied, it is only to create more themes from.")
 
 class FacebookMom(BaseTheme):
     def apply(self) -> None:
@@ -74,10 +74,12 @@ class Hacker(BaseTheme):
 
 
 
-class themes:
+class Themes:
     """
     All available Themes
     """
+    BaseTheme = BaseTheme
+
     FacebookMom = FacebookMom
     Hacker = Hacker
 

@@ -28,13 +28,11 @@ class Window(BaseElement):
 
     exists:bool = False # True, if this window exists at the moment
 
-    global_options = dict() # Standard-Values for options
-
     def __init__(
             self,
             layout:Iterable[Iterable[BaseElement]],
-            title:str = None,
             /,
+            title:str = None,
             alignment: Literals.alignment = None,
             titlebar: bool = None,  # Titlebar visible
             resizeable_width=None,
