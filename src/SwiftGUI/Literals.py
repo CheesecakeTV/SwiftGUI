@@ -12,6 +12,7 @@ padding = int|tuple[int,int]|tuple[int,int,int,int]
 validate = Literal["focus","focusin","focusout","key","all","none"]
 
 anchor = Literal["center","n","ne","e","se","s","sw","w","nw"]
+tabposition = Literal["nw","n","ne","en","e","es","sw","s","se","wn","w","ws"]
 alignment = Literal["left","right"] | None
 
 bitmap = str | Literal['error', 'gray75', 'gray50', 'gray25', 'gray12', 'hourglass', 'info', 'questhead', 'question', 'warning']

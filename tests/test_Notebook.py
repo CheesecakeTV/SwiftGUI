@@ -1,7 +1,14 @@
 import SwiftGUI as sg
+from SwiftGUI import font_windows
 
+# sg.Examples.preview_all_fonts_windows()
+# exit()
 
-sg.GlobalOptions.Common_Textual.fontsize = 14
+del sg.GlobalOptions.Button.fontsize
+
+sg.GlobalOptions.Common_Textual.fonttype = font_windows.Vladimir_Script
+sg.GlobalOptions.Common_Textual.fontsize = 24
+sg.GlobalOptions.Common_Textual.font_bold = True
 
 Tab1 = sg.Frame([
     [
@@ -38,13 +45,20 @@ layout = [
             tab_texts={"Links":"Left", None: "Noname"},
             padding=15,
             default_event=True,
-            key="Notebook"
+            key="Notebook",
+            background_color_tabs="red",
+            background_color_tabs_active="green",
+            text_color_tabs="blue",
+            text_color_tabs_active="yellow",
+            #tabposition="sw"
         ).bind_event_to_tab(tab_key="Rechts", key_function=lambda :print("FUNCTIONAL!!!"))
     ]
 ]
 
 w = sg.Window(layout, "Notebook test", background_color=sg.Color.light_blue)
 s = w.ttk_style
+
+nb.update(fonttype_tabs = font_windows.Bernard_MT_Condensed)
 
 #Tab1.update(background_color = "lightgreen")
 

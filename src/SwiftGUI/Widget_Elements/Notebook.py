@@ -5,7 +5,7 @@ from functools import partial
 from typing import Any, Self, Union
 
 from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement, BaseWidgetContainer, \
-    Frame, Event
+    Frame, Event, font_windows, Font
 from SwiftGUI.Widget_Elements.Spacer import Spacer
 
 
@@ -31,6 +31,19 @@ class Notebook(BaseWidgetTTK):
             key_function: Callable | Iterable[Callable] = None,
 
             background_color: str | Color = None,
+            background_color_tabs: str | Color = None,
+            background_color_tabs_active: str | Color = None,
+
+            text_color_tabs: str | Color = None,
+            text_color_tabs_active: str | Color = None,
+
+            fonttype_tabs: str | Font = None,
+            fontsize_tabs: int = None,
+            font_bold_tabs: bool = None,
+            font_italic_tabs: bool = None,
+            font_underline_tabs: bool = None,
+            font_overstrike_tabs: bool = None,
+
             apply_parent_background_color: bool = None,
 
             padding: int | tuple[int,...] = None,
@@ -43,11 +56,14 @@ class Notebook(BaseWidgetTTK):
 
             cursor: Literals.cursor = None,
 
+            tabposition: Literals.tabposition = None,
+
             expand: bool = None,
             expand_y: bool = None,
             tk_kwargs: dict[str:any]=None
     ):
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
+        self._key_function = key_function
 
         self.add_flags(ElementFlag.IS_CONTAINER)    # So .init_containing is called
         self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
@@ -65,6 +81,13 @@ class Notebook(BaseWidgetTTK):
 
         self._tab_texts = tab_texts
 
+        self._fonttype_tabs = None
+        self._fontsize_tabs = None
+        self._bold_tabs = None
+        self._italic_tabs = None
+        self._underline_tabs = None
+        self._overstrike_tabs = None
+        
         self.update(
             **tk_kwargs,
             #tab_texts = tab_texts,
@@ -76,15 +99,56 @@ class Notebook(BaseWidgetTTK):
             apply_parent_background_color = apply_parent_background_color,
             borderwidth = borderwidth,
             background_color = background_color,
+
+            background_color_tabs = background_color_tabs,
+            background_color_tabs_active = background_color_tabs_active,
+            text_color_tabs = text_color_tabs,
+            text_color_tabs_active = text_color_tabs_active,
+
+            tabposition = tabposition,
+
+            fonttype_tabs = fonttype_tabs,
+            fontsize_tabs = fontsize_tabs,
+            font_bold_tabs = font_bold_tabs,
+            font_italic_tabs = font_italic_tabs,
+            font_underline_tabs = font_underline_tabs,
+            font_overstrike_tabs = font_overstrike_tabs,
         )
 
-        #self._config_ttk_style("Tab", background = "red")
 
         self._default_event = default_event
+
+        # Todo: These could be parameters too
+        self._config_ttk_style(tabmargins = 0)
+
+
+    def _update_font(self):
+
+        # And now for the headings
+        font_options = [
+            self._fonttype_tabs,
+            self._fontsize_tabs,
+        ]
+
+        if self._bold_tabs:
+            font_options.append("bold")
+
+        if self._italic_tabs:
+            font_options.append("italic")
+
+        if self._underline_tabs:
+            font_options.append("underline")
+
+        if self._overstrike_tabs:
+            font_options.append("overstrike")
+
+        self._config_ttk_style("Tab",font=font_options)
 
     _tab_texts: dict[Any, str]
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         match key:
+            case "tabposition":
+                self._config_ttk_style(tabposition=new_val)
             case "apply_parent_background_color":
                 if new_val:
                     self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
@@ -100,6 +164,36 @@ class Notebook(BaseWidgetTTK):
                     if tab.has_flag(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR):
                         tab.update(background_color = new_val)
 
+            case "background_color_tabs":
+                self._map_ttk_style("Tab", background = [("!selected", new_val)])
+            case "background_color_tabs_active":
+                self._map_ttk_style("Tab", background = [("selected", new_val)])
+
+            case "text_color_tabs":
+                self._map_ttk_style("Tab", foreground=[("!selected", new_val)])
+            case "text_color_tabs_active":
+                self._map_ttk_style("Tab", foreground=[("selected", new_val)])
+
+            case "fonttype_tabs":
+                self._fonttype_tabs = self.defaults.single("fonttype", self.defaults.single(key,new_val))
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "fontsize_tabs":
+                self._fontsize_tabs = self.defaults.single("fontsize", self.defaults.single(key,new_val))
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "font_bold_tabs":
+                self._bold_tabs = self.defaults.single("font_bold", self.defaults.single(key,new_val))
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "font_italic_tabs":
+                self._italic_tabs = self.defaults.single("font_italic", self.defaults.single(key,new_val))
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "font_underline_tabs":
+                self._underline_tabs = self.defaults.single("font_underline", self.defaults.single(key,new_val))
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "font_overstrike_tabs":
+                self._overstrike_tabs = self.defaults.single("font_overstrike", self.defaults.single(key,new_val))
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            
+            
             case "borderwidth":
                 self._config_ttk_style(borderwidth=new_val)
             case _:
@@ -109,69 +203,13 @@ class Notebook(BaseWidgetTTK):
 
     def _apply_update(self):
         # If the font changed, apply them to self._tk_kwargs
-        # if self.has_flag(ElementFlag.UPDATE_FONT):
-        #     self._update_font()
+        if self.has_flag(ElementFlag.UPDATE_FONT):
+            self._update_font()
 
         super()._apply_update() # Actually apply the update
 
     def _personal_init(self):
         super()._personal_init()
-
-    _font_size_multiplier: int = 1  # Size of a single character in pixels
-    _font_size_multiplier_applied: int = 1  # Applied value so to catch changes
-    def _update_font(self):
-        ...
-        # font_options = [
-        #     self._fonttype,
-        #     self._fontsize,
-        # ]
-        #
-        # if self._bold:
-        #     font_options.append("bold")
-        #
-        # if self._italic:
-        #     font_options.append("italic")
-        #
-        # if self._underline:
-        #     font_options.append("underline")
-        #
-        # if self._overstrike:
-        #     font_options.append("overstrike")
-        #
-        # self._config_ttk_style(font=font_options)
-        #
-        # self._font_size_multiplier = font.Font(
-        #     self.window.parent_tk_widget,
-        #     family=self._fonttype,
-        #     size=self._fontsize,
-        #     weight="bold" if self._bold else "normal",
-        #     slant="italic" if self._italic else "roman",
-        #     underline=bool(self._underline),
-        #     overstrike=bool(self._overstrike),
-        # ).measure("X_") // 2
-        # if self._col_width_requested and self._font_size_multiplier != self._font_size_multiplier_applied:
-        #     self._font_size_multiplier_applied = self._font_size_multiplier
-        #     self.update(column_width=self._col_width_requested)
-        #
-        # # And now for the headings
-        # font_options = [
-        #     self._fonttype_headings if self._fontsize_headings else self._fonttype,
-        #     self._fontsize_headings if self._fontsize_headings else self._fontsize,
-        # ]
-        #
-        # if self._bold_headings:
-        #     font_options.append("bold")
-        #
-        # if self._italic_headings:
-        #     font_options.append("italic")
-        #
-        # if self._underline_headings:
-        #     font_options.append("underline")
-        #
-        # if self._overstrike_headings:
-        #     font_options.append("overstrike")
-        #
-        # self._config_ttk_style("Heading",font=font_options)
 
     @property
     def index(self) -> int: # index of current tab
