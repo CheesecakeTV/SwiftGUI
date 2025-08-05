@@ -9,3 +9,4 @@ Set_options function that takes a part of the layout and sets options for every 
 Simplified Elements/Widgets with less options for beginners
 
 Tool to convert png/jpg into ico
+

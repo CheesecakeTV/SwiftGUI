@@ -28,13 +28,11 @@ class Window(BaseElement):
 
     exists:bool = False # True, if this window exists at the moment
 
-    global_options = dict() # Standard-Values for options
-
     def __init__(
             self,
             layout:Iterable[Iterable[BaseElement]],
-            title:str = None,
             /,
+            title:str = None,
             alignment: Literals.alignment = None,
             titlebar: bool = None,  # Titlebar visible
             resizeable_width=None,
@@ -77,7 +75,23 @@ class Window(BaseElement):
         self._sg_widget:Frame = Frame(layout,alignment=alignment)
 
         self.ttk_style: ttk.Style = ttk.Style(self._tk)
-        self.update(title,titlebar, resizeable_width, resizeable_height, fullscreen, transparency, size, position, min_size, max_size, icon, keep_on_top, background_color, ttk_theme, _first_update=True)
+        self.update(
+            title=title,
+            titlebar=titlebar,
+            resizeable_width=resizeable_width,
+            resizeable_height=resizeable_height,
+            fullscreen=fullscreen,
+            transparency=transparency,
+            size=size,
+            position=position,
+            min_size=min_size,
+            max_size=max_size,
+            icon=icon,
+            keep_on_top=keep_on_top,
+            background_color=background_color,
+            ttk_theme=ttk_theme,
+            _first_update=True
+        )
 
         self._sg_widget.window_entry_point(self._tk, self)
         self._config_ttk_queue = list()
@@ -85,6 +99,7 @@ class Window(BaseElement):
         for elem in self.all_elements:
             elem.init_window_creation_done()
         self.init_window_creation_done()
+        self._sg_widget.init_window_creation_done()
 
         self.refresh_values()
 

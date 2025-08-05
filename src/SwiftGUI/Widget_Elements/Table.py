@@ -1,8 +1,8 @@
 import tkinter.ttk as ttk
-from collections.abc import Iterable, Callable, Mapping, Iterator
+from collections.abc import Iterable, Callable, Iterator
 from functools import partial
 from tkinter import font
-from typing import Literal, Any, Self, Generator
+from typing import Any, Self
 
 from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement
 
@@ -155,13 +155,19 @@ class Table(BaseWidgetTTK):
             font_overstrike_headings: bool = None,
 
             background_color: str | Color = None,
-            background_color_active: str | Color = None,
+            background_color_rows: str | Color = None,
+            background_color_active_rows: str | Color = None,
             background_color_headings: str | Color = None,
             background_color_active_headings: str | Color = None,
+
             text_color: str | Color = None,
             text_color_active: str | Color = None,
             text_color_headings: str | Color = None,
             text_color_active_headings: str | Color = None,
+
+            cursor: Literals.cursor = None,
+            height: int = None,
+            padding: int | tuple[int, ...] = None,
 
             takefocus: bool = None,
             expand: bool = None,
@@ -169,7 +175,6 @@ class Table(BaseWidgetTTK):
     ):
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand)
 
-        # Todo: self._default_elements: list[TableRow] = list() # When you reset the list-filter, this will act as a backup of the table before filtering.
         self._elements = list()
         self._element_dict = dict()
 
@@ -190,7 +195,9 @@ class Table(BaseWidgetTTK):
             selectmode = selectmode,
 
             background_color = background_color,
-            background_color_active = background_color_active,
+
+            background_color_rows = background_color_rows,
+            background_color_active_rows = background_color_active_rows,
 
             background_color_headings = background_color_headings,
             background_color_active_headings = background_color_active_headings,
@@ -215,8 +222,13 @@ class Table(BaseWidgetTTK):
             font_overstrike_headings=font_overstrike_headings,
 
             sort_col_by_click=sort_col_by_click,
+            takefocus=takefocus,
 
-            takefocus = takefocus,
+            # New ones
+            height = height,
+            cursor = cursor,
+            padding = padding,
+
         )
 
         if default_event:
@@ -363,10 +375,12 @@ class Table(BaseWidgetTTK):
                     , style_ext = "Heading")
 
             case "background_color":
+                self._config_ttk_style(fieldbackground=new_val)
+            case "background_color_rows":
                 self._map_ttk_style(background = [
                     ("!selected",new_val)]
                 )
-            case "background_color_active":
+            case "background_color_active_rows":
                 self._map_ttk_style(background = [
                     ("selected",new_val)]
                 )
@@ -662,6 +676,8 @@ class Table(BaseWidgetTTK):
 
         self.tk_widget["show"] = "headings"   # Removes first column
 
+        #self._map_ttk_style(background = [("selected", "blue")])
+
     def insert(self,row: Iterable[Any], index: int) -> TableRow:
         """
         Append a single row to the Table.
@@ -670,6 +686,8 @@ class Table(BaseWidgetTTK):
         :param row: The element to add
         :return: Added element. You may edit this to edit the row itself.
         """
+        assert self._elements_before_filter is None, "You can not insert an element into a table while a filter is active. Use .reset_filter() to undo it, or .persist_filter() to keep the current table."
+
         row = TableRow(self,row)
 
         self._elements.insert(index, row)
@@ -699,6 +717,8 @@ class Table(BaseWidgetTTK):
         Clear the whole table leaving it blank
         :return:
         """
+        self.reset_filter()
+
         iids = map(str, map(hash, self._elements))
 
         self.tk_widget.delete(*iids)
@@ -712,6 +732,7 @@ class Table(BaseWidgetTTK):
         :param new_table:
         :return:
         """
+        self.reset_filter()
         self.clear_whole_table()
         # self._default_elements = list(self.insert_multiple(new_table, 0))
         self.insert_multiple(new_table, 0)
@@ -725,6 +746,10 @@ class Table(BaseWidgetTTK):
         """
         row = TableRow(self,row)
         self._elements.append(row)
+
+        if self._elements_before_filter is not None:
+            self._elements_before_filter.append(row)
+
         self._element_dict[str(hash(row))] = row
 
         self.tk_widget.insert("",index = "end",values=row,iid=hash(row))
@@ -811,4 +836,81 @@ class Table(BaseWidgetTTK):
         """
         self.tk_widget.see(str(hash(self._elements[index])))
 
+    _elements_before_filter: list[TableRow] | None = None   # When filter is applied, this saves the original state
+    @BaseElement._run_after_window_creation
+    def filter(self, key: Callable, by_column:int | str = None) -> Self:
+        """
+        Filter the whole table either:
+        - If no by_column is passed, the function will be applied to the whole column
+        - If by_column is passed, only the specified column will be passed to the filter-function (key)
 
+        The previous state of the list is saved and can be restored using reset_filter().
+        To apply the filter permanently, use persist_filter().
+
+        :param by_column: Pass a string (name of the column) or its index. If multiple columns have the same name, first one will be used.
+        :param key: Key function. Truethy returns will be kept inside the list
+        :return: sg.Table-Element for inline calls
+        """
+        if isinstance(by_column, str):
+            assert by_column in self._headings, "You tried to filter a Table by a column that doesn't exist. Recheck your arguments, column-names are case-sensitive."
+            by_column = self._headings.index(by_column)
+
+        if not self._elements:
+            return self
+
+        if by_column is None:
+            filter_fkt = key
+        else:
+            filter_fkt = lambda a:key(a[by_column])
+
+        if self._elements_before_filter is None:
+            self._elements_before_filter = self._elements.copy()
+
+        self._elements = list(filter(filter_fkt, self._elements_before_filter))
+
+        all_iids = set(self._get_all_iids(self._elements_before_filter))
+        iids_in = list(self._get_all_iids(self._elements))    # Elements to keep
+        iids_out = all_iids.difference(set(iids_in)) # Elements to remove
+
+        for n,iid in enumerate(iids_in):
+            self.tk_widget.move(iid, "", n)
+
+        self.tk_widget.detach(*iids_out)
+
+        return self
+
+    def reset_filter(self) -> Self:
+        """
+        Reset the filter-view to before it was filtered
+        :return:
+        """
+        if not self._elements_before_filter:
+            return self
+
+        self._elements = self._elements_before_filter
+        self._elements_before_filter = None
+
+        iids = list(self._get_all_iids(self._elements))
+
+        for n,iid in enumerate(iids):
+            self.tk_widget.move(iid, "", n)
+
+        return self
+
+    @BaseElement._run_after_window_creation
+    def persist_filter(self) -> Self:
+        """
+        Persist the filtered view so that it cannot be reset anymore
+        :return:
+        """
+        all_iids = set(self._get_all_iids(self._elements_before_filter))
+        iids_in = list(self._get_all_iids(self._elements))    # Elements to keep
+        iids_out = all_iids.difference(set(iids_in)) # Elements to remove
+
+        self.tk_widget.delete(*iids_out)
+        self._elements_before_filter = None
+
+        for iid in iids_out:
+            del self._element_dict[iid]
+
+        return self

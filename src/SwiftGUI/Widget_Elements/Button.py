@@ -162,10 +162,15 @@ class Button(BaseWidget):
 
         self._key_function = key_function
 
+    _disabled_at_start = False
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         match key:
 
             case "disabled":
+                if not self.has_flag(ElementFlag.IS_CREATED):
+                    self._disabled_at_start = new_val
+                    return True
+
                 self._tk_kwargs["state"] = "disabled" if new_val else "normal"
             case "fonttype":
                 self._fonttype = self.defaults.single(key,new_val)
@@ -239,3 +244,7 @@ class Button(BaseWidget):
             return
 
         self.tk_widget.invoke()
+
+    def init_window_creation_done(self):
+        if self._disabled_at_start:
+            self.update(disabled = True)

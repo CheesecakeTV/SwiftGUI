@@ -16,6 +16,7 @@ layout = [
         sg.Spacer(15),
     ],[
         sg.Button("Event",key="Event"),
+        sg.Button("Append",key="Append"),
         sg.In(),
     ],[
         #table := sg.Table(headings=["Hallo","Welt","Wie","Gehts?"], key="table", default_event=True, key_function=lambda val:val.__setitem__(0,"Clicked!")),
@@ -25,7 +26,8 @@ layout = [
             key="table",
             default_event=True,
             column_width=12,
-            background_color_active = "red",
+            background_color_rows = "lightblue",
+            background_color_active_rows = "red",
             background_color= Color.orange_red,
             background_color_headings= "yellow",
             background_color_active_headings = "green",
@@ -42,7 +44,7 @@ layout = [
     ],
     [
         sg.Table(
-            (("Hi","Welt") for i in range(15))
+            (("Hi","Welt") for i in range(5))
         ),
         sg.Spacer(25),
         sg.VSep()
@@ -52,6 +54,8 @@ layout = [
 w = sg.Window(layout)
 table.sort(0)
 table.all_indexes = 0, 5, 2
+table.filter(lambda a:a % 2 == 0, by_column=0)
+#table.filter(lambda a:a % 3 == 0, by_column=0)
 
 s = w.ttk_style
 
@@ -62,5 +66,11 @@ for e,v in w:
     print(table.all_indexes)
     print(table.all_values)
     print()
+
+    if e == "Append":
+        table.clear_whole_table()
+
+    if e == "Event":
+        table.reset_filter()
     #table.overwrite_table([[i] for i in range(15)])
 

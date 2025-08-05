@@ -241,6 +241,16 @@ class BaseElement:
         if self.has_flag(ElementFlag.IS_CREATED) and self.window.has_flag(ElementFlag.IS_CREATED):
             self._apply_update()
 
+    # @run_after_window_creation
+    # def update_after_window_creation(self,**kwargs) -> Self:
+    #     """
+    #     Call update after the window was created
+    #     :param kwargs:
+    #     :return:
+    #     """
+    #     self.update(**kwargs)
+    #     return Self
+
     def init_window_creation_done(self):
         """
         ONLY FOR INHERITING CLASSES!!!

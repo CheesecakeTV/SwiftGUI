@@ -158,6 +158,12 @@ class Common_Background(DEFAULT_OPTIONS_CLASS):
     """
     background_color: str | Color = "#FEFEFE"
 
+class Common_Field_Background(DEFAULT_OPTIONS_CLASS):
+    """
+    Common background-color for fields with texts not covered by Common_Background
+    """
+    background_color: str | Color = None
+
 class Common_Textual(DEFAULT_OPTIONS_CLASS):
     """
     Widgets with texts
@@ -182,7 +188,7 @@ class Text(Common, Common_Textual, Common_Background):
     padding:Literals.padding = 0
     width:int = None
 
-class Input(Common,Common_Textual):
+class Input(Common,Common_Textual,Common_Field_Background):
     text: str = None
     width: int = None
     #
@@ -209,7 +215,7 @@ class Input(Common,Common_Textual):
     #
     # Mixed options
 
-class Button(Common,Common_Textual):
+class Button(Common,Common_Textual,Common_Field_Background):
     fontsize:int = 9
     anchor:Literals.anchor = "center"
 
@@ -272,7 +278,7 @@ class Checkbox(Common,Common_Textual, Common_Background):
     # highlightcolor: str | Color = None
 
 class Window(Common_Background):
-    title = None
+    title = "SwiftGUI Window"
     titlebar: bool = True  # Titlebar visible
     resizeable_width = False
     resizeable_height = False
@@ -286,7 +292,7 @@ class Window(Common_Background):
     keep_on_top: bool = False
     ttk_theme: str = "default"
 
-class Listbox(Common,Common_Textual):
+class Listbox(Common,Common_Textual,Common_Field_Background):
     activestyle:Literals.activestyle = "none"
     default_list: Iterable[str] = None
     disabled: bool = None
@@ -315,7 +321,7 @@ class FileBrowseButton(Button):
 class ColorChooserButton(Button):
     color_chooser_title: str = None
 
-class TextField(Common,Common_Textual):
+class TextField(Common,Common_Textual,Common_Field_Background):
     borderwidth: int = None
     width: int = None
     height: int = None
@@ -344,10 +350,10 @@ class TextField(Common,Common_Textual):
     can_reset_value_changes: bool = False
     maxundo: int | Literal[-1] = 1024 # -1 means infinite
 
-class Treeview(DEFAULT_OPTIONS_CLASS):
+class Treeview(Common_Field_Background):
     ...
 
-class Table(Common, Common_Textual):
+class Table(Common, Common_Textual,Common_Field_Background):
     fonttype_headings: str = None
     fontsize_headings: int = None
     font_bold_headings: bool = None
@@ -355,10 +361,13 @@ class Table(Common, Common_Textual):
     font_underline_headings: bool = None
     font_overstrike_headings: bool = None
 
-    background_color_active: str | Color = Color.light_blue
-    background_color_active_headings: str | Color = Color.light_blue
+    background_color: str | Color = None
+    background_color_rows: str | Color = None
+    background_color_active_rows: str | Color = Color.light_blue
 
     background_color_headings: str | Color = None
+    background_color_active_headings: str | Color = Color.light_blue
+
     text_color_headings: str | Color = None
     text_color_active: str | Color = None
     text_color_active_headings: str | Color = None
@@ -367,6 +376,9 @@ class Table(Common, Common_Textual):
     takefocus:bool = False
 
     selectmode: Literals.selectmode_tree = "browse"
+    cursor: Literals.cursor = None
+    height: int = None
+    padding: int | tuple[int, ...] = None
 
 
 class Separator(Common_Background):

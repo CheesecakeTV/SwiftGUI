@@ -20,22 +20,33 @@ def preview_all_colors() -> None:
             continue
 
         col.append([
-            sg.Input(width=5, background_color=getattr(Color, name)),
-            sg.T(name, width=20, justify="right"),
+            sg.In(width=5, background_color=getattr(Color, name)),
+            sg.Button(
+                name,
+                fontsize=7,
+                width=20,
+                justify="right",
+                key_function=lambda elem, w: [print(elem.value), w.update(background_color = getattr(Color, elem.value))],
+                fonttype=font_windows.Small_Fonts
+            ),
         ])
 
         n += 1
 
         if n % 42 == 0:
             layout.append(sg.Frame(col))
+            layout.append(sg.Spacer(15))
             col = list()
 
 
-    layout = [layout]
+    layout = [
+        [
+            sg.T("Click on any text to print it to console", fontsize=16)
+        ],
+        layout
+    ]
 
-    w = sg.Window(layout)
-
-    w.loop()
+    sg.Window(layout, title= "SwiftGUI color-preview").loop()
 
 def preview_all_fonts_windows() -> None:
     """
@@ -74,7 +85,7 @@ def preview_all_themes() -> None:
     #  Suggestions are very welcome...
 
     layout = list()
-    all_themes = sg.themes.__dict__.items()
+    all_themes = sg.Themes.__dict__.items()
 
     for n,(key,val) in enumerate(all_themes):
         if key.startswith("_"):

@@ -1,7 +1,7 @@
 import SwiftGUI as sg
 
 
-sg.themes.Hacker()
+sg.Themes.Hacker()
 
 layout = [
     [
