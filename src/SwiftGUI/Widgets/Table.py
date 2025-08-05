@@ -1,8 +1,8 @@
 import tkinter.ttk as ttk
-from collections.abc import Iterable, Callable, Mapping, Iterator
+from collections.abc import Iterable, Callable, Iterator
 from functools import partial
 from tkinter import font
-from typing import Literal, Any, Self, Generator
+from typing import Any, Self
 
 from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement
 

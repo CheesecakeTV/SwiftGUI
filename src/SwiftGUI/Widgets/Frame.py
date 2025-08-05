@@ -19,6 +19,7 @@ class Frame(BaseWidgetContainer):
             self,
             layout: Iterable[Iterable[BaseElement]],
             /,
+            key: str = None,
             alignment: Literals.alignment = None,
             expand: bool = False,
             background_color: str | Color = None,
@@ -26,7 +27,7 @@ class Frame(BaseWidgetContainer):
             # Add here
             tk_kwargs: dict[str:any]=None,
     ):
-        super().__init__(tk_kwargs=tk_kwargs)
+        super().__init__(key=key, tk_kwargs=tk_kwargs)
 
         self._contains = layout
 
@@ -62,7 +63,9 @@ class Frame(BaseWidgetContainer):
         self.window.add_flags(ElementFlag.IS_CREATED)
         self.add_flags(ElementFlag.IS_CONTAINER)
         self._init_widget(root)
+        self.add_flags(ElementFlag.IS_CREATED)
 
+    _background_color_initial: Color | str = None
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
 
         match key:
@@ -73,6 +76,10 @@ class Frame(BaseWidgetContainer):
                     self.remove_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
 
             case "background_color":
+                if not self.has_flag(ElementFlag.IS_CREATED):
+                    self._background_color_initial = new_val
+                    return True
+
                 for row in self._containing_row_frame_widgets:
                     row.configure(background=new_val)
 
@@ -80,9 +87,12 @@ class Frame(BaseWidgetContainer):
                     for elem in i:
                         if elem.has_flag(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR):
                             elem.update(background_color = new_val)
-
-                return True
             case _:
                 return False
 
         return True
+
+    def init_window_creation_done(self):
+        if self._background_color_initial is not None:
+            self.update(background_color = self._background_color_initial)
+
