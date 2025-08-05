@@ -1,9 +1,11 @@
 
 # Getting started
-[Start your journey here](https://github.com/CheesecakeTV/SwiftGUI/wiki/Getting-started#getting-started)
+[Start your journey here](https://github.com/CheesecakeTV/SwiftGUI/blob/60f839fd6dab1fa0e087ab0df4986a8b578d4fa3/Docs/01%20Basic%20tutorials/01%20Getting-started.md)
 
 # Still WIP
 But growing quickly. Give it 1-2 month and you will use it for every GUI you create.
+
+It already contains the most important elements, the others are following quickly.
 
 # SwiftGUI
 

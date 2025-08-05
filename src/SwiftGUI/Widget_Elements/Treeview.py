@@ -65,6 +65,7 @@ class Treeview(BaseWidget):
             headings: Iterable[str] = ("Forgot to add headings?",),
 
             expand: bool = None,
+            expand_y: bool = None,
             tk_kwargs: dict[str:any]=None
     ):
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand)

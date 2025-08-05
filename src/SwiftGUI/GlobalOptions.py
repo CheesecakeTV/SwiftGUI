@@ -248,6 +248,7 @@ class Frame(Common, Common_Background):
     #background = "blue"
     alignment: Literals.alignment = None
     apply_parent_background_color: bool = True
+    pass_down_background_color: bool = True
 
 class Checkbox(Common,Common_Textual, Common_Background):
     key: any = None
@@ -390,6 +391,11 @@ class SeparatorHorizontal(Separator):
 
 class SeparatorVertical(Separator):
     ...
+
+class Notebook(Common_Textual, Common_Background):
+    borderwidth: int = 2
+    apply_parent_background_color: bool = True
+    takefocus: bool = False
 
 def reset_all_options():
     """

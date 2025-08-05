@@ -44,6 +44,7 @@ class Text(BaseWidget):
             font_overstrike:bool = None,
 
             expand: bool = None,
+            expand_y: bool = None,
             tk_kwargs:dict[str:any]=None
     ):
         """
@@ -58,7 +59,7 @@ class Text(BaseWidget):
         # Not used:
         # :param underline: Which character to underline for alt+character selection of this element
 
-        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand)
+        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
 
         if tk_kwargs is None:
             tk_kwargs = dict()

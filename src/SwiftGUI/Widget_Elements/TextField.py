@@ -79,6 +79,7 @@ class TextField(BaseWidget):
             maxundo: int | Literal[-1] = None,
 
             expand: bool = None,
+            expand_y: bool = None,
             tk_kwargs: dict[str:any]=None
     ):
         """
@@ -124,7 +125,7 @@ class TextField(BaseWidget):
         :param expand: True, if this widget should span over the whole row.
         :param tk_kwargs: Additional kwargs for the tk_widget. Don't use it if you don't know tkinter.
         """
-        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand)
+        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
 
         if tk_kwargs is None:
             tk_kwargs = dict()

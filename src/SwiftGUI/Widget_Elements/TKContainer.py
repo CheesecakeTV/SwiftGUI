@@ -19,6 +19,7 @@ class TKContainer(BaseWidget):
             key:str = None,
             pack_kwargs:dict = None,
             expand:bool = False,
+            expand_y: bool = None,
             **tk_kwargs,
     ):
         """

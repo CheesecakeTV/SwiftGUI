@@ -8,6 +8,7 @@ class ElementFlag(Enum):
     IS_CREATED = 4  # Element was created by _init
     EXPAND_ROW = 5  # The row this element is in should be expanded
     APPLY_PARENT_BACKGROUND_COLOR = 6   # Set, if the element should apply whatever background-color the parent has
+    EXPAND_VERTICALLY = 7   # Expand the row this element is in vertically
 
     # Flags 100-200 will never be used, so they are available for you to create custom flags
     # It's important to set an actual value for each flag so it can be saved/loaded correctly

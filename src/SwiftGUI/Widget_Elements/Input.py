@@ -71,6 +71,7 @@ class Input(BaseWidget):
             font_overstrike:bool = None,
             #
             expand: bool = None,
+            expand_y: bool = None,
             tk_kwargs:dict[str:any]=None
     ):
         """
@@ -85,7 +86,7 @@ class Input(BaseWidget):
         # Not used:
         # :param underline: Which character to underline for alt+character selection of this element
 
-        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand)
+        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand,expand_y=expand_y)
         self._key_function = key_function
 
         if tk_kwargs is None:

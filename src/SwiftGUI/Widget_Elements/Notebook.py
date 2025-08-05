@@ -1,18 +1,19 @@
+import tkinter as tk
 import tkinter.ttk as ttk
 from collections.abc import Iterable, Callable, Iterator
 from functools import partial
-from tkinter import font
 from typing import Any, Self, Union
 
 from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement, BaseWidgetContainer, \
     Frame, Event
+from SwiftGUI.Widget_Elements.Spacer import Spacer
 
 
 class Notebook(BaseWidgetTTK):
     tk_widget:ttk.Notebook
     _tk_widget:ttk.Notebook
     _tk_widget_class:type = ttk.Notebook # Class of the connected widget
-    #defaults = GlobalOptions.Table
+    defaults = GlobalOptions.Notebook
 
     _styletype:str = "TNotebook"
 
@@ -26,15 +27,33 @@ class Notebook(BaseWidgetTTK):
 
             key: str = None,
 
+            background_color: str | Color = None,
+            apply_parent_background_color: bool = None,
+
+            padding: int | tuple[int,...] = None,
+            takefocus: bool = None,
+
+            borderwidth: int = None,
+
+            width: int = None,
+            height: int = None,
+
+            cursor: Literals.cursor = None,
+
             expand: bool = None,
+            expand_y: bool = None,
             tk_kwargs: dict[str:any]=None
     ):
-        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand)
+        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
 
         self.add_flags(ElementFlag.IS_CONTAINER)    # So .init_containing is called
+        self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
 
         self._elements: tuple[Frame, ...] = tabs
         self._element_keys: tuple[Any, ...] = tuple(map(lambda a:a.key, tabs))
+
+        if background_color and not apply_parent_background_color:
+            apply_parent_background_color = False
 
         if tk_kwargs is None:
             tk_kwargs = dict()
@@ -44,7 +63,18 @@ class Notebook(BaseWidgetTTK):
         self.update(
             **tk_kwargs,
             #tab_texts = tab_texts,
+            padding = padding,
+            takefocus = takefocus,
+            width = width,
+            height = height,
+            cursor = cursor,
+            apply_parent_background_color = apply_parent_background_color,
+            borderwidth = borderwidth,
+            background_color = background_color,
         )
+
+        #self._config_ttk_style("Tab", background = "red")
+
 
         # if default_event:
         #     self.bind_event("<<TreeviewSelect>>",key=key,key_function=key_function)
@@ -52,8 +82,23 @@ class Notebook(BaseWidgetTTK):
     _tab_texts: dict[Any, str]
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         match key:
+            case "apply_parent_background_color":
+                if new_val:
+                    self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
+                else:
+                    self.remove_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
             case "tab_texts":
                 self._tab_texts.update(new_val)
+            case "background_color":
+                self._config_ttk_style(background=new_val)
+                #self._config_ttk_style(background=new_val, style_ext = "Tab")
+
+                for tab in self._elements:
+                    if tab.has_flag(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR):
+                        tab.update(background_color = new_val)
+
+            case "borderwidth":
+                self._config_ttk_style(borderwidth=new_val)
             case _:
                 return False
 
@@ -156,12 +201,15 @@ class Notebook(BaseWidgetTTK):
 
     def _init_containing(self):
         for tab in self._elements:
-            tab._init(self, self.window)
+            container = Frame([[tab], [Spacer(expand_y=True)]], background_color="red", pass_down_background_color=False)
+            container._init(self, self.window)
+
+            tab.link_background_color(container)
 
             key = tab.key
             title = self._tab_texts.get(key, key)   # If the key is not in this dict, just use the key
 
-            self.tk_widget.add(tab.tk_widget, text=str(title))
+            self.tk_widget.add(container.tk_widget, text=str(title))
 
     def init_window_creation_done(self):
         """Don't touch!"""

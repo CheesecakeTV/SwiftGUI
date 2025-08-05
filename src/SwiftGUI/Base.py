@@ -272,6 +272,18 @@ class BaseWidget(BaseElement):
     _tk_widget_class:type = None # Class of the connected widget
     _tk_kwargs:dict = dict()
 
+    # _transfer_keys = {  # Usual couple of keys
+    #     "background_color_disabled":"disabledbackground",
+    #     "background_color":"background",
+    #     "text_color_disabled": "disabledforeground",
+    #     "highlightbackground_color": "highlightbackground",
+    #     "selectbackground_color": "selectbackground",
+    #     "select_text_color": "selectforeground",
+    #     "background_color_active" : "activebackground",
+    #     "text_color_active" : "activeforeground",
+    #     "text_color":"foreground",
+    # }
+
     _tk_target_value:tk.Variable = None # By default, the value of this is read when fetching the value
 
     _insert_kwargs:dict         # kwargs for the packer/grid
@@ -284,7 +296,7 @@ class BaseWidget(BaseElement):
 
     _events_to_bind_later: list[dict]
 
-    def __init__(self,key:any=None,tk_kwargs:dict[str:any]=None,expand:bool = False,**kwargs):
+    def __init__(self,key:any=None,tk_kwargs:dict[str:any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
         super().__init__()
         self._events_to_bind_later = list()
 
@@ -304,6 +316,9 @@ class BaseWidget(BaseElement):
         expand = self.defaults.single("expand",expand,False)
         if expand:
             self.add_flags(ElementFlag.EXPAND_ROW)
+
+        if expand_y:
+            self.add_flags(ElementFlag.EXPAND_VERTICALLY)
 
     def _window_is_dead(self) -> bool:
         """
@@ -417,7 +432,7 @@ class BaseWidget(BaseElement):
 
                 temp.update(self._insert_kwargs)
 
-                if self.has_flag(ElementFlag.EXPAND_ROW):
+                if self.has_flag(ElementFlag.EXPAND_ROW) or self.has_flag(ElementFlag.EXPAND_VERTICALLY):
                     temp["expand"] = temp.get("expand",True)
                     temp["fill"] = temp.get("fill","both")
 
@@ -449,6 +464,7 @@ class BaseWidget(BaseElement):
             line_elem._fake_tk_element = actual_line
 
             expand = False
+            expand_y = False
 
             for k in i:
                 k._init(line_elem,self.window)
@@ -456,8 +472,17 @@ class BaseWidget(BaseElement):
                 if not expand and k.has_flag(ElementFlag.EXPAND_ROW):
                     expand = True
 
-            if expand:
+                if not expand_y and k.has_flag(ElementFlag.EXPAND_VERTICALLY):
+                    expand_y = True
+
+            if expand and expand_y:
+                ins_kwargs_rows["fill"] = "both"
+                ins_kwargs_rows["expand"] = True
+            elif expand:
                 ins_kwargs_rows["fill"] = "x"
+                ins_kwargs_rows["expand"] = True
+            elif expand_y:
+                ins_kwargs_rows["fill"] = "y"
                 ins_kwargs_rows["expand"] = True
             else:
                 ins_kwargs_rows["fill"] = "none"
@@ -466,7 +491,10 @@ class BaseWidget(BaseElement):
 
             #line.pack(side="top",fill="both",expand=True)
             #line.grid(sticky="ew")
-            line.pack(fill="x")
+            if expand_y:
+                line.pack(fill="both", expand=True)
+            else:
+                line.pack(fill="x")
             actual_line.pack(**ins_kwargs_rows)
 
     def _get_value(self) -> any:
@@ -525,8 +553,8 @@ class BaseWidgetContainer(BaseWidget):
     """
     Base for Widgets that contain other widgets
     """
-    def __init__(self,key:any=None,tk_kwargs:dict[str:any]=None,expand:bool = False,**kwargs):
-        super().__init__(key,tk_kwargs,expand,**kwargs)
+    def __init__(self,key:any=None,tk_kwargs:dict[str:any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
+        super().__init__(key,tk_kwargs,expand,expand_y=expand_y,**kwargs)
 
         self._containing_row_frame_widgets = list()
         self._background_color: str | Color = self.defaults.single("background_color",None)
@@ -541,25 +569,6 @@ class BaseWidgetTTK(BaseWidget):
     _style: str = None  # Registered style of this widget
     _stylecounter: int = 0   # This ensures every style has an unique number
 
-    _transfer_keys = {  # Usual couple of keys
-        # "background_color_disabled":"disabledbackground",
-        "background_color":"background",
-        # "text_color_disabled": "disabledforeground",
-        "highlightbackground_color": "highlightbackground",
-        "selectbackground_color": "selectbackground",
-        "select_text_color": "selectforeground",
-        # "pass_char":"show",
-        "background_color_active" : "activebackground",
-        "text_color_active" : "activeforeground",
-        "text_color":"foreground",
-    }
-
-    _tk_kwargs_for_style: list = [  # These will not pass through to the widget, but to its style
-        "background_color",
-        "text_color",
-        #"relief",
-        #"font",
-    ]
 
     def __init__(self, *args, **kwargs):
         self._style = str(BaseWidgetTTK._stylecounter)

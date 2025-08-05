@@ -171,9 +171,10 @@ class Table(BaseWidgetTTK):
 
             takefocus: bool = None,
             expand: bool = None,
+            expand_y: bool = None,
             tk_kwargs: dict[str:any]=None
     ):
-        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand)
+        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
 
         self._elements = list()
         self._element_dict = dict()

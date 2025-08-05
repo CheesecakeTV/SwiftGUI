@@ -72,9 +72,10 @@ class Checkbox(BaseWidget):
             # hilightbackground_color: str | Color = None,
             # highlightcolor: str | Color = None,
             expand: bool = None,
+            expand_y: bool = None,
             tk_kwargs: dict = None,
     ):
-        super().__init__(key, tk_kwargs=tk_kwargs, expand=expand)
+        super().__init__(key, tk_kwargs=tk_kwargs, expand=expand,expand_y=expand_y)
 
         self._key_function = key_function
 
