@@ -64,6 +64,7 @@ class ColorChooserButton(Button):
             font_overstrike: bool = None,
 
             expand: bool = None,
+            expand_y: bool = None,
             tk_kwargs: dict[str:any] = None
     ):
         """
@@ -143,6 +144,7 @@ class ColorChooserButton(Button):
             font_underline=font_underline,
             font_overstrike=font_overstrike,
             expand=expand,
+            expand_y = expand_y,
             tk_kwargs=tk_kwargs,
         )
 

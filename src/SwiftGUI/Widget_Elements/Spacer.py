@@ -17,8 +17,9 @@ class Spacer(BaseWidget):
             self,
             width:int = None,
             height:int = None,
+            expand_y: bool = None,
     ):
-        super().__init__()
+        super().__init__(expand_y = expand_y)
 
         self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
 

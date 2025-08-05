@@ -248,6 +248,7 @@ class Frame(Common, Common_Background):
     #background = "blue"
     alignment: Literals.alignment = None
     apply_parent_background_color: bool = True
+    pass_down_background_color: bool = True
 
 class Checkbox(Common,Common_Textual, Common_Background):
     key: any = None
@@ -390,6 +391,29 @@ class SeparatorHorizontal(Separator):
 
 class SeparatorVertical(Separator):
     ...
+
+class Notebook(Common_Textual, Common_Background):
+    borderwidth: int = 2
+    apply_parent_background_color: bool = True
+    takefocus: bool = False
+    background_color: str | Color = None
+    background_color_tabs: str | Color = None
+    background_color_tabs_active: str | Color = None
+    text_color_tabs: str | Color = None
+    text_color_tabs_active: str | Color = None
+    fonttype_tabs: str | Font = None
+    fontsize_tabs: int = None
+    font_bold_tabs: bool = None
+    font_italic_tabs: bool = None
+    font_underline_tabs: bool = None
+    font_overstrike_tabs: bool = None
+    padding: int | tuple[int, ...] = None
+    width: int = None
+    height: int = None
+    cursor: Literals.cursor = None
+    tabposition: Literals.tabposition = None
+    expand: bool = None
+    expand_y: bool = None
 
 def reset_all_options():
     """

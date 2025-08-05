@@ -6,7 +6,7 @@ from tkinter import ttk
 
 sg.GlobalOptions.Common_Textual.fontsize = 10
 #sg.GlobalOptions.reset_all_options()
-#sg.themes.FacebookMom()
+sg.Themes.Hacker()
 
 
 layout_left = [

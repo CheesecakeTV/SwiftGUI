@@ -55,9 +55,10 @@ class Listbox(BaseWidget):
             highlightcolor: str | Color = None,
             highlightthickness: int = None,
             expand:bool = None,
+            expand_y: bool = None,
             tk_kwargs: dict = None,
     ):
-        super().__init__(key, tk_kwargs=tk_kwargs, expand=expand)
+        super().__init__(key, tk_kwargs=tk_kwargs, expand=expand, expand_y = expand_y)
 
         self._key_function = key_function
         if default_list is None:
