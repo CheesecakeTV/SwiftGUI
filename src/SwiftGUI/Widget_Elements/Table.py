@@ -1,3 +1,4 @@
+import tkinter
 import tkinter.ttk as ttk
 from collections.abc import Iterable, Callable, Iterator
 from functools import partial
@@ -337,7 +338,8 @@ class Table(BaseWidgetTTK):
 
     @table_elements.setter
     def table_elements(self, new_val):
-        raise AttributeError("You tried to set table_elements directly on an sg.Table. Don't do that.\nsg.Table has a lot of methods you can use to change elements.")
+        raise AttributeError("You tried to set table_elements directly on an sg.Table. If you want to replace the whole table, use .overwrite_table instead.\n"
+                             "I highly recommend not overwriting the whole table though, sg.Table offers a lot of methods to change it.")
 
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         match key:
@@ -519,7 +521,7 @@ class Table(BaseWidgetTTK):
         print("Warning!","It is not possible to set Values of sg.Table (yet)!")
         print("     use .index to set the selected item")
 
-    def __getitem__(self, item: int):
+    def __getitem__(self, item: int) -> TableRow:
         """
         Get the item at specified index
         :param item:
@@ -629,10 +631,13 @@ class Table(BaseWidgetTTK):
         """
         new_vals = tuple(new_vals)
 
-        if new_vals:
-            self.set_index(new_vals[0])
-        else:
-            self.set_index(None)
+        # if new_vals:  # No need, .value and .index don't work in extended mode anyways
+        #     self.set_index(new_vals[0])
+        # else:
+        #     self.set_index(None)
+        self.set_index(None)
+        if not new_vals:
+            return
 
         new_vals = map(self._elements.__getitem__, new_vals)
         new_vals = tuple(self._get_all_iids(new_vals))
@@ -768,7 +773,7 @@ class Table(BaseWidgetTTK):
 
         return tuple(r)
 
-    def move(self,from_index: int, to_index: int) -> None:
+    def move(self,from_index: int, to_index: int) -> Self:
         """
         Move a row from one index to another.
         Pass negative values to index the last n elements like you do with lists.
@@ -786,7 +791,9 @@ class Table(BaseWidgetTTK):
         row_from = self._elements.pop(from_index)
         self._elements.insert(to_index, row_from)
 
-    def move_up(self, index: int, n: int = 1):
+        return self
+
+    def move_up(self, index: int, n: int = 1) -> Self:
         """
         Move one row up n places
         :param index: What row to move
@@ -795,8 +802,9 @@ class Table(BaseWidgetTTK):
         """
         index_new = max(index - n, 0)
         self.move(index, index_new)
+        return self
 
-    def move_down(self, index: int, n: int = 1):
+    def move_down(self, index: int, n: int = 1) -> Self:
         """
         Move one row down n places
         :param index: What row to move
@@ -805,8 +813,9 @@ class Table(BaseWidgetTTK):
         """
         index_new = min(index + n, len(self._elements) - 1)
         self.move(index, index_new)
+        return self
 
-    def swap(self, index1: int, index2: int):
+    def swap(self, index1: int, index2: int) -> Self:
         """
         Swap two rows
 
@@ -828,18 +837,33 @@ class Table(BaseWidgetTTK):
 
         self.move(index2, index1 + 1)
         self.move(index1, index2)
+        return self
 
-    def see(self, index: int = 0):
+    def see(self, index: int = 0) -> Self:
         """
         Scroll through the list to see a certain index.
         :param index: Row to view
         :return:
         """
         self.tk_widget.see(str(hash(self._elements[index])))
+        return self
+
+    @property
+    def filter_mode(self) -> bool:
+        """
+        Returns True, if the table is in filter-mode
+        :return:
+        """
+        return bool(self._elements_before_filter)
+
+    @filter_mode.setter
+    def filter_mode(self, new_val: bool):
+        if not new_val:
+            self.reset_filter()
 
     _elements_before_filter: list[TableRow] | None = None   # When filter is applied, this saves the original state
     @BaseElement._run_after_window_creation
-    def filter(self, key: Callable, by_column:int | str = None) -> Self:
+    def filter(self, key: Callable, by_column:int | str = None, only_remaining_rows:bool = False) -> Self:
         """
         Filter the whole table either:
         - If no by_column is passed, the function will be applied to the whole column
@@ -848,6 +872,7 @@ class Table(BaseWidgetTTK):
         The previous state of the list is saved and can be restored using reset_filter().
         To apply the filter permanently, use persist_filter().
 
+        :param only_remaining_rows: True, if only rows that are in the table right now should be filtered. False, if prior filters should be ignored.
         :param by_column: Pass a string (name of the column) or its index. If multiple columns have the same name, first one will be used.
         :param key: Key function. Truethy returns will be kept inside the list
         :return: sg.Table-Element for inline calls
@@ -867,9 +892,15 @@ class Table(BaseWidgetTTK):
         if self._elements_before_filter is None:
             self._elements_before_filter = self._elements.copy()
 
-        self._elements = list(filter(filter_fkt, self._elements_before_filter))
+        if only_remaining_rows:
+            filter_list = self._elements
+        else:
+            filter_list = self._elements_before_filter
 
-        all_iids = set(self._get_all_iids(self._elements_before_filter))
+        all_iids = set(self._get_all_iids(filter_list))
+
+        self._elements = list(filter(filter_fkt, filter_list))
+
         iids_in = list(self._get_all_iids(self._elements))    # Elements to keep
         iids_out = all_iids.difference(set(iids_in)) # Elements to remove
 
@@ -888,13 +919,20 @@ class Table(BaseWidgetTTK):
         if not self._elements_before_filter:
             return self
 
-        self._elements = self._elements_before_filter
+        self._elements.clear()
+
+        iids = list(self._get_all_iids(self._elements_before_filter))
+
+        n = 0
+        for iid, row in zip(iids, self._elements_before_filter):
+            try:
+                self.tk_widget.move(iid, "", n)
+                self._elements.append(row)
+                n += 1
+            except tkinter.TclError:
+                pass
+
         self._elements_before_filter = None
-
-        iids = list(self._get_all_iids(self._elements))
-
-        for n,iid in enumerate(iids):
-            self.tk_widget.move(iid, "", n)
 
         return self
 
