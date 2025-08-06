@@ -839,6 +839,19 @@ class Table(BaseWidgetTTK):
         """
         self.tk_widget.see(str(hash(self._elements[index])))
 
+    @property
+    def filter_mode(self) -> bool:
+        """
+        Returns True, if the table is in filter-mode
+        :return:
+        """
+        return bool(self._elements_before_filter)
+
+    @filter_mode.setter
+    def filter_mode(self, new_val: bool):
+        if not new_val:
+            self.reset_filter()
+
     _elements_before_filter: list[TableRow] | None = None   # When filter is applied, this saves the original state
     @BaseElement._run_after_window_creation
     def filter(self, key: Callable, by_column:int | str = None, only_remaining_rows:bool = False) -> Self:
