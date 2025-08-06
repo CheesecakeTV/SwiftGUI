@@ -1,3 +1,4 @@
+import tkinter
 import tkinter.ttk as ttk
 from collections.abc import Iterable, Callable, Iterator
 from functools import partial
@@ -337,7 +338,8 @@ class Table(BaseWidgetTTK):
 
     @table_elements.setter
     def table_elements(self, new_val):
-        raise AttributeError("You tried to set table_elements directly on an sg.Table. Don't do that.\nsg.Table has a lot of methods you can use to change elements.")
+        raise AttributeError("You tried to set table_elements directly on an sg.Table. If you want to replace the whole table, use .overwrite_table instead.\n"
+                             "I highly recommend not overwriting the whole table though, sg.Table offers a lot of methods to change it.")
 
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         match key:
@@ -519,7 +521,7 @@ class Table(BaseWidgetTTK):
         print("Warning!","It is not possible to set Values of sg.Table (yet)!")
         print("     use .index to set the selected item")
 
-    def __getitem__(self, item: int):
+    def __getitem__(self, item: int) -> TableRow:
         """
         Get the item at specified index
         :param item:
@@ -888,13 +890,20 @@ class Table(BaseWidgetTTK):
         if not self._elements_before_filter:
             return self
 
-        self._elements = self._elements_before_filter
+        self._elements.clear()
+
+        iids = list(self._get_all_iids(self._elements_before_filter))
+
+        n = 0
+        for iid, row in zip(iids, self._elements_before_filter):
+            try:
+                self.tk_widget.move(iid, "", n)
+                self._elements.append(row)
+                n += 1
+            except tkinter.TclError:
+                pass
+
         self._elements_before_filter = None
-
-        iids = list(self._get_all_iids(self._elements))
-
-        for n,iid in enumerate(iids):
-            self.tk_widget.move(iid, "", n)
 
         return self
 

@@ -10,3 +10,4 @@ Simplified Elements/Widgets with less options for beginners
 
 Tool to convert png/jpg into ico
 
+Hide headings of sg.Table so it can be used as a listbox
