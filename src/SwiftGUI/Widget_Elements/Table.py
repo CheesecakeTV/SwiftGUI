@@ -841,7 +841,7 @@ class Table(BaseWidgetTTK):
 
     _elements_before_filter: list[TableRow] | None = None   # When filter is applied, this saves the original state
     @BaseElement._run_after_window_creation
-    def filter(self, key: Callable, by_column:int | str = None) -> Self:
+    def filter(self, key: Callable, by_column:int | str = None, only_remaining_rows:bool = False) -> Self:
         """
         Filter the whole table either:
         - If no by_column is passed, the function will be applied to the whole column
@@ -850,6 +850,7 @@ class Table(BaseWidgetTTK):
         The previous state of the list is saved and can be restored using reset_filter().
         To apply the filter permanently, use persist_filter().
 
+        :param only_remaining_rows: True, if only rows that are in the table right now should be filtered. False, if prior filters should be ignored.
         :param by_column: Pass a string (name of the column) or its index. If multiple columns have the same name, first one will be used.
         :param key: Key function. Truethy returns will be kept inside the list
         :return: sg.Table-Element for inline calls
@@ -869,9 +870,15 @@ class Table(BaseWidgetTTK):
         if self._elements_before_filter is None:
             self._elements_before_filter = self._elements.copy()
 
-        self._elements = list(filter(filter_fkt, self._elements_before_filter))
+        if only_remaining_rows:
+            filter_list = self._elements
+        else:
+            filter_list = self._elements_before_filter
 
-        all_iids = set(self._get_all_iids(self._elements_before_filter))
+        all_iids = set(self._get_all_iids(filter_list))
+
+        self._elements = list(filter(filter_fkt, filter_list))
+
         iids_in = list(self._get_all_iids(self._elements))    # Elements to keep
         iids_out = all_iids.difference(set(iids_in)) # Elements to remove
 
