@@ -60,7 +60,16 @@ Aliases: Multiline
 
 
 ## Table
+A table with one or more columns.\
+Probably the best element of them all.
 
+Also actually an extended Element, but it fits better in this category in my opinion.
+
+![](../assets/images/2025-08-06-12-16-53.png)
+
+I do have to admit that PySimpleGUI's Table has a lower startup-time when adding a lot of rows, but SwiftGUI's Table easily has the better performance at runtime.
+
+You should really check out the detailed documentation on Tables, this element is incredibly useful.
 
 ## Notebook
 Aliases: TabGroup

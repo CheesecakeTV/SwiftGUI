@@ -396,7 +396,6 @@ class Notebook(Common_Textual, Common_Background):
     borderwidth: int = 2
     apply_parent_background_color: bool = True
     takefocus: bool = False
-    background_color: str | Color = None
     background_color_tabs: str | Color = None
     background_color_tabs_active: str | Color = None
     text_color_tabs: str | Color = None

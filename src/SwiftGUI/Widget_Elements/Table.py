@@ -631,10 +631,13 @@ class Table(BaseWidgetTTK):
         """
         new_vals = tuple(new_vals)
 
-        if new_vals:
-            self.set_index(new_vals[0])
-        else:
-            self.set_index(None)
+        # if new_vals:  # No need, .value and .index don't work in extended mode anyways
+        #     self.set_index(new_vals[0])
+        # else:
+        #     self.set_index(None)
+        self.set_index(None)
+        if not new_vals:
+            return
 
         new_vals = map(self._elements.__getitem__, new_vals)
         new_vals = tuple(self._get_all_iids(new_vals))
@@ -770,7 +773,7 @@ class Table(BaseWidgetTTK):
 
         return tuple(r)
 
-    def move(self,from_index: int, to_index: int) -> None:
+    def move(self,from_index: int, to_index: int) -> Self:
         """
         Move a row from one index to another.
         Pass negative values to index the last n elements like you do with lists.
@@ -788,7 +791,9 @@ class Table(BaseWidgetTTK):
         row_from = self._elements.pop(from_index)
         self._elements.insert(to_index, row_from)
 
-    def move_up(self, index: int, n: int = 1):
+        return self
+
+    def move_up(self, index: int, n: int = 1) -> Self:
         """
         Move one row up n places
         :param index: What row to move
@@ -797,8 +802,9 @@ class Table(BaseWidgetTTK):
         """
         index_new = max(index - n, 0)
         self.move(index, index_new)
+        return self
 
-    def move_down(self, index: int, n: int = 1):
+    def move_down(self, index: int, n: int = 1) -> Self:
         """
         Move one row down n places
         :param index: What row to move
@@ -807,8 +813,9 @@ class Table(BaseWidgetTTK):
         """
         index_new = min(index + n, len(self._elements) - 1)
         self.move(index, index_new)
+        return self
 
-    def swap(self, index1: int, index2: int):
+    def swap(self, index1: int, index2: int) -> Self:
         """
         Swap two rows
 
@@ -830,14 +837,16 @@ class Table(BaseWidgetTTK):
 
         self.move(index2, index1 + 1)
         self.move(index1, index2)
+        return self
 
-    def see(self, index: int = 0):
+    def see(self, index: int = 0) -> Self:
         """
         Scroll through the list to see a certain index.
         :param index: Row to view
         :return:
         """
         self.tk_widget.see(str(hash(self._elements[index])))
+        return self
 
     @property
     def filter_mode(self) -> bool:
