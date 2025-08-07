@@ -1,15 +1,20 @@
-import SwiftGUI as sg
+import tkinter as tk
+import tkinter.ttk as ttk
 
-layout = [
-    [
-        sg.Example(key="MyText",text="It does work..."),
-    ],[
-        sg.Button(text="Generate event",key="Hi")
-    ]
-]
 
-w = sg.Window(layout)
-print(w.loop()) # 'MyText': 'It does work...'
-print(w["MyText"].value)    # This works too
-w["MyText"].value = "Changed!"  # Value changes next time w.loop() is called
-w.loop()
+root = tk.Tk()
+
+
+my_button = tk.Button(root, text="Hallo Welt")
+my_button.pack()
+
+mb = ttk.Menubutton(root, text="Menü")
+mb.pack()
+
+my_menu = tk.Menu(mb)
+mb["menu"] = my_menu
+
+my_menu.add_checkbutton(label="Test")
+my_menu.add_checkbutton(label="Hello")
+
+root.mainloop()
