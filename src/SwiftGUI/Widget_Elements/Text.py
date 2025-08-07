@@ -108,6 +108,9 @@ class Text(BaseWidget):
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         # Fish out all special keys to process them seperately
         match key:
+            case "text":
+                self._text = new_val
+                self.value = new_val
             case "fonttype":
                 self._fonttype = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)

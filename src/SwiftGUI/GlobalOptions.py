@@ -245,10 +245,18 @@ class Frame(Common, Common_Background):
     takefocus = False
     padding: Literals.padding = 3
     relief: Literals.relief = "flat"
-    #background = "blue"
     alignment: Literals.alignment = None
     apply_parent_background_color: bool = True
     pass_down_background_color: bool = True
+
+    borderwidth: int = None
+    highlightbackground_color: Color | str = None
+    highlightcolor: Color | str = None
+    highlightthickness: int = None
+
+    padx: int = 2
+    pady: int = 2
+
 
 class Checkbox(Common,Common_Textual, Common_Background):
     key: any = None
@@ -413,6 +421,9 @@ class Notebook(Common_Textual, Common_Background):
     tabposition: Literals.tabposition = None
     expand: bool = None
     expand_y: bool = None
+
+class LabelFrame(Frame, Common_Textual):
+    relief: Literals.relief = "solid"
 
 def reset_all_options():
     """

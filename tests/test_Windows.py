@@ -6,7 +6,7 @@ from tkinter import ttk
 
 sg.GlobalOptions.Common_Textual.fontsize = 10
 #sg.GlobalOptions.reset_all_options()
-sg.Themes.Hacker()
+#sg.Themes.Hacker()
 
 
 layout_left = [
@@ -66,7 +66,15 @@ layout_right = [
 
 layout = [
     [
-        the_frame := sg.Frame(layout_left),
+        the_frame := sg.LabelFrame(
+            layout_left,
+            #relief = "solid",
+            text = "Hallo Welt",
+            borderwidth= 2,
+            expand_y= True,
+            #background_color="red",
+            expand = True,
+        ),
         sg.Spacer(width=150),
         sg.VerticalSeparator(),
         sg.Frame(layout_right),
@@ -79,7 +87,7 @@ layout = [
     ]
 ]
 
-w = sg.Window(layout,alignment="left")
+w = sg.Window(layout,alignment="left", background_color=Color.light_yellow)
 #w.update(background_color = "red")
 w["ContainerTest"].update(text="blue")
 #the_frame.update(background_color = "red")
@@ -100,12 +108,6 @@ for e,v in w:
     w["List"].append_front(e)
     print(w["List"].list_elements)
     print(w["List"].index_of)
-    #w["Check!"].flash()
-    #w["Hallo Welt"].flash()
-
-    #w["Input-Test"].value = e
-    #w["Input-Test"].update(background_color=sg.Color.gold)
-    #w["SomeText"].value = "Funktioniert"
 
     w["SomeText"].update(background="red")
     w["IAM"].update(font_overstrike=False,background_color=None)

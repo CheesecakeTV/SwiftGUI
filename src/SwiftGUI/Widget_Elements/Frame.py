@@ -8,11 +8,20 @@ class Frame(BaseWidgetContainer):
     """
     Copy this class ot create your own Widget
     """
+    tk_widget: tk.Frame
     _tk_widget_class:type[tk.Frame] = tk.Frame # Class of the connected widget
     defaults = GlobalOptions.Frame
 
     _transfer_keys = {
-        "background_color":"background"
+        "background_color_disabled":"disabledbackground",
+        "background_color_readonly":"readonlybackground",
+        "background_color":"background",
+        "text_color":"foreground",
+        "text_color_disabled": "disabledforeground",
+        "highlightbackground_color": "highlightbackground",
+        "selectbackground_color": "selectbackground",
+        "select_text_color": "selectforeground",
+        "pass_char":"show",
     }
 
     def __init__(
@@ -26,6 +35,19 @@ class Frame(BaseWidgetContainer):
             background_color: str | Color = None,
             apply_parent_background_color: bool = None,
             pass_down_background_color: bool = None,
+            borderwidth: int = None,
+            cursor: Literals.cursor = None,
+            highlightbackground_color: Color | str = None,
+            highlightcolor: Color | str = None,
+            highlightthickness: int = None,
+
+            padx: int = None,
+            pady: int = None,
+
+            relief: Literals.relief = None,
+
+            takefocus: bool = None,
+
             # Add here
             tk_kwargs: dict[str:any]=None,
     ):
@@ -40,14 +62,25 @@ class Frame(BaseWidgetContainer):
         if tk_kwargs is None:
             tk_kwargs = dict()
 
-        _tk_kwargs = {
-            **tk_kwargs,
-            # Insert named arguments for the widget here
-            "background_color":background_color,
-            "apply_parent_background_color": apply_parent_background_color,
-            "pass_down_background_color": pass_down_background_color,
-        }
-        self.update(**_tk_kwargs)
+        self.update(
+            background_color = background_color,
+            apply_parent_background_color = apply_parent_background_color,
+            pass_down_background_color = pass_down_background_color,
+            borderwidth = borderwidth,
+            cursor = cursor,
+            highlightbackground_color = highlightbackground_color,
+            highlightcolor = highlightcolor,
+            highlightthickness = highlightthickness,
+
+            padx = padx,
+            pady = pady,
+
+            relief = relief,
+
+            takefocus = takefocus,
+
+            **tk_kwargs
+        )
 
         self._insert_kwargs["expand"] = self.defaults.single("expand",expand)
 
@@ -97,6 +130,8 @@ class Frame(BaseWidgetContainer):
                 if not self.has_flag(ElementFlag.IS_CREATED):
                     self._background_color_initial = new_val
                     return True
+
+                self.tk_widget.configure(background = new_val)
 
                 for row in self._containing_row_frame_widgets:
                     row.configure(background=new_val)

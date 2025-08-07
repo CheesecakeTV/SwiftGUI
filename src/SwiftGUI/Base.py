@@ -241,6 +241,16 @@ class BaseElement:
         if self.has_flag(ElementFlag.IS_CREATED) and self.window.has_flag(ElementFlag.IS_CREATED):
             self._apply_update()
 
+    @run_after_window_creation
+    def update_after_window_creation(self, **kwargs) -> Self:
+        """
+        Use .update after the window was created
+        :param kwargs:
+        :return:
+        """
+        self.update(**kwargs)
+        return self
+
     # @run_after_window_creation
     # def update_after_window_creation(self,**kwargs) -> Self:
     #     """
@@ -454,7 +464,7 @@ class BaseWidget(BaseElement):
 
         for i in self._contains:
             # line = tk.Frame(self._tk_widget,background="orange",relief="raised",borderwidth="3",border=3)
-            # actual_line = tk.Frame(line,background="lightBlue")
+            # actual_line = tk.Frame(line,background="lightBlue",borderwidth=3,border=3,relief="raised")
 
             line = tk.Frame(self._tk_widget,relief="flat",background=self._background_color)  # This is the row
             actual_line = tk.Frame(line,background=self._background_color)    # This is where the actual elements are put in
