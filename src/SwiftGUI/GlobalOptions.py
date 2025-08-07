@@ -424,6 +424,7 @@ class Notebook(Common_Textual, Common_Background):
 
 class LabelFrame(Frame, Common_Textual):
     relief: Literals.relief = "solid"
+    labelanchor: Literals.tabposition = "nw"
 
 def reset_all_options():
     """

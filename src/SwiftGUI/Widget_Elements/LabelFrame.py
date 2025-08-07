@@ -38,6 +38,8 @@ class LabelFrame(Frame):
             font_overstrike:bool = None,
             text_color: Color | str = None,
 
+            labelanchor: Literals.tabposition = None,
+
             # Normal Frame
             key: str = None,
             alignment: Literals.alignment = None,
@@ -84,6 +86,7 @@ class LabelFrame(Frame):
         self.link_background_color(self._element)
 
         self.update(
+            labelanchor = labelanchor,
             text = text,
             text_color = text_color,
             fonttype = fonttype,
