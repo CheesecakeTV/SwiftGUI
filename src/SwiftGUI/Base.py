@@ -412,6 +412,16 @@ class BaseWidget(BaseElement):
         self._personal_init_inherit()
         self._init_widget(self.parent.parent_tk_widget)    # Init the contained widgets
 
+    def _assign_tk_target_variable(self, variable: tk.Variable, kwargs_key: str="textvariable"):
+        """
+        Assigns an already existing target variable
+        :param variable:
+        :param kwargs_key:
+        :return:
+        """
+        self._tk_target_value = variable
+        self._tk_kwargs[kwargs_key] = variable
+
     def _set_tk_target_variable(self,value_type:type=tk.StringVar,kwargs_key:str="textvariable",default_key:str=None,default_value:any=None):
         """
         Define a target variable for this widget

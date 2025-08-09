@@ -151,6 +151,7 @@ class Common(DEFAULT_OPTIONS_CLASS):
     cursor:Literals.cursor = None   # Find available cursors here (2025): https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/cursors.html
     takefocus:bool = True
     expand:bool = False
+    expand_y: bool = False
 
 class Common_Background(DEFAULT_OPTIONS_CLASS):
     """
@@ -259,11 +260,11 @@ class Frame(Common, Common_Background):
 
 
 class Checkbox(Common,Common_Textual, Common_Background):
-    key: any = None
     default_value: bool = False
+    default_event: bool = False,
     readonly: bool = None
     apply_parent_background_color: bool = True
-    # borderwidth:int = None
+    borderwidth:int = None
     #
     text_color_disabled: str | Color = None
     check_background_color: str | Color = None
@@ -285,6 +286,12 @@ class Checkbox(Common,Common_Textual, Common_Background):
     relief: Literals.relief = None
     # hilightbackground_color: str | Color = None
     # highlightcolor: str | Color = None
+
+class Radiobutton(Checkbox):
+    # hilightbackground_color: str | Color = None,
+    # highlightcolor: str | Color = None,
+    # highlightthickness: int = None,
+    ...
 
 class Window(Common_Background):
     title = "SwiftGUI Window"

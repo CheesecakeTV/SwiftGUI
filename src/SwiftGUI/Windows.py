@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Self, Literal
 from warnings import deprecated
 import inspect
 
-from SwiftGUI import BaseElement, Frame, ElementFlag, Literals, GlobalOptions, Color
+from SwiftGUI import BaseElement, Frame, ElementFlag, Literals, GlobalOptions, Color, Debug
 
 if TYPE_CHECKING:
     from SwiftGUI import AnyElement
@@ -254,8 +254,8 @@ class Window(BaseElement):
         self.all_elements.append(elem)
 
         if not elem.has_flag(ElementFlag.DONT_REGISTER_KEY) and elem.key is not None:
-            if elem.key in self.all_key_elements:
-                print(f"WARNING! Key {elem.key} is defined multiple times!")
+            if Debug.enable_key_warnings and elem.key in self.all_key_elements:
+                print(f"WARNING! Key {elem.key} is defined multiple times! Disable this message by setting sg.Debug.enable_key_warnings = False before creating the layout.")
 
             self.all_key_elements[elem.key] = elem
 

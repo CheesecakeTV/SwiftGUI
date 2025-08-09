@@ -1,15 +1,68 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal
+from typing import Literal, Self
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
+_radio_id:int = 1
+_named_radio_groups: dict = dict()  # All groups with an actual name instead of ids
 
-class Checkbox(BaseWidget):
-    _tk_widget_class: type = tk.Checkbutton  # Class of the connected widget
-    tk_widget: tk.Checkbutton
-    defaults = GlobalOptions.Checkbox  # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
+class RadioGroup:
+    """
+    This is used to identify which radio-buttons belong together.
+    """
+    _name: str = ""
+
+    def __new__(cls, *args, **kwargs):
+        if args:
+            kwargs["name"] = args[0]
+
+        name = kwargs.get("name")
+
+        if name in _named_radio_groups:
+            return _named_radio_groups[kwargs["name"]]
+
+        global _radio_id
+
+        new_instance = super().__new__(cls)
+        new_instance._id = _radio_id
+        _radio_id += 1
+
+        if name is not None:
+            _named_radio_groups[name] = new_instance
+
+        new_instance.next_radio_value = -1   # Will be passed to the radio-button. If the tk-value is equal to this, radio is checked
+        new_instance.tk_variable = tk.IntVar    # Passed to the radio-button
+
+        return new_instance
+
+    def __init__(self, name: str = None):
+        """
+        Pass a name, if you want to grap an already existing Group.
+        :param name:
+        """
+        tk_variable: type | tk.IntVar
+
+        self._name = name
+        self.next_radio_value += 1
+
+    def __str__(self):
+        return f"<RadioGroup\t{self._name=}\t{self._id=}>"
+
+    def __repr__(self):
+        return str(self)
+
+    def __hash__(self):
+        return self._id
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
+
+class Radiobutton(BaseWidget):
+    _tk_widget_class: type = tk.Radiobutton  # Class of the connected widget
+    tk_widget: tk.Radiobutton
+    defaults = GlobalOptions.Radiobutton  # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
     value: bool
 
     _transfer_keys = {
@@ -31,6 +84,7 @@ class Checkbox(BaseWidget):
             self,
             text: str = None,
             /,
+            group: str | RadioGroup = None,
             key: any = None,
             default_event: bool = False,
             key_function: Callable | Iterable[Callable] = None,
@@ -71,6 +125,7 @@ class Checkbox(BaseWidget):
             relief: Literals.relief = None,
             # hilightbackground_color: str | Color = None,
             # highlightcolor: str | Color = None,
+            # highlightthickness: int = None,
             expand: bool = None,
             expand_y: bool = None,
             tk_kwargs: dict = None,
@@ -85,64 +140,75 @@ class Checkbox(BaseWidget):
         if background_color and not apply_parent_background_color:
             apply_parent_background_color = False
 
-        _tk_kwargs = {
-            **tk_kwargs,
-            "default_value": default_value,
-            "font_bold": font_bold,
-            "font_italic": font_italic,
-            "font_overstrike": font_overstrike,
-            "font_underline": font_underline,
-            "fontsize": fontsize,
-            "fonttype": fonttype,
-            "readonly": readonly,
-            "bitmap_position": bitmap_position,
-            "bitmap": bitmap,
-            "check_background_color": check_background_color,
-            "borderwidth": borderwidth,
-
-            "check_type": check_type,
-            "cursor": cursor,
-            "underline": underline,
-            "justify": justify,
-            "background_color": background_color,
-            "apply_parent_background_color": apply_parent_background_color,
-            "highlightthickness": 5,
-            "highlightcolor": "purple",
-            "relief": relief,
-            "text_color": text_color,
-            "width": width,
-            "anchor": anchor,
-            "overrelief": overrelief,
-            "offrelief": offrelief,
-            "takefocus": takefocus,
-            "text_color_disabled": text_color_disabled,
-            "background_color_active": background_color_active,
-            "text_color_active": text_color_active,
-
-            "height": height,
-            "padx": padx,
-            "pady": pady,
-            "text": text,
-        }
-
         self._default_event = default_event
 
-        # self.bind_event("<KeyRelease>",key=self.key,key_function=self._key_function)
+        if group is None:
+            self._group = RadioGroup()
+        else:
+            self._group = RadioGroup(group)
 
-        self.update(**_tk_kwargs)
+        self._my_value = self._group.next_radio_value
+
+        self.update(
+            variable = self._group.tk_variable,
+            text = text,
+            value = self._my_value,
+            fonttype = fonttype,
+            fontsize = fontsize,
+            font_bold = font_bold,
+            font_italic = font_italic,
+            font_underline = font_underline,
+            font_overstrike = font_overstrike,
+            readonly = readonly,
+            borderwidth = borderwidth,
+            bitmap = bitmap,
+            text_color_disabled = text_color_disabled,
+            check_background_color = check_background_color,
+            bitmap_position = bitmap_position,
+            background_color_active = background_color_active,
+            text_color_active = text_color_active,
+            check_type = check_type,
+            width = width,
+            height = height,
+            padx = padx,
+            pady = pady,
+            cursor = cursor,
+            takefocus = takefocus,
+            underline = underline,
+            anchor = anchor,
+            justify = justify,
+            background_color = background_color,
+            apply_parent_background_color = apply_parent_background_color,
+            overrelief = overrelief,
+            offrelief = offrelief,
+            text_color = text_color,
+            relief = relief,
+            # hilightbackground_color = hilightbackground_color,
+            # highlightcolor = highlightcolor,
+            # highlightthickness = highlightthickness,
+            **tk_kwargs,
+        )
+
+        if default_value:
+            self.select()
 
     def _personal_init_inherit(self):
-        self._set_tk_target_variable(tk.IntVar, kwargs_key="variable", default_key="default_value")
+        if not isinstance(self._group.tk_variable, tk.IntVar):
+            self._group.tk_variable = self._group.tk_variable()
+
+        self._assign_tk_target_variable(self._group.tk_variable, kwargs_key="variable")
 
         if self._default_event:
-            self._tk_kwargs["command"] = self.window.get_event_function(self, key=self.key,
-                                                                        key_function=self._key_function, )
+            self._tk_kwargs["command"] = self.window.get_event_function(self, key=self.key, key_function=self._key_function)
 
     def _get_value(self) -> bool:
-        return bool(super()._get_value())
+        return self._group.tk_variable.get() == self._my_value  # Don't like it, but I need to ignore this warning...
 
     def set_value(self, val: bool):
-        super().set_value(int(val))
+        if val:
+            self.select()
+        else:
+            self.deselect()
 
     def _update_font(self):
         # self._tk_kwargs will be passed to tk_widget later
@@ -198,12 +264,23 @@ class Checkbox(BaseWidget):
 
         super()._apply_update()  # Actually apply the update
 
-    def toggle(self):
+    @BaseWidget._run_after_window_creation
+    def select(self) -> Self:
         """
-        Toggle the button WITHOUT throwing an event.
+        Select the button
         :return:
         """
-        self.tk_widget.toggle()
+        self.tk_widget.select()
+        return self
+
+    @BaseWidget._run_after_window_creation
+    def deselect(self) -> Self:
+        """
+        Deselect the button
+        :return:
+        """
+        self.tk_widget.deselect()
+        return self
 
     def flash(self):
         """
@@ -211,4 +288,3 @@ class Checkbox(BaseWidget):
         :return:
         """
         self.tk_widget.flash()
-
