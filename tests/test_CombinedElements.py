@@ -5,8 +5,8 @@ class test(sg.BaseCombinedElement):
     def __init__(self):
 
         frame = sg.Frame([[
-            sg.Radio("Test", key="Button", default_event=True),
-            sg.Button("Hallo"),
+            sg.Radio("Test", default_event=True, key_function=self.throw_event),
+            sg.Button("Hallo", key_function=self.throw_event),
             sg.T("Welt"),
         ]])
 

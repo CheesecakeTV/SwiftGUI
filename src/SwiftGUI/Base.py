@@ -672,7 +672,12 @@ class BaseCombinedElement(BaseElement):
     """
     Derive from this class to create an element consisting of multiple inner elements.
     """
-    def __init__(self, frame, key: Any = None, apply_parent_background_color: bool = True):
+    def __init__(
+            self,
+            frame, key: Any = None,
+            key_function: Callable | Iterable[Callable] = None,
+            apply_parent_background_color: bool = True
+    ):
         """
 
         :param frame: Pass a Frame containing all the elements you'd like to have inside this element
@@ -683,12 +688,23 @@ class BaseCombinedElement(BaseElement):
 
         self._sg_widget = frame
         self.key = key
+        self._key_function = key_function
+
+        self._throw_event: Callable = lambda :None
 
         if apply_parent_background_color:
             self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
 
+    def throw_event(self):
+        """
+        Throw the default event to window
+        :return:
+        """
+        self._throw_event()
+
     def _personal_init(self):
         self._sg_widget._init(self,self.window)
+        self._throw_event = self.window.get_event_function(me= self, key= self.key, key_function= self._key_function)
 
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         """
@@ -716,3 +732,5 @@ class BaseCombinedElement(BaseElement):
         # The key was found in match-case
         return True
 
+    # def _throw_event(self):
+    #     self.window.
