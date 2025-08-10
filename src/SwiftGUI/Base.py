@@ -1,10 +1,12 @@
 from collections.abc import Iterable, Callable
 from functools import wraps
-from typing import Literal, Self, Union
+from typing import Literal, Self, Union, Any
 import tkinter as tk
 
 from SwiftGUI import Event, GlobalOptions, Color
 from SwiftGUI.ElementFlags import ElementFlag
+#from SwiftGUI.Widget_Elements.Frame import Frame
+
 
 def run_after_window_creation(w_fkt: Callable) -> Callable:
     """
@@ -666,5 +668,26 @@ class BaseWidgetTTK(BaseWidget):
 
         self.window.ttk_style.map(stylename, **new_kwargs)
 
+class BaseCombinedElement(BaseElement):
+    """
+    Derive from this class to create an element consisting of multiple inner elements.
+    """
+    def __init__(self, frame, key: Any = None, apply_parent_background_color: bool = True):
+        """
+
+        :param frame: Pass a Frame containing all the elements you'd like to have inside this element
+        :param key:
+        :param apply_parent_background_color: True, if the background_color of the parent container should also apply to this frame
+        """
+        super().__init__()
+
+        self._sg_widget = frame
+        self.key = key
+
+        if apply_parent_background_color:
+            self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
+
+    def _personal_init(self):
+        self._sg_widget._init(self,self.window)
 
 
