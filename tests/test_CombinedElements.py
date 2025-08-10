@@ -10,7 +10,7 @@ class test(sg.BaseCombinedElement):
             sg.T("Welt"),
         ]])
 
-        super().__init__(frame)
+        super().__init__(frame, "Key")
 
 
 layout = [

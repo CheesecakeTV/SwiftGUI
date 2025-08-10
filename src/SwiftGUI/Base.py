@@ -676,7 +676,7 @@ class BaseCombinedElement(BaseElement):
         """
 
         :param frame: Pass a Frame containing all the elements you'd like to have inside this element
-        :param key:
+        :param key: Pass a key to register it in main window
         :param apply_parent_background_color: True, if the background_color of the parent container should also apply to this frame
         """
         super().__init__()
@@ -690,4 +690,29 @@ class BaseCombinedElement(BaseElement):
     def _personal_init(self):
         self._sg_widget._init(self,self.window)
 
+    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+        """
+        Inherit (use) this method to pick out "special" keys to update.
+        Keys are passed one-by-one.
+
+        When calling .update, this method gets called first.
+        If it returns anything truethy, execution of .update ends for this key.
+
+        Otherwise, ._update_default_keys gets called for the key.
+
+        Just copy the whole method and add more cases.
+
+        :param key:
+        :param new_val:
+        :return:
+        """
+        match key:
+            case "background_color":
+                self._sg_widget.update(background_color = new_val)
+            case _:
+                # The key wasn't found in any other case
+                return super()._update_special_key(key, new_val)    # Look in the parent-class
+
+        # The key was found in match-case
+        return True
 
