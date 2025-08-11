@@ -267,6 +267,9 @@ class Window(BaseElement):
         :param value: If not None, it will be saved inside the value-_dict until changed
         :return:
         """
+        if not self.exists:
+            return
+
         if value is not None:
             self.values[key] = value
         self._tk.after(0,self._receive_event,key)
