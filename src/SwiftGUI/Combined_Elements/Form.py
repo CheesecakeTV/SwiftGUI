@@ -1,15 +1,16 @@
 
 # Still WIP!
 
-from collections.abc import Iterable
-from warnings import deprecated
+from collections.abc import Iterable, Callable
+from functools import partial
+from typing import Any, Self
+import json
 
-from SwiftGUI import BaseElement, Frame, Text, Input, ElementFlag
+from SwiftGUI import BaseElement, Frame, Text, Input, BaseCombinedElement, Button
 
 
 # Advanced / Combined elements
-@deprecated("WIP, not ready for usage")
-class Form(BaseElement):
+class Form(BaseCombinedElement):
     """
     Grid-Layout-Form with text-Input-combinations
 
@@ -18,59 +19,177 @@ class Form(BaseElement):
 
     def __init__(
             self,
-            texts:Iterable[str],
-            key:any = "",
-            seperate_keys:bool=False,   # Key for every input
+            texts:Iterable[str] | Iterable[tuple[str, str]],    # Text = keys, or (Text, key)-pairs
+            /,
+            default_values: Iterable[str] | dict[str:str] = None,
+            key:Any = None,
+            key_function: Callable | Iterable[Callable] = None,
+            default_event: bool = None,
+            small_clear_buttons: bool = None,
+            big_clear_button: bool = None,
+            submit_button: bool = None,
+            submit_key: Any = None,
     ):
-        super().__init__()
-        self.key = key
-        self.texts = texts
+        texts = list(texts)
+        self._default_event = default_event
 
-        max_len = max(map(len,texts))
+        if isinstance(texts[0], str):
+            self._texts = texts
+            self._input_keys = texts
+        else:
+            self._texts, self._input_keys = list(zip(*texts))
 
-        self.layout = [
-            [
-                Text(line,width=max_len),
-                Input(key=key + line if seperate_keys else None),
-            ] for line in texts
+        max_len = max(map(len,self._texts))
+
+        self._text_elements = [
+            Text(
+                line,
+                width=max_len + 1,
+                padding=5
+            )
+            for line in self._texts
         ]
 
-        self._sg_widget = Frame(self.layout)
+        self._input_elements = [
+            Input(
+                key_function= self._throw_default_event,
+                default_event= default_event,
+            )
+            for _ in texts
+        ]
 
-        self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
+        self._clear_buttons = [
+            Button(
+                "x",
+                key_function= (
+                    partial(lambda index: self._input_elements[index].set_value(""), n),
+                    self._throw_default_event
+                ),
+                padx= 5,
+            ) if small_clear_buttons else Text()
+            for n, _ in enumerate(self._input_elements)
+        ]
 
-    def _personal_init(self):
-        self._sg_widget._init(self,self.window)
+        self.layout = list(zip(self._text_elements, self._input_elements, self._clear_buttons))
+
+        self.layout.append([])
+        if submit_button:
+            self._submit_button_element = Button(
+                "Submit",
+                key= submit_key if submit_key is not None else None,
+                key_function=self.throw_event
+                #key_function= submit_key_function if submit_key_function else self.throw_event,
+            )
+            self.layout[-1].append(self._submit_button_element)
+
+        if big_clear_button:
+            self.layout[-1].append(Button(
+                "Clear",
+                key_function= (self.clear_all_values, self._throw_default_event)
+            ))
+
+        super().__init__(frame= Frame(self.layout), key= key, key_function= key_function)
+
+        if default_values:
+            if isinstance(default_values, dict):
+                self.set_value(default_values)
+            else:
+                self.set_value({
+                    k:v for k,v in zip(self._input_keys, default_values)
+                })
+
+    def _throw_default_event(self):
+        """
+        Throw an event if default event is wanted
+        :return:
+        """
+        if self._default_event:
+            self.throw_event()
 
     def _get_value(self) -> any:
         return {
-            line:elem[1].value for line,elem in zip(self.texts,self.layout)
+            line:elem.value for line,elem in zip(self._input_keys, self._input_elements)
         }
 
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         match key:
-            case "background_color":
-                for text,*_ in self.layout:
-                    text.update(background_color = new_val)
             case _:
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 
-    def set_value(self,val:dict[str:str]):
+    @BaseElement._run_after_window_creation
+    def update_texts(self,**kwargs) -> Self:
+        """
+        Evoke .update on every text-element
+        :param kwargs:
+        :return:
+        """
+        for elem in self._text_elements:
+            elem.update(**kwargs)
+        return self
+
+    @BaseElement._run_after_window_creation
+    def update_inputs(self,**kwargs) -> Self:
+        """
+        Evoke .update on every text-element
+        :param kwargs:
+        :return:
+        """
+        for elem in self._input_elements:
+            elem.update(**kwargs)
+        return self
+
+    @BaseElement._run_after_window_creation
+    def update_submit_button(self, **kwargs) -> Self:
+        """
+        Evoke .update on every text-element
+        :param kwargs:
+        :return:
+        """
+        self._submit_button_element.update(**kwargs)
+        return self
+
+    @BaseElement._run_after_window_creation
+    def set_value(self,val:dict[str:str]) -> Self:
         """
         Update only passed keys with their value
         :param val:
         :return:
         """
-        for i,text in enumerate(self.texts):
+        for i,text in enumerate(self._input_keys):
             if text in val.keys():
-                self.layout[i][1].value = val[text]
+                self._input_elements[i].value = val[text]
+
+        return self
 
     def clear_all_values(self):
         """
         Does what it says
         :return:
         """
-        for i,_ in enumerate(self.texts):
-            self.layout[i][1].value = ""
+        for elem in self._input_elements:
+            elem.value = ""
+
+    def export_json(self, indent:int = None, **kwargs) -> str:
+        """
+        Return the values as json
+        :return:
+        """
+        return json.dumps(self.value, indent= indent, **kwargs)
+
+    @BaseElement._run_after_window_creation
+    def import_json(self, json_str: str, **kwargs) -> Self:
+        """
+        Load values from a json-string
+        :param json_str:
+        :param kwargs:
+        :return:
+        """
+        self.value = json.loads(json_str, **kwargs)
+        return self
+
+
+
+
+

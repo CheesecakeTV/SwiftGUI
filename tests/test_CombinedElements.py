@@ -15,7 +15,18 @@ class test(sg.BaseCombinedElement):
 
 layout = [
     [
-        test()
+        form := sg.Form(
+            [
+                ("Hallo", "1"),
+                ("Welt", "2"),
+                ("Was geht?", "3")
+            ],
+            default_event=True,
+            default_values=["Hai","Wie","Gehts"],
+            key= "Form",
+            submit_button= True,
+            big_clear_button= True,
+        )
     ]
 ]
 
@@ -23,4 +34,4 @@ layout = [
 w = sg.Window(layout)
 
 for e,v in w:
-    print(e,v)
+    print(form.export_json())
