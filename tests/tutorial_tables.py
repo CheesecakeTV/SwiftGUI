@@ -10,12 +10,16 @@ elements = [
 
 layout = [
     [
-        sg.Frame([[table := sg.Table(
-            elements * 10,
+        sg.Text("Hallo Welt" * 15)
+    ],
+    [
+        table := sg.Table(
+            elements,
             headings= ("Col1", "Col2", "Col3"),
+            column_width= 5,
             height = 3,
-        )]]),
-        sg.TextField("Big TextField", height=10, width=10),
+            expand= True,
+        ).resize_column(1, 15)
     ]
 ]
 

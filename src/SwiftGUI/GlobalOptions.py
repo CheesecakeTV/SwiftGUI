@@ -340,6 +340,7 @@ class ColorChooserButton(Button):
 
 class TextField(Common,Common_Textual,Common_Field_Background):
     borderwidth: int = None
+    scrollbar: bool = False
     width: int = None
     height: int = None
     insertbackground: str | Color = None
