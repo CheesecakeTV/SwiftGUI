@@ -681,7 +681,8 @@ class BaseCombinedElement(BaseElement):
     """
     def __init__(
             self,
-            frame, key: Any = None,
+            frame,
+            key: Any = None,
             key_function: Callable | Iterable[Callable] = None,
             apply_parent_background_color: bool = True
     ):

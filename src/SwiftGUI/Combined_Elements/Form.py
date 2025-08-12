@@ -7,6 +7,8 @@ from typing import Any, Self
 import json
 
 from SwiftGUI import BaseElement, Frame, Text, Input, BaseCombinedElement, Button
+#from SwiftGUI.Widget_Elements.Separator import HorizontalSeparator
+from SwiftGUI.Widget_Elements.Spacer import Spacer
 
 
 # Advanced / Combined elements
@@ -45,7 +47,7 @@ class Form(BaseCombinedElement):
             Text(
                 line,
                 width=max_len + 1,
-                padding=5
+                padding=2
             )
             for line in self._texts
         ]
@@ -71,6 +73,10 @@ class Form(BaseCombinedElement):
         ]
 
         self.layout = list(zip(self._text_elements, self._input_elements, self._clear_buttons))
+
+        # if any((submit_button, big_clear_button)):
+        #     self.layout.append([HorizontalSeparator()])
+        self.layout.append([Spacer(height=5)])
 
         self.layout.append([])
         if submit_button:
