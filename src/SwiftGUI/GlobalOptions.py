@@ -2,7 +2,7 @@
 #from tkinter import ttk
 from collections.abc import Iterable
 from os import PathLike
-from typing import Literal, Union, Any
+from typing import Literal, Union, Any, Callable
 
 from SwiftGUI import Literals, Color, font_windows, Font
 
@@ -436,6 +436,40 @@ class Notebook(Common_Textual, Common_Background):
 class LabelFrame(Frame, Common_Textual):
     relief: Literals.relief = "solid"
     labelanchor: Literals.tabposition = "nw"
+
+class Spinbox(Button, Common_Textual):
+    default_value: float = None
+    cursor: Literals.cursor = None
+    cursor_button: Literals.cursor = None
+    takefocus: bool = None
+    justify: Literal["left", "right", "center"] = None
+    background_color: str | Color = None
+    background_color_active: str | Color = None
+    background_color_disabled: str | Color = None
+    background_color_readonly: str | Color = None
+    text_color_disabled: str | Color = None
+    background_color_button: Color | str = None
+    highlightbackground_color: str | Color = None
+    selectbackground_color: str | Color = None
+    select_text_color: str | Color = None
+    borderwidth: int = None
+    selectborderwidth: int = None
+    highlightcolor: str | Color = None
+    highlightthickness: int = None
+    relief: Literals.relief = None
+    relief_button_down: Literals.relief = None
+    relief_button_up: Literals.relief = None
+    values: Iterable[float] = None
+    wrap: bool = None
+    number_format: str = None
+    number_min: float = None
+    number_max: float = None
+    increment: float = None
+    width: int = None
+    repeatdelay: int = 300
+    repeatinterval: int = 50
+    state: Literals.Spinbox_State = None
+
 
 def reset_all_options():
     """

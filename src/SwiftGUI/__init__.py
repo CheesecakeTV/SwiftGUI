@@ -23,6 +23,7 @@ from .Widget_Elements.Table import Table
 from .Widget_Elements.Notebook import Notebook
 from .Widget_Elements.LabelFrame import LabelFrame
 from .Widget_Elements.Radiobutton import Radiobutton, RadioGroup
+from .Widget_Elements.Spinbox import Spinbox
 
 from .Combined_Elements.Form import Form
 
@@ -53,7 +54,9 @@ Multiline = TextField
 
 TabView = Notebook
 
-AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton
+Spin = Spinbox
+
+AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton | Spinbox
 
 from .Windows import Window
 

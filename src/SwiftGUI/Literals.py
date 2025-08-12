@@ -31,3 +31,6 @@ file_browse_types = Literal["open_single","open_multiple","open_directory","save
 file_browse_filetypes = Iterable[tuple[str, str | list[str] | tuple[str, ...]]]
 
 wrap = Literal["char","word","none"]
+
+Spinbox_State  = Literal["normal", "disabled", "readonly"]
+

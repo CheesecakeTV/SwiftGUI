@@ -7,28 +7,21 @@ group = sg.RadioGroup()
 
 layout = [
     [
-        sg.Radio("Test", group= "Test", key="Test", default_event=True),
-        test := sg.Radio("Test", group= "Test", key= "Test", default_event=True, default_value=True),
-        sg.Radio("Test", group="Test", key="Test"),
-        sg.Radio("Test", group="Test", key="Test"),
-    ],[
-        test1 := sg.Radio("Test", group="Test1", key="Test", default_event=True, default_value=True),
-        sg.Radio("Test", group="Test1", key="Test", default_event=True, default_value=True),
-        sg.Radio("Test", group="Test1", key="Test", default_event=True, default_value=True),
-        sg.Radio("Test", group="Test1", key="Test", default_event=True, default_value=True),
-    ],[
-        sg.Radio("Hallo", group=group),
-        sg.Radio("Hallo", group=group),
-        sg.Radio("Hallo", group=group),
-        sg.Radio("Hallo", group=group),
-        sg.Radio("Hallo", group=group),
+        sg.Spinbox(
+            key= "Spin",
+            default_event= True,
+            values= range(10)
+            # number_min= 0,
+            # number_max= 10,
+            # increment= 0.5,
+        )
     ]
 ]
 
 w = sg.Window(layout)
 
 for e,v in w:
-    print(test.value, test1.value)
+    print(e,v)
 
 
 
