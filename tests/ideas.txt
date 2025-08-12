@@ -11,3 +11,12 @@ Simplified Elements/Widgets with less options for beginners
 Tool to convert png/jpg into ico
 
 Hide headings of sg.Table so it can be used as a listbox
+sg.Table could have widgets inserted into rows
+
+Throw out the value-dict, because it's not needed
+
+"Key-collection" with local instead of global keys
+
+Additional event-loops for combined elements
+
+Colering of scrollbars

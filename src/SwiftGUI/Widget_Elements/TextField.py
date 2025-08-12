@@ -28,8 +28,6 @@ class TextField(BaseWidget):
         "paragraph_spacing": "spacing3",
     }
 
-    # Todo: There are a ton of additional methods and options to add
-    # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/text.html
     def __init__(
             self,
             # Add here
@@ -37,6 +35,7 @@ class TextField(BaseWidget):
             /,
             key: Any = None,
             key_function: Callable|Iterable[Callable] = None,
+            scrollbar: bool = None,
             borderwidth: int = None,
             width: int=None,
             height: int = None,
@@ -126,6 +125,9 @@ class TextField(BaseWidget):
         :param tk_kwargs: Additional kwargs for the tk_widget. Don't use it if you don't know tkinter.
         """
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
+
+        if self.defaults.single("scrollbar", scrollbar):
+            self.add_flags(ElementFlag.HAS_SCROLLBAR_Y)
 
         if tk_kwargs is None:
             tk_kwargs = dict()
@@ -249,3 +251,10 @@ class TextField(BaseWidget):
         super().init_window_creation_done()
         self.value = self._initial_text
         del self._initial_text
+
+    def _personal_init(self):
+        super()._personal_init()
+
+        if self.has_flag(ElementFlag.HAS_SCROLLBAR_Y):
+            self.tk_widget.configure(yscrollcommand=self._tk_scrollbar_y.set)
+            self._tk_scrollbar_y.configure(command=self.tk_widget.yview)

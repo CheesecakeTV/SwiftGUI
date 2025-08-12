@@ -1,5 +1,13 @@
 import SwiftGUI as sg
 
+"""
+This example shows how to use the event-loop.
+
+Refer to 
+https://github.com/CheesecakeTV/SwiftGUI/blob/main/Docs/01%20Basic%20tutorials/01%20Getting-started.md#breaking-out-of-the-loop-events
+for more information.
+"""
+
 ### Global options ###
 
 

@@ -1,10 +1,12 @@
 from collections.abc import Iterable, Callable
 from functools import wraps
-from typing import Literal, Self, Union
+from typing import Literal, Self, Union, Any
 import tkinter as tk
 
 from SwiftGUI import Event, GlobalOptions, Color
 from SwiftGUI.ElementFlags import ElementFlag
+#from SwiftGUI.Widget_Elements.Frame import Frame
+
 
 def run_after_window_creation(w_fkt: Callable) -> Callable:
     """
@@ -241,6 +243,16 @@ class BaseElement:
         if self.has_flag(ElementFlag.IS_CREATED) and self.window.has_flag(ElementFlag.IS_CREATED):
             self._apply_update()
 
+    @run_after_window_creation
+    def update_after_window_creation(self, **kwargs) -> Self:
+        """
+        Use .update after the window was created
+        :param kwargs:
+        :return:
+        """
+        self.update(**kwargs)
+        return self
+
     # @run_after_window_creation
     # def update_after_window_creation(self,**kwargs) -> Self:
     #     """
@@ -295,6 +307,8 @@ class BaseWidget(BaseElement):
     _transfer_keys: dict[str:str] = dict()   # Rename a key from the update-function. from -> to; from_user -> to_widget
 
     _events_to_bind_later: list[dict]
+
+    _tk_scrollbar_y: tk.Scrollbar | None = None
 
     def __init__(self,key:any=None,tk_kwargs:dict[str:any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
         super().__init__()
@@ -402,6 +416,16 @@ class BaseWidget(BaseElement):
         self._personal_init_inherit()
         self._init_widget(self.parent.parent_tk_widget)    # Init the contained widgets
 
+    def _assign_tk_target_variable(self, variable: tk.Variable, kwargs_key: str="textvariable"):
+        """
+        Assigns an already existing target variable
+        :param variable:
+        :param kwargs_key:
+        :return:
+        """
+        self._tk_target_value = variable
+        self._tk_kwargs[kwargs_key] = variable
+
     def _set_tk_target_variable(self,value_type:type=tk.StringVar,kwargs_key:str="textvariable",default_key:str=None,default_value:any=None):
         """
         Define a target variable for this widget
@@ -437,6 +461,11 @@ class BaseWidget(BaseElement):
                     temp["fill"] = temp.get("fill","both")
 
                 self._tk_widget.pack(**temp)
+
+                if self.has_flag(ElementFlag.HAS_SCROLLBAR_Y):
+                    self._tk_scrollbar_y = tk.Scrollbar(container, orient="vertical")
+                    self._tk_scrollbar_y.pack(expand= True, fill= "y", side= "left")
+
             case "grid":
                 self._tk_widget.grid(**self._insert_kwargs)
 
@@ -454,7 +483,7 @@ class BaseWidget(BaseElement):
 
         for i in self._contains:
             # line = tk.Frame(self._tk_widget,background="orange",relief="raised",borderwidth="3",border=3)
-            # actual_line = tk.Frame(line,background="lightBlue")
+            # actual_line = tk.Frame(line,background="lightBlue",borderwidth=3,border=3,relief="raised")
 
             line = tk.Frame(self._tk_widget,relief="flat",background=self._background_color)  # This is the row
             actual_line = tk.Frame(line,background=self._background_color)    # This is where the actual elements are put in
@@ -646,5 +675,70 @@ class BaseWidgetTTK(BaseWidget):
 
         self.window.ttk_style.map(stylename, **new_kwargs)
 
+class BaseCombinedElement(BaseElement):
+    """
+    Derive from this class to create an element consisting of multiple inner elements.
+    """
+    def __init__(
+            self,
+            frame,
+            key: Any = None,
+            key_function: Callable | Iterable[Callable] = None,
+            apply_parent_background_color: bool = True
+    ):
+        """
 
+        :param frame: Pass a Frame containing all the elements you'd like to have inside this element
+        :param key: Pass a key to register it in main window
+        :param apply_parent_background_color: True, if the background_color of the parent container should also apply to this frame
+        """
+        super().__init__()
 
+        self._sg_widget = frame
+        self.key = key
+        self._key_function = key_function
+
+        self._throw_event: Callable = lambda :None
+
+        if apply_parent_background_color:
+            self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
+
+    def throw_event(self):
+        """
+        Throw the default event to window
+        :return:
+        """
+        self._throw_event()
+
+    def _personal_init(self):
+        self._sg_widget._init(self,self.window)
+        self._throw_event = self.window.get_event_function(me= self, key= self.key, key_function= self._key_function)
+
+    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+        """
+        Inherit (use) this method to pick out "special" keys to update.
+        Keys are passed one-by-one.
+
+        When calling .update, this method gets called first.
+        If it returns anything truethy, execution of .update ends for this key.
+
+        Otherwise, ._update_default_keys gets called for the key.
+
+        Just copy the whole method and add more cases.
+
+        :param key:
+        :param new_val:
+        :return:
+        """
+        match key:
+            case "background_color":
+                self._sg_widget.update(background_color = new_val)
+            case _:
+                # The key wasn't found in any other case
+                return super()._update_special_key(key, new_val)    # Look in the parent-class
+
+        # The key was found in match-case
+        return True
+
+    # def _throw_event(self):
+    #     self.window.

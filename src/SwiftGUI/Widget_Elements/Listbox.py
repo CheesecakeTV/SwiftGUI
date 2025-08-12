@@ -3,14 +3,14 @@ import tkinter.font as font
 from collections.abc import Iterable, Callable
 from typing import Self, Any
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, BaseElement
 
 
 class Listbox(BaseWidget):
     _tk_widget_class: type = tk.Listbox  # Class of the connected widget
     tk_widget: tk.Listbox
     defaults = GlobalOptions.Listbox  # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
-    value: list
+    value: Any
 
     _transfer_keys = {
         "background_color": "background",
@@ -27,9 +27,11 @@ class Listbox(BaseWidget):
             self,
             default_list: Iterable[Any] = None,
             /,
-            key: any = None,
+            no_selection_returns: Any = None, # Returned when nothing is selected
+            key: Any = None,
             default_event: bool = False,
             key_function: Callable | Iterable[Callable] = None,
+            scrollbar: bool = None,
             activestyle: Literals.activestyle = None,
             fonttype: str = None,
             fontsize: int = None,
@@ -60,6 +62,11 @@ class Listbox(BaseWidget):
     ):
         super().__init__(key, tk_kwargs=tk_kwargs, expand=expand, expand_y = expand_y)
 
+        self._no_selection_returns = no_selection_returns
+
+        if self.defaults.single("scrollbar", scrollbar):
+            self.add_flags(ElementFlag.HAS_SCROLLBAR_Y)
+
         self._key_function = key_function
         if default_list is None:
             default_list = list()
@@ -70,7 +77,7 @@ class Listbox(BaseWidget):
 
         _tk_kwargs = {
             **tk_kwargs,
-            "default_list": default_list,
+            "default_list": self._list_elements,
             "activestyle":activestyle,
             "borderwidth":borderwidth,
             "font_bold": font_bold,
@@ -101,10 +108,20 @@ class Listbox(BaseWidget):
         if default_event:
             self.bind_event("<<ListboxSelect>>",key=key,key_function=key_function)
 
-        self.update(**_tk_kwargs)
+        self.update(
+            no_selection_returns = no_selection_returns,
+            **_tk_kwargs
+        )
 
     def _personal_init_inherit(self):
         self._set_tk_target_variable(tk.StringVar, kwargs_key="listvariable", default_key="default_list")
+
+    def _personal_init(self):
+        super()._personal_init()
+
+        if self.has_flag(ElementFlag.HAS_SCROLLBAR_Y):
+            self.tk_widget.configure(yscrollcommand=self._tk_scrollbar_y.set)
+            self._tk_scrollbar_y.configure(command=self.tk_widget.yview)
 
         # if self._default_event:
         #     self._tk_kwargs["command"] = self.window.get_event_function(self, key=self.key,
@@ -156,26 +173,28 @@ class Listbox(BaseWidget):
 
         return index
 
-    def _get_value(self) -> str:
+    def _get_value(self) -> Any:
         """
         Returns the selection.
+        If nothing is selected, returns ""
         :return:
         """
         index = self.index
         if index:
             return self._list_elements[index]
 
-        return ""
+        return self._no_selection_returns
 
-    def set_value(self, val: str | int):
+    def set_value(self, new_val: str | int):
         """
-        Select a certain row.
+        Overwrite the current selection with a new value
 
-        :param val: Either the index, or whatever element you want to select
+        :param new_val: Value to write into the row
         :return:
         """
-        if val in self._list_elements:
-            self.tk_widget.selection_set(self._list_elements.index(val))
+        # if val in self._list_elements:
+        #     self.tk_widget.selection_set(self._list_elements.index(val))
+        self.overwrite_element(self.index, new_val)
 
     def _update_font(self):
         # self._tk_kwargs will be passed to tk_widget later
@@ -213,8 +232,10 @@ class Listbox(BaseWidget):
             case "disabled":
                 self._tk_kwargs["state"] = "disabled" if new_val else "normal"
             case "selectmode":
-                assert not new_val or new_val in ["single","browse"], "Invalid value for 'selectmode' in some Listbox element. Multi-Selection is not possible for normal Listboxe. Use ListboxMulti instead, if the class exists by now..."
+                assert not new_val or new_val in ["single","browse"], "Invalid value for 'selectmode' in a Listbox element. Multi-Selection is not possible for normal Listbox. \nUse ListboxMulti instead, if the class exists by now..."
                 return False # Still handle this normally please
+            case "no_selection_returns":
+                self._no_selection_returns = new_val
             case _:  # Not a match
                 return False
 
@@ -256,7 +277,6 @@ class Listbox(BaseWidget):
             self.tk_widget.delete(i)
             del self._list_elements[i]
 
-    # Todo: Do that with del x[...]. Also for the setter and getter.
     def delete_element(self,*element:str):
         """
         Delete certain element(s) by their value
@@ -265,6 +285,32 @@ class Listbox(BaseWidget):
         """
         element = self.get_all_indexes_of(*element)
         self.delete_index(*element)
+
+    def __delitem__(self, key: int):
+        self.delete_index(key)
+
+    @BaseElement._run_after_window_creation
+    def overwrite_element(self, index: int, new_val: Any) -> Self:
+        """
+        Overwrite the element.
+        Selection is preserved, but styling of the row itself is reset.
+        Sadly, tkinter doesn't provide a good way to preserve it.
+
+        :param index:
+        :param new_val:
+        :return:
+        """
+        select = self.index == index
+
+        self.tk_widget.delete(index)
+        self.tk_widget.insert(index, new_val)
+
+        self._list_elements[index] = new_val
+
+        if select:
+            self.index = index
+
+        return self
 
     def index_of(self,value:str,default:int = None) -> int|None:
         """
@@ -350,13 +396,10 @@ class Listbox(BaseWidget):
 
         return self
 
+    def __getitem__(self, item: int):
+        return self._list_elements[item]
 
-    # def extend(self,elements:Iterable[str]):
-    #     """
-    #     Extend by a list instead of single elements
-    #     :param elements:
-    #     :return:
-    #     """
-    #     self.append(*elements)
+    def __setitem__(self, key: int, value: Any):
+        self.overwrite_element(key, value)
 
 

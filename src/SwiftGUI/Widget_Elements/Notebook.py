@@ -1,11 +1,8 @@
-import tkinter as tk
 import tkinter.ttk as ttk
-from collections.abc import Iterable, Callable, Iterator
-from functools import partial
-from typing import Any, Self, Union
+from collections.abc import Iterable, Callable
+from typing import Any, Self
 
-from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement, BaseWidgetContainer, \
-    Frame, Event, font_windows, Font
+from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement, Frame, Font
 from SwiftGUI.Widget_Elements.Spacer import Spacer
 
 
@@ -60,7 +57,7 @@ class Notebook(BaseWidgetTTK):
 
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:any]=None
+            tk_kwargs: dict[str:Any]=None
     ):
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
         self._key_function = key_function
@@ -145,7 +142,7 @@ class Notebook(BaseWidgetTTK):
         self._config_ttk_style("Tab",font=font_options)
 
     _tab_texts: dict[Any, str]
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         match key:
             case "tabposition":
                 self._config_ttk_style(tabposition=new_val)
@@ -275,7 +272,7 @@ class Notebook(BaseWidgetTTK):
             self._default_event_callback_function()
 
     @BaseElement._run_after_window_creation
-    def bind_event_to_tab(self, tab_key:Any = None, tab_index:int = None, key_extention:str | Any=None, key:any=None, key_function:Callable|Iterable[Callable]=None) ->Self:
+    def bind_event_to_tab(self, tab_key:Any = None, tab_index:int = None, key_extention:str | Any=None, key:Any=None, key_function:Callable|Iterable[Callable]=None) ->Self:
         """
         This event will be called when tab_key-tab is opened.
         Keep in mind, that setting this disables the default event for that tab

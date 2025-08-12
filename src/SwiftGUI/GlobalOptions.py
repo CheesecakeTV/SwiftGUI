@@ -2,7 +2,7 @@
 #from tkinter import ttk
 from collections.abc import Iterable
 from os import PathLike
-from typing import Literal, Union
+from typing import Literal, Union, Any, Callable
 
 from SwiftGUI import Literals, Color, font_windows, Font
 
@@ -151,6 +151,7 @@ class Common(DEFAULT_OPTIONS_CLASS):
     cursor:Literals.cursor = None   # Find available cursors here (2025): https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/cursors.html
     takefocus:bool = True
     expand:bool = False
+    expand_y: bool = False
 
 class Common_Background(DEFAULT_OPTIONS_CLASS):
     """
@@ -245,17 +246,25 @@ class Frame(Common, Common_Background):
     takefocus = False
     padding: Literals.padding = 3
     relief: Literals.relief = "flat"
-    #background = "blue"
     alignment: Literals.alignment = None
     apply_parent_background_color: bool = True
     pass_down_background_color: bool = True
 
+    borderwidth: int = None
+    highlightbackground_color: Color | str = None
+    highlightcolor: Color | str = None
+    highlightthickness: int = None
+
+    padx: int = 2
+    pady: int = 2
+
+
 class Checkbox(Common,Common_Textual, Common_Background):
-    key: any = None
     default_value: bool = False
+    default_event: bool = False,
     readonly: bool = None
     apply_parent_background_color: bool = True
-    # borderwidth:int = None
+    borderwidth:int = None
     #
     text_color_disabled: str | Color = None
     check_background_color: str | Color = None
@@ -278,6 +287,12 @@ class Checkbox(Common,Common_Textual, Common_Background):
     # hilightbackground_color: str | Color = None
     # highlightcolor: str | Color = None
 
+class Radiobutton(Checkbox):
+    # hilightbackground_color: str | Color = None,
+    # highlightcolor: str | Color = None,
+    # highlightthickness: int = None,
+    ...
+
 class Window(Common_Background):
     title = "SwiftGUI Window"
     titlebar: bool = True  # Titlebar visible
@@ -294,9 +309,11 @@ class Window(Common_Background):
     ttk_theme: str = "default"
 
 class Listbox(Common,Common_Textual,Common_Field_Background):
+    no_selection_returns: Any = "",  # Returned when nothing is selected
     activestyle:Literals.activestyle = "none"
     default_list: Iterable[str] = None
     disabled: bool = None
+    scrollbar: bool = True
     borderwidth: int = None
     background_color_selected: str | Color = None
     selectborderwidth: int = None
@@ -324,6 +341,7 @@ class ColorChooserButton(Button):
 
 class TextField(Common,Common_Textual,Common_Field_Background):
     borderwidth: int = None
+    scrollbar: bool = False
     width: int = None
     height: int = None
     insertbackground: str | Color = None
@@ -375,6 +393,7 @@ class Table(Common, Common_Textual,Common_Field_Background):
 
     sort_col_by_click: bool = True
     takefocus:bool = False
+    scrollbar: bool = True
 
     selectmode: Literals.selectmode_tree = "browse"
     cursor: Literals.cursor = None
@@ -413,6 +432,44 @@ class Notebook(Common_Textual, Common_Background):
     tabposition: Literals.tabposition = None
     expand: bool = None
     expand_y: bool = None
+
+class LabelFrame(Frame, Common_Textual):
+    relief: Literals.relief = "solid"
+    labelanchor: Literals.tabposition = "nw"
+
+class Spinbox(Button, Common_Textual):
+    default_value: float = None
+    cursor: Literals.cursor = None
+    cursor_button: Literals.cursor = None
+    takefocus: bool = None
+    justify: Literal["left", "right", "center"] = None
+    background_color: str | Color = None
+    background_color_active: str | Color = None
+    background_color_disabled: str | Color = None
+    background_color_readonly: str | Color = None
+    text_color_disabled: str | Color = None
+    background_color_button: Color | str = None
+    highlightbackground_color: str | Color = None
+    selectbackground_color: str | Color = None
+    select_text_color: str | Color = None
+    borderwidth: int = None
+    selectborderwidth: int = None
+    highlightcolor: str | Color = None
+    highlightthickness: int = None
+    relief: Literals.relief = None
+    relief_button_down: Literals.relief = None
+    relief_button_up: Literals.relief = None
+    values: Iterable[float] = None
+    wrap: bool = None
+    number_format: str = None
+    number_min: float = None
+    number_max: float = None
+    increment: float = None
+    width: int = None
+    repeatdelay: int = 300
+    repeatinterval: int = 50
+    state: Literals.Spinbox_State = None
+
 
 def reset_all_options():
     """
