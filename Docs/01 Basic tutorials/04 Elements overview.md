@@ -76,7 +76,11 @@ Aliases: TabGroup
 
 
 # Elements with extended functionality
-SwiftGUI offers a couple of elements that contain a single tkinter-widget, but change its functionality.
+SwiftGUI offers a couple of elements that contain a single tkinter-widget, but change/extend its functionality drastically.
+
+The definition is up to interpretation.
+E.g. sg.Table is actually made from a ttk.Treeview but modified to something completely different, so it should be categorized as extended.
+It's still closer to a widget-element in my opinion.
 
 ## FileBrowseButton
 A button that opens a file-dialogue when clicked.

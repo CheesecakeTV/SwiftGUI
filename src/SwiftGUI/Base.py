@@ -464,7 +464,7 @@ class BaseWidget(BaseElement):
 
                 if self.has_flag(ElementFlag.HAS_SCROLLBAR_Y):
                     self._tk_scrollbar_y = tk.Scrollbar(container, orient="vertical")
-                    self._tk_scrollbar_y.pack(expand= True, fill= "y")
+                    self._tk_scrollbar_y.pack(expand= True, fill= "y", side= "left")
 
             case "grid":
                 self._tk_widget.grid(**self._insert_kwargs)

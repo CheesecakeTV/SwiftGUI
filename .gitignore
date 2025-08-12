@@ -1,3 +1,5 @@
 hidden/
 poetry.lock
 dist/
+.idea/
+.venv/

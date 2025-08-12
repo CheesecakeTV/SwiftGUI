@@ -1,10 +1,11 @@
 
-# sg.Table, probably the most useful element of them all
+# sg.Table 
+...probably the most useful element
 
 ## Comparison to PySimpleGUI's Table
 Let me tell you, why SwiftGUI's Table is much better than the one of PySimpleGUI.
 
-If you don't want to know, just skip this part.
+If you don't care, just skip this part.
 
 When first setting up the table, or overwriting all of its contents, PySimpleGUI is a lot quicker, especially when adding a lot of rows.\
 That's the sole advantage of PySimpleGUI's Table.
@@ -580,6 +581,45 @@ The row won't move "over the edge", so you can e.g. keep "moving up", even when 
 You can swap two rows with `.swap(index_1, index_2)`.
 
 This method probably needs no explanation, but it wasn't as easy to implement as you might think.
+
+## Changing the view
+You can use `.see(index)` to scroll the table so that the passed index row is visible.
+
+To "see" the current selection, use `.see_selection()`.
+If multiple rows are selected, this method "sees" the topmost of them.
+
+### Scrollbar
+By default, a scrollbar is visible.
+It's not shown in this tutorial, because I just added it (SwiftGUI Version 0.4.4).
+Not gonna replace every image.
+
+The scrollbar will be as high as the current row.
+That means, for the table to look good with a scrollbar, the table has to be **the tallest element** in its row:\
+![](../assets/images/2025-08-12-12-41-54.png)
+
+If you can't avoid it, put the table in its own frame:
+```py
+layout = [
+    [
+        sg.Frame([[table := sg.Table(
+            elements * 10,  # Add all the elements 10 times
+            headings= ("Col1", "Col2", "Col3"),
+            height = 3,
+        )]]),
+        sg.TextField("Big TextField", height=10, width=10),
+    ]
+]
+```
+![](../assets/images/2025-08-12-12-45-36.png)
+
+
+Also, no padding in the y-direction for the table.
+If you want to add some space above/below the table, put a spacer in the previous/next row instead.
+
+In my experience, this shouldn't be an issue.
+Implementing a solution means more invisible elements slowing down your code.
+So let's call it a feature, not a bug.
+
 
 ## Customization
 There are a couple of options you can use to change the apperance of this element.

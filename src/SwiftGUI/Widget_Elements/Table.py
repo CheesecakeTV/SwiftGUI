@@ -139,6 +139,7 @@ class Table(BaseWidgetTTK):
 
             sort_col_by_click: bool = None,
             selectmode: Literals.selectmode_tree = None,
+            scrollbar: bool = None,
 
             # Fonts
             fonttype: str = None,
@@ -176,6 +177,9 @@ class Table(BaseWidgetTTK):
             tk_kwargs: dict[str:any]=None
     ):
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
+
+        if self.defaults.single("scrollbar", scrollbar):
+            self.add_flags(ElementFlag.HAS_SCROLLBAR_Y)
 
         self._elements = list()
         self._element_dict = dict()
@@ -452,6 +456,10 @@ class Table(BaseWidgetTTK):
 
     def _personal_init(self):
         super()._personal_init()
+
+        if self.has_flag(ElementFlag.HAS_SCROLLBAR_Y):
+            self.tk_widget.configure(yscrollcommand=self._tk_scrollbar_y.set)
+            self._tk_scrollbar_y.configure(command=self.tk_widget.yview)
 
     _font_size_multiplier: int = 1  # Size of a single character in pixels
     _font_size_multiplier_applied: int = 1  # Applied value so to catch changes
@@ -839,6 +847,7 @@ class Table(BaseWidgetTTK):
         self.move(index1, index2)
         return self
 
+    @BaseElement._run_after_window_creation
     def see(self, index: int = 0) -> Self:
         """
         Scroll through the list to see a certain index.
@@ -846,6 +855,20 @@ class Table(BaseWidgetTTK):
         :return:
         """
         self.tk_widget.see(str(hash(self._elements[index])))
+        return self
+
+    @BaseElement._run_after_window_creation
+    def see_selection(self) -> Self:
+        """
+        Scroll the table so the current selection is visible.
+        If nothing is selected, this function does nothing.
+        :return:
+        """
+        if self.all_indexes:
+            self.see(self.all_indexes[0])
+        elif self.index is not None:
+            self.see(self.index)
+
         return self
 
     @property

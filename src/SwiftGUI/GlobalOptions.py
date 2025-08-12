@@ -391,6 +391,7 @@ class Table(Common, Common_Textual,Common_Field_Background):
 
     sort_col_by_click: bool = True
     takefocus:bool = False
+    scrollbar: bool = True
 
     selectmode: Literals.selectmode_tree = "browse"
     cursor: Literals.cursor = None

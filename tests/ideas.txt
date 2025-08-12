@@ -18,3 +18,5 @@ Throw out the value-dict, because it's not needed
 "Key-collection" with local instead of global keys
 
 Additional event-loops for combined elements
+
+Colering of scrollbars
