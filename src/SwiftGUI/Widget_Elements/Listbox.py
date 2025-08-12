@@ -30,6 +30,7 @@ class Listbox(BaseWidget):
             key: any = None,
             default_event: bool = False,
             key_function: Callable | Iterable[Callable] = None,
+            scrollbar: bool = None,
             activestyle: Literals.activestyle = None,
             fonttype: str = None,
             fontsize: int = None,
@@ -59,6 +60,9 @@ class Listbox(BaseWidget):
             tk_kwargs: dict = None,
     ):
         super().__init__(key, tk_kwargs=tk_kwargs, expand=expand, expand_y = expand_y)
+
+        if self.defaults.single("scrollbar", scrollbar):
+            self.add_flags(ElementFlag.HAS_SCROLLBAR_Y)
 
         self._key_function = key_function
         if default_list is None:
@@ -105,6 +109,13 @@ class Listbox(BaseWidget):
 
     def _personal_init_inherit(self):
         self._set_tk_target_variable(tk.StringVar, kwargs_key="listvariable", default_key="default_list")
+
+    def _personal_init(self):
+        super()._personal_init()
+
+        if self.has_flag(ElementFlag.HAS_SCROLLBAR_Y):
+            self.tk_widget.configure(yscrollcommand=self._tk_scrollbar_y.set)
+            self._tk_scrollbar_y.configure(command=self.tk_widget.yview)
 
         # if self._default_event:
         #     self._tk_kwargs["command"] = self.window.get_event_function(self, key=self.key,

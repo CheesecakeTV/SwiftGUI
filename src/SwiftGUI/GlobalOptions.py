@@ -312,6 +312,7 @@ class Listbox(Common,Common_Textual,Common_Field_Background):
     activestyle:Literals.activestyle = "none"
     default_list: Iterable[str] = None
     disabled: bool = None
+    scrollbar: bool = True
     borderwidth: int = None
     background_color_selected: str | Color = None
     selectborderwidth: int = None

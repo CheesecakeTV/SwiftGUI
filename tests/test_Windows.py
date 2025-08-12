@@ -83,7 +83,7 @@ layout = [
     ],[
         sg.Button("One button to rule them all!",relief="solid")
     ],[
-        sg.Listbox(["Hallo", "Welt"], key="List", default_event=True, height=5, expand=True)
+        sg.Listbox(["Hallo", "Hi", "Welt"] * 10, key="List", default_event=True, height=5, expand=True, scrollbar= True)
     ]
 ]
 
@@ -93,10 +93,10 @@ w["ContainerTest"].update(text="blue")
 #the_frame.update(background_color = "red")
 #w.update(background_color="red")
 
-w["List"].list_elements = ["Hi","Hi","Hallo", "Hi", "Welt", "World"]
+#w["List"].list_elements = ["Hi","Hi","Hallo", "Hi", "Welt", "World"]
 
-w["List"].color_rows(["Hi"],background_color="gold")
-w["List"].delete_element("Hi")
+# w["List"].color_rows(["Hi"],background_color="gold")
+# w["List"].delete_element("Hi")
 
 w["Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.set_value_to("Mouse entered"))
 w["Another-Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions.copy_value_from("Input-Test"))
@@ -105,7 +105,6 @@ print("Start:",w.values)
 
 for e,v in w:
     print(e,v)
-    w["List"].append_front(e)
     print(w["List"].list_elements)
     print(w["List"].index_of)
 

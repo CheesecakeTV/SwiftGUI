@@ -308,6 +308,8 @@ class BaseWidget(BaseElement):
 
     _events_to_bind_later: list[dict]
 
+    _tk_scrollbar_y: tk.Scrollbar | None = None
+
     def __init__(self,key:any=None,tk_kwargs:dict[str:any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
         super().__init__()
         self._events_to_bind_later = list()
@@ -459,6 +461,11 @@ class BaseWidget(BaseElement):
                     temp["fill"] = temp.get("fill","both")
 
                 self._tk_widget.pack(**temp)
+
+                if self.has_flag(ElementFlag.HAS_SCROLLBAR_Y):
+                    self._tk_scrollbar_y = tk.Scrollbar(container, orient="vertical")
+                    self._tk_scrollbar_y.pack(expand= True, fill= "y")
+
             case "grid":
                 self._tk_widget.grid(**self._insert_kwargs)
 
