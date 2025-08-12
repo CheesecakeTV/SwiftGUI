@@ -2,7 +2,7 @@
 #from tkinter import ttk
 from collections.abc import Iterable
 from os import PathLike
-from typing import Literal, Union
+from typing import Literal, Union, Any
 
 from SwiftGUI import Literals, Color, font_windows, Font
 
@@ -309,6 +309,7 @@ class Window(Common_Background):
     ttk_theme: str = "default"
 
 class Listbox(Common,Common_Textual,Common_Field_Background):
+    no_selection_returns: Any = "",  # Returned when nothing is selected
     activestyle:Literals.activestyle = "none"
     default_list: Iterable[str] = None
     disabled: bool = None
