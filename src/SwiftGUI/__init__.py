@@ -63,6 +63,7 @@ from .Windows import Window
 from . import KeyFunctions
 
 from .Examples import preview_all_colors, preview_all_themes, preview_all_fonts_windows
-from .Popups import popup
+from .Popups.Popups import popup
+from .Popups.VirtualKeyboard import popup_virtual_keyboard
 
 from .Themes import Themes
