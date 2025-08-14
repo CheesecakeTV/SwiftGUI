@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal, Any
+from typing import Literal, Any, Self
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
@@ -258,3 +258,33 @@ class TextField(BaseWidget):
         if self.has_flag(ElementFlag.HAS_SCROLLBAR_Y):
             self.tk_widget.configure(yscrollcommand=self._tk_scrollbar_y.set)
             self._tk_scrollbar_y.configure(command=self.tk_widget.yview)
+
+    # @BaseWidget._run_after_window_creation
+    # def see(self, index: int) -> Self:
+    #     """
+    #     If the index-th character is not visible, scroll so it is.
+    #     :param index:
+    #     :return:
+    #     """
+    #     self.tk_widget.see(index)
+    #     return self
+
+    @BaseWidget._run_after_window_creation
+    def see_end(self) -> Self:
+        """
+        Scroll all the way to the end
+
+        :return:
+        """
+        self.tk_widget.see("end")
+        return self
+
+    # @BaseWidget._run_after_window_creation
+    # def see_top(self) -> Self:
+    #     """
+    #     Scroll all the way to the top
+    #
+    #     :return:
+    #     """
+    #     self.tk_widget.see(0)
+    #     return self

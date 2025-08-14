@@ -12,7 +12,7 @@ from SwiftGUI import Color
 layout = [
     [
         sg.Spacer(15),
-        sg.Multiline("Das ist ein Text" * 15,key="ML",default_event=True,highlightthickness=5,highlightcolor="red",undo=True),
+        sg.Multiline("Das ist ein Text\n" * 15,key="ML",default_event=True,highlightthickness=5,highlightcolor="red",undo=True, height=5, scrollbar=True),
         sg.Spacer(15),
     ],[
         sg.Button("Event",key="Event"),
@@ -62,9 +62,9 @@ s = w.ttk_style
 for e,v in w:
     print(e,v)
     #del table[0]
-    print(table.index, table.value)
-    print(table.all_indexes)
-    print(table.all_values)
+    # print(table.index, table.value)
+    # print(table.all_indexes)
+    # print(table.all_values)
     print()
 
     if e == "Append":
@@ -72,5 +72,6 @@ for e,v in w:
 
     if e == "Event":
         table.reset_filter()
+        w["ML"].see_end()
     #table.overwrite_table([[i] for i in range(15)])
 
