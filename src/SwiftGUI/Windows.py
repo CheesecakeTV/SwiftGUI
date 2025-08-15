@@ -70,11 +70,11 @@ class Window(BaseElement):
         self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
         self.values = dict()
 
-        self._tk = tk.Tk()
+        self.root = tk.Tk()
 
         self._sg_widget:Frame = Frame(layout,alignment=alignment)
 
-        self.ttk_style: ttk.Style = ttk.Style(self._tk)
+        self.ttk_style: ttk.Style = ttk.Style(self.root)
         self.update(
             title=title,
             titlebar=titlebar,
@@ -93,7 +93,7 @@ class Window(BaseElement):
             _first_update=True
         )
 
-        self._sg_widget.window_entry_point(self._tk, self)
+        self._sg_widget.window_entry_point(self.root, self)
         self._config_ttk_queue = list()
 
         for elem in self.all_elements:
@@ -157,17 +157,17 @@ class Window(BaseElement):
             self._sg_widget.update(background_color=background_color)
 
         if title is not None:
-            self._tk.title(title)
+            self.root.title(title)
 
         if titlebar is not None:
-            self._tk.overrideredirect(not titlebar)
+            self.root.overrideredirect(not titlebar)
 
-        self._tk.resizable(resizeable_width,resizeable_height)
-        self._tk.state("zoomed" if fullscreen else "normal")
+        self.root.resizable(resizeable_width, resizeable_height)
+        self.root.state("zoomed" if fullscreen else "normal")
 
         if transparency is not None:
             assert 0 <= transparency <= 1, "Window-Transparency must be between 0 and 1"
-            self._tk.attributes("-alpha",1 - transparency)
+            self.root.attributes("-alpha", 1 - transparency)
 
         geometry = ""
         if size[0]:
@@ -190,19 +190,21 @@ class Window(BaseElement):
             geometry += f"+{int(position[0])}+{int(position[1])}".replace("+-","-")
 
         if geometry:
-            self._tk.geometry(geometry)
+            self.root.geometry(geometry)
 
         if min_size != (None,None):
-            self._tk.minsize(*min_size)
+            self.root.minsize(*min_size)
 
         if max_size != (None,None):
-            self._tk.maxsize(*max_size)
+            self.root.maxsize(*max_size)
 
         assert icon is None or icon.endswith(".ico"), "The window-icon has to be the path to a .ico-file. Other filetypes are not supported."
-        self._tk.iconbitmap(icon)
+        self.root.iconbitmap(icon)
 
         if keep_on_top is not None:
-            self._tk.attributes("-topmost",keep_on_top)
+            self.root.attributes("-topmost", keep_on_top)
+
+        return self
 
     @property
     def parent_tk_widget(self) ->tk.Widget:
@@ -214,7 +216,7 @@ class Window(BaseElement):
         :return:
         """
         if self.has_flag(ElementFlag.IS_CREATED):
-            self._tk.destroy()
+            self.root.destroy()
 
     def loop_close(self) -> tuple[any,dict[any:any]]:
         """
@@ -234,10 +236,10 @@ class Window(BaseElement):
         :return: Triggering event key; all values as _dict
         """
         self.exists = True
-        self._tk.mainloop()
+        self.root.mainloop()
 
         try:
-            assert self._tk.winfo_exists()
+            assert self.root.winfo_exists()
         except (AssertionError,tk.TclError):
             self.exists = False # This looks redundant, but it's easier to use self.exists from outside. So leave it!
             self.remove_flags(ElementFlag.IS_CREATED)
@@ -272,7 +274,7 @@ class Window(BaseElement):
 
         if value is not None:
             self.values[key] = value
-        self._tk.after(0,self._receive_event,key)
+        self.root.after(0, self._receive_event, key)
 
     @deprecated("WIP")
     def throw_event_on_next_loop(self,key:any,value:any=None):
@@ -294,7 +296,7 @@ class Window(BaseElement):
         :return:
         """
         self._prev_event = key
-        self._tk.quit()
+        self.root.quit()
 
     def get_event_function(self,me:BaseElement,key:any=None,key_function:Callable|Iterable[Callable]=None,
                            )->Callable:

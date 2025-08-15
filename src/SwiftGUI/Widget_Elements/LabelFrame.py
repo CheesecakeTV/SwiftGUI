@@ -1,5 +1,6 @@
 import tkinter as tk
 from collections.abc import Iterable
+from typing import Self
 
 from SwiftGUI import BaseElement, ElementFlag, BaseWidgetContainer, GlobalOptions, Literals, Color, BaseWidget, Frame, \
     Text, font_windows
@@ -108,7 +109,8 @@ class LabelFrame(Frame):
         "font_underline",
         "font_overstrike",
     ]
-    def update(self,**kwargs):
+
+    def update(self,**kwargs) -> Self:
         pass_to_element = dict()
         kwargs_copy: dict = kwargs.copy()
         for key,val in kwargs_copy.items():
@@ -118,6 +120,7 @@ class LabelFrame(Frame):
 
         super().update(**kwargs)
         self._element.update(**pass_to_element)
+        return self
 
     def init_window_creation_done(self):
         self._element._init(self, self.window)

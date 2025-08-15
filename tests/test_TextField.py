@@ -6,8 +6,7 @@ import tkinter.ttk as ttk
 
 from SwiftGUI import Color
 
-sg.popup_virtual_keyboard()
-exit()
+#sg.popup_virtual_keyboard()
 #sg.Themes.Hacker()
 #sg.Themes.FacebookMom()
 

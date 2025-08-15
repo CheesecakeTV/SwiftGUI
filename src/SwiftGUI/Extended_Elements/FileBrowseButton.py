@@ -9,13 +9,6 @@ from SwiftGUI.Widget_Elements.Button import Button
 
 
 class FileBrowseButton(Button):
-    """
-    Copy this class ot create your own Widget
-
-    The following methods are to be overwritten if needed:
-    _get_value  (determines the value returned by this widget)
-    _init_widget_for_inherrit   (Initializes the widget)
-    """
     tk_widget:tk.Button
     _tk_widget_class:type = tk.Button # Class of the connected widget
     defaults = GlobalOptions.FileBrowseButton
@@ -80,7 +73,7 @@ class FileBrowseButton(Button):
             tk_kwargs: dict[str:any] = None
     ):
         """
-        A button that throws an event every time it is pushed
+        A button that opens a filebrowser when pushed.
 
         :param text: Text the button displays
         :param key: (See docs for more details)
