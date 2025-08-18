@@ -1,6 +1,6 @@
 import SwiftGUI as sg
 from PIL import Image # pip install pillow
-from pathlib import Path    # pip install pathlib
+from pathlib import Path    # pip install pathlib   (Should be builtin though...)
 import tempfile as temp
 import os
 
@@ -27,6 +27,7 @@ layout = [
             "Choose file(s)",
             file_browse_type="open_multiple",
             key = "FileBrowse",
+            #key_function = lambda elem: w["Convert"].update(background_color = sg.Color.PaleGreen1 if elem.value else sg.Color.coral).set_value(f"Convert ({len(elem.value)})"),
             key_function = lambda elem: w["Convert"].update(background_color = sg.Color.PaleGreen1 if elem.value else sg.Color.coral).set_value(f"Convert ({len(elem.value)})"),
             dont_change_on_abort= True,
         )
