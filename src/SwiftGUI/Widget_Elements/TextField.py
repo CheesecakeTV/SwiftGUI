@@ -31,7 +31,7 @@ class TextField(BaseWidget):
     def __init__(
             self,
             # Add here
-            text:str = None,
+            text:str = "",
             /,
             key: Any = None,
             key_function: Callable|Iterable[Callable] = None,
