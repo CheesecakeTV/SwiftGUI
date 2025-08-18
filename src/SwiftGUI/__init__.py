@@ -1,4 +1,6 @@
 
+from .Tools import clp_paste, clp_copy, remove_None_vals
+
 from .Colors import Color,rgb
 from .Fonts import *
 from . import GlobalOptions, Literals, Tools, Debug

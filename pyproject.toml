@@ -16,7 +16,9 @@ classifiers = [
 ]
 license = "Apache-2.0"
 license-files = ["LICEN[CS]E*"]
-#
+dependencies = [
+    "pyperclip",
+]
 [project.urls]
 Homepage = "https://github.com/CheesecakeTV/SwiftGUI"
 issues = "https://github.com/CheesecakeTV/SwiftGUI/issues"
