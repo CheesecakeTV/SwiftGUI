@@ -87,7 +87,10 @@ layout = [
     ]
 ]
 
+
 w = sg.Window(layout,alignment="left", background_color=Color.light_yellow)
+sg.clipboard_observer(w, "CLP", throw_initial_value=False)
+
 #w.update(background_color = "red")
 w["ContainerTest"].update(text="blue")
 #the_frame.update(background_color = "red")
@@ -104,9 +107,7 @@ w["Another-Input-Test"].bind_event(Event.MouseEnter,key_function=sg.KeyFunctions
 print("Start:",w.values)
 
 for e,v in w:
-    print(e,v)
-    print(w["List"].list_elements)
-    print(w["List"].index_of)
+    print(e,v.get(e), sep="\t")
 
     w["SomeText"].update(background="red")
     w["IAM"].update(font_overstrike=False,background_color=None)

@@ -69,3 +69,5 @@ from .Popups.Popups import popup
 from .Popups.VirtualKeyboard import popup_virtual_keyboard
 
 from .Themes import Themes
+
+from .Utilities.Threads import clipboard_observer
