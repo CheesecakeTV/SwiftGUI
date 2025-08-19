@@ -33,6 +33,7 @@ from .Extended_Elements.FileBrowseButton import FileBrowseButton
 from .Extended_Elements.ColorChooserButton import ColorChooserButton
 
 from .Extended_Elements.Image import Image
+from .Extended_Elements.ImageButton import ImageButton
 
 T = Text
 Label = Text

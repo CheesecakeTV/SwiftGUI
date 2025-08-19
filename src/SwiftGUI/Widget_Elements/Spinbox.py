@@ -179,7 +179,7 @@ class Spinbox(BaseWidget):
                 self._overstrike = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
             case _: # Not a match
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 

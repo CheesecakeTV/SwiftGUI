@@ -464,6 +464,9 @@ class Image(DEFAULT_OPTIONS_CLASS):
     height: int = None
     width: int = None
 
+class ImageButton(Button):
+    ...
+
 def reset_all_options():
     """
     Reset everything done to the global options on runtime.

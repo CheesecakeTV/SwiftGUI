@@ -10,7 +10,6 @@ import io
 # img = base64.b32encode(img)
 # img = Image.frombytes(base64.b32decode(img))
 img = sg.file_to_b64("Pixelkatze.png")
-print(img)
 img = sg.file_from_b64(img)
 
 layout = [
@@ -20,6 +19,11 @@ layout = [
         button := sg.Button("Test")
     ],[
         image := sg.Image(img).bind_event(sg.Event.ClickLeft, key= "Img_Click")
+    ],[
+        sg.ImageButton(
+            "Anime.jpg",
+            height= 150,
+        )
     ]
 ]
 

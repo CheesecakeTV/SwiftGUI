@@ -22,8 +22,10 @@ class Image(BaseWidget):
             height: int = None,
             width: int = None,
             tk_kwargs: dict = None,
+            expand: bool = None,
+            expand_y: bool = None,
     ):
-        super().__init__(key= key, tk_kwargs= tk_kwargs)
+        super().__init__(key= key, tk_kwargs= tk_kwargs, expand = expand, expand_y= expand_y)
 
         self._height = None
         self._width = None
@@ -46,7 +48,7 @@ class Image(BaseWidget):
                 self._width = new_val
                 self.add_flags(ElementFlag.UPDATE_IMAGE)
             case _:
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 

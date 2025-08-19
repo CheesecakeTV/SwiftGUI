@@ -164,7 +164,7 @@ class Input(BaseWidget):
             case "readonly":
                 self._tk_kwargs["state"] = "readonly" if new_val else "normal"
             case _: # Not a match
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 

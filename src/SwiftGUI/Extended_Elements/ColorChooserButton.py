@@ -176,16 +176,13 @@ class ColorChooserButton(Button):
 
     _title:str = None
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
-        if super()._update_special_key(key,new_val):
-            return True
-
         match key:
             case "initial_color":
                 self.value = new_val
             case "color_chooser_title":
                 self._title = new_val
             case _:
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 

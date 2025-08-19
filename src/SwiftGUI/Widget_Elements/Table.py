@@ -443,7 +443,7 @@ class Table(BaseWidgetTTK):
             case "elements":
                 self.overwrite_table(new_val)
             case _:
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 

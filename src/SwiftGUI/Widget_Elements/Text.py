@@ -139,7 +139,7 @@ class Text(BaseWidget):
                 else:
                     self.remove_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
             case _: # Not a match
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 

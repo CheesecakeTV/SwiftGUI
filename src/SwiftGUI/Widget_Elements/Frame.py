@@ -145,7 +145,7 @@ class Frame(BaseWidgetContainer):
                             if elem.has_flag(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR):
                                 elem.update(background_color = new_val)
             case _:
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 

@@ -121,7 +121,7 @@ class Treeview(BaseWidget):
             case "can_reset_value_changes":
                 self.can_reset_value_changes = new_val
             case _:
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 

@@ -237,7 +237,7 @@ class Listbox(BaseWidget):
             case "no_selection_returns":
                 self._no_selection_returns = new_val
             case _:  # Not a match
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 

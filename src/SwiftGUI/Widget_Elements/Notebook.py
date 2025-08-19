@@ -194,7 +194,7 @@ class Notebook(BaseWidgetTTK):
             case "borderwidth":
                 self._config_ttk_style(borderwidth=new_val)
             case _:
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 

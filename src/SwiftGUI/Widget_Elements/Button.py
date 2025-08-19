@@ -65,7 +65,7 @@ class Button(BaseWidget):
             background_color: str | Color = None,
             overrelief: Literals.relief = None,
             text_color: str | Color = None,
-            # Todo: image
+
             relief: Literals.relief = None,
 
             repeatdelay:int = None,
@@ -192,7 +192,7 @@ class Button(BaseWidget):
                 self._overstrike = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
             case _:
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 
