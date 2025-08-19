@@ -460,6 +460,9 @@ class Spinbox(Button, Common_Textual):
     repeatinterval: int = 50
     state: Literals.Spinbox_State = None
 
+class Image(DEFAULT_OPTIONS_CLASS):
+    height: int = None
+    width: int = None
 
 def reset_all_options():
     """

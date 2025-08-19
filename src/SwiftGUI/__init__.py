@@ -32,6 +32,8 @@ from .Combined_Elements.Form import Form
 from .Extended_Elements.FileBrowseButton import FileBrowseButton
 from .Extended_Elements.ColorChooserButton import ColorChooserButton
 
+from .Extended_Elements.Image import Image
+
 T = Text
 Label = Text
 
@@ -58,7 +60,7 @@ TabView = Notebook
 
 Spin = Spinbox
 
-AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton | Spinbox
+AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton | Spinbox | Image
 
 from .Windows import Window
 
@@ -71,3 +73,4 @@ from .Popups.VirtualKeyboard import popup_virtual_keyboard
 from .Themes import Themes
 
 from .Utilities.Threads import clipboard_observer
+from .Utilities.Images import file_from_b64, file_to_b64
