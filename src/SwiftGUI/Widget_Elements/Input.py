@@ -164,7 +164,7 @@ class Input(BaseWidget):
             case "readonly":
                 self._tk_kwargs["state"] = "readonly" if new_val else "normal"
             case _: # Not a match
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 
@@ -172,6 +172,7 @@ class Input(BaseWidget):
         # If the font changed, apply them to self._tk_kwargs
         if self.has_flag(ElementFlag.UPDATE_FONT):
             self._update_font()
+            self.remove_flags(ElementFlag.UPDATE_FONT)
 
         super()._apply_update() # Actually apply the update
 

@@ -201,7 +201,7 @@ class BaseElement:
         """
         pass
 
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         """
         Inherit this method to pick out "special" keys to update.
         Keys are passed one-by-one.
@@ -229,7 +229,7 @@ class BaseElement:
         """
         ...
 
-    def update(self,**kwargs):
+    def update(self,**kwargs) -> Self:
         """
         Update configurations of this element.
         :param kwargs:
@@ -242,6 +242,8 @@ class BaseElement:
 
         if self.has_flag(ElementFlag.IS_CREATED) and self.window.has_flag(ElementFlag.IS_CREATED):
             self._apply_update()
+
+        return self
 
     @run_after_window_creation
     def update_after_window_creation(self, **kwargs) -> Self:

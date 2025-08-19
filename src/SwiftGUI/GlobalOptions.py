@@ -125,7 +125,7 @@ class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
         return apply_to
 
     @classmethod
-    def single(cls,key:str,val:any,default:any=None) -> any:
+    def single(cls,key:str,val:Any = None,default:Any=None) -> any:
         """
         val will be returned.
         If val is None, cls.key will be returned.
@@ -380,7 +380,6 @@ class Table(Common, Common_Textual,Common_Field_Background):
     font_underline_headings: bool = None
     font_overstrike_headings: bool = None
 
-    background_color: str | Color = None
     background_color_rows: str | Color = None
     background_color_active_rows: str | Color = Color.light_blue
 
@@ -439,24 +438,16 @@ class LabelFrame(Frame, Common_Textual):
 
 class Spinbox(Button, Common_Textual):
     default_value: float = None
-    cursor: Literals.cursor = None
     cursor_button: Literals.cursor = None
-    takefocus: bool = None
-    justify: Literal["left", "right", "center"] = None
-    background_color: str | Color = None
-    background_color_active: str | Color = None
     background_color_disabled: str | Color = None
     background_color_readonly: str | Color = None
-    text_color_disabled: str | Color = None
     background_color_button: Color | str = None
     highlightbackground_color: str | Color = None
     selectbackground_color: str | Color = None
     select_text_color: str | Color = None
-    borderwidth: int = None
     selectborderwidth: int = None
     highlightcolor: str | Color = None
     highlightthickness: int = None
-    relief: Literals.relief = None
     relief_button_down: Literals.relief = None
     relief_button_up: Literals.relief = None
     values: Iterable[float] = None
@@ -465,11 +456,16 @@ class Spinbox(Button, Common_Textual):
     number_min: float = None
     number_max: float = None
     increment: float = None
-    width: int = None
     repeatdelay: int = 300
     repeatinterval: int = 50
     state: Literals.Spinbox_State = None
 
+class Image(DEFAULT_OPTIONS_CLASS):
+    height: int = None
+    width: int = None
+
+class ImageButton(Button):
+    ...
 
 def reset_all_options():
     """

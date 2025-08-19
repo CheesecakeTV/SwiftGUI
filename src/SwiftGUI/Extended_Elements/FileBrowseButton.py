@@ -9,13 +9,6 @@ from SwiftGUI.Widget_Elements.Button import Button
 
 
 class FileBrowseButton(Button):
-    """
-    Copy this class ot create your own Widget
-
-    The following methods are to be overwritten if needed:
-    _get_value  (determines the value returned by this widget)
-    _init_widget_for_inherrit   (Initializes the widget)
-    """
     tk_widget:tk.Button
     _tk_widget_class:type = tk.Button # Class of the connected widget
     defaults = GlobalOptions.FileBrowseButton
@@ -80,7 +73,7 @@ class FileBrowseButton(Button):
             tk_kwargs: dict[str:any] = None
     ):
         """
-        A button that throws an event every time it is pushed
+        A button that opens a filebrowser when pushed.
 
         :param text: Text the button displays
         :param key: (See docs for more details)
@@ -209,9 +202,6 @@ class FileBrowseButton(Button):
     _file_function: Callable = None
     _file_function_kwargs: dict
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
-        if super()._update_special_key(key,new_val):
-            return True
-
         match key:
             case "file_browse_type":
                 self._file_function = {
@@ -240,7 +230,7 @@ class FileBrowseButton(Button):
             case "file_browse_save_defaultextension":
                 self._file_function_kwargs["file_browse_save_defaultextension"] = new_val
             case _:
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 

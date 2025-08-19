@@ -65,7 +65,7 @@ class Button(BaseWidget):
             background_color: str | Color = None,
             overrelief: Literals.relief = None,
             text_color: str | Color = None,
-            # Todo: image
+
             relief: Literals.relief = None,
 
             repeatdelay:int = None,
@@ -192,13 +192,14 @@ class Button(BaseWidget):
                 self._overstrike = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
             case _:
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 
     def _apply_update(self):
         # If the font changed, apply them to self._tk_kwargs
         if self.has_flag(ElementFlag.UPDATE_FONT):
+            self.remove_flags(ElementFlag.UPDATE_FONT)
             self._update_font()
 
         super()._apply_update() # Actually apply the update

@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal, Any
+from typing import Literal, Any, Self
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
@@ -31,7 +31,7 @@ class TextField(BaseWidget):
     def __init__(
             self,
             # Add here
-            text:str = None,
+            text:str = "",
             /,
             key: Any = None,
             key_function: Callable|Iterable[Callable] = None,
@@ -178,11 +178,13 @@ class TextField(BaseWidget):
         if default_event:
             self.bind_event("<KeyRelease>",key=key,key_function=key_function)
 
+    _readonly = False
     _can_reset_value_changes = False
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         match key:
 
             case "readonly":
+                self._readonly = new_val
                 self._tk_kwargs["state"] = "disabled" if new_val else "normal"
             case "fonttype":
                 self._fonttype = self.defaults.single(key,new_val)
@@ -210,7 +212,7 @@ class TextField(BaseWidget):
             case "can_reset_value_changes":
                 self._can_reset_value_changes = new_val
             case _:
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 
@@ -218,6 +220,7 @@ class TextField(BaseWidget):
         # If the font changed, apply them to self._tk_kwargs
         if self.has_flag(ElementFlag.UPDATE_FONT):
             self._update_font()
+            self.remove_flags(ElementFlag.UPDATE_FONT)
 
         super()._apply_update() # Actually apply the update
 
@@ -241,11 +244,16 @@ class TextField(BaseWidget):
         return self.tk_widget.get("1.0","end")[:-1]
 
     def set_value(self,val:any):
+        if self._readonly:
+            self.tk_widget.configure(state = "normal")
         self.tk_widget.delete("1.0","end")
         self.tk_widget.insert("1.0",val)
 
         if self._can_reset_value_changes:
             self.tk_widget.edit_reset()
+
+        if self._readonly:
+            self.tk_widget.configure(state = "disabled")
 
     def init_window_creation_done(self):
         super().init_window_creation_done()
@@ -258,3 +266,33 @@ class TextField(BaseWidget):
         if self.has_flag(ElementFlag.HAS_SCROLLBAR_Y):
             self.tk_widget.configure(yscrollcommand=self._tk_scrollbar_y.set)
             self._tk_scrollbar_y.configure(command=self.tk_widget.yview)
+
+    # @BaseWidget._run_after_window_creation
+    # def see(self, index: int) -> Self:
+    #     """
+    #     If the index-th character is not visible, scroll so it is.
+    #     :param index:
+    #     :return:
+    #     """
+    #     self.tk_widget.see(index)
+    #     return self
+
+    @BaseWidget._run_after_window_creation
+    def see_end(self) -> Self:
+        """
+        Scroll all the way to the end
+
+        :return:
+        """
+        self.tk_widget.see("end")
+        return self
+
+    # @BaseWidget._run_after_window_creation
+    # def see_top(self) -> Self:
+    #     """
+    #     Scroll all the way to the top
+    #
+    #     :return:
+    #     """
+    #     self.tk_widget.see(0)
+    #     return self

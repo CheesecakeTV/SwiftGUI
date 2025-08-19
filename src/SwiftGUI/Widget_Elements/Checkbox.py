@@ -187,7 +187,7 @@ class Checkbox(BaseWidget):
                 else:
                     self.remove_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
             case _:  # Not a match
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 
@@ -195,6 +195,7 @@ class Checkbox(BaseWidget):
         # If the font changed, apply them to self._tk_kwargs
         if self.has_flag(ElementFlag.UPDATE_FONT):
             self._update_font()
+            self.remove_flags(ElementFlag.UPDATE_FONT)
 
         super()._apply_update()  # Actually apply the update
 

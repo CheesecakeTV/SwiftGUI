@@ -121,7 +121,7 @@ class Treeview(BaseWidget):
             case "can_reset_value_changes":
                 self.can_reset_value_changes = new_val
             case _:
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 
@@ -129,6 +129,7 @@ class Treeview(BaseWidget):
         # If the font changed, apply them to self._tk_kwargs
         if self.has_flag(ElementFlag.UPDATE_FONT):
             self._update_font()
+            self.remove_flags(ElementFlag.UPDATE_FONT)
 
         super()._apply_update() # Actually apply the update
 

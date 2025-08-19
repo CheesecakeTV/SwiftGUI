@@ -237,7 +237,7 @@ class Listbox(BaseWidget):
             case "no_selection_returns":
                 self._no_selection_returns = new_val
             case _:  # Not a match
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 
@@ -245,6 +245,7 @@ class Listbox(BaseWidget):
         # If the font changed, apply them to self._tk_kwargs
         if self.has_flag(ElementFlag.UPDATE_FONT):
             self._update_font()
+            self.remove_flags(ElementFlag.UPDATE_FONT)
 
         super()._apply_update()  # Actually apply the update
 

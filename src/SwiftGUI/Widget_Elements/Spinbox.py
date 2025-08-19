@@ -179,7 +179,7 @@ class Spinbox(BaseWidget):
                 self._overstrike = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
             case _: # Not a match
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 
@@ -187,6 +187,7 @@ class Spinbox(BaseWidget):
         # If the font changed, apply them to self._tk_kwargs
         if self.has_flag(ElementFlag.UPDATE_FONT):
             self._update_font()
+            self.remove_flags(ElementFlag.UPDATE_FONT)
 
         super()._apply_update() # Actually apply the update
 
