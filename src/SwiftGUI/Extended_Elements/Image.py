@@ -16,7 +16,7 @@ class Image(BaseWidget):
 
     def __init__(
             self,
-            image: str | PathLike | PIL_Image.Image | io.BytesIO = None,
+            image: str | PathLike | PIL_Image.Image | IO[bytes] = None,
             /,
             key: Any = None,
             height: int = None,
@@ -56,7 +56,7 @@ class Image(BaseWidget):
     _photo_image: ImageTk.PhotoImage = None
 
     @BaseWidget._run_after_window_creation
-    def _set_image(self, image: str | PathLike | PIL_Image.Image | io.BytesIO) -> Self:
+    def _set_image(self, image: str | PathLike | PIL_Image.Image | IO[bytes]) -> Self:
         """
         Changes/sets/updates the image of the tk-element.
 
@@ -103,5 +103,5 @@ class Image(BaseWidget):
         return None
 
     def set_value(self,val: Any):
-        raise TypeError("sg.Image doesn't allow changing of its 'value'")
+        raise TypeError("sg.Image doesn't allow changing of its 'value'. Use .update(image= ...) instead.")
 
