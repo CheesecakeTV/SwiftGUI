@@ -1,3 +1,4 @@
+import io
 import tkinter as tk
 from os import PathLike
 from typing import Any, Self, IO
@@ -15,7 +16,7 @@ class Image(BaseWidget):
 
     def __init__(
             self,
-            image: str | PathLike | PIL_Image.Image = None,
+            image: str | PathLike | PIL_Image.Image | io.BytesIO = None,
             /,
             key: Any = None,
             height: int = None,
@@ -53,7 +54,7 @@ class Image(BaseWidget):
     _photo_image: ImageTk.PhotoImage = None
 
     @BaseWidget._run_after_window_creation
-    def _set_image(self, image: str | PathLike | PIL_Image.Image) -> Self:
+    def _set_image(self, image: str | PathLike | PIL_Image.Image | io.BytesIO) -> Self:
         """
         Changes/sets/updates the image of the tk-element.
 

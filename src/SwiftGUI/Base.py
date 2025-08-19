@@ -201,7 +201,7 @@ class BaseElement:
         """
         pass
 
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         """
         Inherit this method to pick out "special" keys to update.
         Keys are passed one-by-one.

@@ -1,10 +1,13 @@
+import io
 import tkinter as tk
-from tkinter import ttk
+from os import PathLike
+from tkinter import ttk, PhotoImage
 from collections.abc import Iterable,Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Self, Literal
+from typing import TYPE_CHECKING, Self, Literal, Any
 from warnings import deprecated
 import inspect
+from PIL import Image, ImageTk
 
 from SwiftGUI import BaseElement, Frame, ElementFlag, Literals, GlobalOptions, Color, Debug
 
@@ -43,7 +46,7 @@ class Window(BaseElement):
             position: tuple[int, int] = (None, None),  # Position on monitor # Todo: Center
             min_size: tuple[int, int] = (None, None),
             max_size: tuple[int, int] = (None, None),
-            icon: str = None,  # .ico file
+            icon: str | PathLike | Image.Image | io.BytesIO = None,  # .ico file
             keep_on_top: bool = None,
             background_color:Color | str = None,
             ttk_theme: str = None,
@@ -128,12 +131,13 @@ class Window(BaseElement):
             position: tuple[int, int] = (None, None),  # Position on monitor # Todo: Center
             min_size: tuple[int, int] = (None, None),
             max_size: tuple[int, int] = (None, None),
-            icon: str = None,  # .ico file
+            icon: str | PathLike | Image.Image | io.BytesIO = None,  # .ico file
             keep_on_top: bool = None,
             background_color: Color | str = None,
             ttk_theme: str = None,
             _first_update: bool = False,
     ):
+        # Todo: This method needs to be put in proper shape
         if _first_update:
             title = GlobalOptions.Window.single("title",title)
             titlebar = GlobalOptions.Window.single("titlebar",titlebar)
@@ -198,8 +202,10 @@ class Window(BaseElement):
         if max_size != (None,None):
             self.root.maxsize(*max_size)
 
-        assert icon is None or icon.endswith(".ico"), "The window-icon has to be the path to a .ico-file. Other filetypes are not supported."
-        self.root.iconbitmap(icon)
+        # assert icon is None or icon.endswith(".ico"), "The window-icon has to be the path to a .ico-file. Other filetypes are not supported."
+        # self.root.iconbitmap(icon)
+        if icon is not None:
+            self.update_icon(icon)
 
         if keep_on_top is not None:
             self.root.attributes("-topmost", keep_on_top)
@@ -361,3 +367,25 @@ class Window(BaseElement):
             return self.all_key_elements[item]
         except KeyError:
             raise KeyError(f"The requested Element ({item}) wasn't found. Did you forget to set its key?")
+
+    _icon = None
+    def update_icon(self, icon: str | PathLike | Image.Image | io.BytesIO) -> Self:
+        """
+        Change the icon.
+        Same as .update(icon = ...)
+
+        :param icon:
+        :return:
+        """
+
+
+        if not isinstance(icon, Image.Image):
+            self._icon = Image.open(icon)
+        else:
+            self._icon = icon
+
+        self._icon = ImageTk.PhotoImage(self._icon)
+        self.root.iconphoto(True, self._icon)
+
+        return self
+

@@ -23,7 +23,9 @@ layout = [
     ]
 ]
 
-w = sg.Window(layout)
+img = Image.open("Anime.jpg")
+w = sg.Window(layout, icon=img)
+#w.update(icon = "Anja.ico")
 #w.root.iconphoto("Pixelkatze.")
 
 #w.root.configure(icon = image)
