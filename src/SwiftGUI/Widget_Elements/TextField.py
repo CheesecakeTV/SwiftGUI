@@ -178,11 +178,13 @@ class TextField(BaseWidget):
         if default_event:
             self.bind_event("<KeyRelease>",key=key,key_function=key_function)
 
+    _readonly = False
     _can_reset_value_changes = False
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         match key:
 
             case "readonly":
+                self._readonly = new_val
                 self._tk_kwargs["state"] = "disabled" if new_val else "normal"
             case "fonttype":
                 self._fonttype = self.defaults.single(key,new_val)
@@ -242,11 +244,16 @@ class TextField(BaseWidget):
         return self.tk_widget.get("1.0","end")[:-1]
 
     def set_value(self,val:any):
+        if self._readonly:
+            self.tk_widget.configure(state = "normal")
         self.tk_widget.delete("1.0","end")
         self.tk_widget.insert("1.0",val)
 
         if self._can_reset_value_changes:
             self.tk_widget.edit_reset()
+
+        if self._readonly:
+            self.tk_widget.configure(state = "disabled")
 
     def init_window_creation_done(self):
         super().init_window_creation_done()

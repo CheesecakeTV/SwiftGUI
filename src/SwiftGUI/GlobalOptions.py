@@ -125,7 +125,7 @@ class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
         return apply_to
 
     @classmethod
-    def single(cls,key:str,val:any,default:any=None) -> any:
+    def single(cls,key:str,val:Any = None,default:Any=None) -> any:
         """
         val will be returned.
         If val is None, cls.key will be returned.

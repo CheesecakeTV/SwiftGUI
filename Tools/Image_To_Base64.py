@@ -1,26 +1,28 @@
+import base64
+import io
+
 import SwiftGUI as sg
 from PIL import Image # pip install pillow
 from pathlib import Path    # pip install pathlib   (Should be builtin though...)
-import tempfile as temp
-import os
 
-def img_to_ico(img_path: str, output_folder: Path, force_size: tuple[int, int] = None):
+def img_to_b64(img_path: str, force_size: tuple[int, int] = None) -> bytes:
     """
     Convert an image of various types to .ico
     :param force_size: Pass values to convert the ico to said size
     :param img_path:
-    :param output_folder:
     :return:
     """
     img_path = Path(img_path)
-    ico_path = output_folder / (img_path.stem + ".ico")
 
+    buf = io.BytesIO()
     img = Image.open(img_path)
 
     if force_size:
-        img.resize(force_size)
+        img = img.resize(force_size)
 
-    img.save(ico_path, format = "ICO")
+    img.save(buf, format= "png")
+
+    return base64.b64encode(buf.getvalue())
 
 layout = [
     [
@@ -102,11 +104,20 @@ layout = [
             key="Convert",
             background_color = sg.Color.coral,  # PaleGreen1
         )
+    ],[
+        textfield := sg.TextField(
+            height= 10,
+            width= 100,
+            wrap= "none",
+            readonly= True,
+        )
+    ],[
+        sg.Button(
+            "Copy to clipboard",
+            key_function= lambda :sg.clp_copy(textfield.value)
+        )
     ]
 ]
-
-_tempfolder_raw = temp.TemporaryDirectory()
-_tempfolder = Path(_tempfolder_raw.name)
 
 w = sg.Window(layout, title= "Image to icon converter")
 
@@ -123,7 +134,11 @@ for e,v in w:
             except ValueError:
                 pass
 
+        ml_value = ""
         for name in w["FileBrowse"].value:
-            img_to_ico(name, _tempfolder, force_size= fs)
-            os.system("start " + _tempfolder_raw.name)
+            ml_value += f"{Path(name).stem.replace(' ','_')}: bytes = {img_to_b64(name, force_size=fs)}\n"
+
+        textfield.value = ml_value
+        print(ml_value)
+        print()
 
