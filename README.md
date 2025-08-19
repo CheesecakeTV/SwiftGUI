@@ -2,10 +2,16 @@
 # Getting started
 [Start your journey here](https://github.com/CheesecakeTV/SwiftGUI/blob/60f839fd6dab1fa0e087ab0df4986a8b578d4fa3/Docs/01%20Basic%20tutorials/01%20Getting-started.md)
 
-# Still WIP
-But growing quickly. Give it 1-2 month and you will use it for every GUI you create.
+# Now in alpha-phase!
+The package is useable and already has 18 (Version 0.5.0) finished elements.\
+I am already using it for smaller projects and personally, like it a lot.
 
-It already contains the most important elements, the others are following quickly.
+However, until version 1.0.0, the package is not guaranteed to be down-compatible.
+Names and functions/methods might change, which could destroy your code.
+
+For version 1.0.0, I'd like to sort and standardize names, so they are easier to remember.
+
+Of course, older versions will stay available on pip, so if you worry about this, just don't update the package.
 
 # SwiftGUI
 
