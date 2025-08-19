@@ -260,6 +260,7 @@ class Radiobutton(BaseWidget):
     def _apply_update(self):
         # If the font changed, apply them to self._tk_kwargs
         if self.has_flag(ElementFlag.UPDATE_FONT):
+            self.remove_flags(ElementFlag.UPDATE_FONT)
             self._update_font()
 
         super()._apply_update()  # Actually apply the update
