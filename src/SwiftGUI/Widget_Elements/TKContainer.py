@@ -30,7 +30,7 @@ class TKContainer(BaseWidget):
         :param expand: True, if this widget should fill the whole row
         :param tk_kwargs: These kwargs will be passed directly to the widget when it is initialized.
         """
-        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand)
+        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand,expand_y=expand_y)
 
         self._tk_widget_class = widget_type
 

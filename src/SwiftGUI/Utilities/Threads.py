@@ -3,7 +3,7 @@ from typing import Any
 import SwiftGUI as sg
 import time
 
-from SwiftGUI import clp_paste
+from SwiftGUI import clipboard_paste
 
 
 def _clipboard_observer(w: sg.Window, key: Any, check_interval: float = 0.3, throw_initial_value: bool = True) -> None:
@@ -13,14 +13,14 @@ def _clipboard_observer(w: sg.Window, key: Any, check_interval: float = 0.3, thr
     """
 
     if throw_initial_value:
-        w.throw_event(key, clp_paste())
+        w.throw_event(key, clipboard_paste())
 
     while True:
-        prev_paste = clp_paste()
+        prev_paste = clipboard_paste()
         temp = prev_paste
 
         while temp == prev_paste:
-            temp = clp_paste()
+            temp = clipboard_paste()
             time.sleep(check_interval)
 
         w.throw_event(key, temp)

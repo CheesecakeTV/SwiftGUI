@@ -96,7 +96,6 @@ layout = [
                 ("Force Width", "Width"),
             ),
             key = "ForceSize",
-            default_values= (30, 30),
         )
     ],[
         sg.Button(
@@ -114,7 +113,7 @@ layout = [
     ],[
         sg.Button(
             "Copy to clipboard",
-            key_function= lambda :sg.clp_copy(textfield.value)
+            key_function= lambda :sg.clipboard_copy(textfield.value)
         )
     ]
 ]

@@ -1,14 +1,14 @@
 from typing import Any
 import pyperclip
 
-def clp_paste() -> Any:
+def clipboard_paste() -> Any:
     """
     Output current clipboard as return
     :return:
     """
     return pyperclip.paste()
 
-def clp_copy(value: Any) -> Any:
+def clipboard_copy(value: Any) -> Any:
     """
     Copy the value to clipboard.
     :param value:

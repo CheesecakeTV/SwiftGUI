@@ -5,7 +5,7 @@ from typing import Any, Self, IO
 from PIL import Image as PIL_Image
 from PIL import ImageTk
 
-from SwiftGUI import GlobalOptions, BaseWidget, ElementFlag
+from SwiftGUI import GlobalOptions, BaseWidget, ElementFlag, Color
 
 
 class Image(BaseWidget):
@@ -14,6 +14,10 @@ class Image(BaseWidget):
 
     defaults = GlobalOptions.Image
 
+    _transfer_keys = {
+        "background_color": "bg"
+    }
+
     def __init__(
             self,
             image: str | PathLike | PIL_Image.Image | IO[bytes] = None,
@@ -21,6 +25,8 @@ class Image(BaseWidget):
             key: Any = None,
             height: int = None,
             width: int = None,
+            background_color: str | Color = None,
+            apply_parent_background_color:bool = None,
             tk_kwargs: dict = None,
             expand: bool = None,
             expand_y: bool = None,
@@ -30,10 +36,15 @@ class Image(BaseWidget):
         self._height = None
         self._width = None
 
+        if background_color and not apply_parent_background_color:
+            apply_parent_background_color = False
+
         self.update(
             image = image,
             height = height,
             width = width,
+            apply_parent_background_color = apply_parent_background_color,
+            background_color = background_color,
         )
 
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
@@ -47,6 +58,11 @@ class Image(BaseWidget):
             case "width":
                 self._width = new_val
                 self.add_flags(ElementFlag.UPDATE_IMAGE)
+            case "apply_parent_background_color":
+                if new_val:
+                    self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
+                else:
+                    self.remove_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
             case _:
                 return super()._update_special_key(key, new_val)
 
@@ -87,7 +103,7 @@ class Image(BaseWidget):
             image = ImageTk.PhotoImage(image)
 
         assert isinstance(image, ImageTk.PhotoImage), "Whatever you supplied to .update(image= ...) of the sg.Image can't be used (Wrong type)."
-        self._photo_image = image
+        self._photo_image: Any | str = image
         self.tk_widget.configure(image = self._photo_image)
 
         return self

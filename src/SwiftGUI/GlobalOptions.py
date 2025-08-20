@@ -460,9 +460,11 @@ class Spinbox(Button, Common_Textual):
     repeatinterval: int = 50
     state: Literals.Spinbox_State = None
 
-class Image(DEFAULT_OPTIONS_CLASS):
+class Image(Common_Background):
     height: int = None
     width: int = None
+    apply_parent_background_color: bool = True
+
 
 class ImageButton(Button):
     ...
