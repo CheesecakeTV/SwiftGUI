@@ -1,6 +1,6 @@
 import tkinter as tk
 from collections.abc import Iterable
-from typing import Self
+from typing import Self, Any, Callable
 
 from SwiftGUI import BaseElement, ElementFlag, BaseWidgetContainer, GlobalOptions, Literals, Color, BaseWidget, Frame, \
     Text, font_windows
@@ -20,8 +20,12 @@ class TabFrame(Frame):
             /,
             text: str = None,
             fake_key: str = None,
+            default_event: bool = False,
 
             key: str = None,
+            key_function: Callable | Iterable[Callable] = None,
+
+            # Normal sg.Frame-options
             alignment: Literals.alignment = None,
             expand: bool = False,
             expand_y: bool = False,
@@ -100,15 +104,39 @@ class TabFrame(Frame):
 
         self.text = text
 
-        self.myNotebook: Notebook | None = None
+        self._myNotebook: Notebook | None = None
 
-    @Frame._run_after_window_creation
+        if default_event:
+            self._bind_event_to_tab(key=key, key_function=key_function)
+
+    @BaseElement._run_after_window_creation
     def select(self) -> Self:
         """
         Select this tab in the sg.Notebook
         :return:
         """
-        ...
+        self._myNotebook.value = self.fake_key
+        return self
+
+    def is_selected(self) -> bool:
+        """
+        True, if this tab is currently open
+        :return:
+        """
+        return self._myNotebook.value == self.fake_key
+
+    @BaseElement._run_after_window_creation
+    def _bind_event_to_tab(self, key_extention:str | Any=None, key:Any=None, key_function:Callable|Iterable[Callable]=None) -> Self:
+        """
+        When this tab gets opened, the specified event will be called.
+
+        :param key_extention:
+        :param key:
+        :param key_function:
+        :return:
+        """
+        self._myNotebook.bind_event_to_tab(self.fake_key, key_function= key_function, key_extention= key_extention, key = key)
+        return self
 
     def __matmul__(self, other: Notebook):
         """
@@ -116,4 +144,7 @@ class TabFrame(Frame):
         :param other:
         :return:
         """
-        self.myNotebook = other
+        self._myNotebook = other
+
+    def init_window_creation_done(self):
+        super().init_window_creation_done()

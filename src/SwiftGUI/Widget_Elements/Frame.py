@@ -150,6 +150,7 @@ class Frame(BaseWidgetContainer):
         return True
 
     def init_window_creation_done(self):
+        super().init_window_creation_done()
         if self._background_color_initial is not None:
             self.update(background_color = self._background_color_initial)
 

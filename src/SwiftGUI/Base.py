@@ -276,6 +276,9 @@ class BaseElement:
         for fkt in self._run_when_window_exists:    # Call all those buffered functions
             fkt()
 
+    def __repr__(self) -> str:
+        return f"<sg.{self.__class__.__name__} element at {id(self)}>"
+
 
 class BaseWidget(BaseElement):
     """
