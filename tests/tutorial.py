@@ -2,6 +2,8 @@ import SwiftGUI as sg
 
 ### Global options ###
 #sg.GlobalOptions.Notebook.background_color_tabs_active = "navy"
+sg.Examples.preview_all_elements()
+exit()
 
 ### Layout ###
 left_tab = sg.TabFrame([

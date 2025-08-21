@@ -1,6 +1,8 @@
 
 Button-matrix or checkbutton-matrix elements
 
+Add space between rows
+
 Copy elements/parts of the layout
 
 Instead of a global key-list, keep an option to make it a tree-like structure.
