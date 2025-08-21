@@ -76,6 +76,8 @@ class Notebook(BaseWidgetTTK):
         if tk_kwargs is None:
             tk_kwargs = dict()
 
+        if tab_texts is None:
+            tab_texts = dict()
         self._tab_texts = tab_texts
 
         self._fonttype_tabs = None

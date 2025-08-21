@@ -74,6 +74,11 @@ You should really check out the detailed documentation on Tables, this element i
 ## Notebook
 Aliases: TabGroup
 
+## Image
+Simple widget to display an image.
+
+## ImageButton
+Button with an image instead of a text.
 
 # Elements with extended functionality
 SwiftGUI offers a couple of elements that contain a single tkinter-widget, but change/extend its functionality drastically.

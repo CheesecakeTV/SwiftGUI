@@ -435,6 +435,8 @@ class Notebook(Common_Textual, Common_Background):
 class LabelFrame(Frame, Common_Textual):
     relief: Literals.relief = "solid"
     labelanchor: Literals.tabposition = "nw"
+    no_label: bool = False
+
 
 class Spinbox(Button, Common_Textual):
     default_value: float = None
@@ -460,9 +462,11 @@ class Spinbox(Button, Common_Textual):
     repeatinterval: int = 50
     state: Literals.Spinbox_State = None
 
-class Image(DEFAULT_OPTIONS_CLASS):
+class Image(Common_Background):
     height: int = None
     width: int = None
+    apply_parent_background_color: bool = True
+
 
 class ImageButton(Button):
     ...

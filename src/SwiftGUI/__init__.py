@@ -1,5 +1,5 @@
 
-from .Tools import clp_paste, clp_copy, remove_None_vals
+from .Tools import clipboard_copy, clipboard_paste, remove_None_vals
 
 from .Colors import Color,rgb
 from .Fonts import *
@@ -32,8 +32,8 @@ from .Combined_Elements.Form import Form
 from .Extended_Elements.FileBrowseButton import FileBrowseButton
 from .Extended_Elements.ColorChooserButton import ColorChooserButton
 
-from .Extended_Elements.Image import Image
-from .Extended_Elements.ImageButton import ImageButton
+from SwiftGUI.Widget_Elements.Image import Image
+from SwiftGUI.Widget_Elements.ImageButton import ImageButton
 
 T = Text
 Label = Text
@@ -61,7 +61,7 @@ TabView = Notebook
 
 Spin = Spinbox
 
-AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton | Spinbox | Image
+AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton | Spinbox | Image | ImageButton
 
 from .Windows import Window
 

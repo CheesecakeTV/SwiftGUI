@@ -30,6 +30,7 @@ class LabelFrame(Frame):
             layout: Iterable[Iterable[BaseElement]],
             /,
             text: str = None,
+            no_label: bool = None,
 
             fonttype:str = None,
             fontsize:int = None,
@@ -62,6 +63,8 @@ class LabelFrame(Frame):
     ):
         self._element = Text(relief="flat")    # Todo: Let the user pass an element
         self._element.defaults = self.defaults
+
+        self._no_label = no_label
 
         super().__init__(
             layout,
@@ -125,5 +128,7 @@ class LabelFrame(Frame):
     def init_window_creation_done(self):
         self._element._init(self, self.window)
         super().init_window_creation_done()
-        self.update(labelwidget = self._element.tk_widget)
+
+        if not self._no_label:
+            self.update(labelwidget = self._element.tk_widget)
 

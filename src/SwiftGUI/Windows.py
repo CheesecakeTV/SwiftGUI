@@ -1,10 +1,10 @@
 import io
 import tkinter as tk
 from os import PathLike
-from tkinter import ttk, PhotoImage
+from tkinter import ttk
 from collections.abc import Iterable,Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Self, Literal, Any
+from typing import TYPE_CHECKING, Self, Any
 from warnings import deprecated
 import inspect
 from PIL import Image, ImageTk
@@ -26,7 +26,7 @@ class Window(BaseElement):
     _prev_event:any = None  # Most recent event (-key)
     values:dict  # Key:Value of all named elements
 
-    all_key_elements: dict[any, "AnyElement"]   # Key:Element, if key is present
+    all_key_elements: dict[Any, "AnyElement"]   # Key:Element, if key is present
     all_elements: list["AnyElement"] = list()   # Every single element
 
     exists:bool = False # True, if this window exists at the moment
@@ -384,7 +384,7 @@ class Window(BaseElement):
         else:
             self._icon = icon
 
-        self._icon = ImageTk.PhotoImage(self._icon)
+        self._icon: Any | str = ImageTk.PhotoImage(self._icon)  # Typehint is just so the typechecker doesn't get annoying
         self.root.iconphoto(True, self._icon)
 
         return self
