@@ -437,6 +437,8 @@ class LabelFrame(Frame, Common_Textual):
     labelanchor: Literals.tabposition = "nw"
     no_label: bool = False
 
+class TabFrame(Frame):
+    text: str = None
 
 class Spinbox(Button, Common_Textual):
     default_value: float = None

@@ -3,33 +3,39 @@ import SwiftGUI as sg
 ### Global options ###
 
 ### Layout ###
-inner_layout = [
-    [sg.T("Smaller element")],
-    [sg.Button("Another smaller element")],
-    [sg.Spacer(expand_y= True)],
-    [sg.T("<-- sg.Listbox")]
-]
-
-layout:list[list[sg.BaseElement]] = [
+left_tab = sg.TabFrame([
     [
         sg.Listbox(
             range(10)
         ),
-        sg.Frame(
-            inner_layout,
-            expand_y=True
+    ]
+], key= "left", fake_key= "Günther")
+
+right_tab = sg.TabFrame([
+    [sg.T("Smaller element")],
+    [sg.Button("Another smaller element")],
+    [sg.T("<-- sg.Listbox")]
+], key= "right", fake_key= "Harald")
+
+layout:list[list[sg.BaseElement]] = [
+    [
+        nb := sg.Notebook(
+            left_tab,
+            right_tab,
+            default_event= True,
+            key = "NB"
         )
     ]
 ]
 
 w = sg.Window(layout)
-
+nb.value = "Harald"
 
 ### Additional configurations/actions ###
 
 
 ### Main loop ###
 for e,v in w:
-    ...
+    print(nb.value)
 
 ### After window was closed ###

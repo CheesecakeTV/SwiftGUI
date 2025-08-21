@@ -66,7 +66,10 @@ class Notebook(BaseWidgetTTK):
         self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
 
         self._elements: tuple[Frame, ...] = tabs
-        self._element_keys: tuple[Any, ...] = tuple(map(lambda a:a.key, tabs))
+        self._element_keys: tuple[Any, ...] = tuple(map(
+            lambda a:a.fake_key if hasattr(a, "fake_key") else a.key,
+            tabs
+        ))
 
         self._tab_event_functions: list[Callable | None] = [None] * len(self._elements) # The functions that will be called when the corresponding tab is selected
 
@@ -251,8 +254,16 @@ class Notebook(BaseWidgetTTK):
 
             tab.link_background_color(container)
 
-            key = tab.key
-            title = self._tab_texts.get(key, key)   # If the key is not in this dict, just use the key
+            if hasattr(tab, "text"):
+                title = tab.text
+
+            else:
+                if hasattr(tab, "fake_key"):
+                    key = tab.fake_key
+                else:
+                    key = tab.key
+
+                title = self._tab_texts.get(key, key)   # If the key is not in this dict, just use the key
 
             self.tk_widget.add(container.tk_widget, text=str(title))
 

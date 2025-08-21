@@ -31,6 +31,7 @@ from .Combined_Elements.Form import Form
 
 from .Extended_Elements.FileBrowseButton import FileBrowseButton
 from .Extended_Elements.ColorChooserButton import ColorChooserButton
+from .Extended_Elements.TabFrame import TabFrame
 
 from SwiftGUI.Widget_Elements.Image import Image
 from SwiftGUI.Widget_Elements.ImageButton import ImageButton
