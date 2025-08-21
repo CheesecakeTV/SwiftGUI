@@ -68,11 +68,9 @@ from .Windows import Window
 
 from . import KeyFunctions
 
-from .Examples import preview_all_colors, preview_all_themes, preview_all_fonts_windows
-from .Popups.Popups import popup
-from .Popups.VirtualKeyboard import popup_virtual_keyboard
-
-from .Themes import Themes
+from . import Themes
+from . import Popups
+from . import Examples
 
 from .Utilities.Threads import clipboard_observer
 from .Utilities.Images import file_from_b64, file_to_b64

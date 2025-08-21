@@ -1,25 +1,8 @@
 from SwiftGUI import GlobalOptions as go
 from SwiftGUI import font_windows, Color
-from abc import abstractmethod
 
-class BaseTheme:
-    """
-    Inherit this to create your own theme
-    """
+from SwiftGUI.Themes._BaseTheme import BaseTheme
 
-    def __init__(self):
-        self.apply()
-
-    def __call__(self, *args, **kwargs):
-        self.apply()
-
-    @abstractmethod
-    def apply(self) -> None:
-        """
-        Configurations belong in here
-        :return:
-        """
-        raise NotImplementedError("You tried to apply BaseTheme. BaseTheme should not be applied, it is only to create more themes from.")
 
 class FacebookMom(BaseTheme):
     def apply(self) -> None:
@@ -72,14 +55,4 @@ class Hacker(BaseTheme):
 
         go.Separator.color = "red"
 
-
-
-class Themes:
-    """
-    All available Themes
-    """
-    BaseTheme = BaseTheme
-
-    FacebookMom = FacebookMom
-    Hacker = Hacker
 
