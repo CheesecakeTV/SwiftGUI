@@ -26,7 +26,7 @@ class Window(BaseElement):
     _prev_event:any = None  # Most recent event (-key)
     values:dict  # Key:Value of all named elements
 
-    all_key_elements: dict[any, "AnyElement"]   # Key:Element, if key is present
+    all_key_elements: dict[Any, "AnyElement"]   # Key:Element, if key is present
     all_elements: list["AnyElement"] = list()   # Every single element
 
     exists:bool = False # True, if this window exists at the moment

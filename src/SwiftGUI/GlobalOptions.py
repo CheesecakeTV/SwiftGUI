@@ -435,6 +435,8 @@ class Notebook(Common_Textual, Common_Background):
 class LabelFrame(Frame, Common_Textual):
     relief: Literals.relief = "solid"
     labelanchor: Literals.tabposition = "nw"
+    no_label: bool = False
+
 
 class Spinbox(Button, Common_Textual):
     default_value: float = None
