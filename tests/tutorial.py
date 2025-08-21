@@ -1,23 +1,28 @@
 import SwiftGUI as sg
 
 ### Global options ###
-sg.GlobalOptions.Common_Textual.fontsize = 14
-SG_01: bytes = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAbklEQVR4nGNgGGjACCJs56X/J0fz4aSZjCwwzq9v7CRpZuP6CaZZkAU1LMtQFN043oVXHMMAYjUhAyasong0oAMWdAFkm9ENgckhizOh2wrDxLqKCZftxAIWdAFchuASZyHkRHziKAawQRPGCAQAhZAq+up6rqwAAAAASUVORK5CYII='
 
 ### Layout ###
+inner_layout = [
+    [sg.T("Smaller element")],
+    [sg.Button("Another smaller element")],
+    [sg.Spacer(expand_y= True)],
+    [sg.T("<-- sg.Listbox")]
+]
+
 layout:list[list[sg.BaseElement]] = [
     [
-        sg.Text("Hi Welt")
-    ],[
-        sg.Text("Another test")
-    ],[
-        sg.ImageButton(sg.file_from_b64(SG_01), height=60, background_color_active=sg.Color.orange)
-    ],[
-        #sg.Image("Mond.gif")
+        sg.Listbox(
+            range(10)
+        ),
+        sg.Frame(
+            inner_layout,
+            expand_y=True
+        )
     ]
 ]
 
-w = sg.Window(layout, icon = sg.file_from_b64(SG_01))
+w = sg.Window(layout)
 
 
 ### Additional configurations/actions ###

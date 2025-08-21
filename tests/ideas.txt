@@ -19,4 +19,9 @@ Throw out the value-dict, because it's not needed
 
 Additional event-loops for combined elements
 
-Colering of scrollbars
+Coloring of scrollbars
+
+Bug: LabelFrames without label still have a widget with its own background-color attached to them.
+
+Special type of frame just for sg.Notebook, so the name can be set without a key
+
