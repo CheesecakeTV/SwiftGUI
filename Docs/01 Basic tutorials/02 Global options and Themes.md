@@ -190,10 +190,12 @@ sg.Themes.Hacker()
 ```
 ![](../assets/images/2025-08-05-16-12-52.png)
 
-Currently, there are only 2 incomplete themes (SwiftGUI version 0.3.3), but more will follow before version 1.0.0.
-I am focused more on functionality and adding more widgets atm.
+See all available themes by calling `sg.Examples.preview_all_themes()`:\
+![](../assets/images/2025-08-22-17-27-50.png)
 
-However, it's very easy to create your own theme, so feel free to do so.
+## Creating custom themes
+It's very easy to create your own theme, so feel free to do so.
+I'd love to see what you came up with, feel free to post it in the [GitHub-discussions](https://github.com/CheesecakeTV/SwiftGUI/discussions/26#discussion-8779746).
 
 Let's take a look at the `Hacker`-theme (In its current state):
 ```py

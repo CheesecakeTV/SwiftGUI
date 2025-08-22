@@ -74,4 +74,3 @@ from . import Examples
 
 from .Utilities.Threads import clipboard_observer
 from .Utilities.Images import file_from_b64, file_to_b64
-from .Utilities.PythonLogo import python_logo

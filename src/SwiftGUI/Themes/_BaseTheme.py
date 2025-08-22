@@ -7,7 +7,7 @@ class _BaseTheme_meta(type):
     def __new__(mcs, name, bases, namespace):
         returning: type | "BaseTheme" = super().__new__(mcs, name, bases, namespace)
 
-        if not name.startswith("Base"):
+        if not (name.startswith("Base") or name.startswith("_")):
             all_themes[returning.suffix + name] = returning
 
         return returning

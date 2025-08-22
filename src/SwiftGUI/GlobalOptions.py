@@ -152,6 +152,7 @@ class Common(DEFAULT_OPTIONS_CLASS):
     takefocus:bool = True
     expand:bool = False
     expand_y: bool = False
+    highlightcolor: Color | str = None
 
 class Common_Background(DEFAULT_OPTIONS_CLASS):
     """
@@ -205,7 +206,6 @@ class Input(Common,Common_Textual,Common_Field_Background):
     selectbackground_color: str | Color = None
     select_text_color: str | Color = None
     selectborderwidth: int = None
-    highlightcolor: str | Color = None
     highlightthickness: int = None
     pass_char: str = None
     disabled: bool = None  # Set state to tk.Normal, or 'disabled'
@@ -253,7 +253,6 @@ class Frame(Common, Common_Background):
 
     borderwidth: int = None
     highlightbackground_color: Color | str = None
-    highlightcolor: Color | str = None
     highlightthickness: int = None
 
     padx: int = 2
@@ -286,11 +285,9 @@ class Checkbox(Common,Common_Textual, Common_Background):
     offrelief: Literals.relief = None
     relief: Literals.relief = None
     # hilightbackground_color: str | Color = None
-    # highlightcolor: str | Color = None
 
 class Radiobutton(Checkbox):
     # hilightbackground_color: str | Color = None,
-    # highlightcolor: str | Color = None,
     # highlightthickness: int = None,
     ...
 
@@ -325,7 +322,6 @@ class Listbox(Common,Common_Textual,Common_Field_Background):
     height: int = None
     relief: Literals.relief = None
     highlightbackground_color: str | Color = None
-    highlightcolor: str | Color = None
     highlightthickness: int = None
 
 class FileBrowseButton(Button):

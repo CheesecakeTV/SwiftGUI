@@ -4,7 +4,7 @@ from SwiftGUI import font_windows, Color
 from SwiftGUI.Themes._BaseTheme import BaseTheme
 
 
-class FacebookMom(BaseTheme):
+class _FacebookMom(BaseTheme):
     def apply(self) -> None:
         #go.Common.background_color = Color.light_goldenrod_yellow
         go.Common_Background.background_color = Color.light_goldenrod_yellow

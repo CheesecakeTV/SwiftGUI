@@ -1,4 +1,5 @@
 from SwiftGUI import GlobalOptions as go
+import SwiftGUI as sg
 from SwiftGUI.Themes._BaseTheme import BaseTheme
 
 """
@@ -15,12 +16,14 @@ class BaseFourColors(BaseTheme):
     col4 = "" # Light text
 
     def apply(self) -> None:
-        # Todo: Highlight-colors
-
         c1 = "#" + self.col1
         c2 = "#" + self.col2
         c3 = "#" + self.col3
         c4 = "#" + self.col4
+
+        temp = go.Common
+        temp.highlightcolor = c3
+        temp.highlightbackground_color = c2
 
         #temp = go.Table
         go.Table.background_color = c2
@@ -59,6 +62,8 @@ class BaseFourColors(BaseTheme):
         temp.selectbackground_color = c3
         temp.select_text_color = c1
         temp.cursor_color = c3
+        temp.text_color_disabled = c3
+        temp.background_color_readonly = c1
 
         temp = go.Spinbox
         temp.background_color_button = c2
@@ -77,6 +82,33 @@ class BaseFourColors(BaseTheme):
         temp.text_color = c4
         temp.background_color = c2
 
+    def get_palette_frame(self, width: int = 50, height: int = 200) -> sg.Frame:
+        """
+        Returns an sg.Frame that contains the 4 containing colors.
+        The size of the frame can be adjusted
+        :param width:
+        :param height:
+        :return:
+        """
+        height = height // 4
+        return sg.Frame([
+            [sg.Frame([[sg.Spacer(width=width, height=height)]], background_color= "#" + self.col1)],
+            [sg.Frame([[sg.Spacer(width=width, height=height)]], background_color="#" + self.col2)],
+            [sg.Frame([[sg.Spacer(width=width, height=height)]], background_color="#" + self.col3)],
+            [sg.Frame([[sg.Spacer(width=width, height=height)]], background_color="#" + self.col4)],
+        ])
+
+    def preview_palette(self):
+        """
+        Open the color-palette as a window
+        :return:
+        """
+        layout = [
+            [
+                self.get_palette_frame()
+            ]
+        ]
+        sg.Window(layout).loop_close()
 
 # class New(BaseFourColors):
 #     col1 = ""

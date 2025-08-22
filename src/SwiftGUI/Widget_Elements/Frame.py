@@ -44,6 +44,9 @@ class Frame(BaseWidgetContainer):
             padx: int = None,
             pady: int = None,
 
+            # width: int = None,
+            # height: int = None,
+
             relief: Literals.relief = None,
 
             takefocus: bool = None,
@@ -74,6 +77,9 @@ class Frame(BaseWidgetContainer):
 
             padx = padx,
             pady = pady,
+
+            # width = width,
+            # height = height,
 
             relief = relief,
 
