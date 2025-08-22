@@ -122,13 +122,13 @@ class Goldfish(BaseFourColors):
     col2 = "5F9DF7"
     col1 = "1746A2"
 
-class Letter(BaseFourColors):
+class LightCloud(BaseFourColors):
     col1 = "F7F7F7"
     col2 = "EEEEEE"
     col4 = "393E46"
     col3 = "929AAB"
 
-class LightBlue(BaseFourColors):
+class FrostyBlue(BaseFourColors):
     col1 = "F1F3F8"
     col2 = "D6E0F0"
     col3 = "8D93AB"
@@ -140,25 +140,25 @@ class Emerald(BaseFourColors):
     col3 = "4ECCA3"
     col4 = "EEEEEE"
 
-class CottonCandy(BaseFourColors):
+class FairyPink(BaseFourColors):
     col4 = "440A67"
     col3 = "93329E"
     col2 = "B4AEE8"
     col1 = "FFE3FE"
 
-class VeryPurple(BaseFourColors):
+class DeepPurple(BaseFourColors):
     col1 = "440A67"
     col2 = "93329E"
     col3 = "B4AEE8"
     col4 = "FFE3FE"
 
-class Coffee(BaseFourColors):
+class DarkCoffee(BaseFourColors):
     col4 = "E6E6E6"
     col3 = "C5A880"
     col2 = "532E1C"
     col1 = "0F0F0F"
 
-class Lightwood(BaseFourColors):
+class MilkTea(BaseFourColors):
     col1 = "E6E6E6"
     col2 = "C5A880"
     col3 = "532E1C"
@@ -176,7 +176,7 @@ class _Debug(BaseFourColors):
     col2 = "0000AA"
     col1 = "000000"
 
-class Caramel(BaseFourColors):
+class ToffeeBrown(BaseFourColors):
     col1 = "E4C59E"
     col2 = "AF8260"
     col4 = "803D3B"
@@ -188,13 +188,13 @@ class Jungle(BaseFourColors):
     col3 = "4E9F3D"
     col4 = "D8E9A8"
 
-class SoftBlueLight(BaseFourColors):
+class Teal(BaseFourColors):
     col4 = "2C3333"
     col3 = "2E4F4F"
     col2 = "0E8388"
     col1 = "CBE4DE"
 
-class SoftBlue(BaseFourColors):
+class SlateBlue(BaseFourColors):
     col1 = "2C3333"
     col2 = "2E4F4F"
     #col3 = "0E8388"
@@ -207,13 +207,13 @@ class ArcticGlow(BaseFourColors):
     col4 = "EEEEEE"
     col3 = "FF5722"
 
-class FallLight(BaseFourColors):
+class PumpkinSpice(BaseFourColors):
     col4 = "2D2424"
     col3 = "5C3D2E"
     col2 = "B85C38"
     col1 = "E0C097"
 
-class Fall(BaseFourColors):
+class Chocolate(BaseFourColors):
     col1 = "2D2424"
     col2 = "5C3D2E"
     col3 = "B85C38"
@@ -225,7 +225,7 @@ class SinCity(BaseFourColors):
     col3 = "DA0037"
     col4 = "EDEDED"
 
-class ObsidianGlow(BaseFourColors):
+class ObsidianRed(BaseFourColors):
     col4 = "DDDDDD"
     col1 = "222831"
     col2 = "30475E"
@@ -251,56 +251,56 @@ class NeonRed(BaseFourColors):
     col3 = "FF0000"
     col4 = "FF0000"
 
-class NeonBlue(BaseFourColors):
+class NeonDiamond(BaseFourColors):
     col1 = "212121"
     col2 = "323232"
     #col3 = "0D7377"
     col3 = "14FFEC"
     col4 = "14FFEC"
 
-class NeonRose(BaseFourColors):
-    col1 = "355C7D"
-    col2 = "6C5B7B"
-    col3 = "C06C84"
-    col4 = "F67280"
+# class NeonRose(BaseFourColors):
+#     col1 = "355C7D"
+#     col2 = "6C5B7B"
+#     col3 = "C06C84"
+#     col4 = "F67280"
 
-class GrassLight(BaseFourColors):
+class Froggy(BaseFourColors):
     col1 = "EDF1D6"
     col2 = "9DC08B"
     col3 = "609966"
     col4 = "40513B"
 
-class Grass(BaseFourColors):
+class Forest(BaseFourColors):
     col4 = "EDF1D6"
     col3 = "9DC08B"
     col2 = "609966"
     col1 = "40513B"
 
-class MossAndStone(BaseFourColors):
+class MatchaMilk(BaseFourColors):
     col1 = "F8EDE3"
     col2 = "BDD2B6"
     col3 = "A2B29F"
     col4 = "798777"
 
-class Savanna(BaseFourColors):
+class CocoaMilk(BaseFourColors):
     col1 = "8D7B68"
     col2 = "A4907C"
     col3 = "C8B6A6"
     col4 = "F1DEC9"
 
-class UnderWater(BaseFourColors):
+class DeepSea(BaseFourColors):
     col1 = "1B262C"
     col2 = "0F4C75"
     col3 = "3282B8"
     col4 = "BBE1FA"
 
-class Dawn(BaseFourColors):
+class BlueWhale(BaseFourColors):
     col1 = "27374D"
     col2 = "526D82"
     col3 = "9DB2BF"
     col4 = "DDE6ED"
 
-class Sunset(BaseFourColors):
+class Ducky(BaseFourColors):
     col1 = "F9ED69"
     col2 = "F08A5D"
     col4 = "B83B5E"

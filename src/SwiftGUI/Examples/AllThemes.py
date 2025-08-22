@@ -12,6 +12,10 @@ def preview_all_themes() -> None:
         if key.startswith("_"):
             continue
 
+        # Todo: Remove this
+        if key == "Hacker":
+            continue
+
         sg.GlobalOptions.reset_all_options()
         val() # Apply theme
         sg.GlobalOptions.Common_Textual.fontsize = 8
@@ -44,7 +48,7 @@ def preview_all_themes() -> None:
 
     layout = batched(layout, 6)
 
-    w = sg.Window(layout, title= "Preview of all elements")
+    w = sg.Window(layout, title= "Preview of all elements", alignment= "left")
 
     for e,v in w:
         print(e)
