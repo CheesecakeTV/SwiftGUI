@@ -213,6 +213,7 @@ class Input(Common,Common_Textual,Common_Field_Background):
     exportselection: bool = None
     validate: Literals.validate = None
     validatecommand: callable = None
+    cursor_color: str | Color = None
     #
     # Mixed options
 
@@ -339,21 +340,12 @@ class FileBrowseButton(Button):
 class ColorChooserButton(Button):
     color_chooser_title: str = None
 
-class TextField(Common,Common_Textual,Common_Field_Background):
+class TextField(Input):
     borderwidth: int = None
     scrollbar: bool = False
-    width: int = None
     height: int = None
     insertbackground: str | Color = None
-    highlightbackground_color: str | Color = None
-    selectbackground_color: str | Color = None
-    select_text_color: str | Color = None
-    selectborderwidth: int = None
-    highlightcolor: str | Color = None
-    highlightthickness: int = None
     readonly: bool = False  # Set state to tk.Normal, or 'readonly'
-    relief: Literals.relief = None
-    exportselection: bool = False
     padx: int = None
     pady: int = None
 
@@ -440,18 +432,11 @@ class LabelFrame(Frame, Common_Textual):
 class TabFrame(Frame):
     text: str = None
 
-class Spinbox(Button, Common_Textual):
+class Spinbox(Button, Input):
     default_value: float = None
     cursor_button: Literals.cursor = None
     background_color_disabled: str | Color = None
-    background_color_readonly: str | Color = None
     background_color_button: Color | str = None
-    highlightbackground_color: str | Color = None
-    selectbackground_color: str | Color = None
-    select_text_color: str | Color = None
-    selectborderwidth: int = None
-    highlightcolor: str | Color = None
-    highlightthickness: int = None
     relief_button_down: Literals.relief = None
     relief_button_up: Literals.relief = None
     values: Iterable[float] = None

@@ -1,10 +1,22 @@
 from abc import abstractmethod
 
+all_themes: dict[str: type] = dict()
 
-class BaseTheme:
+class _BaseTheme_meta(type):
+
+    def __new__(mcs, name, bases, namespace):
+        returning: type | "BaseTheme" = super().__new__(mcs, name, bases, namespace)
+
+        if not name.startswith("Base"):
+            all_themes[returning.suffix + name] = returning
+
+        return returning
+
+class BaseTheme(metaclass= _BaseTheme_meta):
     """
     Inherit this to create your own theme
     """
+    suffix: str = ""    # Will be added before the name in all_themes
 
     def __init__(self):
         self.apply()

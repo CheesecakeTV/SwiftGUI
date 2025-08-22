@@ -26,6 +26,7 @@ class TextField(BaseWidget):
         "paragraph_spacing_above": "spacing1",
         "autoline_spacing": "spacing2",
         "paragraph_spacing": "spacing3",
+        "cursor_color": "insertbackground",
     }
 
     def __init__(
@@ -48,6 +49,7 @@ class TextField(BaseWidget):
             highlightbackground_color:str|Color = None,
             selectbackground_color:str|Color = None,
             select_text_color:str|Color = None,
+            cursor_color: str | Color = None,
             selectborderwidth:int = None,
             highlightcolor:str|Color = None,
             highlightthickness:int = None,
@@ -167,6 +169,7 @@ class TextField(BaseWidget):
             "font_underline":font_underline,
             "font_overstrike":font_overstrike,
             "takefocus":takefocus,
+            "cursor_color":cursor_color,
         }
         self.update(**_tk_kwargs)
 

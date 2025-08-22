@@ -89,8 +89,14 @@ def preview_all_elements():
                 [sg.T("What did you expect?")],
                 [sg.T("Useful in combination with sg.Notebook though.")]
             ], alignment="left", fake_key= "A")
+        ],[
+            sg.Spacer(height=20)
+        ],[
+            sg.Notebook(
+                sg.TabFrame([[sg.T("sg.Notebook")]], fake_key="Tab1"),
+                sg.TabFrame([[sg.T("still sg.Notebook")]], fake_key="Tab2"),
+            )
         ]
-        # Todo: Notebook
     ], fake_key= "containers")
 
     images = sg.TabFrame([

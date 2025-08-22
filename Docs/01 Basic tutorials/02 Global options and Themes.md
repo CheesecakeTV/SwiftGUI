@@ -270,4 +270,30 @@ class Marine(sg.Themes.BaseTheme):
 ```
 
 
+## FourColors themes
+You find many abstract color-maps online.
+These color-maps consist of different colors that look well together.
+
+I got the ones used in SwiftGUI from [here](https://colorhunt.co).
+
+SwiftGUI has a theme-template for themes that only change 4 different colors.
+There are also a lot of pre-made themes from that template.
+
+Apply a four-colors-theme like this:
+```py
+sg.Themes.FourColors.ThemeName()
+```
+
+To create your own four-colors-theme, inherit from `sg.Themes.FourColors.BaseFourColors` and change `col1`-`col4`:
+```py
+class Jungle(sg.Themes.FourColors.BaseFourColors):
+    col1 = "191A19"
+    col2 = "1E5128"
+    col3 = "4E9F3D"
+    col4 = "D8E9A8"
+    
+Jungle()    # Apply theme
+```
+You can't enter color-names like `"blue"`, only color-codes.
+Also, don't add `#` in front of the color-code.
 
