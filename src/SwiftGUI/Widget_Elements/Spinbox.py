@@ -19,6 +19,7 @@ class Spinbox(BaseWidget):
         "text_color":"foreground",
         "text_color_disabled": "disabledforeground",
         "text_color_active": "activeforeground",
+        "cursor_color": "insertbackground",
 
         "highlightbackground_color": "highlightbackground",
         "selectbackground_color": "selectbackground",
@@ -67,6 +68,7 @@ class Spinbox(BaseWidget):
             relief:Literals.relief = None,
             relief_button_down:Literals.relief = None,
             relief_button_up:Literals.relief = None,
+            cursor_color: str | Color = None,
 
             # Mixed options
             fonttype:str = None,
@@ -141,6 +143,7 @@ class Spinbox(BaseWidget):
             repeatdelay = repeatdelay,
             repeatinterval = repeatinterval,
             state = state,
+            cursor_color = cursor_color,
         )
 
         self._default_event = default_event

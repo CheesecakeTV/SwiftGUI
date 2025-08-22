@@ -190,10 +190,12 @@ sg.Themes.Hacker()
 ```
 ![](../assets/images/2025-08-05-16-12-52.png)
 
-Currently, there are only 2 incomplete themes (SwiftGUI version 0.3.3), but more will follow before version 1.0.0.
-I am focused more on functionality and adding more widgets atm.
+See all available themes by calling `sg.Examples.preview_all_themes()`:\
+![](../assets/images/2025-08-22-17-27-50.png)
 
-However, it's very easy to create your own theme, so feel free to do so.
+## Creating custom themes
+It's very easy to create your own theme, so feel free to do so.
+I'd love to see what you came up with, feel free to post it in the [GitHub-discussions](https://github.com/CheesecakeTV/SwiftGUI/discussions/26#discussion-8779746).
 
 Let's take a look at the `Hacker`-theme (In its current state):
 ```py
@@ -270,4 +272,30 @@ class Marine(sg.Themes.BaseTheme):
 ```
 
 
+## FourColors themes
+You find many abstract color-maps online.
+These color-maps consist of different colors that look well together.
+
+I got the ones used in SwiftGUI from [here](https://colorhunt.co).
+
+SwiftGUI has a theme-template for themes that only change 4 different colors.
+There are also a lot of pre-made themes from that template.
+
+Apply a four-colors-theme like this:
+```py
+sg.Themes.FourColors.ThemeName()
+```
+
+To create your own four-colors-theme, inherit from `sg.Themes.FourColors.BaseFourColors` and change `col1`-`col4`:
+```py
+class Jungle(sg.Themes.FourColors.BaseFourColors):
+    col1 = "191A19"
+    col2 = "1E5128"
+    col3 = "4E9F3D"
+    col4 = "D8E9A8"
+    
+Jungle()    # Apply theme
+```
+You can't enter color-names like `"blue"`, only color-codes.
+Also, don't add `#` in front of the color-code.
 

@@ -44,6 +44,9 @@ class Frame(BaseWidgetContainer):
             padx: int = None,
             pady: int = None,
 
+            # width: int = None,
+            # height: int = None,
+
             relief: Literals.relief = None,
 
             takefocus: bool = None,
@@ -74,6 +77,9 @@ class Frame(BaseWidgetContainer):
 
             padx = padx,
             pady = pady,
+
+            # width = width,
+            # height = height,
 
             relief = relief,
 
@@ -150,6 +156,7 @@ class Frame(BaseWidgetContainer):
         return True
 
     def init_window_creation_done(self):
+        super().init_window_creation_done()
         if self._background_color_initial is not None:
             self.update(background_color = self._background_color_initial)
 

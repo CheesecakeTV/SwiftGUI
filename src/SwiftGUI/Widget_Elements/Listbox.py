@@ -159,7 +159,18 @@ class Listbox(BaseWidget):
         Select a specified row
         :return:
         """
+        self.set_index(new_val)
+
+    @BaseWidget._run_after_window_creation
+    def set_index(self, new_val: int) -> Self:
+        """
+        Select a specified row.
+        Same as elem.index = new_val
+        :param new_val:
+        :return:
+        """
         self.tk_widget.selection_set(new_val)
+        return self
 
     def get_index(self,default:int = -1) -> int:
         """

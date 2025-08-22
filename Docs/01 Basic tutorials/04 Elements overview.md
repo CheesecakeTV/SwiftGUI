@@ -4,6 +4,7 @@
 Every listed element exists and is perfectly useable, if not marked as WIP.\
 The documentation itself is WIP.
 
+Preview every element by calling `sg.Examples.preview_all_elements()`.
 
 # Elements overview
 

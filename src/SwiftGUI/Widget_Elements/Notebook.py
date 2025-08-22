@@ -65,8 +65,11 @@ class Notebook(BaseWidgetTTK):
         self.add_flags(ElementFlag.IS_CONTAINER)    # So .init_containing is called
         self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
 
-        self._elements: tuple[Frame, ...] = tabs
-        self._element_keys: tuple[Any, ...] = tuple(map(lambda a:a.key, tabs))
+        self._elements: tuple[Frame | Any, ...] = tabs
+        self._element_keys: tuple[Any, ...] = tuple(map(
+            lambda a:a.fake_key if hasattr(a, "fake_key") else a.key,
+            tabs
+        ))
 
         self._tab_event_functions: list[Callable | None] = [None] * len(self._elements) # The functions that will be called when the corresponding tab is selected
 
@@ -144,6 +147,7 @@ class Notebook(BaseWidgetTTK):
         self._config_ttk_style("Tab",font=font_options)
 
     _tab_texts: dict[Any, str]
+    _background_color_tabs_active = None   # If this stays None, normal background_color will be applied
     def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         match key:
             case "tabposition":
@@ -163,10 +167,14 @@ class Notebook(BaseWidgetTTK):
                     if tab.has_flag(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR):
                         tab.update(background_color = new_val)
 
+                if self._background_color_tabs_active is None:  # If no active tab-color, apply the background color. Looks better
+                    self._map_ttk_style("Tab", background=[("selected", new_val)])
+
             case "background_color_tabs":
                 self._map_ttk_style("Tab", background = [("!selected", new_val)])
             case "background_color_tabs_active":
-                self._map_ttk_style("Tab", background = [("selected", new_val)])
+                self._background_color_tabs_active = new_val
+                self._map_ttk_style("Tab", background = [("selected", self.defaults.single("background_color", new_val))])
 
             case "text_color_tabs":
                 self._map_ttk_style("Tab", foreground=[("!selected", new_val)])
@@ -247,12 +255,23 @@ class Notebook(BaseWidgetTTK):
                 pass_down_background_color=False
             )
             container.link_background_color(the_spacer)
+
+            if hasattr(tab, "fake_key"):
+                tab @ self  # Bind this Notebook to the frame before initializing
             container._init(self, self.window)
 
-            tab.link_background_color(container)
+            tab.link_background_color(container) # Tab background should be background of the frame inside
 
-            key = tab.key
-            title = self._tab_texts.get(key, key)   # If the key is not in this dict, just use the key
+            if hasattr(tab, "text"):
+                title = tab.text
+
+            else:
+                if hasattr(tab, "fake_key"):
+                    key = tab.fake_key
+                else:
+                    key = tab.key
+
+                title = self._tab_texts.get(key, key)   # If the key is not in this dict, just use the key
 
             self.tk_widget.add(container.tk_widget, text=str(title))
 
@@ -271,14 +290,16 @@ class Notebook(BaseWidgetTTK):
             self._tab_event_functions[index]()
             return
 
-        if self._default_event_callback_function:
+        if self._default_event and self._default_event_callback_function:
             self._default_event_callback_function()
 
     @BaseElement._run_after_window_creation
     def bind_event_to_tab(self, tab_key:Any = None, tab_index:int = None, key_extention:str | Any=None, key:Any=None, key_function:Callable|Iterable[Callable]=None) ->Self:
         """
         This event will be called when tab_key-tab is opened.
-        Keep in mind, that setting this disables the default event for that tab
+        Keep in mind, that setting this disables the default event for that tab.
+
+        KEEP IN MIND, "elem" as a parameter in key-functions will get THE FRAME ITSELF, not the notebook.
 
         :param tab_index: Pass this to apply the event to the index-ths tab
         :param tab_key: Pass this to apply the event to the tab with this key
@@ -305,6 +326,6 @@ class Notebook(BaseWidgetTTK):
         if tab_key:
             tab_index = self._element_keys.index(tab_key)
 
-        self._tab_event_functions[tab_index] = self.window.get_event_function(self, new_key, key_function=key_function)
+        self._tab_event_functions[tab_index] = self.window.get_event_function(self._elements[tab_index], new_key, key_function=key_function)
 
         return self
