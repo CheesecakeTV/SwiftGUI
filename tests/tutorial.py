@@ -4,7 +4,7 @@ import SwiftGUI as sg
 #sg.GlobalOptions.Notebook.background_color_tabs_active = "navy"
 
 
-#sg.Themes.FourColors.Emerald()
+#sg.Themes.FourColors.New()
 #print(dir(sg.Themes.FourColors))
 #sg.Examples.preview_all_elements()
 sg.Examples.preview_all_themes()

@@ -46,7 +46,7 @@ def preview_all_themes() -> None:
             ]
         ], apply_parent_background_color= False))
 
-    layout = batched(layout, 6)
+    layout = batched(layout, 7)
 
     w = sg.Window(layout, title= "Preview of all elements", alignment= "left")
 
