@@ -9,7 +9,7 @@ from warnings import deprecated
 import inspect
 from PIL import Image, ImageTk
 
-from SwiftGUI import BaseElement, Frame, ElementFlag, Literals, GlobalOptions, Color, Debug, BaseWidget
+from SwiftGUI import BaseElement, Frame, ElementFlag, Literals, GlobalOptions, Color, Debug
 
 if TYPE_CHECKING:
     from SwiftGUI import AnyElement
