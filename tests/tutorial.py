@@ -6,8 +6,9 @@ import SwiftGUI as sg
 
 #sg.Themes.FourColors.New()
 #print(dir(sg.Themes.FourColors))
-#sg.Examples.preview_all_elements()
-sg.Examples.preview_all_themes()
+sg.Themes.FourColors.Emerald()
+sg.Examples.preview_all_elements()
+#sg.Examples.preview_all_themes()
 #sg.Themes.FourColors.Goldfish().preview_palette()
 exit()
 
@@ -28,6 +29,9 @@ right_tab = sg.TabFrame([
 
 layout:list[list[sg.BaseElement]] = [
     [
+        sg.T("Test", padding=50)
+    ],
+    [
         nb := sg.Notebook(
             left_tab,
             right_tab,
@@ -38,7 +42,7 @@ layout:list[list[sg.BaseElement]] = [
     ]
 ]
 
-w = sg.Window(layout, background_color= sg.Color.orange)
+w = sg.Window(layout, size=(500, 300), background_color=sg.Color.orange)
 #nb.value = "Harald"
 
 ### Additional configurations/actions ###

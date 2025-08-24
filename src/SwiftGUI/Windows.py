@@ -9,7 +9,7 @@ from warnings import deprecated
 import inspect
 from PIL import Image, ImageTk
 
-from SwiftGUI import BaseElement, Frame, ElementFlag, Literals, GlobalOptions, Color, Debug
+from SwiftGUI import BaseElement, Frame, ElementFlag, Literals, GlobalOptions, Color, Debug, BaseWidget
 
 if TYPE_CHECKING:
     from SwiftGUI import AnyElement
@@ -31,6 +31,8 @@ class Window(BaseElement):
 
     exists:bool = False # True, if this window exists at the moment
 
+    defaults = GlobalOptions.Window
+
     def __init__(
             self,
             layout:Iterable[Iterable[BaseElement]],
@@ -48,7 +50,8 @@ class Window(BaseElement):
             max_size: tuple[int, int] = (None, None),
             icon: str | PathLike | Image.Image | io.BytesIO = None,  # .ico file
             keep_on_top: bool = None,
-            background_color:Color | str = None,
+            background_color: Color | str = None,
+            grab_anywhere: bool = None,
             ttk_theme: str = None,
     ):
         """
@@ -67,11 +70,13 @@ class Window(BaseElement):
         :param max_size: Maximum size of the window, when the user can resize it
         :param icon: Icon of the window. Has to be .ico
         :param keep_on_top: True, if the window should always be on top of any other window
+        :param grab_anywhere: True, if the window can be "held and dragged" anywhere (exclusing certain elements)
         """
         super().__init__()
         self.all_elements:list["AnyElement"] = list()   # Elements will be registered in here
         self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
         self.values = dict()
+        self._grab_anywhere = self.defaults.single("grab_anywhere", grab_anywhere)
 
         self.root = tk.Tk()
 
@@ -106,6 +111,7 @@ class Window(BaseElement):
 
         self.refresh_values()
 
+        self.bind_grab_anywhere_to_element(self._sg_widget.tk_widget)
 
 
     def __iter__(self) -> Self:
@@ -139,20 +145,20 @@ class Window(BaseElement):
     ):
         # Todo: This method needs to be put in proper shape
         if _first_update:
-            title = GlobalOptions.Window.single("title",title)
-            titlebar = GlobalOptions.Window.single("titlebar",titlebar)
-            resizeable_width = GlobalOptions.Window.single("resizeable_width",resizeable_width)
-            resizeable_height = GlobalOptions.Window.single("resizeable_height",resizeable_height)
-            fullscreen = GlobalOptions.Window.single("fullscreen",fullscreen)
-            transparency = GlobalOptions.Window.single("transparency",transparency)
-            size = GlobalOptions.Window.single("size",size)
-            position = GlobalOptions.Window.single("position",position)
-            min_size = GlobalOptions.Window.single("min_size",min_size)
-            max_size = GlobalOptions.Window.single("max_size",max_size)
-            icon = GlobalOptions.Window.single("icon",icon)
-            keep_on_top = GlobalOptions.Window.single("keep_on_top",keep_on_top)
-            background_color = GlobalOptions.Window.single("background_color",background_color)
-            ttk_theme = GlobalOptions.Window.single("ttk_theme", ttk_theme)
+            title = self.defaults.single("title",title)
+            titlebar = self.defaults.single("titlebar",titlebar)
+            resizeable_width = self.defaults.single("resizeable_width",resizeable_width)
+            resizeable_height = self.defaults.single("resizeable_height",resizeable_height)
+            fullscreen = self.defaults.single("fullscreen",fullscreen)
+            transparency = self.defaults.single("transparency",transparency)
+            size = self.defaults.single("size",size)
+            position = self.defaults.single("position",position)
+            min_size = self.defaults.single("min_size",min_size)
+            max_size = self.defaults.single("max_size",max_size)
+            icon = self.defaults.single("icon",icon)
+            keep_on_top = self.defaults.single("keep_on_top",keep_on_top)
+            background_color = self.defaults.single("background_color",background_color)
+            ttk_theme = self.defaults.single("ttk_theme", ttk_theme)
 
         if ttk_theme:
             self.ttk_style.theme_use(ttk_theme)
@@ -389,3 +395,39 @@ class Window(BaseElement):
 
         return self
 
+    ### grap_anywhere methods.
+    ### Mainly inspired by this post: https://stackoverflow.com/questions/4055267/tkinter-mouse-drag-a-window-without-borders-eg-overridedirect1
+    _lastClickX = None
+    _lastClickY = None
+
+    def _SaveLastClickPos(self, event):
+        self._lastClickX = event.x
+        self._lastClickY = event.y
+
+
+    def _DelLastClickPos(self, *_):
+        """Delete the click position, so the window doesn't move when clicking other elements"""
+        self._lastClickX = None
+        self._lastClickY = None
+
+    def _Dragging(self, event):
+        if self._lastClickX is None:
+            return
+
+        x, y = event.x - self._lastClickX + self.root.winfo_x(), event.y - self._lastClickY + self.root.winfo_y()
+        self.root.geometry("+%s+%s" % (x , y))
+
+    @BaseElement._run_after_window_creation
+    def bind_grab_anywhere_to_element(self, widget: tk.Widget):
+        """
+        Add necessary bindings for window grab-and-move ("grab_anywhere") to the passed widget
+        :param widget:
+        :return:
+        """
+        if self._grab_anywhere:
+            # Disable bindings if not necessary, for performance reasons
+            # The downside is that it can't be enabled later on.
+
+            widget.bind('<ButtonPress-1>', self._SaveLastClickPos)
+            widget.bind('<ButtonRelease-1>', self._DelLastClickPos)
+            widget.bind('<B1-Motion>', self._Dragging)

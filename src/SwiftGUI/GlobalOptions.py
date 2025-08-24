@@ -305,6 +305,7 @@ class Window(Common_Background):
     icon: str = None  # .ico file
     keep_on_top: bool = False
     ttk_theme: str = "default"
+    grab_anywhere: bool = True
 
 class Listbox(Common,Common_Textual,Common_Field_Background):
     no_selection_returns: Any = "",  # Returned when nothing is selected

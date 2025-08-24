@@ -289,6 +289,8 @@ class BaseWidget(BaseElement):
     _tk_widget_class:type = None # Class of the connected widget
     _tk_kwargs:dict = dict()
 
+    _grab_anywhere_on_this: bool = False    # If True, you can grab windows by grabbing this element
+
     # _transfer_keys = {  # Usual couple of keys
     #     "background_color_disabled":"disabledbackground",
     #     "background_color":"background",
@@ -531,6 +533,10 @@ class BaseWidget(BaseElement):
                 line.pack(fill="x")
             actual_line.pack(**ins_kwargs_rows)
 
+            if self._grab_anywhere_on_this:
+                self.window.bind_grab_anywhere_to_element(line)
+                self.window.bind_grab_anywhere_to_element(actual_line)
+
     def _get_value(self) -> any:
         """
         This method is used when the value/state of the Widget is read.
@@ -582,6 +588,9 @@ class BaseWidget(BaseElement):
         for params in self._events_to_bind_later:
             self.bind_event(**params)
         del self._events_to_bind_later  # Free some ram, because why not
+
+        if self._grab_anywhere_on_this:
+            self.window.bind_grab_anywhere_to_element(self.tk_widget)
 
 class BaseWidgetContainer(BaseWidget):
     """

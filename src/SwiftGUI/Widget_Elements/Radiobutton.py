@@ -65,6 +65,8 @@ class Radiobutton(BaseWidget):
     defaults = GlobalOptions.Radiobutton  # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
     value: bool
 
+    _grab_anywhere_on_this = True
+
     _transfer_keys = {
         # "background_color_disabled": "disabledbackground",
         "background_color": "background",

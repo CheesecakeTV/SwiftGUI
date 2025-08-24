@@ -6,6 +6,8 @@ from SwiftGUI import ElementFlag, BaseWidget, Color, GlobalOptions
 class Separator(BaseWidget):
     _tk_widget_class = tk.Frame
 
+    _grab_anywhere_on_this = True
+
     defaults = GlobalOptions.Separator
 
     _transfer_keys = {

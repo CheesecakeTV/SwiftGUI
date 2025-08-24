@@ -12,6 +12,8 @@ class Image(BaseWidget):
     _tk_widget_class = tk.Label
     tk_widget: tk.Label
 
+    _grab_anywhere_on_this = True
+
     defaults = GlobalOptions.Image
 
     _transfer_keys = {

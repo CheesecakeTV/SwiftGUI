@@ -48,7 +48,7 @@ def preview_all_themes() -> None:
 
     layout = batched(layout, 7)
 
-    w = sg.Window(layout, title= "Preview of all elements", alignment= "left")
+    w = sg.Window(layout, title="Preview of all elements", alignment="left")
 
     for e,v in w:
         print(e)

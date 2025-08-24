@@ -12,6 +12,8 @@ class Notebook(BaseWidgetTTK):
     _tk_widget_class:type = ttk.Notebook # Class of the connected widget
     defaults = GlobalOptions.Notebook
 
+    _grab_anywhere_on_this = True
+
     _styletype:str = "TNotebook"
 
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Notebook.html

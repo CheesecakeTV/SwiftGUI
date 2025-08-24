@@ -12,6 +12,8 @@ class Frame(BaseWidgetContainer):
     _tk_widget_class:type[tk.Frame] = tk.Frame # Class of the connected widget
     defaults = GlobalOptions.Frame
 
+    _grab_anywhere_on_this = True
+
     _transfer_keys = {
         "background_color_disabled":"disabledbackground",
         "background_color_readonly":"readonlybackground",

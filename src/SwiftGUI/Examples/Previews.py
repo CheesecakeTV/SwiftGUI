@@ -46,7 +46,7 @@ def preview_all_colors() -> None:
         layout
     ]
 
-    sg.Window(layout, title= "SwiftGUI color-preview").loop()
+    sg.Window(layout, title="SwiftGUI color-preview").loop()
 
 def preview_all_fonts_windows() -> None:
     """

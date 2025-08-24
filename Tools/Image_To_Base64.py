@@ -118,7 +118,7 @@ layout = [
     ]
 ]
 
-w = sg.Window(layout, title= "Image to icon converter")
+w = sg.Window(layout, title="Image to icon converter")
 
 for e,v in w:
     #print(e,v)

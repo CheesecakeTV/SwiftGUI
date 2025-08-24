@@ -12,6 +12,8 @@ class Checkbox(BaseWidget):
     defaults = GlobalOptions.Checkbox  # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
     value: bool
 
+    _grab_anywhere_on_this = True
+
     _transfer_keys = {
         # "background_color_disabled": "disabledbackground",
         "background_color": "background",
@@ -85,6 +87,9 @@ class Checkbox(BaseWidget):
 
         if background_color and not apply_parent_background_color:
             apply_parent_background_color = False
+
+        if check_type == "button":
+            self._grab_anywhere_on_this = False
 
         _tk_kwargs = {
             **tk_kwargs,
