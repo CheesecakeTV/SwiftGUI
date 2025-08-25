@@ -6,9 +6,10 @@ import SwiftGUI as sg
 #sg.Themes.FourColors.New()
 #print(dir(sg.Themes.FourColors))
 sg.Themes.FourColors.NightHorizon()
-# sg.Examples.preview_all_elements()
+sg.Examples.preview_all_elements()
 # #sg.Examples.preview_all_themes()
 #sg.Themes.FourColors.Goldfish().preview_palette()
+exit()
 
 ### Layout ###
 left_tab = sg.TabFrame([

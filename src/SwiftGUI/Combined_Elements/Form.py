@@ -1,12 +1,10 @@
 
-# Still WIP!
-
 from collections.abc import Iterable, Callable
 from functools import partial
 from typing import Any, Self
 import json
 
-from SwiftGUI import BaseElement, Frame, Text, Input, BaseCombinedElement, Button
+from SwiftGUI import BaseElement, Frame, Text, Input, BaseCombinedElement, Button, GlobalOptions
 #from SwiftGUI.Widget_Elements.Separator import HorizontalSeparator
 from SwiftGUI.Widget_Elements.Spacer import Spacer
 
@@ -65,9 +63,9 @@ class Form(BaseCombinedElement):
                 "x",
                 key_function= (
                     partial(lambda index: self._input_elements[index].set_value(""), n),
-                    self._throw_default_event
+                    self._throw_default_event,
                 ),
-                padx= 5,
+                width=2,
             ) if small_clear_buttons else Text()
             for n, _ in enumerate(self._input_elements)
         ]
