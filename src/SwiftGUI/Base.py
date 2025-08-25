@@ -154,7 +154,7 @@ class BaseElement:
         """
         ...
 
-    def _get_value(self) -> any:
+    def _get_value(self) -> Any:
         """
         Returns the value(s) of the Element.
         Override this function.
@@ -162,7 +162,7 @@ class BaseElement:
         """
         return None
 
-    def set_value(self,val:any):
+    def set_value(self,val:Any):
         """
         Set the value of the element
         :param val: New value

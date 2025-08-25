@@ -28,6 +28,7 @@ from .Widget_Elements.Radiobutton import Radiobutton, RadioGroup
 from .Widget_Elements.Spinbox import Spinbox
 
 from .Combined_Elements.Form import Form
+from .Combined_Elements.MultistateButton import MultistateButton
 
 from .Extended_Elements.FileBrowseButton import FileBrowseButton
 from .Extended_Elements.ColorChooserButton import ColorChooserButton

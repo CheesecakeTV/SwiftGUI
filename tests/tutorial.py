@@ -5,7 +5,7 @@ import SwiftGUI as sg
 
 #sg.Themes.FourColors.New()
 #print(dir(sg.Themes.FourColors))
-# sg.Themes.FourColors.NightHorizon()
+sg.Themes.FourColors.NightHorizon()
 # sg.Examples.preview_all_elements()
 # #sg.Examples.preview_all_themes()
 #sg.Themes.FourColors.Goldfish().preview_palette()
@@ -16,6 +16,16 @@ left_tab = sg.TabFrame([
         sg.Listbox(
             range(10)
         ),
+    ],[
+        sg.MultistateButton(
+            ["Hallo", "Welt", "Test", "Hühnerhof"],
+            button_keys= ["H", "W", "T", "Hü"],
+            default_selection= "H",
+            can_deselect= False,
+            key="Multistate",
+            key_function= lambda val: print(val),
+        )
+
     ]
 ], key= "left", fake_key= "Günther", default_event=True, key_function= lambda elem:print(elem.text))
 
@@ -40,11 +50,7 @@ layout:list[list[sg.BaseElement]] = [
     ]
 ]
 
-sg.GlobalOptions.Window.background_color = "red"
-w = sg.Window(layout, background_color=sg.Color.orange)
-nb.update(background_color = sg.Color.coral)
-nb.update(background_color = None)
-nb.update_to_default_value("background_color")
+w = sg.Window(layout)
 #nb.value = "Harald"
 
 ### Additional configurations/actions ###

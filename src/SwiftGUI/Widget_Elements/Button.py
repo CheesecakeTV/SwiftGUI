@@ -72,7 +72,6 @@ class Button(BaseWidget):
             repeatdelay:int = None,
             repeatinterval:int = None,
 
-            # # Mixed options
             fonttype: str = None,
             fontsize: int = None,
             font_bold: bool = None,

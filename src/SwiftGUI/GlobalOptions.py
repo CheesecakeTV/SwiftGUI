@@ -243,6 +243,9 @@ class Button(Common,Common_Textual,Common_Field_Background):
     repeatdelay: int = None
     repeatinterval: int = None
 
+class MultistateButton(Button):
+    can_deselect: bool = True
+
 class Frame(Common, Common_Background):
     takefocus = False
     padding: Literals.padding = 3
