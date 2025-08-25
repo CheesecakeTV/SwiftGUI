@@ -3,7 +3,7 @@ from functools import wraps
 from typing import Literal, Self, Union, Any
 import tkinter as tk
 
-from SwiftGUI import Event, GlobalOptions, Color
+from SwiftGUI import Event, GlobalOptions, Color, remove_None_vals
 from SwiftGUI.ElementFlags import ElementFlag
 #from SwiftGUI.Widget_Elements.Frame import Frame
 
@@ -229,7 +229,7 @@ class BaseElement:
         """
         ...
 
-    def update(self,**kwargs) -> Self:
+    def _update_initial(self,**kwargs) -> Self:
         """
         Update configurations of this element.
         :param kwargs:
@@ -245,6 +245,26 @@ class BaseElement:
 
         return self
 
+    def update(self, **kwargs) -> Self:
+        """
+        Standard update-routine.
+        None-values are removed.
+        :param kwargs:
+        :return:
+        """
+        self._update_initial(**remove_None_vals(kwargs))
+
+        return self
+
+    def update_to_default_value(self, *options: str) -> Self:
+        """
+        Apply the global options to certain keys, aka reset that key to its default value
+        :param options:
+        :return:
+        """
+        self._update_initial(**{key: None for key in options})
+        return self
+
     @run_after_window_creation
     def update_after_window_creation(self, **kwargs) -> Self:
         """
@@ -252,7 +272,7 @@ class BaseElement:
         :param kwargs:
         :return:
         """
-        self.update(**kwargs)
+        self._update_initial(**kwargs)
         return self
 
     # @run_after_window_creation
@@ -402,7 +422,7 @@ class BaseWidget(BaseElement):
         return self
 
     def _init_defaults(self):
-        self.update(**self._tk_kwargs)
+        self._update_initial(**self._tk_kwargs)
 
     def _init_widget_for_inherrit(self,container) -> tk.Widget:
         """
@@ -746,7 +766,7 @@ class BaseCombinedElement(BaseElement):
         """
         match key:
             case "background_color":
-                self._sg_widget.update(background_color = new_val)
+                self._sg_widget._update_initial(background_color=new_val)
             case _:
                 # The key wasn't found in any other case
                 return super()._update_special_key(key, new_val)    # Look in the parent-class

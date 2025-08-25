@@ -91,33 +91,15 @@ class Notebook(BaseWidgetTTK):
         self._italic_tabs = None
         self._underline_tabs = None
         self._overstrike_tabs = None
-        
-        self.update(
-            **tk_kwargs,
-            #tab_texts = tab_texts,
-            padding = padding,
-            takefocus = takefocus,
-            width = width,
-            height = height,
-            cursor = cursor,
-            apply_parent_background_color = apply_parent_background_color,
-            borderwidth = borderwidth,
-            background_color = background_color,
 
-            background_color_tabs = background_color_tabs,
-            background_color_tabs_active = background_color_tabs_active,
-            text_color_tabs = text_color_tabs,
-            text_color_tabs_active = text_color_tabs_active,
-
-            tabposition = tabposition,
-
-            fonttype_tabs = fonttype_tabs,
-            fontsize_tabs = fontsize_tabs,
-            font_bold_tabs = font_bold_tabs,
-            font_italic_tabs = font_italic_tabs,
-            font_underline_tabs = font_underline_tabs,
-            font_overstrike_tabs = font_overstrike_tabs,
-        )
+        self._update_initial(padding=padding, takefocus=takefocus, width=width, height=height, cursor=cursor,
+                             apply_parent_background_color=apply_parent_background_color, borderwidth=borderwidth,
+                             background_color=background_color, background_color_tabs=background_color_tabs,
+                             background_color_tabs_active=background_color_tabs_active, text_color_tabs=text_color_tabs,
+                             text_color_tabs_active=text_color_tabs_active, tabposition=tabposition,
+                             fonttype_tabs=fonttype_tabs, fontsize_tabs=fontsize_tabs, font_bold_tabs=font_bold_tabs,
+                             font_italic_tabs=font_italic_tabs, font_underline_tabs=font_underline_tabs,
+                             font_overstrike_tabs=font_overstrike_tabs, **tk_kwargs)
 
 
         self._default_event = default_event
@@ -167,7 +149,7 @@ class Notebook(BaseWidgetTTK):
 
                 for tab in self._elements:
                     if tab.has_flag(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR):
-                        tab.update(background_color = new_val)
+                        tab._update_initial(background_color=new_val)
 
                 if self._background_color_tabs_active is None:  # If no active tab-color, apply the background color. Looks better
                     self._map_ttk_style("Tab", background=[("selected", new_val)])

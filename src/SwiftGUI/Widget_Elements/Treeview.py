@@ -80,11 +80,7 @@ class Treeview(BaseWidget):
         if tk_kwargs is None:
             tk_kwargs = dict()
 
-        self.update(
-            columns = self._headings,
-            **tk_kwargs,
-            selectmode= "browse",
-        )
+        self._update_initial(columns=self._headings, selectmode="browse", **tk_kwargs)
 
         # if default_event:
         #     self.bind_event("<KeyRelease>",key=key,key_function=key_function)

@@ -21,17 +21,13 @@ class Separator(BaseWidget):
             weight: int = None,
     ):
         super().__init__(key=key)
-        self.update(
-            color = color,
-            weight = weight,
-            #borderwidth = 0,
-        )
+        self._update_initial(color=color, weight=weight)
         self._insert_kwargs["pady"] = 3
         self._insert_kwargs["padx"] = 3
 
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         if key == "weight":
-            self.update(height=new_val, width=new_val)
+            self._update_initial(height=new_val, width=new_val)
             return True
 
         return False

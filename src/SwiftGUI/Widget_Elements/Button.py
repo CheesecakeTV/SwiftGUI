@@ -160,7 +160,7 @@ class Button(BaseWidget):
             "padx": padx,
             "pady": pady,
         }
-        self.update(**_tk_kwargs)
+        self._update_initial(**_tk_kwargs)
 
         self._key_function = key_function
 
@@ -250,4 +250,4 @@ class Button(BaseWidget):
 
     def init_window_creation_done(self):
         if self._disabled_at_start:
-            self.update(disabled = True)
+            self._update_initial(disabled=True)

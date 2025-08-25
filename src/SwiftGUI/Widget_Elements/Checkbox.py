@@ -135,7 +135,7 @@ class Checkbox(BaseWidget):
 
         # self.bind_event("<KeyRelease>",key=self.key,key_function=self._key_function)
 
-        self.update(**_tk_kwargs)
+        self._update_initial(**_tk_kwargs)
 
     def _personal_init_inherit(self):
         self._set_tk_target_variable(tk.IntVar, kwargs_key="variable", default_key="default_value")

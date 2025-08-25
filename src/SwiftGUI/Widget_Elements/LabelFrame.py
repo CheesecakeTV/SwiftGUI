@@ -89,17 +89,9 @@ class LabelFrame(Frame):
 
         self.link_background_color(self._element)
 
-        self.update(
-            labelanchor = labelanchor,
-            text = text,
-            text_color = text_color,
-            fonttype = fonttype,
-            fontsize = fontsize,
-            font_bold = font_bold,
-            font_italic = font_italic,
-            font_underline = font_underline,
-            font_overstrike = font_overstrike,
-        )
+        self._update_initial(labelanchor=labelanchor, text=text, text_color=text_color, fonttype=fonttype,
+                             fontsize=fontsize, font_bold=font_bold, font_italic=font_italic,
+                             font_underline=font_underline, font_overstrike=font_overstrike)
 
     _keys_to_pass_to_element: list[str] = [ # All the keys that gets passed to update of the label-element
         "text",
@@ -113,7 +105,7 @@ class LabelFrame(Frame):
         "font_overstrike",
     ]
 
-    def update(self,**kwargs) -> Self:
+    def _update_initial(self, **kwargs) -> Self:
         pass_to_element = dict()
         kwargs_copy: dict = kwargs.copy()
         for key,val in kwargs_copy.items():
@@ -121,8 +113,8 @@ class LabelFrame(Frame):
                 pass_to_element[key] = val
                 del kwargs[key]
 
-        super().update(**kwargs)
-        self._element.update(**pass_to_element)
+        super()._update_initial(**kwargs)
+        self._element._update_initial(**pass_to_element)
         return self
 
     def init_window_creation_done(self):
@@ -130,5 +122,5 @@ class LabelFrame(Frame):
         super().init_window_creation_done()
 
         if not self._no_label:
-            self.update(labelwidget = self._element.tk_widget)
+            self._update_initial(labelwidget=self._element.tk_widget)
 

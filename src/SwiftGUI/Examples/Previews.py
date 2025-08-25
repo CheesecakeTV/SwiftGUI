@@ -26,7 +26,8 @@ def preview_all_colors() -> None:
                 fontsize=7,
                 width=20,
                 justify="right",
-                key_function=lambda elem, w: [print(elem.value), w.update(background_color = getattr(Color, elem.value))],
+                key_function=lambda elem, w: [print(elem.value),
+                                              w._update_initial(background_color=getattr(Color, elem.value))],
                 fonttype=font_windows.Small_Fonts
             ),
         ])

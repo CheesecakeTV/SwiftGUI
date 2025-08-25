@@ -171,7 +171,7 @@ class TextField(BaseWidget):
             "takefocus":takefocus,
             "cursor_color":cursor_color,
         }
-        self.update(**_tk_kwargs)
+        self._update_initial(**_tk_kwargs)
 
         self._key_function = key_function
         self._initial_text = text

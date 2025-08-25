@@ -66,9 +66,5 @@ class ImageButton(Button, Image):
         self._height = None
         self._width = None
 
-        self.update(
-            image = image,
-            height = height,
-            width = width,
-        )
+        self._update_initial(image=image, height=height, width=width)
 

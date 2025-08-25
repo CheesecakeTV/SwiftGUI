@@ -5,11 +5,10 @@ import SwiftGUI as sg
 
 #sg.Themes.FourColors.New()
 #print(dir(sg.Themes.FourColors))
-#sg.Themes.FourColors.NightHorizon()
-#sg.Examples.preview_all_elements()
-sg.Examples.preview_all_themes()
+# sg.Themes.FourColors.NightHorizon()
+# sg.Examples.preview_all_elements()
+# #sg.Examples.preview_all_themes()
 #sg.Themes.FourColors.Goldfish().preview_palette()
-exit()
 
 ### Layout ###
 left_tab = sg.TabFrame([
@@ -41,7 +40,11 @@ layout:list[list[sg.BaseElement]] = [
     ]
 ]
 
-w = sg.Window(layout, size=(500, 300), background_color=sg.Color.orange)
+sg.GlobalOptions.Window.background_color = "red"
+w = sg.Window(layout, background_color=sg.Color.orange)
+nb.update(background_color = sg.Color.coral)
+nb.update(background_color = None)
+nb.update_to_default_value("background_color")
 #nb.value = "Harald"
 
 ### Additional configurations/actions ###

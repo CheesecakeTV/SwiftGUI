@@ -91,7 +91,7 @@ class Text(BaseWidget):
             "anchor":anchor,
             "apply_parent_background_color": apply_parent_background_color,
         }
-        self.update(**_tk_kwargs)
+        self._update_initial(**_tk_kwargs)
 
         self._text = text
 

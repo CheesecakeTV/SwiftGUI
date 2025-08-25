@@ -83,7 +83,7 @@ class Window(BaseElement):
         self._sg_widget:Frame = Frame(layout,alignment=alignment)
 
         self.ttk_style: ttk.Style = ttk.Style(self.root)
-        self.update(
+        self._update_initial(
             title=title,
             titlebar=titlebar,
             resizeable_width=resizeable_width,
@@ -125,7 +125,8 @@ class Window(BaseElement):
 
         return e,v
 
-    def update(
+    # Todo: This need to be changed to new routine
+    def _update_initial(
             self,
             title = None,
             titlebar: bool = None,  # Titlebar visible
@@ -164,7 +165,7 @@ class Window(BaseElement):
             self.ttk_style.theme_use(ttk_theme)
 
         if background_color is not None:
-            self._sg_widget.update(background_color=background_color)
+            self._sg_widget._update_initial(background_color=background_color)
 
         if title is not None:
             self.root.title(title)

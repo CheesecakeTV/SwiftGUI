@@ -132,7 +132,7 @@ class Form(BaseCombinedElement):
         :return:
         """
         for elem in self._text_elements:
-            elem.update(**kwargs)
+            elem._update_initial(**kwargs)
         return self
 
     @BaseElement._run_after_window_creation
@@ -143,7 +143,7 @@ class Form(BaseCombinedElement):
         :return:
         """
         for elem in self._input_elements:
-            elem.update(**kwargs)
+            elem._update_initial(**kwargs)
         return self
 
     @BaseElement._run_after_window_creation
@@ -153,7 +153,7 @@ class Form(BaseCombinedElement):
         :param kwargs:
         :return:
         """
-        self._submit_button_element.update(**kwargs)
+        self._submit_button_element._update_initial(**kwargs)
         return self
 
     @BaseElement._run_after_window_creation

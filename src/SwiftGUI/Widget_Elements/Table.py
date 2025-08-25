@@ -194,48 +194,20 @@ class Table(BaseWidgetTTK):
         if tk_kwargs is None:
             tk_kwargs = dict()
 
-        self.update(
-            columns = self._headings,
-            column_width = column_width,
-            **tk_kwargs,
-            selectmode = selectmode,
-
-            background_color = background_color,
-
-            background_color_rows = background_color_rows,
-            background_color_active_rows = background_color_active_rows,
-
-            background_color_headings = background_color_headings,
-            background_color_active_headings = background_color_active_headings,
-
-            text_color= text_color,
-            text_color_active= text_color_active,
-            text_color_headings= text_color_headings,
-            text_color_active_headings = text_color_active_headings,
-
-            fonttype = fonttype,
-            fontsize = fontsize,
-            font_bold = font_bold,
-            font_italic = font_italic,
-            font_underline = font_underline,
-            font_overstrike = font_overstrike,
-
-            fonttype_headings=fonttype_headings,
-            fontsize_headings=fontsize_headings,
-            font_bold_headings=font_bold_headings,
-            font_italic_headings=font_italic_headings,
-            font_underline_headings=font_underline_headings,
-            font_overstrike_headings=font_overstrike_headings,
-
-            sort_col_by_click=sort_col_by_click,
-            takefocus=takefocus,
-
-            # New ones
-            height = height,
-            cursor = cursor,
-            padding = padding,
-
-        )
+        self._update_initial(columns=self._headings, column_width=column_width, selectmode=selectmode,
+                             background_color=background_color, background_color_rows=background_color_rows,
+                             background_color_active_rows=background_color_active_rows,
+                             background_color_headings=background_color_headings,
+                             background_color_active_headings=background_color_active_headings, text_color=text_color,
+                             text_color_active=text_color_active, text_color_headings=text_color_headings,
+                             text_color_active_headings=text_color_active_headings, fonttype=fonttype,
+                             fontsize=fontsize, font_bold=font_bold, font_italic=font_italic,
+                             font_underline=font_underline, font_overstrike=font_overstrike,
+                             fonttype_headings=fonttype_headings, fontsize_headings=fontsize_headings,
+                             font_bold_headings=font_bold_headings, font_italic_headings=font_italic_headings,
+                             font_underline_headings=font_underline_headings,
+                             font_overstrike_headings=font_overstrike_headings, sort_col_by_click=sort_col_by_click,
+                             takefocus=takefocus, height=height, cursor=cursor, padding=padding, **tk_kwargs)
 
         if default_event:
             self.bind_event("<<TreeviewSelect>>",key=key,key_function=key_function)
@@ -496,7 +468,7 @@ class Table(BaseWidgetTTK):
         ).measure("X_") // 2
         if self._col_width_requested and self._font_size_multiplier != self._font_size_multiplier_applied:
             self._font_size_multiplier_applied = self._font_size_multiplier
-            self.update(column_width=self._col_width_requested)
+            self._update_initial(column_width=self._col_width_requested)
 
         # And now for the headings
         font_options = [

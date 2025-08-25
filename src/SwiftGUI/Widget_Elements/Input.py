@@ -129,7 +129,7 @@ class Input(BaseWidget):
             "width": width,
             "cursor_color": cursor_color,
         }
-        self.update(**_tk_kwargs)
+        self._update_initial(**_tk_kwargs)
 
     def _update_font(self):
         # self._tk_kwargs will be passed to tk_widget later
