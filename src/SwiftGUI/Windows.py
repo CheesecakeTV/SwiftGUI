@@ -3,7 +3,6 @@ import tkinter as tk
 from os import PathLike
 from tkinter import ttk
 from collections.abc import Iterable,Callable
-from dataclasses import dataclass
 from typing import TYPE_CHECKING, Self, Any
 import inspect
 from PIL import Image, ImageTk
@@ -38,7 +37,11 @@ class ValueDict:
             return default
 
     def __setitem__(self, key: Any, value: Any):
-        self._window[key].value = value
+        try:
+            self._window[key].value = value
+        except KeyError:
+            pass
+
         self._values[key] = value
         self._updated_keys.add(key)
 
@@ -94,6 +97,15 @@ class ValueDict:
         self._values[key] = value
         return self
 
+    def update(self, vals: dict[Any:Any]) -> Self:
+        """
+        Apply all values from the provided dict
+        :param vals:
+        :return:
+        """
+        for key, val in vals.items():
+            self.__setitem__(key, val)
+        return self
 
 class Window(BaseElement):
     _prev_event:any = None  # Most recent event (-key)
