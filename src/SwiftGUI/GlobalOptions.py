@@ -190,6 +190,35 @@ class Text(Common, Common_Textual, Common_Background):
     padding:Literals.padding = 0
     width:int = None
 
+class Scale(Common_Background, Common_Textual):
+    default_value: int | float = None
+    number_min: float = None
+    number_max: float = None
+    resolution: float = None
+    showvalue: bool = None
+    tickinterval: float = None
+    width: int = None
+    length: int = None
+    sliderlength: int = None
+    sliderrelief: Literals.relief = None
+    orient: Literal["horizontal", "vertical"] = "horizontal"
+    disabled: bool = None
+    readonly: bool = None
+    borderwidth: int = None
+    label: str = None
+    troughcolor: str | Color = None
+    digits: int = None
+    cursor: Literals.cursor = None
+    takefocus: bool = None
+    apply_parent_background_color: bool = None
+    relief: Literals.relief = None
+    hilightbackground_color: str | Color = None
+    highlightcolor: str | Color = None
+    highlightthickness: int = 0
+    repeatdelay: int = None
+    repeatinterval: int = None
+
+
 class Input(Common,Common_Textual,Common_Field_Background):
     text: str = None
     width: int = None

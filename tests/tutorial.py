@@ -20,7 +20,12 @@ left_tab = sg.TabFrame([
             key="Multistate",
             key_function= lambda val: print(val),
         )
-
+    ],[
+        sg.Scale(
+            default_value= 50,
+            highlightbackground_color= "red",
+            label= "test"
+        )
     ]
 ], key= "left", default_event=True, key_function= lambda elem:print(elem.text))
 
