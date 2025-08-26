@@ -3,23 +3,17 @@ import SwiftGUI as sg
 ### Global options ###
 #sg.GlobalOptions.Notebook.background_color_tabs_active = "navy"
 
-#sg.Themes.FourColors.New()
-#print(dir(sg.Themes.FourColors))
-sg.Themes.FourColors.NightHorizon()
-sg.Examples.preview_all_elements()
-# #sg.Examples.preview_all_themes()
-#sg.Themes.FourColors.Goldfish().preview_palette()
-exit()
-
 ### Layout ###
 left_tab = sg.TabFrame([
     [
         sg.Listbox(
-            range(10)
-        ),
+            range(10),
+            key= "Listbox",
+            default_event= True,
+        ).set_index(0),
     ],[
         sg.MultistateButton(
-            ["Hallo", "Welt", "Test", "Hühnerhof"],
+            ["Hallo", "Welt", "Test"],
             button_keys= ["H", "W", "T", "Hü"],
             default_selection= "H",
             can_deselect= False,
@@ -28,13 +22,13 @@ left_tab = sg.TabFrame([
         )
 
     ]
-], key= "left", fake_key= "Günther", default_event=True, key_function= lambda elem:print(elem.text))
+], key= "left", default_event=True, key_function= lambda elem:print(elem.text))
 
 right_tab = sg.TabFrame([
     [sg.T("Smaller element")],
-    [sg.Button("Another smaller element")],
+    [sg.Button("Another smaller element", key= "Button")],
     [sg.T("<-- sg.Listbox")]
-], key= "right", fake_key= "Harald")
+], key= "right")
 
 layout:list[list[sg.BaseElement]] = [
     [
@@ -46,6 +40,7 @@ layout:list[list[sg.BaseElement]] = [
             right_tab,
             #default_event= True,
             key = "NB",
+            default_event= True,
             #background_color_tabs_active = sg.GlobalOptions.Common_Background.background_color
         )
     ]
@@ -61,5 +56,7 @@ w = sg.Window(layout)
 for e,v in w:
     #print(nb.value)
     print(e,v)
+
+    #v["Listbox"] = "Funktioniert"
 
 ### After window was closed ###

@@ -13,10 +13,90 @@ from SwiftGUI import BaseElement, Frame, ElementFlag, Literals, GlobalOptions, C
 if TYPE_CHECKING:
     from SwiftGUI import AnyElement
 
+class ValueDict:
+    def __init__(self, window: "Window", keys: set[Any]):
+        super().__init__()
+        self._values = dict()
+        self._window: "Window" = window
+
+        self._updated_keys: set = set()
+        self._all_keys: set = keys
+
+    def __getitem__(self, item: Any) -> Any:
+        if item in self._updated_keys:
+            return self._values[item]
+
+        if item in self._window:
+            self.refresh_key(item)
+
+        return self._values[item]
+
+    def get(self, key: Any, default: Any = None) -> Any:
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
+    def __setitem__(self, key: Any, value: Any):
+        self._window[key].value = value
+        self._values[key] = value
+        self._updated_keys.add(key)
+
+    def refresh_key(self, *key: Any) -> Self:
+        """
+        Refresh a single key
+        :param key:
+        :return:
+        """
+        for k in key:
+            self._values[k] = self._window[k].value
+            self._updated_keys.add(k)
+
+        return self
+
+    def refresh_all(self) -> Self:
+        """
+        Refreshes all keys with their current values
+        :return:
+        """
+        map(self.refresh_key, self._all_keys)
+
+        return self
+
+    def invalidate_all_values(self) -> Self:
+        """
+        Called after every loop
+        :return:
+        """
+        #self.refresh_all()
+        self._updated_keys.clear()
+        return self
+
+    @property
+    def _not_updated_keys(self):
+        return self._all_keys.symmetric_difference(self._updated_keys)
+
+    def __str__(self) -> str:
+        self.refresh_key(*self._not_updated_keys)
+        return str(self._values)
+
+    def __repr__(self):
+        self.refresh_key(*self._not_updated_keys)
+        return repr(self._values)
+
+    def set_extra_value(self, key: Any, value: Any) -> Self:
+        """
+        Set a value that is not included in the actual window (like from threads)
+        :param key:
+        :param value:
+        :return:
+        """
+        self._values[key] = value
+        return self
+
 
 class Window(BaseElement):
     _prev_event:any = None  # Most recent event (-key)
-    values:dict  # Key:Value of all named elements
 
     all_key_elements: dict[Any, "AnyElement"]   # Key:Element, if key is present
     all_elements: list["AnyElement"] = list()   # Every single element
@@ -67,7 +147,6 @@ class Window(BaseElement):
         super().__init__()
         self.all_elements:list["AnyElement"] = list()   # Elements will be registered in here
         self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
-        self.values = dict()
         self._grab_anywhere = self.defaults.single("grab_anywhere", grab_anywhere)
 
         self.root = tk.Tk()
@@ -101,7 +180,7 @@ class Window(BaseElement):
         self.init_window_creation_done()
         self._sg_widget.init_window_creation_done()
 
-        self.refresh_values()
+        self._value_dict = ValueDict(self, set(self.all_key_elements.keys()))
 
         self.bind_grab_anywhere_to_element(self._sg_widget.tk_widget)
 
@@ -211,6 +290,9 @@ class Window(BaseElement):
 
         return self
 
+    def __contains__(self, item):
+        return item in self.all_key_elements.keys()
+
     @property
     def parent_tk_widget(self) ->tk.Widget:
         return self._sg_widget.parent_tk_widget
@@ -232,7 +314,7 @@ class Window(BaseElement):
         self.close()
         return e,v
 
-    def loop(self) -> tuple[any,dict[any:any]]:
+    def loop(self) -> tuple[Any, ValueDict]:
         """
         Main loop
 
@@ -248,9 +330,10 @@ class Window(BaseElement):
         except (AssertionError,tk.TclError):
             self.exists = False # This looks redundant, but it's easier to use self.exists from outside. So leave it!
             self.remove_flags(ElementFlag.IS_CREATED)
-            return None,self.values
+            return None,self._value_dict
 
-        return self._prev_event, self.values
+        self._value_dict.invalidate_all_values()
+        return self._prev_event, self._value_dict
 
     def register_element(self,elem:BaseElement):
         """
@@ -277,8 +360,9 @@ class Window(BaseElement):
         if not self.exists:
             return
 
-        if value is not None:
-            self.values[key] = value
+        #if value is not None:
+            #self.values[key] = value
+        self._value_dict.set_extra_value(key, value)
         self.root.after(0, self._receive_event, key)
 
     #@deprecated("WIP")
@@ -324,7 +408,7 @@ class Window(BaseElement):
                 kwargs = {  # Possible parameters for function
                     "w": self,  # Reference to main window
                     "e": key,   # Event-key, if there is one
-                    "v": self.values,   # All values
+                    "v": self._value_dict,   # All values
                     "val": me.value,    # Value of element that caused the event
                     "elem": me,
                 }
@@ -336,30 +420,29 @@ class Window(BaseElement):
 
                     if fkt(**{i:kwargs[i] for i in offers}) is not None:
                         kwargs["val"] = me.value
-                        self.refresh_values()
+                        self._value_dict.invalidate_all_values()
                         did_refresh = True
 
                 if not did_refresh:
-                    self.refresh_values() # In case you change values with the key-functions
+                    self._value_dict.invalidate_all_values()
                     did_refresh = True
 
             if key is not None: # Call named event
                 if not did_refresh: # Not redundant, keep it!
-                    self.refresh_values()
+                    self._value_dict.invalidate_all_values()
 
                 self._receive_event(key)
 
         return single_event
 
-    def refresh_values(self) -> dict:
+    def refresh_values(self) -> ValueDict:
         """
-        "Picks up" all values from the elements to store them in Window.values
+        Invalidate all values from the value-dict so they will be refreshed the next time they are accessed
         :return: new values
         """
-        for key,elem in self.all_key_elements.items():
-            self.values[key] = elem.value
+        self._value_dict.invalidate_all_values()
 
-        return self.values
+        return self._value_dict
 
     def __getitem__(self, item) -> "AnyElement":
         try:
@@ -396,7 +479,6 @@ class Window(BaseElement):
     def _SaveLastClickPos(self, event):
         self._lastClickX = event.x
         self._lastClickY = event.y
-
 
     def _DelLastClickPos(self, *_):
         """Delete the click position, so the window doesn't move when clicking other elements"""
