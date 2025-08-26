@@ -3,7 +3,6 @@ import tkinter.ttk as ttk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
 from typing import Literal, Any
-from warnings import deprecated
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
@@ -30,7 +29,7 @@ class DictBidirect(dict):
         del self.rev[self[key]]
         super().__delitem__(key)
 
-@deprecated("WIP, Treeview does work, but still a long way to go. Probably shouldn't use it atm...")
+#@deprecated("WIP, Treeview does work, but still a long way to go. Probably shouldn't use it atm...")
 class Treeview(BaseWidget):
     tk_widget:ttk.Treeview
     _tk_widget:ttk.Treeview
@@ -68,6 +67,7 @@ class Treeview(BaseWidget):
             expand_y: bool = None,
             tk_kwargs: dict[str:any]=None
     ):
+        raise NotImplementedError("sg.Treeview is not ready to use yet.")
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand)
 
         # if elements is None:

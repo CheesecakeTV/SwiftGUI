@@ -1,5 +1,4 @@
 from itertools import batched, starmap, chain
-from warnings import deprecated
 
 import SwiftGUI as sg
 from SwiftGUI import Color,font_windows

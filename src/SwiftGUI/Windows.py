@@ -5,7 +5,6 @@ from tkinter import ttk
 from collections.abc import Iterable,Callable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Self, Any
-from warnings import deprecated
 import inspect
 from PIL import Image, ImageTk
 
@@ -14,13 +13,6 @@ from SwiftGUI import BaseElement, Frame, ElementFlag, Literals, GlobalOptions, C
 if TYPE_CHECKING:
     from SwiftGUI import AnyElement
 
-
-@deprecated("WIP")
-@dataclass
-class Options_Windowwide:
-    ... # Contains options for all Elements inside a window
-
-# Windows-Class
 
 class Window(BaseElement):
     _prev_event:any = None  # Most recent event (-key)
@@ -289,7 +281,7 @@ class Window(BaseElement):
             self.values[key] = value
         self.root.after(0, self._receive_event, key)
 
-    @deprecated("WIP")
+    #@deprecated("WIP")
     def throw_event_on_next_loop(self,key:any,value:any=None):
         """
         NOT THREAD-SAFE!!!
@@ -300,7 +292,7 @@ class Window(BaseElement):
         :return:
         """
         # Todo
-        ...
+        raise NotImplementedError("sg.Window.throw_event_on_next_loop is not ready to use yet")
 
     def _receive_event(self,key:any):
         """
