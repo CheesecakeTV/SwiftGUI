@@ -188,7 +188,7 @@ class Listbox(BaseWidget):
         :return:
         """
         index = self.index
-        if index:
+        if index is not None:
             return self._list_elements[index]
 
         return self._no_selection_returns
