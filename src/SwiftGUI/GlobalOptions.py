@@ -210,14 +210,14 @@ class Scale(Common_Background, Common_Textual):
     digits: int = None
     cursor: Literals.cursor = None
     takefocus: bool = None
-    apply_parent_background_color: bool = None
+    apply_parent_background_color: bool = True
     relief: Literals.relief = None
-    hilightbackground_color: str | Color = None
+    highlightbackground_color: str | Color = None
     highlightcolor: str | Color = None
     highlightthickness: int = 0
     repeatdelay: int = None
     repeatinterval: int = None
-
+    background_color_active: str | Color = None
 
 class Input(Common,Common_Textual,Common_Field_Background):
     text: str = None

@@ -1,7 +1,9 @@
 import SwiftGUI as sg
 
 ### Global options ###
-#sg.GlobalOptions.Notebook.background_color_tabs_active = "navy"
+sg.Themes.FourColors.Emerald()
+sg.Examples.preview_all_elements()
+exit()
 
 ### Layout ###
 left_tab = sg.TabFrame([
@@ -22,9 +24,13 @@ left_tab = sg.TabFrame([
         )
     ],[
         sg.Scale(
-            default_value= 50,
+            default_value= 50.5,
             highlightbackground_color= "red",
-            label= "test"
+            label= "test",
+            key = "Scale",
+            default_event= True,
+            digits= 2,
+            resolution= 0.1,
         )
     ]
 ], key= "left", default_event=True, key_function= lambda elem:print(elem.text))

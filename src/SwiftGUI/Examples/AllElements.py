@@ -24,6 +24,10 @@ def preview_all_elements(include_images: bool = True):
         ],[
             sg.HSep()
         ],[
+            sg.Scale(label= "sg.Scale", expand= True)
+        ], [
+            sg.HSep()
+        ], [
             sg.Input("sg.Input / sg.In")
         ],[
             sg.HSep()

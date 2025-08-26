@@ -46,6 +46,7 @@ class Scale(BaseWidget):
             length: int = None,
             sliderlength: int = None,
             sliderrelief: Literals.relief = None,
+            background_color_active: str | Color = None,
             orient: Literal["horizontal", "vertical"] = None,
 
             disabled: bool = None,
@@ -127,6 +128,7 @@ class Scale(BaseWidget):
             repeatdelay = repeatdelay,
             repeatinterval = repeatinterval,
             background_color = background_color,
+            background_color_active = background_color_active,
         )
 
     def set_value(self,val: float):
