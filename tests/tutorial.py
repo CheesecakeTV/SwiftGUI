@@ -2,8 +2,6 @@ import SwiftGUI as sg
 
 ### Global options ###
 sg.Themes.FourColors.Emerald()
-sg.Examples.preview_all_elements()
-exit()
 
 ### Layout ###
 left_tab = sg.TabFrame([
@@ -24,13 +22,17 @@ left_tab = sg.TabFrame([
         )
     ],[
         sg.Scale(
-            default_value= 50.5,
+            default_value= 50,
+            number_max= 150,
             highlightbackground_color= "red",
             label= "test",
             key = "Scale",
             default_event= True,
-            digits= 2,
-            resolution= 0.1,
+            tickinterval= 25,
+            expand = True,
+            width= 100,
+            repeatdelay= 500,
+            repeatinterval= 100,
         )
     ]
 ], key= "left", default_event=True, key_function= lambda elem:print(elem.text))

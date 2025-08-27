@@ -79,6 +79,9 @@ class MultistateButton(sg.BaseCombinedElement):
             height = height,
         )
 
+    def __getitem__(self, item: Any) -> sg.Button:
+        return self._buttons[item]
+
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         match key:
             case "text_color":
