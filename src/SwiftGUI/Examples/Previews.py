@@ -1,5 +1,4 @@
 from itertools import batched, starmap, chain
-from warnings import deprecated
 
 import SwiftGUI as sg
 from SwiftGUI import Color,font_windows
@@ -26,7 +25,8 @@ def preview_all_colors() -> None:
                 fontsize=7,
                 width=20,
                 justify="right",
-                key_function=lambda elem, w: [print(elem.value), w.update(background_color = getattr(Color, elem.value))],
+                key_function=lambda elem, w: [print(elem.value),
+                                              w._update_initial(background_color=getattr(Color, elem.value))],
                 fonttype=font_windows.Small_Fonts
             ),
         ])
@@ -46,7 +46,7 @@ def preview_all_colors() -> None:
         layout
     ]
 
-    sg.Window(layout, title= "SwiftGUI color-preview").loop()
+    sg.Window(layout, title="SwiftGUI color-preview").loop()
 
 def preview_all_fonts_windows() -> None:
     """

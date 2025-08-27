@@ -123,7 +123,7 @@ class _popup_virtual_keyboard:
 
         self.input = elem
 
-        w = sg.Window(layout, title= "Keyboard", alignment= "left", keep_on_top=True)
+        w = sg.Window(layout, title="Keyboard", alignment="left", keep_on_top=True)
 
         self.use_charmap(self.rows_default)
 

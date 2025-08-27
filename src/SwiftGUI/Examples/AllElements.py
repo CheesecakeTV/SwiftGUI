@@ -24,6 +24,10 @@ def preview_all_elements(include_images: bool = True):
         ],[
             sg.HSep()
         ],[
+            sg.Scale(label= "sg.Scale", expand= True)
+        ], [
+            sg.HSep()
+        ], [
             sg.Input("sg.Input / sg.In")
         ],[
             sg.HSep()
@@ -138,11 +142,35 @@ def preview_all_elements(include_images: bool = True):
         ]
     ], fake_key= "Big elements")
 
+    combined_elements = sg.TabFrame([
+        [
+            sg.Form(
+                ["sg.Form", "useful for", "creating forms"],
+                big_clear_button= True,
+                submit_button= True,
+                default_values= ("", "", "Click on Clear"),
+            )
+        ],[
+            sg.HSep()
+        ],[
+            sg.MultistateButton(
+                [
+                    "sg.Multistate",
+                    "Works like sg.Radio",
+                    "But looks cooler",
+                ],
+                default_select_first= True,
+                horizontal_orientation= True,
+            )
+        ]
+    ], fake_key= "Combined elements")
+
     tabs = [
         smaller_widgets,
         extended_elements,
         containers,
         bigger_elements,
+        combined_elements,
     ]
 
     if include_images:
@@ -162,7 +190,7 @@ def preview_all_elements(include_images: bool = True):
         ]
     ]
 
-    w = sg.Window(layout, title= "Preview of all currently available elements")
+    w = sg.Window(layout, title="Preview of all currently available elements")
     w["List"].index = 2
 
     for e,v in w:

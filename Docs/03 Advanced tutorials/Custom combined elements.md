@@ -351,7 +351,7 @@ Sure, you could just overwrite it, but working with SwiftGUI is easier than work
 
 The whole SwiftGUI update-routine is quite complicated, but you only need to know a tiny part of it.
 
-Let's explain that part by calling `someElement.update(background_color = "red", text = "Hello World")` on some element, skipping unimportant steps.
+Let's explain that part by calling `someElement._update_initial(background_color = "red", text = "Hello World")` on some element, skipping unimportant steps.
 
 **First**, the passed arguments are converted into a single dictionary called `kwargs`: `{"background_color": "red", "text": "Hello World"}`.
 
@@ -371,6 +371,21 @@ Let's say, only the call for `"background_color"` returned `True`.
 That key is dropped, so `kwargs` looks like this now: `{"text": "Hello World"}`.
 
 **Next**, `someElement._update_default_keys(kwargs)` is called with the remaining kwargs.
+
+**The difference between `.update` and `._update_initial` is that `.update` ignores `None`-values.**
+If it would be the same method, you couldn't annotate `.update` properly.
+
+Consider this example:
+```py
+def .update(background_color = None, text_color = None):
+    super().update(background_color = background_color, text_color = text_color)
+```
+If `.update` acted like `._update_initial` and the user called `.update(text_color = "red")`, `background_color` would be reset to the default/GlobalOptions-value, because its passed value is `None`.
+
+That means, you should call `._update_initial` in `__init__` and `.update` anywhere else.
+An example to this is shown later.
+
+In reality, `.update` removes everything `None` and calls `._update_initial` with all the remaining options.
 
 ### Good practice for ._update_special_key
 This method usually looks something like this:
@@ -393,16 +408,17 @@ Just add a case for the key and the method returns `True` for that key.
 ### Adding global options
 You can attach your own global-options-class by setting `defaults = yourClass` (It is included in the template).
 
-How to create global-options-classes is (or will be) explained in a different tutorial.
+There is a dedicated tutorial on how to create global-options-classes.
 
 
-### Calling updates before the window is created
+### Calling .update before the window is created
+The element doesn't actually get created in `.__init__`, but when the window is initialized (`w = sg.Window(...)`).
 Sooner or later, you will stumble upon an error in `.update`, because you are trying to do something that needs a finished element.
 
-Instead of `.update`, you could call `someElement.update_after_window_creation(**kwargs)`.
-This method saves the call and calls `.update(**kwargs)` once the window got created.
+Instead of `.update`, you could call `someElement.update_after_window_creation(**kwargs)` instead.
+This method stores the `.update`-call and "re-calls" it when the window is done.
 
-To test if the window exists from within the class, it's easiest to call `hasattr(self, "window")`.
+To test if the window exists from within the element-class, it's easiest to call `hasattr(self, "window")`.
 
 E.g.: You want to update `"background_color"` only if the window exists:
 ```py
@@ -435,7 +451,7 @@ For default-keys it could look something like this:
 ```
 
 ### Single-time actions once the window exists
-When the window was created, `init_window_creation_done` is called on every single element once.
+When the window was created, `init_window_creation_done` is called on every single element.
 
 Use (overwrite) this method for one-time-calls that require other elements to exist.
 
@@ -484,7 +500,7 @@ As an example, here is `__init__` of `sg.Frame`:
         if tk_kwargs is None:
             tk_kwargs = dict()
 
-        self.update(    # All of those options can be changed using .update
+        self._update_initial(    # All of those options can be changed using .update
             background_color = background_color,
             apply_parent_background_color = apply_parent_background_color,
             pass_down_background_color = pass_down_background_color,
@@ -510,7 +526,7 @@ As an example, here is `__init__` of `sg.Frame`:
             "side":self.defaults.single("alignment",alignment),
         })
 ```
-As you can see, most of the parameters just get passed on to `.update`.
+As you can see, most of the parameters just get passed on to `._update_initial`.
 
 
 
@@ -537,7 +553,7 @@ Now, clicking `Clear`, actually clears the inputs.
 ### Running methods before window was created
 Methods that modify the elements inside the combined element might throw an error when called too early (before the window exists).
 
-The solution: Saving/Buffering the method-call and "retrying" it once the window is created.
+The solution: Saving/Buffering the method-call and "re-calling" it once the window is created.
 
 Of course, SwiftGUI's magic offers a very easy way to do that:
 ```py

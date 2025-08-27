@@ -23,7 +23,8 @@ def preview_all_themes() -> None:
 
         layout.append(sg.Frame([
             [
-                sg.T(f"Theme: {key}"),
+                sg.T("Theme: "),
+                sg.T(f"{key}").bind_event(sg.Event.ClickLeft, key_function= lambda val: print(val)),
             ],[
                 sg.HSep()
             ],[
@@ -46,13 +47,20 @@ def preview_all_themes() -> None:
             ]
         ], apply_parent_background_color= False))
 
-    layout = batched(layout, 6)
+    layout = batched(layout, 7)
 
-    w = sg.Window(layout, title= "Preview of all elements", alignment= "left")
+    sg.GlobalOptions.reset_all_options()
+    sg.Themes.FourColors.HotAsh()
+    layout = [
+         [
+             sg.T("Click on the title of any theme and it will be printed to the console", fontsize= 14, expand= True)
+         ]
+    ] + list(layout)
+
+    w = sg.Window(layout, title="Preview of all elements", alignment="left")
 
     for e,v in w:
-        print(e)
-
         sg.GlobalOptions.reset_all_options()
         sg.Themes.all_themes[e]()
         sg.Examples.preview_all_elements(include_images= False)
+

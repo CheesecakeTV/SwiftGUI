@@ -29,7 +29,8 @@ layout = [
             file_browse_type="open_multiple",
             key = "FileBrowse",
             #key_function = lambda elem: w["Convert"].update(background_color = sg.Color.PaleGreen1 if elem.value else sg.Color.coral).set_value(f"Convert ({len(elem.value)})"),
-            key_function = lambda elem: w["Convert"].update(background_color = sg.Color.PaleGreen1 if elem.value else sg.Color.coral).set_value(f"Convert ({len(elem.value)})"),
+            key_function = lambda elem: w["Convert"].update(
+            background_color=sg.Color.PaleGreen1 if elem.value else sg.Color.coral).set_value(f"Convert ({len(elem.value)})"),
             dont_change_on_abort= True,
             file_browse_filetypes= (
                 ("Image/graphic", (
@@ -108,7 +109,7 @@ layout = [
 _tempfolder_raw = temp.TemporaryDirectory()
 _tempfolder = Path(_tempfolder_raw.name)
 
-w = sg.Window(layout, title= "Image to icon converter")
+w = sg.Window(layout, title="Image to icon converter")
 
 for e,v in w:
     #print(e,v)

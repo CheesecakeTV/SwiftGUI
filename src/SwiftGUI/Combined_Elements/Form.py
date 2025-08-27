@@ -1,12 +1,10 @@
 
-# Still WIP!
-
 from collections.abc import Iterable, Callable
 from functools import partial
 from typing import Any, Self
 import json
 
-from SwiftGUI import BaseElement, Frame, Text, Input, BaseCombinedElement, Button
+from SwiftGUI import BaseElement, Frame, Text, Input, BaseCombinedElement, Button, GlobalOptions
 #from SwiftGUI.Widget_Elements.Separator import HorizontalSeparator
 from SwiftGUI.Widget_Elements.Spacer import Spacer
 
@@ -65,9 +63,9 @@ class Form(BaseCombinedElement):
                 "x",
                 key_function= (
                     partial(lambda index: self._input_elements[index].set_value(""), n),
-                    self._throw_default_event
+                    self._throw_default_event,
                 ),
-                padx= 5,
+                width=2,
             ) if small_clear_buttons else Text()
             for n, _ in enumerate(self._input_elements)
         ]
@@ -132,7 +130,7 @@ class Form(BaseCombinedElement):
         :return:
         """
         for elem in self._text_elements:
-            elem.update(**kwargs)
+            elem._update_initial(**kwargs)
         return self
 
     @BaseElement._run_after_window_creation
@@ -143,7 +141,7 @@ class Form(BaseCombinedElement):
         :return:
         """
         for elem in self._input_elements:
-            elem.update(**kwargs)
+            elem._update_initial(**kwargs)
         return self
 
     @BaseElement._run_after_window_creation
@@ -153,7 +151,7 @@ class Form(BaseCombinedElement):
         :param kwargs:
         :return:
         """
-        self._submit_button_element.update(**kwargs)
+        self._submit_button_element._update_initial(**kwargs)
         return self
 
     @BaseElement._run_after_window_creation

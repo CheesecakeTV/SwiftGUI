@@ -9,6 +9,8 @@ class Spacer(BaseWidget):
     _tk_widget_class = tk.Frame
     defaults = GlobalOptions.Common_Background
 
+    _grab_anywhere_on_this = True
+
     _transfer_keys = {
         "background_color":"bg"
     }

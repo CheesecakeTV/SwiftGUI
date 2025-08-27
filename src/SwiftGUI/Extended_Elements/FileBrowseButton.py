@@ -161,16 +161,11 @@ class FileBrowseButton(Button):
 
         self._file_function_kwargs = dict()
 
-        self.update(
-            file_browse_type = file_browse_type,
-            file_browse_initial_dir = file_browse_initial_dir,
-            file_browse_filetypes = file_browse_filetypes,
-            file_browse_initial_file = file_browse_initial_file,
-            file_browse_title = file_browse_title,
-            file_browse_save_defaultextension = file_browse_save_defaultextension,
-
-            dont_change_on_abort=dont_change_on_abort,
-        )
+        self._update_initial(file_browse_type=file_browse_type, file_browse_initial_dir=file_browse_initial_dir,
+                             file_browse_filetypes=file_browse_filetypes,
+                             file_browse_initial_file=file_browse_initial_file, file_browse_title=file_browse_title,
+                             file_browse_save_defaultextension=file_browse_save_defaultextension,
+                             dont_change_on_abort=dont_change_on_abort)
 
     _prev_val:str|tuple[str] = None
     _file_function_wanted = None

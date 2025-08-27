@@ -108,10 +108,7 @@ class Listbox(BaseWidget):
         if default_event:
             self.bind_event("<<ListboxSelect>>",key=key,key_function=key_function)
 
-        self.update(
-            no_selection_returns = no_selection_returns,
-            **_tk_kwargs
-        )
+        self._update_initial(no_selection_returns=no_selection_returns, **_tk_kwargs)
 
     def _personal_init_inherit(self):
         self._set_tk_target_variable(tk.StringVar, kwargs_key="listvariable", default_key="default_list")
@@ -191,7 +188,7 @@ class Listbox(BaseWidget):
         :return:
         """
         index = self.index
-        if index:
+        if index is not None:
             return self._list_elements[index]
 
         return self._no_selection_returns

@@ -150,10 +150,7 @@ class ColorChooserButton(Button):
 
         self._file_function_kwargs = dict()
 
-        self.update(
-            initial_color = initial_color,
-            color_chooser_title = color_chooser_title,
-        )
+        self._update_initial(initial_color=initial_color, color_chooser_title=color_chooser_title)
 
     _prev_val:str = None
     def _button_callback(self):
@@ -172,7 +169,7 @@ class ColorChooserButton(Button):
 
     def set_value(self,val:any):
         self._prev_val = val
-        self.update(background_color = val)
+        self._update_initial(background_color=val)
 
     _title:str = None
     def _update_special_key(self,key:str,new_val:any) -> bool|None:

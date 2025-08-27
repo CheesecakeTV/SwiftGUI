@@ -21,6 +21,10 @@ class Example(sg.BaseCombinedElement):
             apply_parent_background_color= apply_parent_background_color,
         )
 
+        self._update_initial(
+            # Put all of your options in here
+        )
+
     def _get_value(self) -> any:
         """Returns the value (self.value) of this element"""
         return super()._get_value()

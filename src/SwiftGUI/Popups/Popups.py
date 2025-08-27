@@ -101,10 +101,4 @@ def popup_get_text(
 
     return v["In"]
 
-class popup:
-    yes_no = popup_yes_no
-    button_menu = popup_button_menu
-    get_text = popup_get_text
-    text = popup_text
-
 

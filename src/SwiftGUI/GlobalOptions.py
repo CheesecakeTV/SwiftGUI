@@ -190,6 +190,35 @@ class Text(Common, Common_Textual, Common_Background):
     padding:Literals.padding = 0
     width:int = None
 
+class Scale(Common_Background, Common_Textual):
+    default_value: int | float = None
+    number_min: float = None
+    number_max: float = None
+    resolution: float = None
+    showvalue: bool = None
+    tickinterval: float = None
+    width: int = None
+    length: int = None
+    sliderlength: int = None
+    sliderrelief: Literals.relief = None
+    orient: Literal["horizontal", "vertical"] = "horizontal"
+    disabled: bool = None
+    readonly: bool = None
+    borderwidth: int = None
+    label: str = None
+    troughcolor: str | Color = None
+    digits: int = None
+    cursor: Literals.cursor = None
+    takefocus: bool = None
+    apply_parent_background_color: bool = True
+    relief: Literals.relief = None
+    highlightbackground_color: str | Color = None
+    highlightcolor: str | Color = None
+    highlightthickness: int = 0
+    repeatdelay: int = None
+    repeatinterval: int = None
+    background_color_active: str | Color = None
+
 class Input(Common,Common_Textual,Common_Field_Background):
     text: str = None
     width: int = None
@@ -242,6 +271,9 @@ class Button(Common,Common_Textual,Common_Field_Background):
 
     repeatdelay: int = None
     repeatinterval: int = None
+
+class MultistateButton(Button):
+    can_deselect: bool = True
 
 class Frame(Common, Common_Background):
     takefocus = False
@@ -305,6 +337,7 @@ class Window(Common_Background):
     icon: str = None  # .ico file
     keep_on_top: bool = False
     ttk_theme: str = "default"
+    grab_anywhere: bool = False
 
 class Listbox(Common,Common_Textual,Common_Field_Background):
     no_selection_returns: Any = "",  # Returned when nothing is selected

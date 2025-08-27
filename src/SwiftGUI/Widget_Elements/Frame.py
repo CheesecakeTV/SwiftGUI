@@ -12,6 +12,8 @@ class Frame(BaseWidgetContainer):
     _tk_widget_class:type[tk.Frame] = tk.Frame # Class of the connected widget
     defaults = GlobalOptions.Frame
 
+    _grab_anywhere_on_this = True
+
     _transfer_keys = {
         "background_color_disabled":"disabledbackground",
         "background_color_readonly":"readonlybackground",
@@ -65,28 +67,12 @@ class Frame(BaseWidgetContainer):
         if tk_kwargs is None:
             tk_kwargs = dict()
 
-        self.update(
-            background_color = background_color,
-            apply_parent_background_color = apply_parent_background_color,
-            pass_down_background_color = pass_down_background_color,
-            borderwidth = borderwidth,
-            cursor = cursor,
-            highlightbackground_color = highlightbackground_color,
-            highlightcolor = highlightcolor,
-            highlightthickness = highlightthickness,
-
-            padx = padx,
-            pady = pady,
-
-            # width = width,
-            # height = height,
-
-            relief = relief,
-
-            takefocus = takefocus,
-
-            **tk_kwargs
-        )
+        self._update_initial(background_color=background_color,
+                             apply_parent_background_color=apply_parent_background_color,
+                             pass_down_background_color=pass_down_background_color, borderwidth=borderwidth,
+                             cursor=cursor, highlightbackground_color=highlightbackground_color,
+                             highlightcolor=highlightcolor, highlightthickness=highlightthickness, padx=padx, pady=pady,
+                             relief=relief, takefocus=takefocus, **tk_kwargs)
 
         self._insert_kwargs["expand"] = self.defaults.single("expand",expand)
 
@@ -143,13 +129,13 @@ class Frame(BaseWidgetContainer):
                     row.configure(background=new_val)
 
                 for elem in self._linked_background_elements:
-                    elem.update(background_color = new_val)
+                    elem._update_initial(background_color=new_val)
 
                 if self._pass_down_background_color:
                     for i in self._contains:
                         for elem in i:
                             if elem.has_flag(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR):
-                                elem.update(background_color = new_val)
+                                elem._update_initial(background_color=new_val)
             case _:
                 return super()._update_special_key(key, new_val)
 
@@ -158,5 +144,5 @@ class Frame(BaseWidgetContainer):
     def init_window_creation_done(self):
         super().init_window_creation_done()
         if self._background_color_initial is not None:
-            self.update(background_color = self._background_color_initial)
+            self._update_initial(background_color=self._background_color_initial)
 

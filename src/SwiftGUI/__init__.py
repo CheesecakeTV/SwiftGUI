@@ -26,8 +26,10 @@ from .Widget_Elements.Notebook import Notebook
 from .Widget_Elements.LabelFrame import LabelFrame
 from .Widget_Elements.Radiobutton import Radiobutton, RadioGroup
 from .Widget_Elements.Spinbox import Spinbox
+from .Widget_Elements.Scale import Scale
 
 from .Combined_Elements.Form import Form
+from .Combined_Elements.MultistateButton import MultistateButton
 
 from .Extended_Elements.FileBrowseButton import FileBrowseButton
 from .Extended_Elements.ColorChooserButton import ColorChooserButton
@@ -62,7 +64,9 @@ TabView = Notebook
 
 Spin = Spinbox
 
-AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton | Spinbox | Image | ImageButton
+Slider = Scale
+
+AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton | Spinbox | Image | ImageButton | Scale
 
 from .Windows import Window
 

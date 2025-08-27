@@ -82,7 +82,7 @@ You can "request" certain information about the GUI by using parameters.
 If you create parameters with these names, they will be written accordingly:
 - `w`     - Window (the window, called `w` in the template)
 - `e`     - Event (Event-key, if you did define it, same as `e` of the template)
-- `v`     - Values (All values as a dict, same as `v` of the template)
+- `v`     - Value-"dict", same as `v` in the for-loop
 - `val`   - Value (Value of the event-element, same as `w[key].value` if you set a key)
 - `elem`  - Element (Element that caused the event, same as `w[key]`, if you set a key)
 
@@ -169,8 +169,8 @@ layout:list[list[sg.BaseElement]] = [
 If we look at `sg.KeyFunctions.set_value_to`, we can see that it is a function returning another function.
 The returned function is the actual key-function and looks like this:
 ```py
-def temp(w):
-    w[elem_key].value = new_value
+def temp(v):
+    v[elem_key] = new_value
 ```
 Simple, yet elegant and very useful.
 
@@ -182,10 +182,12 @@ By the way, I'm the most humble person in the world. Noone knows humble better t
 Instead of a single key-function, you may pass a list (or any iterable) of multiple functions, as mentioned above.
 These functions will be called one after another.
 
-**There is a nasty trap to this:** Values will only be refreshed, after all key-functions of an element are executed (for performance reasons).
+**There is a nasty trap to this:** `val` will only be refreshed, after all key-functions of an element are executed (for performance reasons).
 
-So, if your first key-function multiplies the value by 2 and the next one divides by 10, the division uses the same "starting-value" as the multiplication.
+So, if your first key-function multiplies `val` by 2 and the next one divides by 10, the division uses the same "starting-value" as the multiplication.
 That means, the multiplication has no effect.
+
+**This is only a problem if a single element has multiple key-functions.**
 
 But there's hope! If your key_function returns anything but None, all values will be refreshed directly after execution.
 

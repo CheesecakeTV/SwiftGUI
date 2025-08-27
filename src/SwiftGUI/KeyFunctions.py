@@ -7,7 +7,7 @@ from typing import Any
 # Just create a function, but don't add any parameters except:
 # w     - Window (useful for changing elements)
 # e     - Event (Event-key, if you set any)
-# v     - Values (All values as a dict)
+# v     - Value-"dict"
 # val   - Value (Value of the event-element)
 # elem  - Element (Element that caused the event)
 #
@@ -17,29 +17,29 @@ from typing import Any
 ### Some useful key-functions to use in your layout.
 
 
-def copy_value_to(to_key:any) -> Callable:
+def copy_value_to(to_key: Any) -> Callable:
     """
     Copies the value to the specified key
     :param to_key: Element-key to copy to
     :return:
     """
-    def fkt(w,val):
-        w[to_key].set_value(val)
+    def fkt(v, val):
+        v[to_key] = val
 
     return fkt
 
-def copy_value_from(from_key:any) -> Callable:
+def copy_value_from(from_key: Any) -> Callable:
     """
     Copies the value from the specified key to the calling element
     :param from_key: Element-key to copy from
     :return:
     """
-    def fkt(v,elem):
+    def fkt(v, elem):
         elem.value = v[from_key]
 
     return fkt
 
-def set_value_to(new_value:any = "", elem_key:str = None) -> Callable:
+def set_value_to(new_value: Any = "", elem_key: str = None) -> Callable:
     """
     Sets the value of an element.
 
@@ -52,16 +52,16 @@ def set_value_to(new_value:any = "", elem_key:str = None) -> Callable:
     :param new_value: The element will be set to this value
     :return:
     """
-    if elem_key:
-        def temp(w):
-            w[elem_key].value = new_value
+    if elem_key is not None:
+        def temp(v):
+            v[elem_key] = new_value
     else:
         def temp(elem):
             elem.value = new_value
 
     return temp
 
-def cycle_values(key:Any, *values:Any) -> Callable:
+def cycle_values(key: Any, *values: Any) -> Callable:
     """
     Every time this gets called, the next value is written to key
     IT WILL START AT THE SECOND VALUE, so it's a good idea to set the initial element-value as the first value.
@@ -75,13 +75,13 @@ def cycle_values(key:Any, *values:Any) -> Callable:
 
     assert val_len > 1, "You did not provide enough values for your cycle_values key-function"
 
-    def temp(w):
+    def temp(v):
         nonlocal n
         n += 1
 
         if n == val_len:
             n = 0
 
-        w[key].value = values[n]
+        v[key] = values[n]
 
     return temp

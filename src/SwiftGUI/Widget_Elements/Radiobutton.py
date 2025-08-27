@@ -65,6 +65,8 @@ class Radiobutton(BaseWidget):
     defaults = GlobalOptions.Radiobutton  # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
     value: bool
 
+    _grab_anywhere_on_this = True
+
     _transfer_keys = {
         # "background_color_disabled": "disabledbackground",
         "background_color": "background",
@@ -149,45 +151,17 @@ class Radiobutton(BaseWidget):
 
         self._my_value = self._group.next_radio_value
 
-        self.update(
-            variable = self._group.tk_variable,
-            text = text,
-            value = self._my_value,
-            fonttype = fonttype,
-            fontsize = fontsize,
-            font_bold = font_bold,
-            font_italic = font_italic,
-            font_underline = font_underline,
-            font_overstrike = font_overstrike,
-            readonly = readonly,
-            borderwidth = borderwidth,
-            bitmap = bitmap,
-            text_color_disabled = text_color_disabled,
-            check_background_color = check_background_color,
-            bitmap_position = bitmap_position,
-            background_color_active = background_color_active,
-            text_color_active = text_color_active,
-            check_type = check_type,
-            width = width,
-            height = height,
-            padx = padx,
-            pady = pady,
-            cursor = cursor,
-            takefocus = takefocus,
-            underline = underline,
-            anchor = anchor,
-            justify = justify,
-            background_color = background_color,
-            apply_parent_background_color = apply_parent_background_color,
-            overrelief = overrelief,
-            offrelief = offrelief,
-            text_color = text_color,
-            relief = relief,
-            # hilightbackground_color = hilightbackground_color,
-            # highlightcolor = highlightcolor,
-            # highlightthickness = highlightthickness,
-            **tk_kwargs,
-        )
+        self._update_initial(variable=self._group.tk_variable, text=text, value=self._my_value, fonttype=fonttype,
+                             fontsize=fontsize, font_bold=font_bold, font_italic=font_italic,
+                             font_underline=font_underline, font_overstrike=font_overstrike, readonly=readonly,
+                             borderwidth=borderwidth, bitmap=bitmap, text_color_disabled=text_color_disabled,
+                             check_background_color=check_background_color, bitmap_position=bitmap_position,
+                             background_color_active=background_color_active, text_color_active=text_color_active,
+                             check_type=check_type, width=width, height=height, padx=padx, pady=pady, cursor=cursor,
+                             takefocus=takefocus, underline=underline, anchor=anchor, justify=justify,
+                             background_color=background_color,
+                             apply_parent_background_color=apply_parent_background_color, overrelief=overrelief,
+                             offrelief=offrelief, text_color=text_color, relief=relief, **tk_kwargs)
 
         if default_value:
             self.select()

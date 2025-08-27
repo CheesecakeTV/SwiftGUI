@@ -82,6 +82,11 @@ class BaseFourColors(BaseTheme):
         temp.text_color = c4
         temp.background_color = c2
 
+        temp = go.Scale
+        temp.highlightbackground_color = c1
+        temp.troughcolor = c2
+        temp.background_color_active = c3
+
     def get_palette_frame(self, width: int = 50, height: int = 200) -> sg.Frame:
         """
         Returns an sg.Frame that contains the 4 containing colors.
@@ -116,6 +121,98 @@ class BaseFourColors(BaseTheme):
 #     col3 = ""
 #     col4 = ""
 
+class RoyalBlue(BaseFourColors):
+    col1 = "21325E"
+    col2 = "3E497A"
+    col3 = "F1D00A"
+    col4 = "F0F0F0"
+
+class RoyalBeige(BaseFourColors):
+    col4 = "42032C"
+    col3 = "D36B00"
+    col2 = "E6D2AA"
+    col1 = "F1EFDC"
+
+class LooksGoodSomehow(BaseFourColors):
+    col1 = "42032C"
+    col2 = "D36B00"
+    col3 = "E6D2AA"
+    col4 = "F1EFDC"
+
+class NightHorizon(BaseFourColors):
+    col1 = "000000"
+    col2 = "262A56"
+    col3 = "B8621B"
+    col4 = "E3CCAE"
+
+class SparkOfMagic(BaseFourColors):
+    col1 = "363062"
+    col2 = "4D4C7D"
+    col3 = "F99417"
+    col4 = "F5F5F5"
+
+class GarnetFlair(BaseFourColors):
+    col1 = "0F0E0E"
+    col2 = "541212"
+    col3 = "468A9A"
+    col4 = "EEEEEE"
+
+class PastelReef(BaseFourColors):
+    col1 = "245953"
+    col2 = "408E91"
+    col3 = "E49393"
+    col4 = "D8D8D8"
+
+class Maritime(BaseFourColors):
+    col1 = "071952"
+    col2 = "088395"
+    col3 = "37B7C3"
+    col4 = "EBF4F6"
+
+class HotAsh(BaseFourColors):
+    col3 = "ED7D31"
+    col2 = "6C5F5B"
+    col1 = "4F4A45"
+    col4 = "F6F1EE"
+
+class Snake(BaseFourColors):
+    col3 = "F3CA52"
+    col4 = "F6E9B2"
+    col1 = "0A6847"
+    col2 = "7ABA78"
+
+class IvoryTerracotta(BaseFourColors):
+    col1 = "FAF7F0"
+    col2 = "D8D2C2"
+    col3 = "B17457"
+    col4 = "4A4947"
+
+class OrangeCake(BaseFourColors):
+    col4 = "C14600"
+    col3 = "FF9D23"
+    col2 = "E5D0AC"
+    col1 = "FEF9E1"
+
+class CinnamonLatte(BaseFourColors):
+    col4 = "F8F4E1"
+    col3 = "FEBA17"
+    col2 = "74512D"
+    col1 = "4E1F00"
+
+class FriedEgg(BaseFourColors):
+    col1 = "F8F4E1"
+    col2 = "FEBA17"
+    col3 = "74512D"
+    col4 = "4E1F00"
+
+class Goldenberry(BaseFourColors):
+    col1 = "626F47"
+    col2 = "A4B465"
+    col3 = "FFCF50"
+    col4 = "FEFAE0"
+
+
+# Version 0.5.4
 class Goldfish(BaseFourColors):
     col3 = "FF731D"
     col4 = "FFF7E9"

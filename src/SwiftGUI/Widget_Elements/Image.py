@@ -12,6 +12,8 @@ class Image(BaseWidget):
     _tk_widget_class = tk.Label
     tk_widget: tk.Label
 
+    _grab_anywhere_on_this = True
+
     defaults = GlobalOptions.Image
 
     _transfer_keys = {
@@ -39,13 +41,9 @@ class Image(BaseWidget):
         if background_color and not apply_parent_background_color:
             apply_parent_background_color = False
 
-        self.update(
-            image = image,
-            height = height,
-            width = width,
-            apply_parent_background_color = apply_parent_background_color,
-            background_color = background_color,
-        )
+        self._update_initial(image=image, height=height, width=width,
+                             apply_parent_background_color=apply_parent_background_color,
+                             background_color=background_color)
 
     def _update_special_key(self,key:str,new_val:any) -> bool|None:
         match key:
