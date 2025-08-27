@@ -6,10 +6,13 @@ sg.Themes.FourColors.Emerald()
 ### Layout ###
 left_tab = sg.TabFrame([
     [
+        sg.T("Text", key = "Text")
+    ],[
         sg.Listbox(
             range(10),
             key= "Listbox",
             default_event= True,
+            key_function= sg.KeyFunctions.cycle_values("Text", "Hallo", "Welt")
         ).set_index(0),
     ],[
         sg.MultistateButton(

@@ -404,10 +404,19 @@ w = sg.Window(layout)
 my_text.value = "Hello GitHub"
 ```
 
-To make life easier for users transitioning from PySimpleGUI, all "keyed" values are saved inside `v` (`for e,v in w`), a dictionary.
+To make life easier for users transitioning from PySimpleGUI, all "keyed" values are saved inside `v` (`for e,v in w`), something that can be used simmilar to a dictionary.
 
-Reading it from there will grant a small runtime-advantage and might be easier to understand for newer Python-developers.
-Keep in mind that changing `v` does not change the element and that `v` won't be refreshed until the next loop.
+`v[key]` is the same as `w[key].value` and `v[key] = new_value` the same as `w[key].value = new_value`.
+
+You can `print(v)`, which will print `v` like a dictionary.
+However, this "collects" the value of every keyed elements, so you should only do it for debug reasons.
+
+This collecting-mechanism is a bit too complicated for this tutorial.
+Let's just simplify: Every value is collected only once per loop.
+That means, calling `print(v)` only really "hurts" once per loop.
+
+It also means, `print(v)` might not contain values that got updated by `w[key].value = ...`.
+However, `v[key]` always returns the most recent value.
 
 # Updating the layout
 You can change most of the configuration of layout-elements after creating the window.
