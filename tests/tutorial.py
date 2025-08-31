@@ -1,7 +1,7 @@
 import SwiftGUI as sg
 
 ### Global options ###
-sg.Themes.FourColors.Emerald()
+sg.Themes.FourColors.DarkGold()
 
 ### Layout ###
 left_tab = sg.TabFrame([
@@ -36,6 +36,7 @@ left_tab = sg.TabFrame([
             width= 100,
             repeatdelay= 500,
             repeatinterval= 100,
+            sliderlength= 50,
         )
     ]
 ], key= "left", default_event=True, key_function= lambda elem:print(elem.text))

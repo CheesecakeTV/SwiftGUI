@@ -299,3 +299,11 @@ Jungle()    # Apply theme
 You can't enter color-names like `"blue"`, only color-codes.
 Also, don't add `#` in front of the color-code.
 
+### Well looking color-combinations
+Not all colors look good together.
+
+Follow these rules when chosing the colors to maximize your chance of creating something good-looking:
+- col3 and col4 should both have a good contrast to col1 and col2. 3 and 4 should be readable on both, 1 and 2.
+- col3 should stand out from the rest, it's used for highlights and such.
+- col1 and col2 should be simmilar, but if they are not, it can look pretty good too.
+
