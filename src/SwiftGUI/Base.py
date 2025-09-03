@@ -65,6 +65,8 @@ class BaseElement:
     def __init__(self):
         self._run_when_window_exists = list()
 
+        self._update_options = dict()   # This saves all valuew passed by .update, so they can be recalled using .get_option()
+
     def _init(self,parent:"BaseElement",window):
         """
         Not __init__
@@ -237,6 +239,9 @@ class BaseElement:
         """
 
         kwargs = self.defaults.apply(kwargs)
+
+        self._update_options = kwargs.copy()
+
         kwargs = dict(filter(lambda a: not self._update_special_key(*a), kwargs.items()))
         self._update_default_keys(kwargs)
 
@@ -252,9 +257,24 @@ class BaseElement:
         :param kwargs:
         :return:
         """
-        self._update_initial(**remove_None_vals(kwargs))
+        kwargs = remove_None_vals(kwargs)
+
+        self._update_options.update(kwargs)
+
+        self._update_initial(**kwargs)
 
         return self
+
+    def get_option(self, key: str, default: Any = None) -> Any:
+        """
+        Returns the option like it was set in .update.
+        If it wasn't set in .update, it tries to get the option from the widget itself (only for BaseWidget)
+
+        :param key:
+        :param default:
+        :return:
+        """
+        return self._update_options.get(key, default)
 
     def update_to_default_value(self, *options: str) -> Self:
         """
@@ -611,6 +631,26 @@ class BaseWidget(BaseElement):
 
         if self._grab_anywhere_on_this:
             self.window.bind_grab_anywhere_to_element(self.tk_widget)
+
+    def get_option(self, key: str, default: Any = None) -> Any:
+        highlevel = super().get_option(key) # Option set by .update ?
+        if highlevel is not None:
+            return highlevel
+
+        try:    # Option in tkinter widget?
+            return self.tk_widget.cget(key)
+        except tk.TclError:
+            pass
+
+        if key in self._transfer_keys:  # Maybe the key is called differently in tkinter?
+            key = self._transfer_keys[key]
+
+            try:
+                return self.tk_widget.cget(key)
+            except tk.TclError:
+                pass
+
+        return default  # Well, gave it my best shot...
 
 class BaseWidgetContainer(BaseWidget):
     """

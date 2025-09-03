@@ -230,7 +230,7 @@ class Window(BaseElement):
             ttk_theme: str = None,
             _first_update: bool = False,
     ):
-        # Todo: This method needs to be put in proper shape
+        # Todo: This method needs to be put in proper shape. It's disgusting
         if _first_update:
             title = self.defaults.single("title",title)
             titlebar = self.defaults.single("titlebar",titlebar)

@@ -30,7 +30,7 @@ class Input(BaseWidget):
     }
 
     def __init__(
-            self,   # Todo: Test all options
+            self,
             # Add here
             text:str = None,
             /,

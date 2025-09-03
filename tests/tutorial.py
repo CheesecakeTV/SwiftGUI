@@ -49,7 +49,7 @@ right_tab = sg.TabFrame([
 
 layout:list[list[sg.BaseElement]] = [
     [
-        sg.T("Test", padding=50)
+        text := sg.T("Test", padding=50)
     ],
     [
         nb := sg.Notebook(
@@ -73,6 +73,10 @@ w = sg.Window(layout)
 for e,v in w:
     #print(nb.value)
     print(e,v)
+    print(text.get_option("blabli"))
+
+    if e == "Multistate":
+        text.update(background_color= "red")
 
     #v["Listbox"] = "Funktioniert"
 

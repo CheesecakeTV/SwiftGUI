@@ -36,7 +36,7 @@ class Spinbox(BaseWidget):
     }
 
     def __init__(
-            self,   # Todo: Test all options
+            self,
             # Add here
             default_value:float = None,
             /,
