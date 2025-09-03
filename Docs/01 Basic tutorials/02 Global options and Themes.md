@@ -289,7 +289,7 @@ sg.Themes.FourColors.ThemeName()
 To create your own four-colors-theme, inherit from `sg.Themes.FourColors.BaseFourColors` and change `col1`-`col4`:
 ```py
 class Jungle(sg.Themes.FourColors.BaseFourColors):
-    col1 = "191A19"
+    col1 = "191A19" # Color-codes (hex) without the #
     col2 = "1E5128"
     col3 = "4E9F3D"
     col4 = "D8E9A8"

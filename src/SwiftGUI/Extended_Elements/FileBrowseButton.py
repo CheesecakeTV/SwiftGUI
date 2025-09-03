@@ -54,7 +54,7 @@ class FileBrowseButton(Button):
             background_color: str | Color = None,
             overrelief: Literals.relief = None,
             text_color: str | Color = None,
-            # Todo: image
+
             relief: Literals.relief = None,
 
             repeatdelay:int = None,

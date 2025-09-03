@@ -5,11 +5,6 @@ Add space between rows
 
 Copy elements/parts of the layout
 
-Instead of a global key-list, keep an option to make it a tree-like structure.
-That way it's possible to copy parts of the layout without changing its keys.
-
-Set_options function that takes a part of the layout and sets options for every containing element
-
 Simplified Elements/Widgets with less options for beginners
 
 Tool to convert png/jpg into ico
@@ -27,5 +22,6 @@ Coloring of scrollbars
 
 Bug: LabelFrames without label still have a widget with its own background-color attached to them.
 
-Special type of frame just for sg.Notebook, so the name can be set without a key
+Add a way to include matplotlib graphs
+
 

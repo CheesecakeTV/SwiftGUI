@@ -196,6 +196,9 @@ class Window(BaseElement):
 
         self.bind_grab_anywhere_to_element(self._sg_widget.tk_widget)
 
+        if position == (None, None):
+            self.center()
+
 
     def __iter__(self) -> Self:
         return self
@@ -369,6 +372,7 @@ class Window(BaseElement):
         :param value: If not None, it will be saved inside the value-_dict until changed
         :return:
         """
+        # Todo: Add a function to call
         if not self.exists:
             return
 
@@ -507,7 +511,11 @@ class Window(BaseElement):
     @BaseElement._run_after_window_creation
     def bind_grab_anywhere_to_element(self, widget: tk.Widget):
         """
-        Add necessary bindings for window grab-and-move ("grab_anywhere") to the passed widget
+        Add necessary bindings for window grab-and-move ("grab_anywhere") to the passed widget.
+        This should be called on every widget the user should be able to grab and pull the window from.
+
+        ONLY WORKS IF w._grab_anywhere == True
+
         :param widget:
         :return:
         """
@@ -518,3 +526,12 @@ class Window(BaseElement):
             widget.bind('<ButtonPress-1>', self._SaveLastClickPos)
             widget.bind('<ButtonRelease-1>', self._DelLastClickPos)
             widget.bind('<B1-Motion>', self._Dragging)
+
+    @BaseElement._run_after_window_creation
+    def center(self) -> Self:
+        """
+        Centers the window on the current screen
+        :return:
+        """
+        self.root.eval("tk::PlaceWindow . center")
+        return self
