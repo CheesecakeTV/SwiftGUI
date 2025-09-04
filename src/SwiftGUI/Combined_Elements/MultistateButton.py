@@ -2,6 +2,7 @@ from typing import Any, Callable, Iterable, Self, Literal
 from functools import partial
 
 import SwiftGUI as sg
+from SwiftGUI import BaseCombinedElement
 
 
 class MultistateButton(sg.BaseCombinedElement):
@@ -74,9 +75,9 @@ class MultistateButton(sg.BaseCombinedElement):
             button_background_color = button_background_color,
             background_color_active = background_color_active,
             can_deselect = can_deselect,
-            default_selection = default_selection,
             width = width,
             height = height,
+            default_selection=default_selection,
         )
 
     def __getitem__(self, item: Any) -> sg.Button:
@@ -98,10 +99,7 @@ class MultistateButton(sg.BaseCombinedElement):
             case "can_deselect":
                 self._can_deselect = new_val
             case "default_selection":
-                if not hasattr(self, "window"):
-                    self.update_after_window_creation(default_selection = new_val)
-                    return True
-                self.value = new_val
+                self.set_value(new_val)
             case _:
                 return super()._update_special_key(key, new_val)
 
@@ -125,6 +123,7 @@ class MultistateButton(sg.BaseCombinedElement):
     def _get_value(self) -> Any:
         return self._current_val
 
+    @BaseCombinedElement._run_after_window_creation
     def set_value(self, val:Any):
         if self._current_val is not None:
             elem = self._buttons[self._current_val]
