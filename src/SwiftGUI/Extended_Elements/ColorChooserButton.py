@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import colorchooser
 from collections.abc import Iterable, Callable
-from typing import Literal
+from typing import Literal, Any
 
 from SwiftGUI import GlobalOptions, Literals, Color
 from SwiftGUI.Widget_Elements.Button import Button
@@ -22,7 +22,7 @@ class ColorChooserButton(Button):
             # Add here
             text:str = "",
             /,
-            key:any = None,
+            key:Any = None,
             key_function:Callable|Iterable[Callable] = None,
 
             initial_color: str | Color = None,
@@ -65,7 +65,7 @@ class ColorChooserButton(Button):
 
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:any] = None
+            tk_kwargs: dict[str:Any] = None
     ):
         """
         A button that throws an event every time it is pushed
@@ -164,15 +164,15 @@ class ColorChooserButton(Button):
 
         return True # Refresh values for coming key_functions
 
-    def _get_value(self) -> any:
+    def _get_value(self) -> Any:
         return self._prev_val
 
-    def set_value(self,val:any):
+    def set_value(self,val:Any):
         self._prev_val = val
         self._update_initial(background_color=val)
 
     _title:str = None
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         match key:
             case "initial_color":
                 self.value = new_val

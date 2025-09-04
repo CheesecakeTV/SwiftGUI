@@ -2,6 +2,8 @@ import SwiftGUI as sg
 
 ### Global options ###
 sg.Themes.FourColors.DarkGold()
+sg.Examples.preview_all_elements()
+exit()
 
 ### Layout ###
 left_tab = sg.TabFrame([

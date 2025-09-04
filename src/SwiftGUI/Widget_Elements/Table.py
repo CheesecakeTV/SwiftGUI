@@ -174,7 +174,7 @@ class Table(BaseWidgetTTK):
             takefocus: bool = None,
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:any]=None
+            tk_kwargs: dict[str:Any]=None
     ):
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
 
@@ -317,7 +317,7 @@ class Table(BaseWidgetTTK):
         raise AttributeError("You tried to set table_elements directly on an sg.Table. If you want to replace the whole table, use .overwrite_table instead.\n"
                              "I highly recommend not overwriting the whole table though, sg.Table offers a lot of methods to change it.")
 
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         match key:
             case "column_width":
                 if new_val is None:
@@ -498,7 +498,7 @@ class Table(BaseWidgetTTK):
 
         return self._element_dict[str(hash(self._elements[temp]))]
 
-    def set_value(self,val:any):
+    def set_value(self,val:Any):
         print("Warning!","It is not possible to set Values of sg.Table (yet)!")
         print("     use .index to set the selected item")
 

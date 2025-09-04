@@ -65,7 +65,7 @@ class Treeview(BaseWidget):
 
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:any]=None
+            tk_kwargs: dict[str:Any]=None
     ):
         raise NotImplementedError("sg.Treeview is not ready to use yet.")
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand)
@@ -86,7 +86,7 @@ class Treeview(BaseWidget):
         #     self.bind_event("<KeyRelease>",key=key,key_function=key_function)
 
     can_reset_value_changes = False
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         match key:
 
             case "readonly":
@@ -171,7 +171,7 @@ class Treeview(BaseWidget):
 
         return tuple(temp["values"])
 
-    def set_value(self,val:any):
+    def set_value(self,val:Any):
         print("Warning!","It is not possible to set Values of sg.Treeview (yet)!")
 
     selection:tuple[str]

@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal, Self
+from typing import Literal, Self, Any
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
@@ -32,7 +32,7 @@ class Scale(BaseWidget):
     def __init__(
             self,
             /,
-            key: any = None,
+            key: Any = None,
             default_event: bool = False,
             key_function: Callable | Iterable[Callable] = None,
             default_value: int | float = None,
@@ -155,7 +155,7 @@ class Scale(BaseWidget):
             overstrike=bool(self._overstrike),
         )
 
-    def _update_special_key(self, key: str, new_val: any) -> bool | None:
+    def _update_special_key(self, key: str, new_val: Any) -> bool | None:
         # Fish out all special keys to process them seperately
         match key:
             case "fonttype":

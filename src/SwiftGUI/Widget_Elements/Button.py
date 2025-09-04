@@ -8,13 +8,6 @@ from SwiftGUI import BaseElement, ElementFlag, BaseWidget, BaseWidgetContainer, 
 
 
 class Button(BaseWidget):
-    """
-    Copy this class ot create your own Widget
-
-    The following methods are to be overwritten if needed:
-    _get_value  (determines the value returned by this widget)
-    _init_widget_for_inherrit   (Initializes the widget)
-    """
     tk_widget:tk.Button
     _tk_widget_class:type = tk.Button # Class of the connected widget
     defaults = GlobalOptions.Button
@@ -123,43 +116,40 @@ class Button(BaseWidget):
         if tk_kwargs is None:
             tk_kwargs = dict()
 
-        _tk_kwargs = {
+        self._update_initial(
             **tk_kwargs,
-            "text":text,
-            "cursor":cursor,
-            "underline":underline,
-            "justify":justify,
-            "background_color":background_color,
+            text = text,
+            cursor = cursor,
+            underline = underline,
+            justify = justify,
+            background_color = background_color,
             #"highlightbackground_color":"cyan",
             # "highlightthickness":5,
-            "highlightcolor":highlightcolor,
-            "relief":relief,
-            "text_color":text_color,
-            "width":width,
-            "fonttype":fonttype,
-            "fontsize":fontsize,
-            "font_bold":font_bold,
-            "font_italic":font_italic,
-            "font_underline":font_underline,
-            "font_overstrike":font_overstrike,
-            "anchor":anchor,
-            "bitmap":bitmap,
-            "borderwidth":borderwidth,
-            "disabled":disabled,
-            "overrelief":overrelief,
-            "takefocus":takefocus,
-            #"background_color_disabled": background_color_disabled,    # Todo: Add this manually since tk.Button has no option for it
-            "text_color_disabled": text_color_disabled,
-            "background_color_active": background_color_active,
-            "text_color_active": text_color_active,
-            "repeatdelay":repeatdelay,
-            "repeatinterval":repeatinterval,
-
-            "height": height,
-            "padx": padx,
-            "pady": pady,
-        }
-        self._update_initial(**_tk_kwargs)
+            highlightcolor = highlightcolor,
+            relief = relief,
+            text_color = text_color,
+            width = width,
+            fonttype = fonttype,
+            fontsize = fontsize,
+            font_bold = font_bold,
+            font_italic = font_italic,
+            font_underline = font_underline,
+            font_overstrike = font_overstrike,
+            anchor = anchor,
+            bitmap = bitmap,
+            borderwidth = borderwidth,
+            disabled = disabled,
+            overrelief = overrelief,
+            takefocus = takefocus,
+            text_color_disabled = text_color_disabled,
+            background_color_active = background_color_active,
+            text_color_active = text_color_active,
+            repeatdelay = repeatdelay,
+            repeatinterval = repeatinterval,
+            height = height,
+            padx = padx,
+            pady = pady,
+        )
 
         self._key_function = key_function
 

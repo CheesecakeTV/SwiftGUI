@@ -46,7 +46,7 @@ class TabFrame(Frame):
             takefocus: bool = None,
 
             # Add here
-            tk_kwargs: dict[str:any]=None,
+            tk_kwargs: dict[str:Any]=None,
     ):
         """
 

@@ -75,40 +75,38 @@ class Listbox(BaseWidget):
         if tk_kwargs is None:
             tk_kwargs = dict()
 
-        _tk_kwargs = {
+        self._update_initial(
+            default_list = self._list_elements,
+            activestyle = activestyle,
+            borderwidth = borderwidth,
+            font_bold = font_bold,
+            font_italic = font_italic,
+            font_overstrike = font_overstrike,
+            font_underline = font_underline,
+            fontsize = fontsize,
+            fonttype = fonttype,
+            disabled = disabled,
+            highlightbackground_color = highlightbackground_color,
+            highlightthickness = highlightthickness,
+            selectborderwidth = selectborderwidth,
+            cursor = cursor,
+            background_color = background_color,
+            text_color = text_color,
+            highlightcolor = highlightcolor,
+            relief = relief,
+            takefocus = takefocus,
+            text_color_disabled = text_color_disabled,
+            width = width,
+            height = height,
+            background_color_selected = background_color_selected,
+            text_color_selected = text_color_selected,
+            selectmode = selectmode,
+            no_selection_returns = no_selection_returns,
             **tk_kwargs,
-            "default_list": self._list_elements,
-            "activestyle":activestyle,
-            "borderwidth":borderwidth,
-            "font_bold": font_bold,
-            "font_italic": font_italic,
-            "font_overstrike": font_overstrike,
-            "font_underline": font_underline,
-            "fontsize": fontsize,
-            "fonttype": fonttype,
-            "disabled": disabled,
-            "highlightbackground_color":highlightbackground_color,
-            "highlightthickness":highlightthickness,
-            "selectborderwidth":selectborderwidth,
-            "cursor": cursor,
-            "background_color": background_color,
-            "text_color": text_color,
-            "highlightcolor": highlightcolor,
-            "relief": relief,
-            "takefocus": takefocus,
-            "text_color_disabled": text_color_disabled,
-            "width": width,
-            "height": height,
-            "background_color_selected":background_color_selected,
-            "text_color_selected":text_color_selected,
-            "selectmode":selectmode,
-            # "text": text,
-        }
+        )
 
         if default_event:
             self.bind_event("<<ListboxSelect>>",key=key,key_function=key_function)
-
-        self._update_initial(no_selection_returns=no_selection_returns, **_tk_kwargs)
 
     def _personal_init_inherit(self):
         self._set_tk_target_variable(tk.StringVar, kwargs_key="listvariable", default_key="default_list")
@@ -135,7 +133,7 @@ class Listbox(BaseWidget):
         return tuple(self._list_elements)
 
     @list_elements.setter
-    def list_elements(self,new_val:Iterable):
+    def list_elements(self, new_val: Iterable):
         self._list_elements = list(new_val)
         super().set_value(new_val)
 
@@ -151,7 +149,7 @@ class Listbox(BaseWidget):
         return None
 
     @index.setter
-    def index(self, new_val:int):
+    def index(self, new_val: int):
         """
         Select a specified row
         :return:
@@ -216,7 +214,7 @@ class Listbox(BaseWidget):
             overstrike=bool(self._overstrike),
         )
 
-    def _update_special_key(self, key: str, new_val: any) -> bool | None:
+    def _update_special_key(self, key: str, new_val: Any) -> bool | None:
         # Fish out all special keys to process them seperately
         match key:
             case "fonttype":

@@ -2,7 +2,7 @@ import tkinter as tk
 from os import PathLike
 from tkinter import filedialog as fd
 from collections.abc import Iterable, Callable
-from typing import Literal
+from typing import Literal, Any
 
 from SwiftGUI import GlobalOptions, Literals, Color
 from SwiftGUI.Widget_Elements.Button import Button
@@ -20,7 +20,7 @@ class FileBrowseButton(Button):
             # Add here
             text:str = "",
             /,
-            key:any = None,
+            key:Any = None,
             key_function:Callable|Iterable[Callable] = None,
 
             file_browse_type:Literals.file_browse_types = None, #{"defaultextension","parent","title"}
@@ -70,7 +70,7 @@ class FileBrowseButton(Button):
 
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:any] = None
+            tk_kwargs: dict[str:Any] = None
     ):
         """
         A button that opens a filebrowser when pushed.
@@ -188,15 +188,15 @@ class FileBrowseButton(Button):
         self._prev_val = temp
         return True # Refresh values for coming key_functions
 
-    def _get_value(self) -> any:
+    def _get_value(self) -> Any:
         return self._prev_val
 
-    def set_value(self,val:any):
+    def set_value(self,val:Any):
         self._prev_val = val
 
     _file_function: Callable = None
     _file_function_kwargs: dict
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         match key:
             case "file_browse_type":
                 self._file_function = {

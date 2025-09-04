@@ -53,7 +53,7 @@ class BaseElement:
     _element_flags:set[ElementFlag] # Properties the element has
     window = None # Main Window
 
-    key:any = None  # If given, this will be written to the event-value. Elements without a key can not throw key-events
+    key:Any = None  # If given, this will be written to the event-value. Elements without a key can not throw key-events
     _key_function: Callable | Iterable[Callable] = None  # Called as an event
 
     defaults:type[GlobalOptions.DEFAULT_OPTIONS_CLASS] = GlobalOptions.Common  # Change this to apply a different default configuration
@@ -173,7 +173,7 @@ class BaseElement:
         pass
 
     @property
-    def value(self) -> any:
+    def value(self) -> Any:
         """
         Value of the surrounding object.
         Override _get_value to create custom values
@@ -357,7 +357,7 @@ class BaseWidget(BaseElement):
 
     _tk_scrollbar_y: tk.Scrollbar | None = None
 
-    def __init__(self,key:any=None,tk_kwargs:dict[str:any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
+    def __init__(self,key:Any=None,tk_kwargs:dict[str:Any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
         super().__init__()
         self._events_to_bind_later = list()
 
@@ -392,7 +392,7 @@ class BaseWidget(BaseElement):
     def tk_widget(self) -> tk.Widget:
         return self._tk_widget
 
-    def bind_event(self,tk_event:str|Event,key_extention:Union[str,any]=None,key:any=None,key_function:Callable|Iterable[Callable]=None)->Self:
+    def bind_event(self,tk_event:str|Event,key_extention:Union[str,Any]=None,key:Any=None,key_function:Callable|Iterable[Callable]=None)->Self:
         """
         Bind a tk-event onto the underlying tk-widget
 
@@ -473,7 +473,7 @@ class BaseWidget(BaseElement):
         self._tk_target_value = variable
         self._tk_kwargs[kwargs_key] = variable
 
-    def _set_tk_target_variable(self,value_type:type=tk.StringVar,kwargs_key:str="textvariable",default_key:str=None,default_value:any=None):
+    def _set_tk_target_variable(self,value_type:type=tk.StringVar,kwargs_key:str="textvariable",default_key:str=None,default_value:Any=None):
         """
         Define a target variable for this widget
         :param default_key: If given and in self._tk_args, self._tk_args[default_key] will be the default value. The key will be removed from the dict.
@@ -577,7 +577,7 @@ class BaseWidget(BaseElement):
                 self.window.bind_grab_anywhere_to_element(line)
                 self.window.bind_grab_anywhere_to_element(actual_line)
 
-    def _get_value(self) -> any:
+    def _get_value(self) -> Any:
         """
         This method is used when the value/state of the Widget is read.
         :return:
@@ -616,7 +616,7 @@ class BaseWidget(BaseElement):
     def _apply_update(self):
         self._tk_widget.configure(self._tk_kwargs)
 
-    def set_value(self,val:any):
+    def set_value(self,val:Any):
         try:
             self._tk_target_value.set(val)
         except AttributeError:
@@ -656,7 +656,7 @@ class BaseWidgetContainer(BaseWidget):
     """
     Base for Widgets that contain other widgets
     """
-    def __init__(self,key:any=None,tk_kwargs:dict[str:any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
+    def __init__(self,key:Any=None,tk_kwargs:dict[str:Any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
         super().__init__(key,tk_kwargs,expand,expand_y=expand_y,**kwargs)
 
         self._containing_row_frame_widgets = list()
@@ -666,6 +666,15 @@ class BaseWidgetContainer(BaseWidget):
         super()._flag_init()
         self._line_insert_kwargs = dict()
         self.add_flags(ElementFlag.IS_CONTAINER)
+
+    def update_all_containing(self, **kwargs) -> Self:
+        """
+        Update all elements inside this frame
+        :param kwargs:
+        :return:
+        """
+        raise NotImplementedError("update_all_containing isn't implemented yet...")
+        # Todo: update_all_containing
 
 class BaseWidgetTTK(BaseWidget):
     _styletype: str = None  # Style will be named n.styletype
@@ -788,7 +797,7 @@ class BaseCombinedElement(BaseElement):
         self._sg_widget._init(self,self.window)
         self._throw_event = self.window.get_event_function(me= self, key= self.key, key_function= self._key_function)
 
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         """
         Inherit (use) this method to pick out "special" keys to update.
         Keys are passed one-by-one.

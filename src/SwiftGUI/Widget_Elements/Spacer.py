@@ -12,13 +12,13 @@ class Spacer(BaseWidget):
     _grab_anywhere_on_this = True
 
     _transfer_keys = {
-        "background_color":"bg"
+        "background_color": "bg"
     }
 
     def __init__(
             self,
-            width:int = None,
-            height:int = None,
+            width: int = None,
+            height: int = None,
             expand_y: bool = None,
     ):
         super().__init__(expand_y = expand_y)

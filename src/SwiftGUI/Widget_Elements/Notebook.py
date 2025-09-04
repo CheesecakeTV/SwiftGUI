@@ -26,7 +26,7 @@ class Notebook(BaseWidgetTTK):
 
             tab_texts: dict[Any, str] = None,
 
-            key: str = None,
+            key: Any = None,
             key_function: Callable | Iterable[Callable] = None,
 
             background_color: str | Color = None,

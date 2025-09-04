@@ -1,22 +1,22 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal
+from typing import Literal, Any
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
 class Spinbox(BaseWidget):
-    _tk_widget_class:type = tk.Spinbox # Class of the connected widget
+    _tk_widget_class: type = tk.Spinbox # Class of the connected widget
     tk_widget: tk.Spinbox
     defaults = GlobalOptions.Spinbox   # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
 
     _transfer_keys = {
-        "background_color_disabled":"disabledbackground",
-        "background_color_readonly":"readonlybackground",
-        "background_color":"background",
+        "background_color_disabled": "disabledbackground",
+        "background_color_readonly": "readonlybackground",
+        "background_color": "background",
         "background_color_active" : "activebackground",
 
-        "text_color":"foreground",
+        "text_color": "foreground",
         "text_color_disabled": "disabledforeground",
         "text_color_active": "activeforeground",
         "cursor_color": "insertbackground",
@@ -24,7 +24,7 @@ class Spinbox(BaseWidget):
         "highlightbackground_color": "highlightbackground",
         "selectbackground_color": "selectbackground",
         "select_text_color": "selectforeground",
-        "pass_char":"show",
+        "pass_char": "show",
         "background_color_button": "buttonbackground",
         "cursor_button": "buttoncursor",
         "relief_button_down": "buttondownrelief",
@@ -40,43 +40,43 @@ class Spinbox(BaseWidget):
             # Add here
             default_value:float = None,
             /,
-            key:any=None,
+            key:Any=None,
             key_function:Callable|Iterable[Callable] = None,
             default_event:bool = False,
             #
-            cursor:Literals.cursor = None,
-            cursor_button:Literals.cursor = None,
-            takefocus:bool = None,
-            justify:Literal["left","right","center"] = None,
+            cursor: Literals.cursor = None,
+            cursor_button: Literals.cursor = None,
+            takefocus: bool = None,
+            justify: Literal["left","right","center"] = None,
 
-            background_color:str|Color = None,
+            background_color: str|Color = None,
             background_color_active: str | Color = None,
-            background_color_disabled:str|Color = None,
-            background_color_readonly:str|Color = None,
+            background_color_disabled: str|Color = None,
+            background_color_readonly: str|Color = None,
             text_color: str|Color = None,
-            text_color_disabled:str|Color = None,
+            text_color_disabled: str|Color = None,
 
             background_color_button: Color | str = None,
 
-            highlightbackground_color:str|Color = None,
-            selectbackground_color:str|Color = None,
-            select_text_color:str|Color = None,
+            highlightbackground_color: str|Color = None,
+            selectbackground_color: str|Color = None,
+            select_text_color: str|Color = None,
             borderwidth: int = None,
-            selectborderwidth:int = None,
-            highlightcolor:str|Color = None,
-            highlightthickness:int = None,
-            relief:Literals.relief = None,
-            relief_button_down:Literals.relief = None,
-            relief_button_up:Literals.relief = None,
+            selectborderwidth: int = None,
+            highlightcolor: str|Color = None,
+            highlightthickness: int = None,
+            relief: Literals.relief = None,
+            relief_button_down: Literals.relief = None,
+            relief_button_up: Literals.relief = None,
             cursor_color: str | Color = None,
 
             # Mixed options
-            fonttype:str = None,
-            fontsize:int = None,
-            font_bold:bool = None,
-            font_italic:bool = None,
-            font_underline:bool = None,
-            font_overstrike:bool = None,
+            fonttype: str = None,
+            fontsize: int = None,
+            font_bold: bool = None,
+            font_italic: bool = None,
+            font_underline: bool = None,
+            font_overstrike: bool = None,
 
             values: Iterable[float] = None,
             wrap: bool = None,
@@ -85,7 +85,7 @@ class Spinbox(BaseWidget):
             number_max: float = None,
             increment: float = None,
 
-            width:int=None,
+            width: int=None,
 
             repeatdelay: int = None,
             repeatinterval: int = None,
@@ -94,7 +94,7 @@ class Spinbox(BaseWidget):
 
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs:dict[str:any]= None,
+            tk_kwargs: dict[str:Any]= None,
     ):
 
         if tk_kwargs is None:
@@ -135,7 +135,7 @@ class Spinbox(BaseWidget):
             overstrike=bool(self._overstrike),
         )
 
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         # Fish out all special keys to process them seperately
         match key:
             case "fonttype":
@@ -182,7 +182,7 @@ class Spinbox(BaseWidget):
             self._tk_target_value.trace_add("write", self._value_change_callback)
 
     _last_viable_value: float = None
-    def _get_value(self) -> any:
+    def _get_value(self) -> Any:
         try:
             self._last_viable_value = self._tk_target_value.get()
         except tk.TclError:  # _tk_target_value isn't used
@@ -196,3 +196,4 @@ class Spinbox(BaseWidget):
         if self._last_event_value != self.value:
             self._last_event_value = self.value
             self._window_event_function()   # Call the actual event
+

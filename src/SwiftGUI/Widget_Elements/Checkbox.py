@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal
+from typing import Literal, Any
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
@@ -33,7 +33,7 @@ class Checkbox(BaseWidget):
             self,
             text: str = None,
             /,
-            key: any = None,
+            key: Any = None,
             default_event: bool = False,
             key_function: Callable | Iterable[Callable] = None,
             default_value: bool = False,
@@ -91,51 +91,47 @@ class Checkbox(BaseWidget):
         if check_type == "button":
             self._grab_anywhere_on_this = False
 
-        _tk_kwargs = {
-            **tk_kwargs,
-            "default_value": default_value,
-            "font_bold": font_bold,
-            "font_italic": font_italic,
-            "font_overstrike": font_overstrike,
-            "font_underline": font_underline,
-            "fontsize": fontsize,
-            "fonttype": fonttype,
-            "readonly": readonly,
-            "bitmap_position": bitmap_position,
-            "bitmap": bitmap,
-            "check_background_color": check_background_color,
-            "borderwidth": borderwidth,
-
-            "check_type": check_type,
-            "cursor": cursor,
-            "underline": underline,
-            "justify": justify,
-            "background_color": background_color,
-            "apply_parent_background_color": apply_parent_background_color,
+        self._update_initial(
+            default_value = default_value,
+            font_bold = font_bold,
+            font_italic = font_italic,
+            font_overstrike = font_overstrike,
+            font_underline = font_underline,
+            fontsize = fontsize,
+            fonttype = fonttype,
+            readonly = readonly,
+            bitmap_position = bitmap_position,
+            bitmap = bitmap,
+            check_background_color = check_background_color,
+            borderwidth = borderwidth,
+            check_type = check_type,
+            cursor = cursor,
+            underline = underline,
+            justify = justify,
+            background_color = background_color,
+            apply_parent_background_color = apply_parent_background_color,
             #"highlightthickness": 5,
-            "highlightcolor": highlightcolor,
-            "relief": relief,
-            "text_color": text_color,
-            "width": width,
-            "anchor": anchor,
-            "overrelief": overrelief,
-            "offrelief": offrelief,
-            "takefocus": takefocus,
-            "text_color_disabled": text_color_disabled,
-            "background_color_active": background_color_active,
-            "text_color_active": text_color_active,
-
-            "height": height,
-            "padx": padx,
-            "pady": pady,
-            "text": text,
-        }
+            highlightcolor = highlightcolor,
+            relief = relief,
+            text_color = text_color,
+            width = width,
+            anchor = anchor,
+            overrelief = overrelief,
+            offrelief = offrelief,
+            takefocus = takefocus,
+            text_color_disabled = text_color_disabled,
+            background_color_active = background_color_active,
+            text_color_active = text_color_active,
+            height = height,
+            padx = padx,
+            pady = pady,
+            text = text,
+            **tk_kwargs,
+        )
 
         self._default_event = default_event
 
         # self.bind_event("<KeyRelease>",key=self.key,key_function=self._key_function)
-
-        self._update_initial(**_tk_kwargs)
 
     def _personal_init_inherit(self):
         self._set_tk_target_variable(tk.IntVar, kwargs_key="variable", default_key="default_value")
@@ -162,7 +158,7 @@ class Checkbox(BaseWidget):
             overstrike=bool(self._overstrike),
         )
 
-    def _update_special_key(self, key: str, new_val: any) -> bool | None:
+    def _update_special_key(self, key: str, new_val: Any) -> bool | None:
         # Fish out all special keys to process them seperately
         match key:
             case "fonttype":
