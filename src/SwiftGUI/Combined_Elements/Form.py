@@ -4,7 +4,7 @@ from functools import partial
 from typing import Any, Self
 import json
 
-from SwiftGUI import BaseElement, Frame, Text, Input, BaseCombinedElement, Button, GlobalOptions
+from SwiftGUI import BaseElement, Frame, Text, Input, BaseCombinedElement, Button
 #from SwiftGUI.Widget_Elements.Separator import HorizontalSeparator
 from SwiftGUI.Widget_Elements.Spacer import Spacer
 
@@ -72,7 +72,7 @@ class Form(BaseCombinedElement):
 
         self.layout = list(zip(self._text_elements, self._input_elements, self._clear_buttons))
 
-        # if any((submit_button, big_clear_button)):
+        # if Any((submit_button, big_clear_button)):
         #     self.layout.append([HorizontalSeparator()])
         self.layout.append([Spacer(height=5)])
 
@@ -110,12 +110,12 @@ class Form(BaseCombinedElement):
         if self._default_event:
             self.throw_event()
 
-    def _get_value(self) -> any:
+    def _get_value(self) -> Any:
         return {
             line:elem.value for line,elem in zip(self._input_keys, self._input_elements)
         }
 
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         match key:
             case _:
                 return super()._update_special_key(key, new_val)

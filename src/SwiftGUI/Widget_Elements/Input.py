@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal
+from typing import Literal, Any
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
@@ -30,51 +30,48 @@ class Input(BaseWidget):
     }
 
     def __init__(
-            self,   # Todo: Test all options
+            self,
             # Add here
-            text:str = None,
+            text: str = None,
             /,
-            key:any=None,
-            key_function:Callable|Iterable[Callable] = None,
-            width:int=None,
-            default_event:bool = False,
+            key: Any = None,
+            key_function: Callable|Iterable[Callable] = None,
+            width: int = None,
+            default_event: bool = False,
             #
-            # Standard-Tkinter options
-            cursor:Literals.cursor = None,
-            takefocus:bool = None,
+            cursor: Literals.cursor = None,
+            takefocus: bool = None,
             #
-            # Special Tkinter-options
-            justify:Literal["left","right","center"] = None,
-            background_color:str|Color = None,
-            #background_color_disabled:str|Color = None,    # It's never disabled, only readonly
-            background_color_readonly:str|Color = None,
-            text_color:str|Color = None,
-            text_color_disabled:str|Color = None,
-            highlightbackground_color:str|Color = None,
-            selectbackground_color:str|Color = None,
-            select_text_color:str|Color = None,
+            justify: Literal["left","right","center"] = None,
+            background_color: str|Color = None,
+            background_color_readonly: str|Color = None,
+            text_color: str|Color = None,
+            text_color_disabled: str|Color = None,
+            highlightbackground_color: str|Color = None,
+            selectbackground_color: str|Color = None,
+            select_text_color: str|Color = None,
             cursor_color: str | Color = None,
-            selectborderwidth:int = None,
-            highlightcolor:str|Color = None,
-            highlightthickness:int = None,
-            pass_char:str = None,
-            readonly:bool = None,   # Set state to tk.Normal, or 'readonly'
-            relief:Literals.relief = None,
-            exportselection:bool = None,
-            validate:Literals.validate = None,
-            validatecommand:callable = None,
+            selectborderwidth: int = None,
+            highlightcolor: str|Color = None,
+            highlightthickness: int = None,
+            pass_char: str = None,
+            readonly: bool = None,   # Set state to tk.Normal, or 'readonly'
+            relief: Literals.relief = None,
+            exportselection: bool = None,
+            validate: Literals.validate = None,
+            validatecommand: Callable = None,
             #
             # Mixed options
-            fonttype:str = None,
-            fontsize:int = None,
-            font_bold:bool = None,
-            font_italic:bool = None,
-            font_underline:bool = None,
-            font_overstrike:bool = None,
+            fonttype: str = None,
+            fontsize: int = None,
+            font_bold: bool = None,
+            font_italic: bool = None,
+            font_underline: bool = None,
+            font_overstrike: bool = None,
             #
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs:dict[str:any]=None
+            tk_kwargs: dict[str:Any]=None
     ):
         """
 
@@ -97,39 +94,37 @@ class Input(BaseWidget):
         if default_event:   # Todo: Exclude shift+ctrl+alt from default event-calls
             self.bind_event("<KeyRelease>",key=self.key,key_function=self._key_function)
 
-        _tk_kwargs = {
+        self._update_initial(
+            takefocus = takefocus,
+            background_color = background_color,
+            background_color_readonly = background_color_readonly,
+            cursor = cursor,
+            readonly = readonly,
+            exportselection = exportselection,
+            font_bold = font_bold,
+            font_italic = font_italic,
+            font_overstrike = font_overstrike,
+            font_underline = font_underline,
+            fontsize = fontsize,
+            fonttype = fonttype,
+            highlightbackground_color = highlightbackground_color,
+            highlightcolor = highlightcolor,
+            highlightthickness = highlightthickness,
+            justify = justify,
+            pass_char = pass_char,
+            relief = relief,
+            select_text_color = select_text_color,
+            selectbackground_color = selectbackground_color,
+            selectborderwidth = selectborderwidth,
+            text = text,
+            text_color = text_color,
+            text_color_disabled = text_color_disabled,
+            validate = validate,
+            validatecommand = validatecommand,
+            width = width,
+            cursor_color = cursor_color,
             **tk_kwargs,
-            "takefocus":takefocus,
-            "background_color":background_color,
-            # "background_color_disabled": background_color_disabled,
-            "background_color_readonly": background_color_readonly,
-            "cursor": cursor,
-            "readonly": readonly,
-            "exportselection": exportselection,
-            "font_bold": font_bold,
-            "font_italic": font_italic,
-            "font_overstrike": font_overstrike,
-            "font_underline": font_underline,
-            "fontsize": fontsize,
-            "fonttype": fonttype,
-            "highlightbackground_color": highlightbackground_color,
-            "highlightcolor": highlightcolor,
-            "highlightthickness": highlightthickness,
-            "justify": justify,
-            "pass_char": pass_char,
-            "relief": relief,
-            "select_text_color": select_text_color,
-            "selectbackground_color": selectbackground_color,
-            "selectborderwidth": selectborderwidth,
-            "text": text,
-            "text_color": text_color,
-            "text_color_disabled": text_color_disabled,
-            "validate": validate,
-            "validatecommand": validatecommand,
-            "width": width,
-            "cursor_color": cursor_color,
-        }
-        self._update_initial(**_tk_kwargs)
+        )
 
     def _update_font(self):
         # self._tk_kwargs will be passed to tk_widget later
@@ -143,7 +138,7 @@ class Input(BaseWidget):
             overstrike=bool(self._overstrike),
         )
 
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self, key: str, new_val: Any) -> bool|None:
         # Fish out all special keys to process them seperately
         match key:
             case "fonttype":

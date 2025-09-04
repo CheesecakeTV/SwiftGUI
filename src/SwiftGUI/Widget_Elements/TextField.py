@@ -81,7 +81,7 @@ class TextField(BaseWidget):
 
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:any]=None
+            tk_kwargs: dict[str:Any]=None
     ):
         """
         An Input-Element with multiple rows
@@ -134,44 +134,43 @@ class TextField(BaseWidget):
         if tk_kwargs is None:
             tk_kwargs = dict()
 
-        _tk_kwargs = {
+        self._update_initial(
+            borderwidth = borderwidth,
+            width = width,
+            height = height,
+            insertbackground = insertbackground,
+            highlightbackground_color = highlightbackground_color,
+            selectbackground_color = selectbackground_color,
+            select_text_color = select_text_color,
+            selectborderwidth = selectborderwidth,
+            highlightcolor = highlightcolor,
+            highlightthickness = highlightthickness,
+            readonly = readonly,
+            relief = relief,
+            exportselection = exportselection,
+            padx = padx,
+            pady = pady,
+            paragraph_spacing = paragraph_spacing,
+            paragraph_spacing_above = paragraph_spacing_above,
+            autoline_spacing = autoline_spacing,
+            tabs = tabs,
+            wrap = wrap,
+            undo = undo,
+            can_reset_value_changes = can_reset_value_changes,
+            maxundo = maxundo,
+            cursor = cursor,
+            background_color = background_color,
+            text_color = text_color,
+            fonttype = fonttype,
+            fontsize = fontsize,
+            font_bold = font_bold,
+            font_italic = font_italic,
+            font_underline = font_underline,
+            font_overstrike = font_overstrike,
+            takefocus = takefocus,
+            cursor_color = cursor_color,
             **tk_kwargs,
-            "borderwidth": borderwidth,
-            "width": width,
-            "height": height,
-            "insertbackground": insertbackground,
-            "highlightbackground_color": highlightbackground_color,
-            "selectbackground_color": selectbackground_color,
-            "select_text_color": select_text_color,
-            "selectborderwidth": selectborderwidth,
-            "highlightcolor": highlightcolor,
-            "highlightthickness": highlightthickness,
-            "readonly": readonly,
-            "relief": relief,
-            "exportselection": exportselection,
-            "padx": padx,
-            "pady": pady,
-            "paragraph_spacing": paragraph_spacing,
-            "paragraph_spacing_above": paragraph_spacing_above,
-            "autoline_spacing": autoline_spacing,
-            "tabs": tabs,
-            "wrap": wrap,
-            "undo": undo,
-            "can_reset_value_changes": can_reset_value_changes,
-            "maxundo": maxundo,
-            "cursor":cursor,
-            "background_color":background_color,
-            "text_color":text_color,
-            "fonttype":fonttype,
-            "fontsize":fontsize,
-            "font_bold":font_bold,
-            "font_italic":font_italic,
-            "font_underline":font_underline,
-            "font_overstrike":font_overstrike,
-            "takefocus":takefocus,
-            "cursor_color":cursor_color,
-        }
-        self._update_initial(**_tk_kwargs)
+        )
 
         self._key_function = key_function
         self._initial_text = text
@@ -183,7 +182,7 @@ class TextField(BaseWidget):
 
     _readonly = False
     _can_reset_value_changes = False
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         match key:
 
             case "readonly":
@@ -243,10 +242,10 @@ class TextField(BaseWidget):
         if self._tabsize is not None:
             self._tk_kwargs["tabs"] = self._tabsize * temp.measure(" ")
 
-    def _get_value(self) -> any:
+    def _get_value(self) -> Any:
         return self.tk_widget.get("1.0","end")[:-1]
 
-    def set_value(self,val:any):
+    def set_value(self,val:Any):
         if self._readonly:
             self.tk_widget.configure(state = "normal")
         self.tk_widget.delete("1.0","end")

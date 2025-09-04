@@ -1,9 +1,8 @@
 import tkinter as tk
 from collections.abc import Iterable
-from typing import Self
+from typing import Self, Any
 
-from SwiftGUI import BaseElement, ElementFlag, BaseWidgetContainer, GlobalOptions, Literals, Color, BaseWidget, Frame, \
-    Text, font_windows
+from SwiftGUI import BaseElement, GlobalOptions, Literals, Color, Frame, Text
 
 
 class LabelFrame(Frame):
@@ -32,12 +31,12 @@ class LabelFrame(Frame):
             text: str = None,
             no_label: bool = None,
 
-            fonttype:str = None,
-            fontsize:int = None,
-            font_bold:bool = None,
-            font_italic:bool = None,
-            font_underline:bool = None,
-            font_overstrike:bool = None,
+            fonttype: str = None,
+            fontsize: int = None,
+            font_bold: bool = None,
+            font_italic: bool = None,
+            font_underline: bool = None,
+            font_overstrike: bool = None,
             text_color: Color | str = None,
 
             labelanchor: Literals.tabposition = None,
@@ -59,7 +58,7 @@ class LabelFrame(Frame):
             highlightthickness: int = None,
             relief: Literals.relief = None,
             takefocus: bool = None,
-            tk_kwargs: dict[str:any] = None,
+            tk_kwargs: dict[str:Any] = None,
     ):
         self._element = Text(relief="flat")    # Todo: Let the user pass an element
         self._element.defaults = self.defaults

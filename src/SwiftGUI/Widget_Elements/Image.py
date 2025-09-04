@@ -45,7 +45,7 @@ class Image(BaseWidget):
                              apply_parent_background_color=apply_parent_background_color,
                              background_color=background_color)
 
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         match key:
             case "image":
                 self._image = new_val

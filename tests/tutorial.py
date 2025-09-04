@@ -1,7 +1,9 @@
 import SwiftGUI as sg
 
 ### Global options ###
-sg.Themes.FourColors.Emerald()
+sg.Themes.FourColors.DarkGold()
+sg.Examples.preview_all_elements()
+exit()
 
 ### Layout ###
 left_tab = sg.TabFrame([
@@ -36,6 +38,7 @@ left_tab = sg.TabFrame([
             width= 100,
             repeatdelay= 500,
             repeatinterval= 100,
+            sliderlength= 50,
         )
     ]
 ], key= "left", default_event=True, key_function= lambda elem:print(elem.text))
@@ -48,7 +51,7 @@ right_tab = sg.TabFrame([
 
 layout:list[list[sg.BaseElement]] = [
     [
-        sg.T("Test", padding=50)
+        text := sg.T("Test", padding=50)
     ],
     [
         nb := sg.Notebook(
@@ -72,6 +75,10 @@ w = sg.Window(layout)
 for e,v in w:
     #print(nb.value)
     print(e,v)
+    print(text.get_option("blabli"))
+
+    if e == "Multistate":
+        text.update(background_color= "red")
 
     #v["Listbox"] = "Funktioniert"
 

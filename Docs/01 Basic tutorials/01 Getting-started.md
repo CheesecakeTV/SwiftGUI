@@ -441,6 +441,23 @@ w["ButtonKey"].update(disabled = True)
 ```
 You get the idea...
 
+## Reading/getting element-options
+The "opposite" of `.update(key= ...)` is `.get_option(key)`.
+
+`.get_option` returns whatever value you set that option (key) to earlier.
+
+Why you would use that, if you know what you put in `.update`?\
+Well, `.get_option` also returns values that are set by default.
+
+E.g.: Not sure of the standard background-color?
+Just use `.get_option`.
+
+If you know tkinter: 
+`.get_option` also returns options from the underlying tkinter-widget, if the option is unavailable otherwise.
+
+E.g.: The option for background-color is called `background_color` in SwiftGUI, but `bg` in Tkinter.
+That means, `.get_option("bg")` will return that configuration directly from the tkinter-widget using `tk_widget.cget(key)`.
+
 # Where to now?
 
 This library offers A LOT more while still being easy to use.

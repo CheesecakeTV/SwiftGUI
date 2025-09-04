@@ -1,5 +1,6 @@
 import tkinter as tk
 from collections.abc import Iterable
+from typing import Any
 
 from SwiftGUI import BaseElement, ElementFlag, BaseWidgetContainer, GlobalOptions, Literals, Color, BaseWidget
 
@@ -54,7 +55,7 @@ class Frame(BaseWidgetContainer):
             takefocus: bool = None,
 
             # Add here
-            tk_kwargs: dict[str:any]=None,
+            tk_kwargs: dict[str:Any]=None,
     ):
         super().__init__(key=key, tk_kwargs=tk_kwargs, expand_y=expand_y)
 
@@ -106,7 +107,7 @@ class Frame(BaseWidgetContainer):
 
     _background_color_initial: Color | str = None
     _pass_down_background_color: bool = False
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self,key:str,new_val:Any) -> bool|None:
 
         match key:
             case "apply_parent_background_color":

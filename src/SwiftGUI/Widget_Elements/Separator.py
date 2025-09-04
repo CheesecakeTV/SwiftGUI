@@ -11,7 +11,7 @@ class Separator(BaseWidget):
     defaults = GlobalOptions.Separator
 
     _transfer_keys = {
-        "color":"bg"
+        "color": "bg"
     }
 
     def __init__(
@@ -25,7 +25,7 @@ class Separator(BaseWidget):
         self._insert_kwargs["pady"] = 3
         self._insert_kwargs["padx"] = 3
 
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         if key == "weight":
             self._update_initial(height=new_val, width=new_val)
             return True
@@ -58,7 +58,7 @@ class HorizontalSeparator(Separator):
             weight: int = None,
     ):
         super().__init__(
-            key=key,
+            key= key,
             color = color,
             weight = weight,
         )

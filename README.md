@@ -1,9 +1,26 @@
 
+# SwiftGUI
+
+A python-package to quickly create user-interfaces (GUIs).
+
+I really liked PySimpleGUI (before they went "premium"),
+but their codebase is an utter mess.
+
+`SwiftGUI` adapts some concepts of `PySimpleGUI`, but is even simpler (in my opinion)
+and allows writing less offputting code.
+
 # Getting started
 [Start your journey here](https://github.com/CheesecakeTV/SwiftGUI/blob/60f839fd6dab1fa0e087ab0df4986a8b578d4fa3/Docs/01%20Basic%20tutorials/01%20Getting-started.md)
 
-# Now in alpha-phase!
-The package is useable and already has 18 (Version 0.5.0) finished elements.\
+# Now with themes!
+Does your GUI look shitty?
+
+Just call `sg.Themes.FourColors.Emerald()` before creating the layout.
+
+See which themes are available by calling `sg.Examples.preview_all_themes()`.
+
+#  Alpha-phase!
+The package is useable and already has 23 (Version 0.6.0) finished elements.\
 I am already using it for smaller projects and personally, like it a lot.
 
 However, until version 1.0.0, the package is not guaranteed to be down-compatible.
@@ -12,16 +29,6 @@ Names and functions/methods might change, which could destroy your code.
 For version 1.0.0, I'd like to sort and standardize names, so they are easier to remember.
 
 Of course, older versions will stay available on pip, so if you worry about this, just don't update the package.
-
-# SwiftGUI
-
-A python-package to quickly create user-interfaces (GUIs).
-
-I really liked PySimpleGUI (before they went "premium"), 
-but their codebase is an utter mess.
-
-`SwiftGUI` adapts some concepts of `PySimpleGUI`, but is even simpler (in my opinion)
-and allows writing less offputting code.
 
 ## Legal disclaimer
 

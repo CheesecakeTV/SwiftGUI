@@ -14,11 +14,11 @@ class TKContainer(BaseWidget):
     def __init__(
             self,
             # Add here
-            widget_type:type[tk.Widget | ttk.Widget],
+            widget_type: type[tk.Widget | ttk.Widget],
             /,
-            key:str = None,
-            pack_kwargs:dict = None,
-            expand:bool = False,
+            key: str = None,
+            pack_kwargs: dict = None,
+            expand: bool = False,
             expand_y: bool = None,
             **tk_kwargs,
     ):

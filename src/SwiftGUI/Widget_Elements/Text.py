@@ -1,7 +1,6 @@
-import tkinter as tk
 import tkinter.font as font
 import tkinter.ttk as ttk
-from typing import Literal
+from typing import Literal, Any
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
@@ -15,12 +14,17 @@ class Text(BaseWidget):
 
     _grab_anywhere_on_this = True
 
+    _transfer_keys = {
+        "background_color": "background",
+        "text_color": "foreground",
+    }
+
     def __init__(
             self,
             # Add here
             text:str = None,
             /,
-            key:any=None,
+            key:Any=None,
             width:int=None,
 
             # Standard-Tkinter options
@@ -47,7 +51,7 @@ class Text(BaseWidget):
 
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs:dict[str:any]=None
+            tk_kwargs:dict[str:Any]=None
     ):
         """
 
@@ -69,31 +73,29 @@ class Text(BaseWidget):
         if background_color and not apply_parent_background_color:
             apply_parent_background_color = False
 
-        _tk_kwargs = {
-            **tk_kwargs,
-            "cursor":cursor,
-            "takefocus":takefocus,
-            "underline":underline,
-            "justify":justify,
-            "background_color":background_color,
+        self._update_initial(
+            text = text,
+            cursor = cursor,
+            takefocus = takefocus,
+            underline = underline,
+            justify = justify,
+            background_color = background_color,
             #"borderwidth":borderwidth,
-            "relief":relief,
-            "text_color":text_color,
-            "padding":padding,
-            "width":width,
+            relief = relief,
+            text_color = text_color,
+            padding = padding,
+            width = width,
             # "wraplength":"1c" # Todo: integrate wraplength in a smart way
-            "fonttype":fonttype,
-            "fontsize":fontsize,
-            "font_bold":font_bold,
-            "font_italic":font_italic,
-            "font_underline":font_underline,
-            "font_overstrike":font_overstrike,
-            "anchor":anchor,
-            "apply_parent_background_color": apply_parent_background_color,
-        }
-        self._update_initial(**_tk_kwargs)
-
-        self._text = text
+            fonttype = fonttype,
+            fontsize = fontsize,
+            font_bold = font_bold,
+            font_italic = font_italic,
+            font_underline = font_underline,
+            font_overstrike = font_overstrike,
+            anchor = anchor,
+            apply_parent_background_color =  apply_parent_background_color,
+            ** tk_kwargs,
+        )
 
     def _update_font(self):
         # self._tk_kwargs will be passed to tk_widget later
@@ -107,7 +109,7 @@ class Text(BaseWidget):
             overstrike=bool(self._overstrike),
         )
 
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self, key:str, new_val: Any) -> bool|None:
         # Fish out all special keys to process them seperately
         match key:
             case "text":
@@ -131,10 +133,6 @@ class Text(BaseWidget):
             case "font_overstrike":
                 self._overstrike = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
-            case "background_color":
-                self._tk_kwargs["background"] = self.defaults.single(key,new_val)
-            case "text_color":
-                self._tk_kwargs["foreground"] = self.defaults.single(key,new_val)
             case "apply_parent_background_color":
                 if new_val:
                     self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
