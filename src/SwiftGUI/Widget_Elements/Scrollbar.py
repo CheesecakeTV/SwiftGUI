@@ -1,8 +1,7 @@
-import tkinter as tk
 from tkinter import ttk
-from typing import Literal, Any, Self
+from typing import Any, Self
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, BaseWidgetTTK
+from SwiftGUI import BaseWidget, GlobalOptions, BaseWidgetTTK, Literals, Color
 
 
 class Scrollbar(BaseWidgetTTK):
@@ -19,6 +18,17 @@ class Scrollbar(BaseWidgetTTK):
             /,
             key: Any = None,
 
+            cursor: Literals.cursor = None,
+            #takefocus: bool = None,
+
+            background_color: str | Color = None,
+            background_color_active: str | Color = None,
+
+            text_color: str | Color = None,
+            text_color_active: str | Color = None,
+
+            troughcolor: str | Color = None,
+
             # Add here
             expand: bool = None,
             expand_y: bool = None,
@@ -27,66 +37,43 @@ class Scrollbar(BaseWidgetTTK):
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
 
         self._update_initial(
+            cursor = cursor,
+            background_color = background_color,
+            background_color_active = background_color_active,
 
+            text_color = text_color,
+            text_color_active = text_color_active,
+
+            troughcolor = troughcolor,
+            #takefocus = takefocus,
         )
 
     _tab_texts: dict[Any, str]
     _background_color_tabs_active = None   # If this stays None, normal background_color will be applied
     def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         match key:
-            case "tabposition":
-                self._config_ttk_style(tabposition=new_val)
-            case "apply_parent_background_color":
-                if new_val:
-                    self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
-                else:
-                    self.remove_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
-            case "tab_texts":
-                self._tab_texts.update(new_val)
             case "background_color":
-                self._config_ttk_style(background=new_val)
-                #self._config_ttk_style(background=new_val, style_ext = "Tab")
+                self._map_ttk_style(
+                    background=[("!pressed", new_val)]
+                )
+            case "background_color_active":
+                self._map_ttk_style(
+                    background=[("pressed", new_val)]
+                )
 
-                for tab in self._elements:
-                    if tab.has_flag(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR):
-                        tab._update_initial(background_color=new_val)
+            case "text_color":
+                self._map_ttk_style(
+                    arrowcolor=[("!pressed", new_val)]
+                )
+            case "text_color_active":
+                self._map_ttk_style(
+                    arrowcolor=[("pressed", new_val)]
+                )
 
-                if self._background_color_tabs_active is None:  # If no active tab-color, apply the background color. Looks better
-                    self._map_ttk_style("Tab", background=[("selected", new_val)])
+            case "troughcolor":
+                self._config_ttk_style(troughcolor = new_val)
+                return True
 
-            case "background_color_tabs":
-                self._map_ttk_style("Tab", background = [("!selected", new_val)])
-            case "background_color_tabs_active":
-                self._background_color_tabs_active = new_val
-                self._map_ttk_style("Tab", background = [("selected", self.defaults.single("background_color", new_val))])
-
-            case "text_color_tabs":
-                self._map_ttk_style("Tab", foreground=[("!selected", new_val)])
-            case "text_color_tabs_active":
-                self._map_ttk_style("Tab", foreground=[("selected", new_val)])
-
-            case "fonttype_tabs":
-                self._fonttype_tabs = self.defaults.single("fonttype", self.defaults.single(key,new_val))
-                self.add_flags(ElementFlag.UPDATE_FONT)
-            case "fontsize_tabs":
-                self._fontsize_tabs = self.defaults.single("fontsize", self.defaults.single(key,new_val))
-                self.add_flags(ElementFlag.UPDATE_FONT)
-            case "font_bold_tabs":
-                self._bold_tabs = self.defaults.single("font_bold", self.defaults.single(key,new_val))
-                self.add_flags(ElementFlag.UPDATE_FONT)
-            case "font_italic_tabs":
-                self._italic_tabs = self.defaults.single("font_italic", self.defaults.single(key,new_val))
-                self.add_flags(ElementFlag.UPDATE_FONT)
-            case "font_underline_tabs":
-                self._underline_tabs = self.defaults.single("font_underline", self.defaults.single(key,new_val))
-                self.add_flags(ElementFlag.UPDATE_FONT)
-            case "font_overstrike_tabs":
-                self._overstrike_tabs = self.defaults.single("font_overstrike", self.defaults.single(key,new_val))
-                self.add_flags(ElementFlag.UPDATE_FONT)
-
-
-            case "borderwidth":
-                self._config_ttk_style(borderwidth=new_val)
             case _:
                 return super()._update_special_key(key, new_val)
 

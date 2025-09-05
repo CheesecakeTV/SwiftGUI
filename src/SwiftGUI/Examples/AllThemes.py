@@ -39,7 +39,7 @@ def preview_all_themes() -> None:
                         sg.Check("I like it!"),
                         sg.Button("Take a closer look", key = key),
                     ], [
-                        sg.Listbox(["Listbox", "with", "some", "elements"], width=15, height=3, scrollbar=False),
+                        sg.Listbox(["Listbox", "with", "some", "elements", "and", "a scrollbar"], width=15, height=3, scrollbar=True),
                         sg.VSep(),
                         sg.TextField("TextField", width=15, height=3, scrollbar=False)
                     ]

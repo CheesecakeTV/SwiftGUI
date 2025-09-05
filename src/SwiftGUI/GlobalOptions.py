@@ -357,7 +357,7 @@ class Listbox(Common,Common_Textual,Common_Field_Background):
     highlightbackground_color: str | Color = None
     highlightthickness: int = None
 
-class Scrollbar(Common_Field_Background):
+class Scrollbar(Scale):
     ...
 
 class FileBrowseButton(Button):

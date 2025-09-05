@@ -13,12 +13,9 @@ left_tab = sg.TabFrame([
             key= "Listbox",
             default_event= True,
             key_function= sg.KeyFunctions.cycle_values("Text", "Hallo", "Welt"),
-            #scrollbar= False,
-        ).set_index(0),
-        # sg.Scrollbar(
-        #     expand_y= True,
-        #     #tk_kwargs= {"troughcolor":"red"}
-        # ).bind_to_element(lb)
+        ).set_index(0).update_scrollbar_y(cursor = "pirate"),
+    ],[
+        sg.Scale(background_color_active="red")
     ],[
         sg.MultistateButton(
             ["Hallo", "Welt", "Test"],
@@ -43,12 +40,6 @@ left_tab = sg.TabFrame([
             repeatinterval= 100,
             sliderlength= 50,
         )
-    ],[
-        sg.Multiline(
-            "Hallo\nWelt\n\n" * 10,
-            height=10,
-            scrollbar= True,
-        ).update_scrollbar_y(cursor= "pirate")
     ]
 ], key= "left", default_event=True, key_function= lambda elem:print(elem.text))
 
