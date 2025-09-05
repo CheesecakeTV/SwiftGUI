@@ -3,10 +3,10 @@ import tkinter.font as font
 from collections.abc import Iterable, Callable
 from typing import Literal, Any, Self
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, Scrollbar, BaseScrollbar
 
 
-class TextField(BaseWidget):
+class TextField(BaseWidget, BaseScrollbar):
     tk_widget:tk.Text
     _tk_widget:tk.Text
     _tk_widget_class:type = tk.Text # Class of the connected widget
@@ -130,6 +130,7 @@ class TextField(BaseWidget):
 
         if self.defaults.single("scrollbar", scrollbar):
             self.add_flags(ElementFlag.HAS_SCROLLBAR_Y)
+            self.scrollbar_y = Scrollbar(expand_y=True)
 
         if tk_kwargs is None:
             tk_kwargs = dict()
@@ -261,13 +262,6 @@ class TextField(BaseWidget):
         super().init_window_creation_done()
         self.value = self._initial_text
         del self._initial_text
-
-    def _personal_init(self):
-        super()._personal_init()
-
-        if self.has_flag(ElementFlag.HAS_SCROLLBAR_Y):
-            self.tk_widget.configure(yscrollcommand=self._tk_scrollbar_y.set)
-            self._tk_scrollbar_y.configure(command=self.tk_widget.yview)
 
     # @BaseWidget._run_after_window_creation
     # def see(self, index: int) -> Self:

@@ -2,20 +2,23 @@ import SwiftGUI as sg
 
 ### Global options ###
 sg.Themes.FourColors.DarkGold()
-sg.Examples.preview_all_elements()
-exit()
 
 ### Layout ###
 left_tab = sg.TabFrame([
     [
         sg.T("Text", key = "Text")
     ],[
-        sg.Listbox(
-            range(10),
+        lb := sg.Listbox(
+            range(20),
             key= "Listbox",
             default_event= True,
-            key_function= sg.KeyFunctions.cycle_values("Text", "Hallo", "Welt")
+            key_function= sg.KeyFunctions.cycle_values("Text", "Hallo", "Welt"),
+            #scrollbar= False,
         ).set_index(0),
+        # sg.Scrollbar(
+        #     expand_y= True,
+        #     #tk_kwargs= {"troughcolor":"red"}
+        # ).bind_to_element(lb)
     ],[
         sg.MultistateButton(
             ["Hallo", "Welt", "Test"],
@@ -40,6 +43,12 @@ left_tab = sg.TabFrame([
             repeatinterval= 100,
             sliderlength= 50,
         )
+    ],[
+        sg.Multiline(
+            "Hallo\nWelt\n\n" * 10,
+            height=10,
+            scrollbar= True,
+        ).update_scrollbar_y(cursor= "pirate")
     ]
 ], key= "left", default_event=True, key_function= lambda elem:print(elem.text))
 

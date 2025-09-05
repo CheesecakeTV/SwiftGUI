@@ -5,7 +5,7 @@ from functools import partial
 from tkinter import font
 from typing import Any, Self
 
-from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement
+from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement, Scrollbar, BaseScrollbar
 
 
 class TableRow(list):
@@ -110,7 +110,7 @@ class TableRow(list):
 
         return super().__eq__(other)
 
-class Table(BaseWidgetTTK):
+class Table(BaseWidgetTTK, BaseScrollbar):
     tk_widget:ttk.Treeview
     _tk_widget:ttk.Treeview
     _tk_widget_class:type = ttk.Treeview # Class of the connected widget
@@ -180,6 +180,7 @@ class Table(BaseWidgetTTK):
 
         if self.defaults.single("scrollbar", scrollbar):
             self.add_flags(ElementFlag.HAS_SCROLLBAR_Y)
+            self.scrollbar_y = Scrollbar(expand_y= True)
 
         self._elements = list()
         self._element_dict = dict()
@@ -429,10 +430,6 @@ class Table(BaseWidgetTTK):
 
     def _personal_init(self):
         super()._personal_init()
-
-        if self.has_flag(ElementFlag.HAS_SCROLLBAR_Y):
-            self.tk_widget.configure(yscrollcommand=self._tk_scrollbar_y.set)
-            self._tk_scrollbar_y.configure(command=self.tk_widget.yview)
 
     _font_size_multiplier: int = 1  # Size of a single character in pixels
     _font_size_multiplier_applied: int = 1  # Applied value so to catch changes
