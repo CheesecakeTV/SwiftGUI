@@ -8,7 +8,11 @@ class _BaseTheme_meta(type):
         returning: type | "BaseTheme" = super().__new__(mcs, name, bases, namespace)
 
         if not (name.startswith("Base") or name.startswith("_")):
-            all_themes[returning.suffix + name] = returning
+            suffix = ""
+            if returning.suffix:
+                suffix = returning.suffix + "."
+
+            all_themes[suffix + name] = returning
 
         return returning
 
@@ -16,7 +20,7 @@ class BaseTheme(metaclass= _BaseTheme_meta):
     """
     Inherit this to create your own theme
     """
-    suffix: str = ""    # Will be added before the name in all_themes
+    suffix: str = "Custom"    # Will be added before the name in all_themes
 
     def __init__(self):
         self.apply()
@@ -24,7 +28,6 @@ class BaseTheme(metaclass= _BaseTheme_meta):
     def __call__(self, *args, **kwargs):
         self.apply()
 
-    @abstractmethod
     def apply(self) -> None:
         """
         Configurations belong in here

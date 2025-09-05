@@ -3,8 +3,10 @@ from SwiftGUI import font_windows, Color
 
 from SwiftGUI.Themes._BaseTheme import BaseTheme
 
+class BaseThematic(BaseTheme):
+    suffix = "Thematic"
 
-class _FacebookMom(BaseTheme):
+class FacebookMom(BaseThematic):
     def apply(self) -> None:
         #go.Common.background_color = Color.light_goldenrod_yellow
         go.Common_Background.background_color = Color.light_goldenrod_yellow
@@ -22,7 +24,7 @@ class _FacebookMom(BaseTheme):
 
         go.Button.background_color = Color.green2
 
-class Hacker(BaseTheme):
+class Hacker(BaseThematic):
 
     def apply(self) -> None:
         go.Common_Textual.fonttype = font_windows.Fixedsys
