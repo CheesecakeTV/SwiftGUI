@@ -13,15 +13,13 @@ left_tab = sg.TabFrame([
             key="Combo",
             key_function=lambda val: print(val),
             default_event=True,
-            can_change_text=True,
             fontsize= 8,
         ),
-        test := sg.Combobox(
+        test := sg.Combo(
             ["Hallo", "Welt", ""],
             key="Combo",
             key_function=lambda val: print(val),
             default_event=True,
-            can_change_text=True,
             fontsize= 14,
         ),
     ],[

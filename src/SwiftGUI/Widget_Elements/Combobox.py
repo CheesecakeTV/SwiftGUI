@@ -1,4 +1,3 @@
-import tkinter.font
 from tkinter import ttk, font
 from typing import Any, Iterable, Callable
 from SwiftGUI.Compat import Self
