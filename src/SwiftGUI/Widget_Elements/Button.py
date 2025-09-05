@@ -1,10 +1,9 @@
 import tkinter as tk
 import tkinter.font as font
-import tkinter.ttk as ttk
 from collections.abc import Iterable, Callable
 from typing import Literal
 
-from SwiftGUI import BaseElement, ElementFlag, BaseWidget, BaseWidgetContainer, GlobalOptions, Literals, Color
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
 
 class Button(BaseWidget):

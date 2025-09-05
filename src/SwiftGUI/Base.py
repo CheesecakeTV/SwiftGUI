@@ -1,9 +1,10 @@
 from collections.abc import Iterable, Callable
 from functools import wraps
-from typing import Literal, Self, Union, Any
+from typing import Literal, Union, Any
+from SwiftGUI.Compat import Self
 import tkinter as tk
 
-from SwiftGUI import Event, GlobalOptions, Color, remove_None_vals
+from SwiftGUI import Event, GlobalOptions, Color, remove_None_vals, Literals
 from SwiftGUI.ElementFlags import ElementFlag
 #from SwiftGUI.Widget_Elements.Frame import Frame
 
@@ -509,9 +510,10 @@ class BaseWidget(BaseElement):
 
                 self._tk_widget.pack(**temp)
 
-                if self.has_flag(ElementFlag.HAS_SCROLLBAR_Y):
-                    self._tk_scrollbar_y = tk.Scrollbar(container, orient="vertical")
-                    self._tk_scrollbar_y.pack(expand= True, fill= "y", side= "left")
+                if hasattr(self, "scrollbar_y"):
+                    self.scrollbar_y._init(self.parent, self.window)
+                    self.scrollbar_y.bind_to_element(self)
+                    self.scrollbar_y.tk_widget.pack(expand= True, fill= "y", side= "left")
 
             case "grid":
                 self._tk_widget.grid(**self._insert_kwargs)
@@ -651,6 +653,41 @@ class BaseWidget(BaseElement):
                 pass
 
         return default  # Well, gave it my best shot...
+
+class BaseScrollbar:
+    """
+    Base for every widget that has a scrollbar.
+
+    Probably the most annoying feature to implement, but it works now...
+    Appreciate it.
+    """
+    scrollbar_y: BaseWidget # Actually type sg.Scrollbar, but yeah...
+
+    @run_after_window_creation
+    def update_scrollbar_y(
+            self,
+            cursor: Literals.cursor = None,
+            # takefocus: bool = None,
+
+            background_color: str | Color = None,
+            background_color_active: str | Color = None,
+
+            text_color: str | Color = None,
+            text_color_active: str | Color = None,
+
+            troughcolor: str | Color = None,
+    ) -> Self:
+        assert hasattr(self, "scrollbar_y"), f"{self} has no scrollbar, so .update_scrollbar_y can't be called..."
+        self.scrollbar_y.update(
+            cursor = cursor,
+            background_color = background_color,
+            background_color_active = background_color_active,
+            text_color = text_color,
+            text_color_active = text_color_active,
+            troughcolor = troughcolor,
+        )
+        return self
+
 
 class BaseWidgetContainer(BaseWidget):
     """

@@ -1,7 +1,8 @@
 
 from collections.abc import Iterable, Callable
 from functools import partial
-from typing import Any, Self
+from typing import Any
+from SwiftGUI.Compat import Self
 import json
 
 from SwiftGUI import BaseElement, Frame, Text, Input, BaseCombinedElement, Button

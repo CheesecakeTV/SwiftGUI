@@ -357,6 +357,9 @@ class Listbox(Common,Common_Textual,Common_Field_Background):
     highlightbackground_color: str | Color = None
     highlightthickness: int = None
 
+class Scrollbar(Scale):
+    ...
+
 class FileBrowseButton(Button):
     file_browse_type: Literals.file_browse_types = "open_single"
     file_browse_filetypes: Literals.file_browse_filetypes = (("All files","*"),)

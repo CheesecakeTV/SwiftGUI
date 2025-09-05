@@ -1,4 +1,5 @@
-from typing import Any, Callable, Iterable, Self, Literal
+from typing import Any, Callable, Iterable, Literal
+from SwiftGUI.Compat import Self
 from functools import partial
 
 import SwiftGUI as sg

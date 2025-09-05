@@ -1,5 +1,3 @@
-from itertools import batched, starmap, chain
-
 import SwiftGUI as sg
 from SwiftGUI import Color,font_windows
 

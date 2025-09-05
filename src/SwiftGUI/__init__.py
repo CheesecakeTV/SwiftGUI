@@ -1,4 +1,5 @@
 
+from . import Compat
 from .Tools import clipboard_copy, clipboard_paste, remove_None_vals
 
 from .Colors import Color,rgb
@@ -7,9 +8,10 @@ from . import GlobalOptions, Literals, Tools, Debug
 from .ElementFlags import ElementFlag
 
 from .Events import Event
-from .Base import BaseElement,BaseWidget,BaseWidgetContainer,ElementFlag,BaseWidgetTTK,BaseCombinedElement
+from .Base import BaseElement,BaseWidget,BaseWidgetContainer,ElementFlag,BaseWidgetTTK,BaseCombinedElement, BaseScrollbar
 #from .KeyManager import Key,SEPARATOR,duplicate_warnings   # Todo: Make some decent key-manager
 
+from .Widget_Elements.Scrollbar import Scrollbar
 from .Widget_Elements.Text import Text
 from .Widget_Elements.Button import Button
 from .Widget_Elements.Checkbox import Checkbox

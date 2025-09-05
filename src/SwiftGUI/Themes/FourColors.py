@@ -8,7 +8,7 @@ Check it out, great website!
 """
 
 class BaseFourColors(BaseTheme):
-    suffix = "FourColors."
+    suffix = "FourColors"
 
     col1 = "" # Dark text
     col2 = "" # Background

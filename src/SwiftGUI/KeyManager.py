@@ -1,4 +1,4 @@
-from typing import Self
+from SwiftGUI.Compat import Self
 
 All_Keys:dict[str:"Key"] = dict()
 SEPARATOR = "."

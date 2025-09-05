@@ -9,6 +9,9 @@ but their codebase is an utter mess.
 `SwiftGUI` adapts some concepts of `PySimpleGUI`, but is even simpler (in my opinion)
 and allows writing less offputting code.
 
+## Compatible with Python 3.10 and above
+, but intended for Python 3.13 and above.
+
 # Getting started
 [Start your journey here](https://github.com/CheesecakeTV/SwiftGUI/blob/60f839fd6dab1fa0e087ab0df4986a8b578d4fa3/Docs/01%20Basic%20tutorials/01%20Getting-started.md)
 

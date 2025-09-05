@@ -2,20 +2,20 @@ import SwiftGUI as sg
 
 ### Global options ###
 sg.Themes.FourColors.DarkGold()
-sg.Examples.preview_all_elements()
-exit()
 
 ### Layout ###
 left_tab = sg.TabFrame([
     [
         sg.T("Text", key = "Text")
     ],[
-        sg.Listbox(
-            range(10),
+        lb := sg.Listbox(
+            range(20),
             key= "Listbox",
             default_event= True,
-            key_function= sg.KeyFunctions.cycle_values("Text", "Hallo", "Welt")
-        ).set_index(0),
+            key_function= sg.KeyFunctions.cycle_values("Text", "Hallo", "Welt"),
+        ).set_index(0).update_scrollbar_y(cursor = "pirate"),
+    ],[
+        sg.Scale(background_color_active="red")
     ],[
         sg.MultistateButton(
             ["Hallo", "Welt", "Test"],

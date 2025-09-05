@@ -1,12 +1,13 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Self, Any
+from typing import Any
+from SwiftGUI.Compat import Self
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, BaseElement
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, BaseElement, Scrollbar, BaseScrollbar
 
 
-class Listbox(BaseWidget):
+class Listbox(BaseWidget, BaseScrollbar):
     _tk_widget_class: type = tk.Listbox  # Class of the connected widget
     tk_widget: tk.Listbox
     defaults = GlobalOptions.Listbox  # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
@@ -66,6 +67,7 @@ class Listbox(BaseWidget):
 
         if self.defaults.single("scrollbar", scrollbar):
             self.add_flags(ElementFlag.HAS_SCROLLBAR_Y)
+            self.scrollbar_y = Scrollbar(expand_y= True)
 
         self._key_function = key_function
         if default_list is None:
@@ -113,10 +115,6 @@ class Listbox(BaseWidget):
 
     def _personal_init(self):
         super()._personal_init()
-
-        if self.has_flag(ElementFlag.HAS_SCROLLBAR_Y):
-            self.tk_widget.configure(yscrollcommand=self._tk_scrollbar_y.set)
-            self._tk_scrollbar_y.configure(command=self.tk_widget.yview)
 
         # if self._default_event:
         #     self._tk_kwargs["command"] = self.window.get_event_function(self, key=self.key,
