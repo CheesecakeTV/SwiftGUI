@@ -1,5 +1,6 @@
 from tkinter import ttk
-from typing import Any, Self
+from typing import Any
+from SwiftGUI.Compat import Self
 
 from SwiftGUI import BaseWidget, GlobalOptions, BaseWidgetTTK, Literals, Color
 

@@ -3,7 +3,8 @@ import tkinter.ttk as ttk
 from collections.abc import Iterable, Callable, Iterator
 from functools import partial
 from tkinter import font
-from typing import Any, Self
+from typing import Any
+from SwiftGUI.Compat import Self
 
 from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement, Scrollbar, BaseScrollbar
 

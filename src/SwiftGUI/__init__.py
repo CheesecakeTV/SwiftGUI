@@ -1,4 +1,5 @@
 
+from . import Compat
 from .Tools import clipboard_copy, clipboard_paste, remove_None_vals
 
 from .Colors import Color,rgb

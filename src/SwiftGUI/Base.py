@@ -1,6 +1,7 @@
 from collections.abc import Iterable, Callable
 from functools import wraps
-from typing import Literal, Self, Union, Any
+from typing import Literal, Union, Any
+from SwiftGUI.Compat import Self
 import tkinter as tk
 
 from SwiftGUI import Event, GlobalOptions, Color, remove_None_vals, Literals

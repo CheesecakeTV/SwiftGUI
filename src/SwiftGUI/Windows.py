@@ -3,7 +3,8 @@ import tkinter as tk
 from os import PathLike
 from tkinter import ttk
 from collections.abc import Iterable,Callable
-from typing import TYPE_CHECKING, Self, Any
+from typing import TYPE_CHECKING, Any
+from SwiftGUI.Compat import Self
 import inspect
 from PIL import Image, ImageTk
 

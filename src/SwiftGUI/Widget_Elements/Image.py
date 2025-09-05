@@ -1,7 +1,8 @@
 import io
 import tkinter as tk
 from os import PathLike
-from typing import Any, Self, IO
+from typing import Any, IO
+from SwiftGUI.Compat import Self
 from PIL import Image as PIL_Image
 from PIL import ImageTk
 

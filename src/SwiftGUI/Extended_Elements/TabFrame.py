@@ -1,9 +1,9 @@
 import tkinter as tk
 from collections.abc import Iterable
-from typing import Self, Any, Callable
+from typing import Any, Callable
+from SwiftGUI.Compat import Self
 
-from SwiftGUI import BaseElement, ElementFlag, BaseWidgetContainer, GlobalOptions, Literals, Color, BaseWidget, Frame, \
-    Text, font_windows
+from SwiftGUI import BaseElement, GlobalOptions, Literals, Color, Frame
 from SwiftGUI.Widget_Elements.Notebook import Notebook
 
 

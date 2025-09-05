@@ -1,10 +1,9 @@
-import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal, Any
+from typing import Any
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions
 
 class DictBidirect(dict):
     """

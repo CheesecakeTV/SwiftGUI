@@ -1,4 +1,5 @@
-from itertools import batched
+#from itertools import batched
+from SwiftGUI.Compat import batched
 import SwiftGUI as sg
 
 def preview_all_themes() -> None:

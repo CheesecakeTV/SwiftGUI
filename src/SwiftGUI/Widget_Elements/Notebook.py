@@ -1,6 +1,7 @@
 import tkinter.ttk as ttk
 from collections.abc import Iterable, Callable
-from typing import Any, Self
+from typing import Any
+from SwiftGUI.Compat import Self
 
 from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement, Frame, Font
 from SwiftGUI.Widget_Elements.Spacer import Spacer
