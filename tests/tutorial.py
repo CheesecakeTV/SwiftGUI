@@ -2,16 +2,28 @@ import SwiftGUI as sg
 
 ### Global options ###
 sg.Themes.FourColors.DarkGold()
+#sg.Examples.preview_all_elements()
+#sg.Examples.preview_all_themes()
 
 ### Layout ###
 left_tab = sg.TabFrame([
     [
         sg.Combobox(
             ["Hallo", "Welt", ""],
-            key= "Combo",
-            key_function= lambda val:print(val),
-            default_event= True
-        )
+            key="Combo",
+            key_function=lambda val: print(val),
+            default_event=True,
+            can_change_text=True,
+            fontsize= 8,
+        ),
+        test := sg.Combobox(
+            ["Hallo", "Welt", ""],
+            key="Combo",
+            key_function=lambda val: print(val),
+            default_event=True,
+            can_change_text=True,
+            fontsize= 14,
+        ),
     ],[
         sg.T("Text", key = "Text")
     ],[

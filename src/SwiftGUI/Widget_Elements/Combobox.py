@@ -1,8 +1,9 @@
-from tkinter import ttk
+import tkinter.font
+from tkinter import ttk, font
 from typing import Any, Iterable, Callable
 from SwiftGUI.Compat import Self
 
-from SwiftGUI import GlobalOptions, BaseWidgetTTK, Literals, Color
+from SwiftGUI import GlobalOptions, BaseWidgetTTK, Literals, Color, ElementFlag
 
 
 class Combobox(BaseWidgetTTK):
@@ -25,12 +26,28 @@ class Combobox(BaseWidgetTTK):
             default_value: str = None,
 
             cursor: Literals.cursor = None,
+            insertbackground: str | Color = None,
 
-            # background_color: str | Color = None,
-            # background_color_active: str | Color = None,
+            background_color: str | Color = None,
+            background_color_disabled: str | Color = None,
+            selectbackground_color: str | Color = None,
 
-            # text_color: str | Color = None,
-            # text_color_active: str | Color = None,
+            text_color: str | Color = None,
+            text_color_disabled: str | Color = None,
+            select_text_color: str | Color = None,
+
+            fonttype: str = None,
+            fontsize: int = None,
+            font_bold: bool = None,
+            font_italic: bool = None,
+            font_underline: bool = None,
+            font_overstrike: bool = None,
+
+            button_background_color= None,
+            button_background_color_active= None,
+
+            arrow_color= None,
+            arrow_color_active= None,
 
             disabled: bool = None,
             can_change_text: bool = None,
@@ -76,6 +93,25 @@ class Combobox(BaseWidgetTTK):
             takefocus = takefocus,
             disabled = disabled,
             can_change_text = can_change_text,
+            background_color = background_color,
+            background_color_disabled = background_color_disabled,
+            selectbackground_color = selectbackground_color,
+            text_color = text_color,
+            text_color_disabled = text_color_disabled,
+            select_text_color = select_text_color,
+            button_background_color = button_background_color,
+            button_background_color_active= button_background_color_active,
+            arrow_color = arrow_color,
+            arrow_color_active= arrow_color_active,
+
+            fonttype=fonttype,
+            fontsize=fontsize,
+            font_bold=font_bold,
+            font_italic=font_italic,
+            font_underline=font_underline,
+            font_overstrike=font_overstrike,
+
+            insertbackground = insertbackground,
         )
 
     _tab_texts: dict[Any, str]
@@ -88,26 +124,57 @@ class Combobox(BaseWidgetTTK):
                 else:
                     self._tk_kwargs["values"] = tuple()
                 return False
+
+            case "insertbackground":
+                self._config_ttk_style(insertcolor=new_val)
+
+            case "arrow_color":
+                self._map_ttk_style(arrowcolor=(("!pressed", new_val), ))
+            case "arrow_color_active":
+                self._map_ttk_style(arrowcolor=(("pressed", new_val), ))
+
+            case "button_background_color":
+                self._map_ttk_style(background=(("!pressed", new_val), ))
+            case "button_background_color_active":
+                self._map_ttk_style(background=(("pressed", new_val), ))
+
             case "background_color":
-                self._map_ttk_style(
-                    background=[("!active", new_val)]
-                )
-            case "background_color_active":
-                self._map_ttk_style(
-                    background=[("active", new_val)]
-                )
+                self._map_ttk_style(fieldbackground=(("!disabled", new_val), ))
+            case "background_color_disabled":
+                self._map_ttk_style(fieldbackground=(("disabled", new_val), ))
 
             case "text_color":
-                self._map_ttk_style(
-                    arrowcolor=[("!active", new_val)]
-                )
-            case "text_color_active":
-                self._map_ttk_style(
-                    arrowcolor=[("active", new_val)]
-                )
+                self._map_ttk_style(foreground=(("!disabled", new_val),))
+            case "text_color_disabled":
+                self._map_ttk_style(foreground=(("disabled", new_val),))
+
+            case "selectbackground_color":
+                self._config_ttk_style(selectbackground= new_val)
+            case "select_text_color":
+                self._config_ttk_style(selectforeground= new_val)
 
             case "default_event":
                 self._default_event = new_val
+
+            case "fonttype":
+                self._fonttype = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "fontsize":
+                self._fontsize = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+                self._config_ttk_style(arrowsize= new_val)
+            case "font_bold":
+                self._bold = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "font_italic":
+                self._italic = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "font_underline":
+                self._underline = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
+            case "font_overstrike":
+                self._overstrike = self.defaults.single(key,new_val)
+                self.add_flags(ElementFlag.UPDATE_FONT)
 
             case "disabled":
                 if not self.window:
@@ -125,6 +192,29 @@ class Combobox(BaseWidgetTTK):
                 return super()._update_special_key(key, new_val)
 
         return True
+
+    def _update_font(self):
+        # self._tk_kwargs will be passed to tk_widget later
+        self._tk_kwargs["font"] = font.Font(
+            self.window.parent_tk_widget,
+            family=self._fonttype,
+            size=self._fontsize,
+            weight="bold" if self._bold else "normal",
+            slant="italic" if self._italic else "roman",
+            underline=bool(self._underline),
+            overstrike=bool(self._overstrike),
+        )
+
+        self.tk_widget.option_add(f"*TCombobox*Listbox*Font", self._tk_kwargs["font"])
+        self.tk_widget.tk.call("ttk::combobox::PopdownWindow", self.tk_widget)  # WHY does this work?!?!?! I hate my life!
+
+    def _apply_update(self):
+        # If the font changed, apply them to self._tk_kwargs
+        if self.has_flag(ElementFlag.UPDATE_FONT):
+            self._update_font()
+            self.remove_flags(ElementFlag.UPDATE_FONT)
+
+        super()._apply_update() # Actually apply the update
 
     _prev_value: str    # Value of last callback
     def _value_change_callback(self, *_):
@@ -147,3 +237,6 @@ class Combobox(BaseWidgetTTK):
 
     def init_window_creation_done(self):
         super().init_window_creation_done()
+
+        # So not everything gets selected when chosing something from the drop-down
+        self.tk_widget.bind("<<ComboboxSelected>>", lambda *_:self.tk_widget.selection_clear())

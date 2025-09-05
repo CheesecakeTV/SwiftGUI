@@ -482,7 +482,13 @@ class Spinbox(Button, Input):
     state: Literals.Spinbox_State = None
 
 class Combobox(Button, Input):
-    ...
+    background_color_disabled: str | Color = None
+    button_background_color = None
+    button_background_color_active = None
+    arrow_color = None
+    arrow_color_active = None
+    can_change_text: bool = False
+    insertbackground: str | Color = None
 
 class Image(Common_Background):
     height: int = None
