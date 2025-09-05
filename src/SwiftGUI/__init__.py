@@ -29,6 +29,7 @@ from .Widget_Elements.LabelFrame import LabelFrame
 from .Widget_Elements.Radiobutton import Radiobutton, RadioGroup
 from .Widget_Elements.Spinbox import Spinbox
 from .Widget_Elements.Scale import Scale
+from .Widget_Elements.Combobox import Combobox
 
 from .Combined_Elements.Form import Form
 from .Combined_Elements.MultistateButton import MultistateButton

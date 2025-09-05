@@ -6,6 +6,13 @@ sg.Themes.FourColors.DarkGold()
 ### Layout ###
 left_tab = sg.TabFrame([
     [
+        sg.Combobox(
+            ["Hallo", "Welt", ""],
+            key= "Combo",
+            key_function= lambda val:print(val),
+            default_event= True
+        )
+    ],[
         sg.T("Text", key = "Text")
     ],[
         lb := sg.Listbox(
@@ -23,7 +30,6 @@ left_tab = sg.TabFrame([
             default_selection= "H",
             can_deselect= False,
             key="Multistate",
-            key_function= lambda val: print(val),
         )
     ],[
         sg.Scale(
@@ -41,7 +47,7 @@ left_tab = sg.TabFrame([
             sliderlength= 50,
         )
     ]
-], key= "left", default_event=True, key_function= lambda elem:print(elem.text))
+], key= "left", default_event=True)
 
 right_tab = sg.TabFrame([
     [sg.T("Smaller element")],
@@ -75,7 +81,6 @@ w = sg.Window(layout)
 for e,v in w:
     #print(nb.value)
     print(e,v)
-    print(text.get_option("blabli"))
 
     if e == "Multistate":
         text.update(background_color= "red")
