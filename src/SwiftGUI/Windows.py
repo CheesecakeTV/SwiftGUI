@@ -321,7 +321,7 @@ class Window(BaseElement):
         if self.has_flag(ElementFlag.IS_CREATED):
             self.root.destroy()
 
-    def loop_close(self) -> tuple[any,dict[any:any]]:
+    def loop_close(self) -> tuple[Any,dict[Any:Any]]:
         """
         Loop once, then close
         :return:
@@ -365,25 +365,30 @@ class Window(BaseElement):
 
             self.all_key_elements[elem.key] = elem
 
-    def throw_event(self,key:any,value:any=None):
+    def throw_event(self, key: Any = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
         """
         Thread-safe method to generate a custom event.
 
+        :param function_kwargs: Will be passed to function
+        :param function_args: Will be passed to function
+        :param function: This function will be called on the main thread
         :param key:
         :param value: If not None, it will be saved inside the value-_dict until changed
         :return:
         """
-        # Todo: Add a function to call
         if not self.exists:
             return
 
-        #if value is not None:
-            #self.values[key] = value
-        self._value_dict.set_extra_value(key, value)
-        self.root.after(0, self._receive_event, key)
+        if key is not None:
+            self._value_dict.set_extra_value(key, value)
+
+        if function_kwargs is None and function is not None:
+            function_kwargs = dict()
+
+        self.root.after(0, self._receive_event, key, function, function_args, function_kwargs)
 
     #@deprecated("WIP")
-    def throw_event_on_next_loop(self,key:any,value:any=None):
+    def throw_event_on_next_loop(self,key:Any,value:Any=None):
         """
         NOT THREAD-SAFE!!!
 
@@ -395,16 +400,25 @@ class Window(BaseElement):
         # Todo
         raise NotImplementedError("sg.Window.throw_event_on_next_loop is not ready to use yet")
 
-    def _receive_event(self,key:any):
+    def _receive_event(self, key:Any = None, callback: Callable = None, callback_args: tuple = tuple(), callback_kwargs: dict = None):
         """
         Gets called when an event is evoked
         :param key:
         :return:
         """
-        self._prev_event = key
-        self.root.quit()
+        # Call the function if given
+        if callback is not None:
+            if callback_kwargs is None:
+                callback_kwargs = dict()
 
-    def get_event_function(self,me:BaseElement,key:any=None,key_function:Callable|Iterable[Callable]=None,
+            callback(*callback_args, **callback_kwargs)
+
+        # Break out of the loop if a key is given
+        if key is not None:
+            self._prev_event = key
+            self.root.quit()
+
+    def get_event_function(self,me:BaseElement = None,key:Any=None,key_function:Callable|Iterable[Callable]=None,
                            )->Callable:
         """
         Returns a function that sets the event-variable accorting to key
@@ -426,7 +440,7 @@ class Window(BaseElement):
                     "w": self,  # Reference to main window
                     "e": key,   # Event-key, if there is one
                     "v": self._value_dict,   # All values
-                    "val": me.value,    # Value of element that caused the event
+                    "val": None if me is None else me.value,    # Value of element that caused the event
                     "elem": me,
                 }
 
@@ -436,7 +450,8 @@ class Window(BaseElement):
                     did_refresh = False
 
                     if fkt(**{i:kwargs[i] for i in offers}) is not None:
-                        kwargs["val"] = me.value
+                        if me is not None:
+                            kwargs["val"] = me.value
                         self._value_dict.invalidate_all_values()
                         did_refresh = True
 

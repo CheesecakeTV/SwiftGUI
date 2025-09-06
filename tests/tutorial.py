@@ -1,88 +1,31 @@
 import SwiftGUI as sg
+import threading
+import time
 
 ### Global options ###
 sg.Themes.FourColors.SinCity()
 #sg.Examples.preview_all_elements()
 #sg.Examples.preview_all_themes()
 
+def fkt():
+    n = 0
+    #my_fkt = w.get_event_function(me= w["An Event"], key="Custom key", key_function= lambda elem: elem.set_value(n))
+    while True:
+        time.sleep(1)
+        w.throw_event(function= print, function_args= ("Hallo", "Welt"), function_kwargs= {"sep": " - "})
+        n += 1
+
 ### Layout ###
-left_tab = sg.TabFrame([
-    [
-        sg.Combobox(
-            ["Hallo", "Welt", ""],
-            key="Combo",
-            key_function=lambda val: print(val),
-            default_event=True,
-            fontsize= 8,
-        ),
-        test := sg.Combo(
-            ["Hallo", "Welt", ""],
-            key="Combo",
-            key_function=lambda val: print(val),
-            default_event=True,
-            fontsize= 14,
-        ),
-    ],[
-        sg.T("Text", key = "Text")
-    ],[
-        lb := sg.Listbox(
-            range(20),
-            key= "Listbox",
-            default_event= True,
-            key_function= sg.KeyFunctions.cycle_values("Text", "Hallo", "Welt"),
-        ).set_index(0).update_scrollbar_y(cursor = "pirate"),
-    ],[
-        sg.Scale(background_color_active="red")
-    ],[
-        sg.MultistateButton(
-            ["Hallo", "Welt", "Test"],
-            button_keys= ["H", "W", "T", "Hü"],
-            default_selection= "H",
-            can_deselect= False,
-            key="Multistate",
-        )
-    ],[
-        sg.Scale(
-            default_value= 50,
-            number_max= 150,
-            highlightbackground_color= "red",
-            label= "test",
-            key = "Scale",
-            default_event= True,
-            tickinterval= 25,
-            expand = True,
-            width= 100,
-            repeatdelay= 500,
-            repeatinterval= 100,
-            sliderlength= 50,
-        )
-    ]
-], key= "left", default_event=True)
-
-right_tab = sg.TabFrame([
-    [sg.T("Smaller element")],
-    [sg.Button("Another smaller element", key= "Button")],
-    [sg.T("<-- sg.Listbox")]
-], key= "right")
-
 layout:list[list[sg.BaseElement]] = [
     [
-        text := sg.T("Test", padding=50)
-    ],
-    [
-        nb := sg.Notebook(
-            left_tab,
-            right_tab,
-            #default_event= True,
-            key = "NB",
-            default_event= True,
-            #background_color_tabs_active = sg.GlobalOptions.Common_Background.background_color
-        )
+        sg.Button("Hi, I'm an event", key="An Event")
     ]
 ]
 
 w = sg.Window(layout)
 #nb.value = "Harald"
+
+threading.Thread(target= fkt, daemon= True).start()
 
 ### Additional configurations/actions ###
 
@@ -91,9 +34,6 @@ w = sg.Window(layout)
 for e,v in w:
     #print(nb.value)
     print(e,v)
-
-    if e == "Multistate":
-        text.update(background_color= "red")
 
     #v["Listbox"] = "Funktioniert"
 
