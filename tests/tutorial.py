@@ -1,7 +1,7 @@
 import SwiftGUI as sg
 
 ### Global options ###
-sg.Themes.FourColors.DarkGold()
+sg.Themes.FourColors.SinCity()
 #sg.Examples.preview_all_elements()
 #sg.Examples.preview_all_themes()
 

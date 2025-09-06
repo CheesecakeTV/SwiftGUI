@@ -1,8 +1,10 @@
 from tkinter import ttk, font
 from typing import Any, Iterable, Callable
+
+from SwiftGUI import BaseWidget
 from SwiftGUI.Compat import Self
 
-from SwiftGUI import GlobalOptions, BaseWidgetTTK, Literals, Color, ElementFlag
+from SwiftGUI import GlobalOptions, BaseWidgetTTK, Literals, Color, ElementFlag, BaseElement
 
 
 class Combobox(BaseWidgetTTK):
@@ -116,6 +118,10 @@ class Combobox(BaseWidgetTTK):
     _tab_texts: dict[Any, str]
     _background_color_tabs_active = None   # If this stays None, normal background_color will be applied
     def _update_special_key(self,key:str,new_val:Any) -> bool|None:
+        if not self.window and key in ["background_color", "text_color", "selectbackground_color", "select_text_color"]:    # These can only be handled once the element exists
+            self.update_after_window_creation(**{key: new_val})
+            return True
+
         match key:
             case "values":
                 if new_val:
@@ -139,18 +145,27 @@ class Combobox(BaseWidgetTTK):
 
             case "background_color":
                 self._map_ttk_style(fieldbackground=(("!disabled", new_val), ))
+                self.tk_widget.tk.eval(
+                    f"[ttk::combobox::PopdownWindow {self.tk_widget}].f.l configure -background {new_val}")
+                #self.window.root.option_add('*TCombobox*Listbox*Background', "red")
             case "background_color_disabled":
                 self._map_ttk_style(fieldbackground=(("disabled", new_val), ))
 
             case "text_color":
                 self._map_ttk_style(foreground=(("!disabled", new_val),))
+                self.tk_widget.tk.eval(
+                    f"[ttk::combobox::PopdownWindow {self.tk_widget}].f.l configure -foreground {new_val}")
             case "text_color_disabled":
                 self._map_ttk_style(foreground=(("disabled", new_val),))
 
             case "selectbackground_color":
                 self._config_ttk_style(selectbackground= new_val)
+                self.tk_widget.tk.eval(
+                    f"[ttk::combobox::PopdownWindow {self.tk_widget}].f.l configure -selectbackground {new_val}")
             case "select_text_color":
                 self._config_ttk_style(selectforeground= new_val)
+                self.tk_widget.tk.eval(
+                    f"[ttk::combobox::PopdownWindow {self.tk_widget}].f.l configure -selectforeground {new_val}")
 
             case "default_event":
                 self._default_event = new_val
@@ -204,8 +219,7 @@ class Combobox(BaseWidgetTTK):
             overstrike=bool(self._overstrike),
         )
 
-        self.tk_widget.option_add(f"*TCombobox*Listbox*Font", self._tk_kwargs["font"])
-        self.tk_widget.tk.call("ttk::combobox::PopdownWindow", self.tk_widget)  # WHY does this work?!?!?! I hate my life!
+        self.tk_widget.tk.eval(f"[ttk::combobox::PopdownWindow {self.tk_widget}].f.l configure -font {self._tk_kwargs['font']}")
 
     def _apply_update(self):
         # If the font changed, apply them to self._tk_kwargs
