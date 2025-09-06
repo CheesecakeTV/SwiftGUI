@@ -165,13 +165,13 @@ class BaseElement:
         """
         return None
 
-    def set_value(self,val:Any):
+    def set_value(self,val:Any) -> Self:
         """
         Set the value of the element
         :param val: New value
         :return:
         """
-        pass
+        return self
 
     @property
     def value(self) -> Any:
@@ -618,11 +618,13 @@ class BaseWidget(BaseElement):
     def _apply_update(self):
         self._tk_widget.configure(self._tk_kwargs)
 
-    def set_value(self,val:Any):
+    def set_value(self,val:Any) -> Self:
         try:
             self._tk_target_value.set(val)
         except AttributeError:
             pass
+
+        return self
 
     def init_window_creation_done(self):
         super().init_window_creation_done()
