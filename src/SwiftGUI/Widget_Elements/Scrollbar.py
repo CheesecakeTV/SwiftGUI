@@ -20,7 +20,6 @@ class Scrollbar(BaseWidgetTTK):
             key: Any = None,
 
             cursor: Literals.cursor = None,
-            #takefocus: bool = None,
 
             background_color: str | Color = None,
             background_color_active: str | Color = None,
@@ -46,11 +45,8 @@ class Scrollbar(BaseWidgetTTK):
             text_color_active = text_color_active,
 
             troughcolor = troughcolor,
-            #takefocus = takefocus,
         )
 
-    _tab_texts: dict[Any, str]
-    _background_color_tabs_active = None   # If this stays None, normal background_color will be applied
     def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         match key:
             case "background_color":

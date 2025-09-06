@@ -87,6 +87,13 @@ class BaseFourColors(BaseTheme):
         temp.troughcolor = c2
         temp.background_color_active = c3
 
+        temp = go.Combobox
+        temp.arrow_color = c4
+        temp.button_background_color = c2
+        temp.arrow_color_active = c1
+        temp.button_background_color_active = c3
+        temp.insertbackground = c3
+
     def get_palette_frame(self, width: int = 50, height: int = 200) -> sg.Frame:
         """
         Returns an sg.Frame that contains the 4 containing colors.

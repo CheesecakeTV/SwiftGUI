@@ -1,72 +1,31 @@
 import SwiftGUI as sg
+import threading
+import time
 
 ### Global options ###
-sg.Themes.FourColors.DarkGold()
+sg.Themes.FourColors.SinCity()
+#sg.Examples.preview_all_elements()
+#sg.Examples.preview_all_themes()
+
+test_vals = [[i] for i in range(100_000)]
+
 
 ### Layout ###
-left_tab = sg.TabFrame([
+layout = [
     [
-        sg.T("Text", key = "Text")
-    ],[
-        lb := sg.Listbox(
-            range(20),
-            key= "Listbox",
-            default_event= True,
-            key_function= sg.KeyFunctions.cycle_values("Text", "Hallo", "Welt"),
-        ).set_index(0).update_scrollbar_y(cursor = "pirate"),
-    ],[
-        sg.Scale(background_color_active="red")
-    ],[
-        sg.MultistateButton(
-            ["Hallo", "Welt", "Test"],
-            button_keys= ["H", "W", "T", "Hü"],
-            default_selection= "H",
-            can_deselect= False,
-            key="Multistate",
-            key_function= lambda val: print(val),
-        )
-    ],[
-        sg.Scale(
-            default_value= 50,
-            number_max= 150,
-            highlightbackground_color= "red",
-            label= "test",
-            key = "Scale",
-            default_event= True,
-            tickinterval= 25,
-            expand = True,
-            width= 100,
-            repeatdelay= 500,
-            repeatinterval= 100,
-            sliderlength= 50,
-        )
-    ]
-], key= "left", default_event=True, key_function= lambda elem:print(elem.text))
-
-right_tab = sg.TabFrame([
-    [sg.T("Smaller element")],
-    [sg.Button("Another smaller element", key= "Button")],
-    [sg.T("<-- sg.Listbox")]
-], key= "right")
-
-layout:list[list[sg.BaseElement]] = [
-    [
-        text := sg.T("Test", padding=50)
-    ],
-    [
-        nb := sg.Notebook(
-            left_tab,
-            right_tab,
-            #default_event= True,
-            key = "NB",
-            default_event= True,
-            #background_color_tabs_active = sg.GlobalOptions.Common_Background.background_color
+        table := sg.Table(  # table is a permanent reference to this object now
+            headings=("Col1", "Col2", "Col3"),
         )
     ]
 ]
 
 w = sg.Window(layout)
+
+print(table.thread_running)
+table.overwrite_table_threaded(test_vals)
+print(table.thread_running)
 #nb.value = "Harald"
+
 
 ### Additional configurations/actions ###
 
@@ -75,10 +34,6 @@ w = sg.Window(layout)
 for e,v in w:
     #print(nb.value)
     print(e,v)
-    print(text.get_option("blabli"))
-
-    if e == "Multistate":
-        text.update(background_color= "red")
 
     #v["Listbox"] = "Funktioniert"
 

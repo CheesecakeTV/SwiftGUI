@@ -340,7 +340,7 @@ class Window(Common_Background):
     grab_anywhere: bool = False
 
 class Listbox(Common,Common_Textual,Common_Field_Background):
-    no_selection_returns: Any = "",  # Returned when nothing is selected
+    no_selection_returns: Any = ""  # Returned when nothing is selected
     activestyle:Literals.activestyle = "none"
     default_list: Iterable[str] = None
     disabled: bool = None
@@ -480,6 +480,15 @@ class Spinbox(Button, Input):
     repeatdelay: int = 300
     repeatinterval: int = 50
     state: Literals.Spinbox_State = None
+
+class Combobox(Button, Input):
+    background_color_disabled: str | Color = None
+    button_background_color = None
+    button_background_color_active = None
+    arrow_color = None
+    arrow_color_active = None
+    can_change_text: bool = False
+    insertbackground: str | Color = None
 
 class Image(Common_Background):
     height: int = None

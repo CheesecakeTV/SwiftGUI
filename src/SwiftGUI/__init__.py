@@ -29,6 +29,7 @@ from .Widget_Elements.LabelFrame import LabelFrame
 from .Widget_Elements.Radiobutton import Radiobutton, RadioGroup
 from .Widget_Elements.Spinbox import Spinbox
 from .Widget_Elements.Scale import Scale
+from .Widget_Elements.Combobox import Combobox
 
 from .Combined_Elements.Form import Form
 from .Combined_Elements.MultistateButton import MultistateButton
@@ -68,7 +69,9 @@ Spin = Spinbox
 
 Slider = Scale
 
-AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton | Spinbox | Image | ImageButton | Scale
+Combo = Combobox
+
+AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton | Spinbox | Image | ImageButton | Scale | Combobox
 
 from .Windows import Window
 

@@ -4,6 +4,8 @@ from collections.abc import Iterable, Callable
 from typing import Literal, Any
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
+from SwiftGUI.Compat import Self
+
 
 class Input(BaseWidget):
     """
@@ -91,8 +93,10 @@ class Input(BaseWidget):
         if tk_kwargs is None:
             tk_kwargs = dict()
 
-        if default_event:   # Todo: Exclude shift+ctrl+alt from default event-calls
-            self.bind_event("<KeyRelease>",key=self.key,key_function=self._key_function)
+        self._default_event = default_event
+        self._value_change_callback: Callable | None = None
+        # if default_event:
+        #     self.bind_event("<KeyRelease>",key=self.key,key_function=self._key_function)
 
         self._update_initial(
             takefocus = takefocus,
@@ -141,6 +145,8 @@ class Input(BaseWidget):
     def _update_special_key(self, key: str, new_val: Any) -> bool|None:
         # Fish out all special keys to process them seperately
         match key:
+            case "default_event":
+                self._default_event = new_val
             case "fonttype":
                 self._fonttype = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
@@ -176,3 +182,23 @@ class Input(BaseWidget):
 
     def _personal_init_inherit(self):
         self._set_tk_target_variable(default_key="text")
+
+    def init_window_creation_done(self):
+        self._value_change_callback = self.window.get_event_function(self, key= self.key, key_function= self._key_function)
+        self._tk_target_value.trace_add("write", self._event_callback)
+
+    def set_value(self, val:str) -> Self:
+        self._prev_value = val  # Avoid event trigger
+        super().set_value(val)
+        return self
+
+    _prev_value: str = None
+    def _event_callback(self, *_):
+        value = self.value
+        if self._prev_value == value:
+            return
+
+        self._prev_value = value
+        if self._default_event:
+            self._value_change_callback()
+

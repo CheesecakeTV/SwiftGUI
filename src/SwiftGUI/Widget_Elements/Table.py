@@ -1,10 +1,13 @@
+import threading
+import time
 import tkinter
 import tkinter.ttk as ttk
 from collections.abc import Iterable, Callable, Iterator
 from functools import partial
 from tkinter import font
-from typing import Any
+from typing import Any, Literal
 from SwiftGUI.Compat import Self
+from itertools import islice
 
 from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement, Scrollbar, BaseScrollbar
 
@@ -178,6 +181,8 @@ class Table(BaseWidgetTTK, BaseScrollbar):
             tk_kwargs: dict[str:Any]=None
     ):
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
+
+        self._thread_lock = threading.Lock()
 
         if self.defaults.single("scrollbar", scrollbar):
             self.add_flags(ElementFlag.HAS_SCROLLBAR_Y)
@@ -681,8 +686,53 @@ class Table(BaseWidgetTTK, BaseScrollbar):
 
         return row
 
+    #def throw_event(self, key: Any = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
+    def _insert_multiple_thread_method(self,rows:Iterable[Iterable[Any]], index: int | Literal["end"], chunksize: int = 1000, delay: float = 0.1):
+        """
+        insert_multiple divided into chunks that get added one after another with a set delay
+        :param rows: Table-rows to add
+        :param index: Where to insert. "end" to append
+        :param chunksize: How many are added at once
+        :param delay: Time between additions
+        :return:
+        """
+        with self._thread_lock: # So the threads don't intercept each other
+            rows = iter(rows)
+
+            while True:
+                time.sleep(delay)
+                next_elems = list(islice(rows, chunksize))
+
+                if not next_elems:
+                    break
+
+                self.window.throw_event(function= self.insert_multiple, function_args= (next_elems, index, ))
+
+                if index != "end":
+                    index += chunksize
+
+    thread_running: bool    # True, if the insert-thread is running
+    @property
+    def thread_running(self) -> bool:
+        return self._thread_lock.locked()
+
+    _thread_lock: threading.Lock = None
     @BaseElement._run_after_window_creation
-    def insert_multiple(self,rows:Iterable[Iterable[Any]], index: int) -> tuple[TableRow, ...]:
+    def insert_multiple_threaded(self,rows:Iterable[Iterable[Any]], index: int | Literal["end"] = "end", chunksize: int = 1000, delay: float = 0.5) -> Self:
+        """
+        insert_multiple divided into chunks that get added one after another with a set delay
+        :param rows: Table-rows to add
+        :param index: Where to insert. "end" to append
+        :param chunksize: How many are added at once
+        :param delay: Time between additions
+        :return:
+        """
+        # Start the thread
+        threading.Thread(target= self._insert_multiple_thread_method, daemon= True, args=(rows, index, chunksize, delay)).start()
+        return self
+
+    @BaseElement._run_after_window_creation
+    def insert_multiple(self,rows:Iterable[Iterable[Any]], index: int | Literal["end"]) -> tuple[TableRow, ...]:
         """
         Insert multiple rows at once.
         They will be ordered like the list you pass, starting at the index you pass
@@ -690,6 +740,9 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         :param index:
         :return: Tuple of all the rows you added
         """
+        if index == "end":
+            return self.extend(rows)
+
         r = []
         for row in rows:
             r.append(self.insert(row,index))
@@ -711,7 +764,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         self._elements = list()
         self._element_dict = dict()
 
-    def overwrite_table(self, new_table: Iterable[Iterable[Any]]):
+    def overwrite_table(self, new_table: Iterable[Iterable[Any]]) -> Self:
         """
         Clear the whole table and replace its elements with a new table.
         :param new_table:
@@ -721,6 +774,20 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         self.clear_whole_table()
         # self._default_elements = list(self.insert_multiple(new_table, 0))
         self.insert_multiple(new_table, 0)
+        return self
+
+    def overwrite_table_threaded(self,rows:Iterable[Iterable[Any]], chunksize: int = 1000, delay: float = 0.3) -> Self:
+        """
+        Overwrite the whole table, but in small chunks to improve the performance
+        :param rows: Table-rows to add
+        :param chunksize: How many are added at once
+        :param delay: Time between additions
+        :return:
+        """
+        self.reset_filter()
+        self.clear_whole_table()
+        self.insert_multiple_threaded(rows, index= 0, chunksize= chunksize, delay= delay)
+        return self
 
     def append(self,row: Iterable[Any]) -> TableRow:
         """
@@ -739,6 +806,17 @@ class Table(BaseWidgetTTK, BaseScrollbar):
 
         self.tk_widget.insert("",index = "end",values=row,iid=hash(row))
         return row
+
+    def extend_threaded(self,rows:Iterable[Iterable[Any]], chunksize: int = 1000, delay: float = 0.3) -> Self:
+        """
+        extend divided into chunks that get added one after another with a set delay
+        :param rows: Table-rows to add
+        :param chunksize: How many are added at once
+        :param delay: Time between additions
+        :return:
+        """
+        self.insert_multiple_threaded(rows, index= "end", chunksize= chunksize, delay= delay)
+        return self
 
     def extend(self,rows: Iterable[Iterable[Any]]) -> tuple[TableRow,...]:
         """
