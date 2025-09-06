@@ -1,6 +1,6 @@
 
 # sg.Table 
-...probably the most useful element
+...probably the best element SwiftGUI has to offer
 
 ## Comparison to PySimpleGUI's Table
 Let me tell you, why SwiftGUI's Table is much better than the one of PySimpleGUI.
@@ -8,7 +8,8 @@ Let me tell you, why SwiftGUI's Table is much better than the one of PySimpleGUI
 If you don't care, just skip this part.
 
 When first setting up the table, or overwriting all of its contents, PySimpleGUI is a lot quicker, especially when adding a lot of rows.\
-That's the sole advantage of PySimpleGUI's Table.
+That's the sole advantage of PySimpleGUI's Table.\
+(**Update since version 0.7.4**: Nevermind, the issue is fixed. See section "Making the table less laggy" for details.)
 
 However, to change any row of PySimpleGUI's Table, you need to **replace the whole table**.
 There is no intended way to modify, append, insert, or delete a single row.
@@ -48,7 +49,7 @@ So why always return a list with all selections?
 
 In sg, you can read the value, index, all values and all indexes seperately.
 
-## Basic functionality
+# Basic functionality
 
 After ranting about PySimpleGUI excessively, let's dive into SwiftGUI's Table.
 
@@ -101,19 +102,19 @@ layout = [
 ```
 Tipp: You don't have to pass elements, you could just leave the table it empty.
 
-## Modifying the whole table
+# Replacing the whole table
 
 You can go the "PySimpleGUI-Mode" and replace the whole table:
 ```py
-table.overwrite_table([["Only", "Element", "In Table"]])
+table.overwrite_table([["Only", "row", "in the table"]])
 ```
-**I do not recommend this!** It's a runtime nightmare.
-
-However, if you do need to replace the whole table, this is your best option.
+**Only use this if you really have to replace the whole table.** 
+If you want to replace only a few rows, rather edit them instead of trashing and replacing everything.
 
 If you just want to empty the table, use `table.clear_whole_table()` instead.
 
-## Modifying single rows
+
+# Modifying single rows
 
 To modify a single row, just use the table-reference like you'd use a normal list:
 ```py
@@ -238,12 +239,12 @@ del table[0]
 If you can't use `del table[index]` for any reason (e.g. inside a lambda-function), use `table.__delitem__(index)` instead.
 Does the exact same thing.
 
-## Sorting the list
+# Sorting the list
 
 SwiftGUI's Table can actually be sorted simmilar to normal lists.
 Selections will be preserved.
 
-### Default Column-sorting
+## Default Column-sorting
 
 By default, when clicking on a column-heading once, the table sorts after that column.
 Clicking the same heading again, sorts the table in the reversed direction.
@@ -302,7 +303,7 @@ layout = [
 ```
 You may overwrite this parameter later using `.update`.
 
-### "Manual" sorting
+## "Manual" sorting
 
 You can sort the table like you'd sort a nested list ("double-list") using `.sort`.
 
@@ -353,7 +354,7 @@ The other difference to normal list-sorting is that you can pass `empty_to_back`
 If `True`, empty strings and None will be placed at the end of the table. `False` places them at front.
 This is independent of your key-function.
 
-## Filtering the list
+# Filtering the list
 
 Besides sorting, `sg.Table` offers a way to filter the list, much like [filter](https://docs.python.org/3/library/functions.html#filter) does.
 Please familiarize yourself with its functionality before reading this part.
@@ -386,7 +387,7 @@ Indexes still refer to the actual shown rows, so the same index might refer to a
 
 `.clear_whole_table` still clears the whole table, not only remaining elements.
 
-### Chaining filters
+## Chaining filters
 
 Usually, `.filter` applies to all rows, visible or not.
 By passing `only_remaining_rows = True` to the filter method, the filter will not include non-visible filters.
@@ -404,14 +405,14 @@ layout = [
 ```
 ![](../assets/images/2025-08-06-17-03-41.png)
 
-### Exiting filter-mode
+## Exiting filter-mode
 As stated earlier, you can exit the filter-mode by calling `.reset_filter()` on your table.
 
 However, if you'd like to discard all rows that did not get through the filter, use `.persist_filter()` instead.
 
 `.filter_mode` is `True`, if the table is in filter-mode.
 
-## Selections
+# Selections
 
 To get the currently selected row, use `.value`, for the index of that row, `.index`.
 
@@ -471,7 +472,7 @@ for e,v in w:
 
 **Keep in mind:** If no row is selected, `.value` and `.index` both return `None`.
 
-### Select elements from code
+## Select elements from code
 To select an element, just set `.index` to a valid index.
 
 **Changing the selection by code also throws an event.**
@@ -486,7 +487,7 @@ table.index = 0
 Since an event is thrown for this row, the key function is called, changing `Col1` to "clicked":\
 ![](../assets/images/2025-08-06-17-30-18.png)
 
-### Multiple selections
+## Multiple selections
 There are 3 selectmodes you can chose from:
 - `none`: The user can select nothing. Simmilar to `readonly` or `disabled` on other sg-elements.
 - `browse`: The user can select a single row (default)
@@ -526,7 +527,7 @@ for e,v in w:
 
 Tipp: Instead of `table.all_indexes = ...` you can also use `table.set_all_indexes(new_indexes)` with new_indexes being a tuple (or any Iterable).
 
-## Moving rows around
+# Moving rows around
 
 SwiftGUI's Table offers a couple of ways to move rows around.
 
@@ -571,27 +572,98 @@ Let's move row 4 to index 2 now:\
 
 Because 4 <! 2, row 2 and 3 got pushed back one index to make space for row 4.
 
-### Quick moves
+## Quick moves
 You can use `.move_up(index, n)` and `.move_down(index, n)`, to move the row at a certain index up/down n places.
 n is one by default.
 
 The row won't move "over the edge", so you can e.g. keep "moving up", even when you try to move row 0 to index -1.
 
-### Swapping
+## Swapping
 You can swap two rows with `.swap(index_1, index_2)`.
 
 This method probably needs no explanation, but it wasn't as easy to implement as you might think.
 
-## Changing the view
+# Making the table less laggy
+When adding a lot (3000+) of rows, you might notice the program freezing for a moment.
+It's not a big deal, but the user will probably notice.
+
+Adding a lot more (50000+) rows, the program might even freeze a couple of seconds showing "no response".
+This can be annoying, especially when it slows down the program-startup.
+
+SwiftGUI's table-element offers a way to divide the added elements into chunks of elements that get added one-by-one.
+
+This way, you don't cause one giant lag, but rather a lot of smaller ones.
+This feels much less annoying for the user.
+
+To use this feature, just call `table.overwrite_table_threaded` instead of `table.overwrite_table`.
+
+The method returns the table-element itself, so it can be called inline:
+```py
+layout = [
+    [
+        sg.Table(
+            headings=("Col1", "Col2", "Col3"),
+        ).overwrite_table_threaded(elements)
+    ]
+]
+```
+If this still feels laggy, you can adjust how many elements are added in a single chunk (`chunksize`, default is 1000) and how long to wait between chunks (`delay`, default is 0.3):
+```py
+layout = [
+    [
+        sg.Table(
+            headings=("Col1", "Col2", "Col3"),
+        ).overwrite_table_threaded(elements, chunksize= 500, delay= 0.5)
+    ]
+]
+```
+
+## Other treaded methods
+Besides `.overwrite_table_threaded`, the following methods are available as a threaded version of their "normal" counterpart:
+- `insert_multiple_threaded`
+- `extend_threaded`
+
+Tipp: To append to the front of the list, use `insert_multiple_threaded` with `index= 0`.
+
+## Important! "Interrupting" threaded methods
+There is a big downside to using these "threaded methods", so handle it with care.
+
+What do you think happens, when the table is currently adding values with these methods and you add some row using a non-threaded method like `.append`?
+
+The results are predictable, but not in an easy way, so I'll only present them simplified.
+While the thread is running, these effects will occur:
+- Adding rows might mess up the row-order
+- **Threaded methods are safe and will run one after another**
+- If the thread crashes, added rows might not actually be added
+- Deleting rows might mess up the row-order, or crash the thread in rare cases
+- Clearing the table (deleting all rows) crashes the thread in most cases
+- Sorting ignores all rows that didn't get added yet
+- Filtering has a good chance of crashing the thread and ignores all rows that didn't get added yet
+- Persisting the filter-view doesn't stop pending rows to be added
+- Moving rows should be safe
+- Updating the look (colors, font, ...) of the table is safe
+- The scrollbar might act somewhat strange while rows are being added
+
+The thread is running, if `table.thread_running` is `True`.
+
+Follow these rules and you'll be fine using threaded methods:
+- If row-order is important, only use threaded methods to add rows.
+- Deleting rows is safe if you only use `.extend_threaded`.
+- If row-order is important, disable `sort_col_by_click`.
+- Don't filter/persist while the thread is running
+
+# Changing the view
 You can use `.see(index)` to scroll the table so that the passed index row is visible.
 
 To "see" the current selection, use `.see_selection()`.
 If multiple rows are selected, this method "sees" the topmost of them.
 
-### Scrollbar
+## Scrollbar
 By default, a scrollbar is visible.
 It's not shown in this tutorial, because I just added it (SwiftGUI Version 0.4.4).
 Not gonna replace every image.
+
+Also, the scrollbar looks different since version 0.6.2, so don't be too suprised.
 
 The scrollbar will be as high as the current row.
 That means, for the table to look good with a scrollbar, the table has to be **the tallest element** in its row:\
@@ -612,14 +684,12 @@ layout = [
 ```
 ![](../assets/images/2025-08-12-12-45-36.png)
 
-
 Also, no padding in the y-direction for the table.
 If you want to add some space above/below the table, put a spacer in the previous/next row instead.
 
 In my experience, this shouldn't be an issue.
-Implementing a solution means more invisible elements slowing down your code.
+Implementing a solution means more invisible elements slowing down the code and making the codebase messier.\
 So let's call it a feature, not a bug.
-
 
 ## Customization
 There are a couple of options you can use to change the apperance of this element.

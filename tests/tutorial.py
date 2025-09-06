@@ -11,15 +11,19 @@ test_vals = [[i] for i in range(100_000)]
 
 
 ### Layout ###
-layout:list[list[sg.BaseElement]] = [
+layout = [
     [
-        table := sg.Table(
-            headings= ["Test"],
-        ).insert_multiple_threaded(test_vals, delay= 0.3),
+        table := sg.Table(  # table is a permanent reference to this object now
+            headings=("Col1", "Col2", "Col3"),
+        )
     ]
 ]
 
 w = sg.Window(layout)
+
+print(table.thread_running)
+table.overwrite_table_threaded(test_vals)
+print(table.thread_running)
 #nb.value = "Harald"
 
 

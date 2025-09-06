@@ -711,6 +711,11 @@ class Table(BaseWidgetTTK, BaseScrollbar):
                 if index != "end":
                     index += chunksize
 
+    thread_running: bool    # True, if the insert-thread is running
+    @property
+    def thread_running(self) -> bool:
+        return self._thread_lock.locked()
+
     _thread_lock: threading.Lock = None
     @BaseElement._run_after_window_creation
     def insert_multiple_threaded(self,rows:Iterable[Iterable[Any]], index: int | Literal["end"] = "end", chunksize: int = 1000, delay: float = 0.5) -> Self:
@@ -802,7 +807,6 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         self.tk_widget.insert("",index = "end",values=row,iid=hash(row))
         return row
 
-    @BaseElement._run_after_window_creation
     def extend_threaded(self,rows:Iterable[Iterable[Any]], chunksize: int = 1000, delay: float = 0.3) -> Self:
         """
         extend divided into chunks that get added one after another with a set delay
@@ -945,40 +949,39 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         :param key: Key function. Truethy returns will be kept inside the list
         :return: sg.Table-Element for inline calls
         """
-        with self._thread_lock:
-            if isinstance(by_column, str):
-                assert by_column in self._headings, "You tried to filter a Table by a column that doesn't exist. Recheck your arguments, column-names are case-sensitive."
-                by_column = self._headings.index(by_column)
+        if isinstance(by_column, str):
+            assert by_column in self._headings, "You tried to filter a Table by a column that doesn't exist. Recheck your arguments, column-names are case-sensitive."
+            by_column = self._headings.index(by_column)
 
-            if not self._elements:
-                return self
-
-            if by_column is None:
-                filter_fkt = key
-            else:
-                filter_fkt = lambda a:key(a[by_column])
-
-            if self._elements_before_filter is None:
-                self._elements_before_filter = self._elements.copy()
-
-            if only_remaining_rows:
-                filter_list = self._elements
-            else:
-                filter_list = self._elements_before_filter
-
-            all_iids = set(self._get_all_iids(filter_list))
-
-            self._elements = list(filter(filter_fkt, filter_list))
-
-            iids_in = list(self._get_all_iids(self._elements))    # Elements to keep
-            iids_out = all_iids.difference(set(iids_in)) # Elements to remove
-
-            for n,iid in enumerate(iids_in):
-                self.tk_widget.move(iid, "", n)
-
-            self.tk_widget.detach(*iids_out)
-
+        if not self._elements:
             return self
+
+        if by_column is None:
+            filter_fkt = key
+        else:
+            filter_fkt = lambda a:key(a[by_column])
+
+        if self._elements_before_filter is None:
+            self._elements_before_filter = self._elements.copy()
+
+        if only_remaining_rows:
+            filter_list = self._elements
+        else:
+            filter_list = self._elements_before_filter
+
+        all_iids = set(self._get_all_iids(filter_list))
+
+        self._elements = list(filter(filter_fkt, filter_list))
+
+        iids_in = list(self._get_all_iids(self._elements))    # Elements to keep
+        iids_out = all_iids.difference(set(iids_in)) # Elements to remove
+
+        for n,iid in enumerate(iids_in):
+            self.tk_widget.move(iid, "", n)
+
+        self.tk_widget.detach(*iids_out)
+
+        return self
 
     def reset_filter(self) -> Self:
         """
@@ -988,23 +991,22 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         if not self._elements_before_filter:
             return self
 
-        with self._thread_lock:
-            self._elements.clear()
+        self._elements.clear()
 
-            iids = list(self._get_all_iids(self._elements_before_filter))
+        iids = list(self._get_all_iids(self._elements_before_filter))
 
-            n = 0
-            for iid, row in zip(iids, self._elements_before_filter):
-                try:
-                    self.tk_widget.move(iid, "", n)
-                    self._elements.append(row)
-                    n += 1
-                except tkinter.TclError:
-                    pass
+        n = 0
+        for iid, row in zip(iids, self._elements_before_filter):
+            try:
+                self.tk_widget.move(iid, "", n)
+                self._elements.append(row)
+                n += 1
+            except tkinter.TclError:
+                pass
 
-            self._elements_before_filter = None
+        self._elements_before_filter = None
 
-            return self
+        return self
 
     @BaseElement._run_after_window_creation
     def persist_filter(self) -> Self:
@@ -1012,15 +1014,14 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         Persist the filtered view so that it cannot be reset anymore
         :return:
         """
-        with self._thread_lock:
-            all_iids = set(self._get_all_iids(self._elements_before_filter))
-            iids_in = list(self._get_all_iids(self._elements))    # Elements to keep
-            iids_out = all_iids.difference(set(iids_in)) # Elements to remove
+        all_iids = set(self._get_all_iids(self._elements_before_filter))
+        iids_in = list(self._get_all_iids(self._elements))    # Elements to keep
+        iids_out = all_iids.difference(set(iids_in)) # Elements to remove
 
-            self.tk_widget.delete(*iids_out)
-            self._elements_before_filter = None
+        self.tk_widget.delete(*iids_out)
+        self._elements_before_filter = None
 
-            for iid in iids_out:
-                del self._element_dict[iid]
+        for iid in iids_out:
+            del self._element_dict[iid]
 
-            return self
+        return self
