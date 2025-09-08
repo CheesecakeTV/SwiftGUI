@@ -35,4 +35,4 @@ wrap = Literal["char","word","none"]
 Spinbox_State  = Literal["normal", "disabled", "readonly"]
 
 left_center_right = Literal["center", "left", "right"]
-
+progress_mode = Literal["determinate", "indeterminate"]

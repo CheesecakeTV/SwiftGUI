@@ -89,12 +89,12 @@ When an event occurs, these functions will be evoked too.
 
 E.g.: Let's say you want to add a button that clears out an input-element.
 In PySimpleGUI, you would need to give that button its own key, add an if-statement
-to the main loop, just to make the call `window["InputKey"]("")"`.
+to the main loop, just to make the call `window["InputKey"]("")`.
 
 In swiftGUI, the only thing you need to do is pass a lambda-function as a key-function to
 the button: `sg.Button(...,key_function=lambda w:w["InputKey"].set_value(""))`.\
 Done.\
-No breaking out of window.loop(), no if-statement, no key "used",
+No going through the whole event-loop, no if-statements, no key "used",
 not even an additional line of code.
 
 Additionally, there are a couple of pre-made "key-functions" you can configure and use.

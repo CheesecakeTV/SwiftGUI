@@ -58,6 +58,7 @@ class Scale(BaseWidget):
             font_italic: bool = None,
             font_underline: bool = None,
             font_overstrike: bool = None,
+
             readonly: bool = None,
             borderwidth:int = None,
 

@@ -173,6 +173,11 @@ class BaseElement:
         """
         return self
 
+    def __call__(self, val: Any) -> Self:
+        """Same as .set_value"""
+        self.set_value(val)
+        return self
+
     @property
     def value(self) -> Any:
         """
@@ -506,7 +511,14 @@ class BaseWidget(BaseElement):
 
                 if self.has_flag(ElementFlag.EXPAND_ROW) or self.has_flag(ElementFlag.EXPAND_VERTICALLY):
                     temp["expand"] = temp.get("expand",True)
-                    temp["fill"] = temp.get("fill","both")
+
+                    match (self.has_flag(ElementFlag.EXPAND_ROW), self.has_flag(ElementFlag.EXPAND_VERTICALLY)):
+                        case (True, True):
+                            temp["fill"] = temp.get("fill","both")
+                        case (True, False):
+                            temp["fill"] = temp.get("fill", "x")
+                        case (False, True):
+                            temp["fill"] = temp.get("fill", "y")
 
                 self._tk_widget.pack(**temp)
 

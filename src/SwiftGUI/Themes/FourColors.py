@@ -94,6 +94,9 @@ class BaseFourColors(BaseTheme):
         temp.button_background_color_active = c3
         temp.insertbackground = c3
 
+        temp = go.Progressbar
+        temp.bar_color = c3
+
     def get_palette_frame(self, width: int = 50, height: int = 200) -> sg.Frame:
         """
         Returns an sg.Frame that contains the 4 containing colors.
