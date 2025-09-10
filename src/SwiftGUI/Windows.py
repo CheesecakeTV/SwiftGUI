@@ -164,7 +164,7 @@ class Window(BaseElement):
 
         self.root = tk.Tk()
 
-        self._sg_widget:Frame = Frame(layout,alignment=alignment)
+        self._sg_widget:Frame = Frame(layout,alignment= self.defaults.single("alignment", alignment))
 
         self.ttk_style: ttk.Style = ttk.Style(self.root)
         self._update_initial(

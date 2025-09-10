@@ -19,11 +19,11 @@ class Separator(BaseWidget):
             key: Any = None,
             color: str | Color = None,
             weight: int = None,
+            padding: int = None,
     ):
         super().__init__(key=key)
         self._update_initial(color=color, weight=weight)
-        self._insert_kwargs["pady"] = 3
-        self._insert_kwargs["padx"] = 3
+        self._insert_kwargs["pady"] = self._insert_kwargs["padx"] = self.defaults.single("padding", padding)
 
     def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         if key == "weight":
@@ -39,11 +39,13 @@ class VerticalSeparator(Separator):
             key: Any = None,
             color: str | Color = None,
             weight: int = None,
+            padding: int = None,
     ):
         super().__init__(
             key=key,
             color = color,
             weight = weight,
+            padding = padding,
         )
 
     def _personal_init_inherit(self):
@@ -56,11 +58,13 @@ class HorizontalSeparator(Separator):
             key: Any = None,
             color: str | Color = None,
             weight: int = None,
+            padding: int = None,
     ):
         super().__init__(
             key= key,
             color = color,
             weight = weight,
+            padding = padding,
         )
 
     def _personal_init_inherit(self):

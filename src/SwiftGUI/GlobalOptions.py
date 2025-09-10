@@ -290,6 +290,8 @@ class Frame(Common, Common_Background):
     padx: int = 2
     pady: int = 2
 
+class GridFrame(Frame):
+    ...
 
 class Checkbox(Common,Common_Textual, Common_Background):
     default_value: bool = False
@@ -427,6 +429,7 @@ class Table(Common, Common_Textual,Common_Field_Background):
 class Separator(Common_Background):
     color: str | Color = Color.light_grey
     weight: int = 2
+    padding: int = 3
 
 class SeparatorHorizontal(Separator):
     ...
@@ -495,6 +498,12 @@ class Image(Common_Background):
     width: int = None
     apply_parent_background_color: bool = True
 
+class Progressbar(Common_Field_Background):
+    number_max: float = None
+    cursor: Literals.cursor = None
+    bar_color: str | Color = None
+    takefocus: bool = None
+    mode: Literals.progress_mode = "determinate"
 
 class ImageButton(Button):
     ...

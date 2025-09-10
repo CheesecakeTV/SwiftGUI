@@ -9,7 +9,7 @@ If you don't care, just skip this part.
 
 When first setting up the table, or overwriting all of its contents, PySimpleGUI is a lot quicker, especially when adding a lot of rows.\
 That's the sole advantage of PySimpleGUI's Table.\
-(**Update since version 0.7.4**: Nevermind, the issue is fixed. See section "Making the table less laggy" for details.)
+(**Update since version 0.7.4**: Nevermind, the issue is more or less fixed. See section "Making the table less laggy" for details.)
 
 However, to change any row of PySimpleGUI's Table, you need to **replace the whole table**.
 There is no intended way to modify, append, insert, or delete a single row.

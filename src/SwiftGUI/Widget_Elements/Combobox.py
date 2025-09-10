@@ -115,8 +115,6 @@ class Combobox(BaseWidgetTTK):
             insertbackground = insertbackground,
         )
 
-    _tab_texts: dict[Any, str]
-    _background_color_tabs_active = None   # If this stays None, normal background_color will be applied
     def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         if not self.window and key in ["background_color", "text_color", "selectbackground_color", "select_text_color"]:    # These can only be handled once the element exists
             self.update_after_window_creation(**{key: new_val})

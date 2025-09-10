@@ -6,6 +6,7 @@ from SwiftGUI.Compat import Self
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, BaseElement, Scrollbar, BaseScrollbar
 
+# Todo: ListboxMultiselect
 
 class Listbox(BaseWidget, BaseScrollbar):
     _tk_widget_class: type = tk.Listbox  # Class of the connected widget
@@ -28,35 +29,45 @@ class Listbox(BaseWidget, BaseScrollbar):
             self,
             default_list: Iterable[Any] = None,
             /,
-            no_selection_returns: Any = None, # Returned when nothing is selected
             key: Any = None,
-            default_event: bool = False,
             key_function: Callable | Iterable[Callable] = None,
+            default_event: bool = False,
+
+            no_selection_returns: Any = None, # .value when nothing is selected
+
             scrollbar: bool = None,
+            selectmode: Literals.selectmode_single = None,
             activestyle: Literals.activestyle = None,
+
+            width: int = None,
+            height: int = None,
+
             fonttype: str = None,
             fontsize: int = None,
             font_bold: bool = None,
             font_italic: bool = None,
             font_underline: bool = None,
             font_overstrike: bool = None,
+
             disabled: bool = None,
+
             borderwidth:int = None,
+            selectborderwidth: int = None,
+            highlightthickness: int = None,
+
             background_color: str | Color = None,
             background_color_selected: str | Color = None,
-            selectborderwidth: int = None,
             text_color: str | Color = None,
             text_color_selected: str | Color = None,
             text_color_disabled: str | Color = None,
-            selectmode: Literals.selectmode_single = None,
-            width: int = None,
-            height: int = None,
-            cursor: Literals.cursor = None,
-            takefocus: bool = None,
-            relief: Literals.relief = None,
             highlightbackground_color: str | Color = None,
             highlightcolor: str | Color = None,
-            highlightthickness: int = None,
+
+            cursor: Literals.cursor = None,
+
+            takefocus: bool = None,
+            relief: Literals.relief = None,
+
             expand:bool = None,
             expand_y: bool = None,
             tk_kwargs: dict = None,
@@ -165,7 +176,7 @@ class Listbox(BaseWidget, BaseScrollbar):
         self.tk_widget.selection_set(new_val)
         return self
 
-    def get_index(self,default:int = -1) -> int:
+    def get_index(self, default:int = -1) -> int:
         """
         Returns the index.
         If nothing is selected, returns default
@@ -184,10 +195,10 @@ class Listbox(BaseWidget, BaseScrollbar):
         :return:
         """
         index = self.index
-        if index is not None:
-            return self._list_elements[index]
+        if index is None:
+            return self._no_selection_returns
 
-        return self._no_selection_returns
+        return self._list_elements[index]
 
     def set_value(self, new_val: str | int):
         """
@@ -236,7 +247,7 @@ class Listbox(BaseWidget, BaseScrollbar):
             case "disabled":
                 self._tk_kwargs["state"] = "disabled" if new_val else "normal"
             case "selectmode":
-                assert not new_val or new_val in ["single","browse"], "Invalid value for 'selectmode' in a Listbox element. Multi-Selection is not possible for normal Listbox. \nUse ListboxMulti instead, if the class exists by now..."
+                assert not new_val or new_val in ["single","browse"], "Invalid value for 'selectmode' in a Listbox element. Multi-Selection is not possible for normal Listbox. \nUse sg.Table instead, or sg.ListboxMulti, if it is implemented yet..."
                 return False # Still handle this normally please
             case "no_selection_returns":
                 self._no_selection_returns = new_val
@@ -253,16 +264,18 @@ class Listbox(BaseWidget, BaseScrollbar):
 
         super()._apply_update()  # Actually apply the update
 
-    def append(self,*element:str):
+    @BaseWidget._run_after_window_creation
+    def append(self,*element:str) -> Self:
         """
-        Append a single element
+        Append a single or multiple elements
         :param element:
         :return:
         """
         self.tk_widget.insert(tk.END,*element)
         self._list_elements.extend(element)
 
-    def append_front(self,*element:str):
+    @BaseWidget._run_after_window_creation
+    def append_front(self,*element:str) -> Self:
         """
         Append to the beginning
         :param element:
@@ -270,8 +283,10 @@ class Listbox(BaseWidget, BaseScrollbar):
         """
         self.tk_widget.insert(0,*element)
         self._list_elements = list(element) + self._list_elements
+        return self
 
-    def delete_index(self,*index:int):
+    @BaseWidget._run_after_window_creation
+    def delete_index(self,*index:int) -> Self:
         """
         Delete some indexes from the list
         :param index:
@@ -282,7 +297,10 @@ class Listbox(BaseWidget, BaseScrollbar):
             self.tk_widget.delete(i)
             del self._list_elements[i]
 
-    def delete_element(self,*element:str):
+        return self
+
+    @BaseWidget._run_after_window_creation
+    def delete_element(self,*element:str) -> Self:
         """
         Delete certain element(s) by their value
         :param element:
@@ -291,6 +309,8 @@ class Listbox(BaseWidget, BaseScrollbar):
         element = self.get_all_indexes_of(*element)
         self.delete_index(*element)
 
+        return self
+
     def __delitem__(self, key: int):
         self.delete_index(key)
 
@@ -298,7 +318,7 @@ class Listbox(BaseWidget, BaseScrollbar):
     def overwrite_element(self, index: int, new_val: Any) -> Self:
         """
         Overwrite the element.
-        Selection is preserved, but styling of the row itself is reset.
+        Selection is preserved, but styling/coloring of the row itself is reset.
         Sadly, tkinter doesn't provide a good way to preserve it.
 
         :param index:
@@ -337,6 +357,7 @@ class Listbox(BaseWidget, BaseScrollbar):
         """
         return tuple(n for n,v in enumerate(self._list_elements) if v in value)
 
+    # Already runs after window-creation
     def color_row(
             self,
             row: int | str,
@@ -364,6 +385,7 @@ class Listbox(BaseWidget, BaseScrollbar):
 
         return self
 
+    @BaseElement._run_after_window_creation
     def color_rows(
             self,
             rows:Iterable[int|str],

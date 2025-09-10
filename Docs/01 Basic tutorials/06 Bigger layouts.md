@@ -1,13 +1,11 @@
 
 # Bigger / Advanced layouts
-There comes a time where a basic "row-layout" as described in tutorial "01 Getting-started" just isn't enough.
-
-There are a couple of common cases, when this might happen.
+There comes a time when a basic "row-layout" as described in tutorial "01 Getting-started" just isn't enough.
 
 E.g. when you have too many elements.
 The GUI gets too crowded and is neither good looking, nor user-friendly.
 
-Another case, is that you want to place a couple of smaller elements in the same row as a big element (like `sg.Listbox`):\
+Or when you want to place multiple smaller elements besides a bigger one (like `sg.Listbox`):\
 ![](../assets/images/2025-08-21-10-08-22.png)\
 Since the `sg.Listbox` is only one element in one row, this is not possible without utilizing the functionalities described in this tutorial.
 You can't add "multiple rows to a single row", without using frames.
@@ -69,6 +67,114 @@ layout:list[list[sg.BaseElement]] = [
 
 To not draw sketchy red borders all the time, I'm going to use `sg.LabelFrame` with `no_label=True` going further:\
 ![](../assets/images/2025-08-21-10-37-10.png)
+
+## GridFrame
+If you want to arrange your elements in a grid, use `sg.GridFrame` (Added in SwiftGUI version 0.7.6).
+
+Normally, all elements in a row are aligned.
+With GridFrames, the elements align in rows AND columns:\
+![](../assets/images/2025-09-10-14-06-28.png)
+
+```py
+grid_contents = [
+    [
+        sg.Button("Upper left"),
+        sg.Button("Hi"),
+        sg.Button("3rd column")
+    ],[
+        sg.Button("Hii"),
+        sg.T(), # Placeholder, empty text
+        sg.Button("2nd row")
+    ]
+]
+
+layout:list[list[sg.BaseElement]] = [
+    [
+        sg.GridFrame(grid_contents)
+    ]
+]
+```
+Doesn't look much like a grid, does it?
+
+Well, don't think of it as a grid.
+Just know that elements are aligned in rows and columns.
+
+As you can see, `Upper left` is centered above `Hii`. 
+They form a column.
+
+In row-oriented (normal) layouts, the tallest element decides the height of the row.
+This is also true for grids, but for rows and columns:\
+![](../assets/images/2025-09-10-14-17-02.png)
+```py
+grid_contents = [
+    [
+        sg.Button("Very Big", width=25, height=10),
+        sg.Button("Hi"),
+        sg.Button("3rd column")
+    ],[
+        sg.Button("Hii"),
+        sg.T(), # Placeholder, empty text
+        sg.Button("2nd row")
+    ]
+]
+```
+The elements are still centered vertically/horizontally, only that the first row and first column are quite big now.
+
+
+## Expanding elements
+In SwiftGUI, every element can only expand if it doesn't resize its container.
+
+E.g. take a look at the previous example (Scrollbar different due to newer version):\
+![](../assets/images/2025-09-10-13-53-47.png)
+
+Theoretically, the LabelFrame could expand to the top/bottom, because the Listbox makes the row taller.
+The container (main Window) would not need to resize:\
+![](../assets/images/2025-09-10-14-00-06.png)
+```py
+layout:list[list[sg.BaseElement]] = [
+    [
+        sg.Listbox(
+            range(10)
+        ),
+        sg.LabelFrame(
+            inner_layout,
+            text = "LabelFrame",
+            expand_y= True
+        )
+    ]
+]
+```
+
+However, it can not expand left/right, because it would expand the window itself.
+
+Same with grids.
+
+Consider this example:
+```py
+grid_contents = [
+    [
+        sg.Button("Very Big", width=25, height=10),
+        sg.Button("Hi"),
+        sg.Button("3rd column", expand_y= True)
+    ],[
+        sg.Button("Hii", expand= True),
+        sg.T(), # Placeholder, empty text
+        sg.Button("2nd row")
+    ]
+]
+
+layout:list[list[sg.BaseElement]] = [
+    [
+        sg.GridFrame(grid_contents)
+    ]
+]
+```
+![](../assets/images/2025-09-10-14-22-00.png)
+
+As you can see, the elements can expand inside their row/colum.
+
+The Button `Very Big` has a specified width and height, so it is allowed resize the container (`sg.Gridframe`).
+
 
 ## Horizontal alignment
 Elements are aligned "center" by default.
@@ -184,7 +290,6 @@ It might not sound that cool, but remember that elements with "open" texts, like
 
 Without background-color-propagation, the GUI'd look like that:\
 ![](../assets/images/2025-08-21-11-03-15.png)
-
 
 If you set a background-color for specific elements, they automatically won't apply the surrounding frame's background-color:
 ```py
@@ -432,7 +537,7 @@ w = sg.Window(layout)
 ```
 ![](../assets/images/2025-08-21-12-16-54.png)
 
-## Aligning frame-widgets to the bottom of a frame
+## Aligning elements to the bottom of a frame
 In the beginning of this tutorial you have learned that you need to set `expand_y` so the elements align to the actual top of the row:
 ```py
 ### Layout ###
@@ -483,4 +588,48 @@ inner_layout = [
 ```
 ![](../assets/images/2025-08-21-12-26-06.png)
 
+### Aligning to top/bottom in sg.GridFrame
+Unfortunately, there is no good way to align `sg.GridFrame`-elements to the top or bottom yet (version 0.7.6).
+I promise to implement one in the future.
+Doesn't even take much effort, but I am going to upgrade the `sg.Frame`-element soon, which would require me to change `sg.GridFrame` too.
+
+If you really, really, really need to align elements to top/bottom in a GridFrame, make every required field its own `sg.Frame` and add a spacer at their bottom (which is an abomination to readability):
+```py
+grid_contents = [
+    [
+        sg.Button("Very Big", width=25, height=10),
+        sg.Frame([
+            [
+                sg.Button("Hi")
+            ], [
+                sg.Spacer(expand_y=True)
+            ]],
+            expand_y=True,
+            padx=0,
+            pady=0),
+        sg.Frame([
+            [
+                sg.Button("3rd column")
+            ], [
+                sg.Spacer(expand_y=True)
+            ]],
+            expand_y=True,
+            padx=0,
+            pady=0),
+    ],[
+        sg.Button("Hii"),
+        sg.T(), # Placeholder, empty text
+        sg.Button("2nd row")
+    ]
+]
+
+layout:list[list[sg.BaseElement]] = [
+    [
+        sg.GridFrame(grid_contents)
+    ]
+]
+```
+![](../assets/images/2025-09-10-14-34-26.png)
+
+Amazing.
 

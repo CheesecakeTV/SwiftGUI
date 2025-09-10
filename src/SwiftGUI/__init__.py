@@ -30,6 +30,8 @@ from .Widget_Elements.Radiobutton import Radiobutton, RadioGroup
 from .Widget_Elements.Spinbox import Spinbox
 from .Widget_Elements.Scale import Scale
 from .Widget_Elements.Combobox import Combobox
+from .Widget_Elements.Progressbar import Progressbar, ProgressbarVertical
+from .Widget_Elements.GridFrame import GridFrame
 
 from .Combined_Elements.Form import Form
 from .Combined_Elements.MultistateButton import MultistateButton
@@ -71,7 +73,7 @@ Slider = Scale
 
 Combo = Combobox
 
-AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton | Spinbox | Image | ImageButton | Scale | Combobox
+AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton | Spinbox | Image | ImageButton | Scale | Combobox | Progressbar
 
 from .Windows import Window
 

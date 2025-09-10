@@ -19,7 +19,6 @@ def preview_all_elements(include_images: bool = True):
             sg.HSep()
         ],[
             sg.Checkbox("sg.Checkbox"),
-        ],[
             sg.Checkbox("Also sg.Checkbox\nbut check_type='button'", check_type= "button"),
         ],[
             sg.HSep()
@@ -59,6 +58,14 @@ def preview_all_elements(include_images: bool = True):
             sg.T("sg.VerticalSeparator,\n"
                  "or sg.VSep\n"
                  "<-- looks like this")
+        ],[
+            sg.HSep(),
+        ],[
+            sg.T("sg.Progressbar:"),
+            sg.Progressbar(expand= True).start(0.09),
+            sg.VSep(),
+            sg.T("sg.ProgressbarVertical:"),
+            sg.ProgressbarVertical().start(),
         ]
     ], fake_key= "Small elements")
 

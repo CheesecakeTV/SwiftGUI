@@ -1,4 +1,3 @@
-import enum
 
 def rgb(r:int,g:int,b:int) -> str:
     """
@@ -8,8 +7,11 @@ def rgb(r:int,g:int,b:int) -> str:
     :param b: blue
     :return: Finished color-string
     """
+    r = min(r, 255)
+    g = min(g, 255)
+    b = min(b, 255)
 
-    return f"#{r:#05x}{g:#05x}{b:#05x}".replace("0x","")
+    return f"#{r:#04x}{g:#04x}{b:#04x}".replace("0x","").upper()
 
 class Color:
     # gray0-gray99 weren't included, except for gray0, gray20, gray40,...

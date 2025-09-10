@@ -173,6 +173,11 @@ class BaseElement:
         """
         return self
 
+    def __call__(self, val: Any) -> Self:
+        """Same as .set_value"""
+        self.set_value(val)
+        return self
+
     @property
     def value(self) -> Any:
         """
@@ -490,33 +495,35 @@ class BaseWidget(BaseElement):
         self._tk_target_value = value_type(self.parent_tk_widget, value=default_value)
         self._tk_kwargs[kwargs_key] = self._tk_target_value
 
-    def _init_widget(self,container:tk.Widget|tk.Tk,mode:Literal["pack","grid"]="pack") -> None:
+    def _init_widget(self,container:tk.Widget|tk.Tk) -> None:
         """
         Initialize the widget to the container
         :return:
         """
         self._tk_widget = self._init_widget_for_inherrit(container)
 
-        match mode:
-            case "pack":
-                #temp = {"expand":False,"side":"left"}
-                temp = {"side":"left"}
+        #temp = {"expand":False,"side":"left"}
+        temp = {"side":"left"}
 
-                temp.update(self._insert_kwargs)
+        temp.update(self._insert_kwargs)
 
-                if self.has_flag(ElementFlag.EXPAND_ROW) or self.has_flag(ElementFlag.EXPAND_VERTICALLY):
-                    temp["expand"] = temp.get("expand",True)
+        if self.has_flag(ElementFlag.EXPAND_ROW) or self.has_flag(ElementFlag.EXPAND_VERTICALLY):
+            temp["expand"] = temp.get("expand",True)
+
+            match (self.has_flag(ElementFlag.EXPAND_ROW), self.has_flag(ElementFlag.EXPAND_VERTICALLY)):
+                case (True, True):
                     temp["fill"] = temp.get("fill","both")
+                case (True, False):
+                    temp["fill"] = temp.get("fill", "x")
+                case (False, True):
+                    temp["fill"] = temp.get("fill", "y")
 
-                self._tk_widget.pack(**temp)
+        self._tk_widget.pack(**temp)
 
-                if hasattr(self, "scrollbar_y"):
-                    self.scrollbar_y._init(self.parent, self.window)
-                    self.scrollbar_y.bind_to_element(self)
-                    self.scrollbar_y.tk_widget.pack(expand= True, fill= "y", side= "left")
-
-            case "grid":
-                self._tk_widget.grid(**self._insert_kwargs)
+        if hasattr(self, "scrollbar_y"):
+            self.scrollbar_y._init(self.parent, self.window)
+            self.scrollbar_y.bind_to_element(self)
+            self.scrollbar_y.tk_widget.pack(expand= True, fill= "y", side= "left")
 
         if self.has_flag(ElementFlag.IS_CONTAINER):
             self._init_containing()
