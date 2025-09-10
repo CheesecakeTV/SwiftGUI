@@ -4,17 +4,16 @@ import time
 
 ### Global options ###
 sg.Themes.FourColors.Emerald()
-sg.Examples.preview_all_elements()
-exit()
+sg.GlobalOptions.Separator.padding = 0
 
 ### Layout ###
 layout = [
     [
-        my_text := sg.T("Some text", fontsize= 24), # Don't leave the layout empty
-    ],[
-        my_progress := sg.Progressbar(9, expand= True, number_max= 100),
-    ],[
-        sg.ProgressbarVertical(30)
+        grid := sg.GridFrame([
+            [tex := sg.T("Hi", width=30), sg.VSep(), sg.T("World")],
+            [sg.HSep() for i in range(4)],
+            [sg.T("World",expand_y=True, background_color="red", expand=False), sg.VSep(), sg.T("Hi"), sg.Listbox(range(15))],
+        ], alignment= "right")
     ]
 ]
 

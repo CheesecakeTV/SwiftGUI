@@ -77,8 +77,9 @@ class Frame(BaseWidgetContainer):
 
         self._insert_kwargs["expand"] = self.defaults.single("expand",expand)
 
+        self._side = self.defaults.single("alignment", alignment)
         self._insert_kwargs_rows.update({
-            "side":self.defaults.single("alignment",alignment),
+            "side": self._side
         })
 
     def window_entry_point(self,root:tk.Tk|tk.Widget,window:BaseElement):

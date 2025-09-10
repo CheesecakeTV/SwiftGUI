@@ -31,6 +31,7 @@ from .Widget_Elements.Spinbox import Spinbox
 from .Widget_Elements.Scale import Scale
 from .Widget_Elements.Combobox import Combobox
 from .Widget_Elements.Progressbar import Progressbar, ProgressbarVertical
+from .Widget_Elements.GridFrame import GridFrame
 
 from .Combined_Elements.Form import Form
 from .Combined_Elements.MultistateButton import MultistateButton

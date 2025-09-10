@@ -34,6 +34,8 @@ class Notebook(BaseWidgetTTK):
             background_color_tabs: str | Color = None,
             background_color_tabs_active: str | Color = None,
 
+            apply_parent_background_color: bool = None,
+
             text_color_tabs: str | Color = None,
             text_color_tabs_active: str | Color = None,
 
@@ -43,8 +45,6 @@ class Notebook(BaseWidgetTTK):
             font_italic_tabs: bool = None,
             font_underline_tabs: bool = None,
             font_overstrike_tabs: bool = None,
-
-            apply_parent_background_color: bool = None,
 
             padding: int | tuple[int,...] = None,
             takefocus: bool = None,
