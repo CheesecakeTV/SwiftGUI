@@ -3,7 +3,7 @@
 
 This tutorial will help you create easy and very useful interfaces.
 
-If you haven't already, install swiftGUI using pip:
+If you haven't already, install SwiftGUI using pip:
 ```bash
 pip install swiftGUI
 ```
@@ -72,11 +72,37 @@ layout:list[list[sg.BaseElement]] = [
 
 Notice how every list inside the layout-list is its own row.
 
+# Making the layout look good
+The normal "theme" doesn't look that good, I know.
+
+To make it look better, simply apply a pre-made theme, like that:
+```py
+import SwiftGUI as sg
+sg.Themes.FourColors.Emerald()
+```
+Just leave that on the top of your script and forget about it.
+
+Themes are explained in-depth in the next tutorial, but applying them is as easy as that.
+
+My personal favorites are:
+```
+sg.Themes.FourColors.FourColors.Emerald
+sg.Themes.FourColors.FourColors.DarkTeal
+sg.Themes.FourColors.FourColors.DarkCoffee
+sg.Themes.FourColors.FourColors.SinCity
+sg.Themes.FourColors.FourColors.Jungle
+sg.Themes.FourColors.FourColors.DarkGold
+```
+
+Preview all available themes by calling `sg.Examples.preview_all_themes()`.
+
 # Basic elements
 
 There are a couple of elements you can choose from.
 
 They each have a ton of options you can use to customize the element, but we will only focus on the common ones in this tutorial.
+
+Pro-tipp: Preview all available elements by calling `sg.Examples.preview_all_elements()`.
 
 ## Text
 This element allows you to display some text inside your GUI (Who would have guessed...).
@@ -208,16 +234,18 @@ The for-loop somehow won't execute.
 
 That's because you need to "throw" an event to go through the loop a single time.
 
-There are 4 main ways to setup events:
+There are a couple of ways to set up events:
 - Using event-elements like `sg.Button`
 - Enabling the default-events for interactive elements like `sg.Input`, `sg.Table`, `sg.Checkbox`, etc.
 - Binding custom events
 - Throwing events manually from a different thread
+- (Using the binding decorator)
 
-All of these ways have something essential in common: **You have to set a key to throw an event to the loop!**\
-Not setting a key can also be useful sometime, but that's a different topic.
+All of these ways have something essential in common: **You have to set a key to throw an event to the event-loop!**\
+Not setting a key can also be useful sometimes, but that's a different topic.
 
-Whenever an event gets thrown, `e` ("event") will be set to the corresponding key (See the examples below).
+Whenever an "keyed-"event gets thrown, `e` ("event") will be set to the corresponding key (See the examples below).
+The loop will then execute once.
 
 ## Using buttons, or default events
 A button already comes with a builtin event.
@@ -251,7 +279,7 @@ w = sg.Window(layout)
 
 ### Main loop ###
 for e,v in w:
-    print("Event:",e)
+    print("Event:", e)
 
     if e == "B1":
         print("Button 1 was pressed!")
@@ -261,16 +289,18 @@ for e,v in w:
 
 ### After window was closed ###
 ```
-This structure is the basic idea behind swiftGUI (To be fair, it is very simmilar to the PySimpleGUI event-loop, but has a couple of advantages).
+This structure is the basic idea behind SwiftGUI (To be fair, it is very simmilar to the PySimpleGUI event-loop, but has a lot of advantages).
 You now know how to differentiate between events and execute code accordingly.
 
-To not slow down your code, Elements like `sg.Input` won't naturally throw an event.
+To not slow down your code by throwing too many events, elements like `sg.Input` won't naturally throw events.
 You have to specifically ask for it:
 
-Any element the user can interact with (`sg.Input`) has the parameter `default_event`.
+Any element the user can interact with in some way (`sg.Input`, `sg.Checkbox`, etc.) has the parameter `default_event`.
 Set this to `True` and an event will be thrown as soon as the user changes the value of that element.
-What exactly the user has to do is dependent on the type of element, but obvious most of the times.
-**Remember to set a key!**
+
+What exactly the user has to do is dependent on the type of element, but obvious most of the time.
+
+**Remember to set a key,** or no event will be thrown to the event-loop.
 ```py
 import SwiftGUI as sg
 
@@ -306,14 +336,14 @@ for e,v in w:
 How to actually read what was written into the `sg.Input` will be explained later.
 
 ## Binding custom events
-SwiftGUI is based on `tkinter`, a builtin package.
-`tkinter` offers a lot of different events you can throw: [TKinter reference](https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-types.html)
+SwiftGUI is based on `tkinter`, a builtin Python-package.
+`tkinter` offers a lot of different events you can throw: [TKinter reference](https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/event-types.html).
 You don't need to know most of these, but it can be useful to know what's possible.
 
 "Binding" events is done via the corresponding event-string, some of which are listed in the linked tkinter-reference.
-To make your life easier, SwiftGUI offers the class `Event`, which contains the most common event-strings.
+To make your life easier, SwiftGUI offers the class `Event`, which contains common event-strings.
 
-Bind an event by calling `.bind_event` on the elements instance.
+Bind an event by calling `.bind_event` on the element-instance.
 To make your life even more easier, `.bind_event` returns the instance itself, so you can call it directly inside your layout:
 ```py
 ### Layout ###
@@ -330,7 +360,7 @@ layout:list[list[sg.BaseElement]] = [
 Now, the `sg.Input`-element will not only throw an event once its text changed (`default_event = True`), but also when any mouse-button is clicked on it (`.bind_event(sg.Event.ClickAny)`), or the mouse simply enters the element (`.bind_event(sg.Event.MouseEnter)`).
 
 Unfortunately, any of these events will throw the same key: `"Input"`.
-To keep them apart, you can use the parameters `key_extention` and `key` of `bind_event`:
+To keep them apart, you can use the parameters `key_extention` or `key` of `bind_event`:
 ```py
 yourElement.bind_event(sg.Event.ClickAny,key_extention="_Click").bind_event(sg.Event.MouseEnter,key="MouseEnter")
 ```
@@ -340,12 +370,11 @@ yourElement.bind_event(sg.Event.ClickAny,key_extention="_Click").bind_event(sg.E
 ## Throwing events from different threads
 Threading can be tricky for Python-beginners.
 If you don't know how to use threading, skip this part.
-If you do know threading, this part is very easy.
+There is an in-depth explanation of these features in an advanced tutorial (if you don't see a link here, I forgot to add it...).
 
-Just call `w.throw_event(key)` on a different thread.\
-Done.
+Call `w.throw_event(key)` on a different thread to throw an event.
 
-You can also pass a value (`w.throw_event(key,value)`), which will be added to the value-dict (explained later) under the given key.
+You can also pass a value (`w.throw_event(key, value)`), which will be added to the value-dict (explained later) under the given key.
 
 The value stays in the value-dict until you change it by throwing an event to the same key.
 
@@ -355,22 +384,23 @@ If you use a key that is already "occupied" by an element, the value will not tr
 In swiftGUI, you can read and write values pretty easily.
 
 Reading: `w[key].value`\
-Writing: `w[key].value = new_value`, or `w[key].set_value(new_value)`
+Writing: `w[key].value = new_value`, or `w[key].set_value(new_value)`\
+(`w` is a reference to the window-object)
 
 What exactly you are reading/writing depends on the type of element.
 For `sg.Input`-Elements, `w[key].value` returns/changes the text shown to the user.
 Its type is `str`.
 
 In my opinion, it's fairly obvious, what type the value has.
-But I am adding a lot of typehints, to make it as easy as possible for you.
+But I am adding a lot of typehints to make it as easy as possible for you.
 
 Universal rule for any element: Reading and writing values always relates to the same thing.
 If reading returns the text inside the element, writing it will change that text.\
-E.g.: Reading the value of an `sg.Checkbox` returns if the box is checked or not. Writing it will check/uncheck the box, not change the text of the checkbox.
+E.g.: Reading the value of a `sg.Checkbox` returns if the box is checked or not. Writing it will check/uncheck the box.
 
 Note that for `w[key]` to work, the element needs a key.
 If you don't specify a key, the element can't be accessed this way.
-If two elements share the same key (which you shouldn't do, but who am I to stop you), only one of these elements will be accessed.
+If two elements share the same key (which you shouldn't do, but who am I to stop you), only one of these elements will be accessible through `w`.
 
 The sole purpose of `w[key]` is to return the element you put into the layout, so you could just save it in a variable before putting it in:
 ```py
@@ -389,7 +419,7 @@ my_text.value = "Hello GitHub"
 ```
 
 For better readability, I recommend the walrus-operator (Not making up the name).
-This code does exactly the same:
+This code does exactly the same as before:
 ```py
 ### Layout ###
 layout:list[list[sg.BaseElement]] = [
@@ -406,17 +436,22 @@ my_text.value = "Hello GitHub"
 
 To make life easier for users transitioning from PySimpleGUI, all "keyed" values are saved inside `v` (`for e,v in w`), something that can be used simmilar to a dictionary.
 
-`v[key]` is the same as `w[key].value` and `v[key] = new_value` the same as `w[key].value = new_value`.
+`v[key]` is the same as `w[key].value`, so `v[key] = new_value` the same as `w[key].value = new_value`.
 
 You can `print(v)`, which will print `v` like a dictionary.
-However, this "collects" the value of every keyed elements, so you should only do it for debug reasons.
+However, this "collects" the value of every keyed elements, so you should only do it for debug reasons and remove it later.
 
 This collecting-mechanism is a bit too complicated for this tutorial.
-Let's just simplify: Every value is collected only once per loop.
+Let's just simplify: Every value is "fully collected" only once per loop.
 That means, calling `print(v)` only really "hurts" once per loop.
 
 It also means, `print(v)` might not contain values that got updated by `w[key].value = ...`.
-However, `v[key]` always returns the most recent value.
+
+However, `v[key]` is very reliable and always returns the correct value.
+
+(Unnecessary side-rant about PySimpleGUI) In PySimpleGUI, `v` (or `value`) is a normal dictionary that completely updates once per loop.
+That means, changing the value of elements won't update `value`.
+Doesn't sound like much, but it annoyed the s out of me.
 
 # Updating the layout
 You can change most of the configuration of layout-elements after creating the window.

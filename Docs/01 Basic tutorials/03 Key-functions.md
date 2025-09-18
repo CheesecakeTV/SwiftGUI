@@ -191,3 +191,57 @@ That means, the multiplication has no effect.
 
 But there's hope! If your key_function returns anything but None, all values will be refreshed directly after execution.
 
+# Decorating functions to make them key-functions
+Big thanks to [yunlo](https://github.com/yunluo) for this idea!
+
+I tried really hard to find any advantage of this method over standard key-functions, but couldn't.
+It's just a different way to structure your code, which you might like better.
+
+Using a certain decorator, you can assign key-functions to a key in the event-loop.
+When the event-loop receives that key in an event, the key function will be called **instead of running through the loop**:
+```py
+import SwiftGUI as sg
+
+@sg.attach_function_to_key("Button1")
+def do_something():
+    print("Button 1 was pressed")
+
+@sg.attach_function_to_key("Button2")
+def do_something_else(v):
+    print("Button 2 was pressed.")
+    v["Button2"] = "Pressed"
+
+layout = [
+    [
+        sg.Button(" 1 ", key="Button1"),
+        sg.Button(" 2 ", key="Button2"),
+        sg.Button(" 3 ", key="Button3"),
+    ]
+]
+
+w = sg.Window(layout)
+
+for e,v in w:
+    print("Loop:",e, v)
+```
+Best to copy the code and try yourself:
+- When b1 is pressed, `do_something` is called.
+The loop does not run.
+- When b2 is pressed, `do_something_else` is called and the value-dict is passed to `v`.
+The loop does not run here either.
+- The key of b3 isn't used in any of the decorators, so the event-loop runs normally.
+
+Other than actual key-functions, these "decorated functions" should only take `e`, `v`, or `w` as parameters.
+`elem` and `val` will always be `None`.
+
+Some things to keep in mind when using this feature:
+- All "decorations" must be done before creating the window using `w = sg.Window(layout)`
+- The decorator only applies to the main event-loop.
+Since SwiftGUI version 0.8.0, it is possible to create other event-loops.
+Keys for these loops are not affected.
+- If you create multiple windows using `sg.Window` in a single program (which has risks on its own), the decorated functions apply to all windows.
+Also, the parameter `w` will always be filled by the first window created.
+So better avoid used keys alltogether.\
+There will be a way to create additional windows before version 1.0.0, I promise!
+
+

@@ -1,6 +1,5 @@
 from typing import Any, Callable, Iterable, Self
 import SwiftGUI as sg
-from SwiftGUI.Windows import ValueDict
 
 
 class Example(sg.BaseCombinedElement):
@@ -27,7 +26,7 @@ class Example(sg.BaseCombinedElement):
             # Put all of your options in here
         )
 
-    def _event_loop(self, e: Any, v: ValueDict):
+    def _event_loop(self, e: Any, v: dict):
         """An event-loop just for this element. Use self.w to refer to keys inside this element."""
         ...
 

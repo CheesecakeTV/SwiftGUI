@@ -291,10 +291,12 @@ class BaseKeyHandler(BaseElement):
             if callback_kwargs is None:
                 callback_kwargs = dict()
 
+            self._value_dict.invalidate_all_values()
             callback(*callback_args, **callback_kwargs)
 
         # Break out of the loop if a key is given
         if key is not None:
+            self._value_dict.invalidate_all_values()
             self._key_event_callback_function(key, self._value_dict)
 
     def get_event_function(self,me:BaseElement = None,key:Any=None,key_function:Callable|Iterable[Callable]=None,
@@ -360,6 +362,12 @@ class BaseKeyHandler(BaseElement):
             return self.all_key_elements[item]
         except KeyError:
             raise KeyError(f"The requested Element ({item}) wasn't found. Did you forget to set its key?")
+
+    def _get_value(self) -> Any:
+        return self._value_dict
+
+    def set_value(self,val:Any) -> Self:
+        raise NotImplementedError("You can't change the value of this element like that.")
 
     ### grap_anywhere methods.
     ### Mainly inspired by this post: https://stackoverflow.com/questions/4055267/tkinter-mouse-drag-a-window-without-borders-eg-overridedirect1

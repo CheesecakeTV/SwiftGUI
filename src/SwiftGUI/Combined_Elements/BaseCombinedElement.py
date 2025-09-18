@@ -59,7 +59,7 @@ class BaseCombinedElement(BaseElement):
         self._throw_event()
 
     def _personal_init(self):
-        self._sg_widget._init(self,self.window)
+        self._sg_widget._init(self, self.window)
         self._throw_event = self.window.get_event_function(me= self, key= self.key, key_function= self._key_function)
 
     def _update_special_key(self,key:str,new_val:Any) -> bool|None:
@@ -94,3 +94,11 @@ class BaseCombinedElement(BaseElement):
             raise AttributeError("You tried to get .w from a combined element that does not have a sub-layout.\nUse ._sg_widget instead.")
 
         return self._sg_widget
+
+    def _get_value(self) -> Any:
+        if isinstance(self._sg_widget, Frame):
+            return None
+
+        return self._sg_widget.value
+
+
