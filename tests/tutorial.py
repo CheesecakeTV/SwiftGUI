@@ -1,31 +1,24 @@
 import SwiftGUI as sg
-import threading
-import time
 
-### Global options ###
-sg.Themes.FourColors.Emerald()
-# sg.GlobalOptions.Separator.padding = 0
-sg.Examples.preview_all_elements()
-exit()
+@sg.attach_function_to_key("Button1")
+def do_something():
+    print("Button 1 was pressed")
 
-### Layout ###
+@sg.attach_function_to_key("Button2")
+def do_something_else(v):
+    print("Button 2 was pressed.")
+    v["Button2"] = "Pressed"
+
 layout = [
     [
-        grid := sg.GridFrame([
-            [tex := sg.T("Hi", width=30), sg.VSep(), sg.T("World")],
-            [sg.HSep() for i in range(4)],
-            [sg.T("World",expand_y=True, background_color="red", expand=False), sg.VSep(), sg.T("Hi"), sg.Listbox(range(15))],
-        ], alignment= "right")
+        sg.Button(" 1 ", key="Button1"),
+        sg.Button(" 2 ", key="Button2"),
+        sg.Button(" 3 ", key="Button3"),
     ]
 ]
 
 w = sg.Window(layout)
 
-### Additional configurations/actions ###
-
-### Main loop ###
 for e,v in w:
-    print(e, v)
+    print("Loop:",e, v)
 
-
-### After window was closed ###

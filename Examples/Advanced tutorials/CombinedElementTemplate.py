@@ -1,6 +1,7 @@
 from typing import Any, Callable, Iterable, Self
 import SwiftGUI as sg
 
+
 class Example(sg.BaseCombinedElement):
     defaults = sg.GlobalOptions.DEFAULT_OPTIONS_CLASS   # Change this to attach your own GlobalOption-class to the element
 
@@ -25,11 +26,15 @@ class Example(sg.BaseCombinedElement):
             # Put all of your options in here
         )
 
-    def _get_value(self) -> any:
+    def _event_loop(self, e: Any, v: dict):
+        """An event-loop just for this element. Use self.w to refer to keys inside this element."""
+        ...
+
+    def _get_value(self) -> Any:
         """Returns the value (self.value) of this element"""
         return super()._get_value()
 
-    def set_value(self,val:any):
+    def set_value(self,val: Any):
         """Changes the value of this element (self.value = val)"""
         super().set_value(val)
 

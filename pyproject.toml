@@ -1,6 +1,6 @@
 [project]
 name = "SwiftGUI"
-version = "0.7.8"
+version = "0.7.10"
 packages = [
     { include = "SwiftGUI", from = "src" }
 ]

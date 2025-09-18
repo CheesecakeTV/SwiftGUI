@@ -4,7 +4,6 @@ from typing import Any
 
 from SwiftGUI import BaseElement, ElementFlag, BaseWidgetContainer, GlobalOptions, Literals, Color, BaseWidget
 
-
 class Frame(BaseWidgetContainer):
     """
     Copy this class ot create your own Widget

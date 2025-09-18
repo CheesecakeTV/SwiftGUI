@@ -1,9 +1,10 @@
 import io
 import tkinter as tk
+from abc import abstractmethod
 from os import PathLike
-from tkinter import ttk
+from tkinter import ttk, Widget
 from collections.abc import Iterable,Callable
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Union
 from SwiftGUI.Compat import Self
 import inspect
 from PIL import Image, ImageTk
@@ -14,10 +15,10 @@ if TYPE_CHECKING:
     from SwiftGUI import AnyElement
 
 class ValueDict:
-    def __init__(self, window: "Window", keys: set[Any]):
+    def __init__(self, window: "BaseKeyHandler", keys: set[Any]):
         super().__init__()
         self._values = dict()
-        self._window: "Window" = window
+        self._window: "BaseKeyHandler" = window
 
         self._updated_keys: set = set()
         self._all_keys: set = keys
@@ -108,14 +109,336 @@ class ValueDict:
             self.__setitem__(key, val)
         return self
 
-class Window(BaseElement):
-    _prev_event:any = None  # Most recent event (-key)
-
+class BaseKeyHandler(BaseElement):
+    """
+    The base-class for anything window-ish.
+    Don't use unless you absolutely know what you're doing.
+    """
     all_key_elements: dict[Any, "AnyElement"]   # Key:Element, if key is present
     all_elements: list["AnyElement"] = list()   # Every single element
 
-    exists:bool = False # True, if this window exists at the moment
+    exists: bool = False # True, if this window exists at the moment
 
+    def __init__(self, event_loop_function: Callable = None):
+        """
+
+        :param event_loop_function: This function is called when a keyed event occurs. Replaces the event-loop, needs e and v as parameters.
+        """
+        super().__init__()
+
+        self._value_dict: ValueDict | None = None
+        self._grab_anywhere: bool | None = None
+        #self.ttk_style: ttk.Style | None = None
+        self.root: tk.Tk | Widget | None = None
+        self._sg_widget: Frame | None = None
+
+        self.all_elements:list["AnyElement"] = list()   # Elements will be registered in here
+        self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
+        self._grab_anywhere_window: Self | None = None  # This window will handle the callbacks of the grab-anywhere methods
+
+        self._key_event_callback_function = event_loop_function
+        if event_loop_function is None:
+            self._key_event_callback_function = lambda *_:None
+
+    @BaseElement._run_after_window_creation
+    def set_custom_event_loop(self, key_event_callback_function: Callable) -> Self:
+        """
+        Specify a function/method that gets called instead of breaking out of the loop
+        :param key_event_callback_function:
+        :return:
+        """
+
+        self._key_event_callback_function = key_event_callback_function
+        return self
+
+    def init(
+            self,
+            sg_element: Frame,
+            container: tk.Tk | Widget, # Container of this sub-window
+            grab_anywhere_window: Self = None,
+    ):
+        """Should be called by the window when/after it is being created"""
+        self._sg_widget: Frame = sg_element
+
+        self.root = container
+
+        if grab_anywhere_window is not None:
+            self._grab_anywhere_window = grab_anywhere_window
+
+        if not hasattr(self, "ttk_style"):
+            self.ttk_style = ttk_style
+
+        if not hasattr(self, "_grab_anywhere"):
+            self._grab_anywhere = False
+
+        self._sg_widget.window_entry_point(self.root, self)
+
+        self._value_dict = ValueDict(self, set(self.all_key_elements.keys()))
+
+        self.exists = True
+
+        for elem in self.all_elements:
+            elem.init_window_creation_done()
+
+        self._sg_widget.init_window_creation_done()
+
+        super().init_window_creation_done()
+
+
+    def __iter__(self) -> Self:
+        return self
+
+    def __next__(self) -> tuple[any,dict[any:any]]:
+        e,v = self.loop()
+
+        if not self.exists:
+            raise StopIteration
+
+        return e,v
+
+    def __contains__(self, item):
+        return item in self.all_key_elements.keys()
+
+    def close(self):
+        """
+        Kill the window
+        :return:
+        """
+        ...
+
+    def loop_close(self) -> tuple[Any,dict[Any:Any]]:
+        """
+        Loop once, then close
+        :return:
+        """
+        e,v = self.loop()
+        self.close()
+        return e,v
+
+    def loop(self) -> tuple[Any, ValueDict]:
+        """
+        Main loop
+
+        When window is closed, None is returned as the key.
+
+        :return: Triggering event key; all values as _dict
+        """
+        raise NotImplementedError(f"A {self.__class__.__name__}-object can't be looped (yet).")
+
+    def register_element(self,elem:BaseElement):
+        """
+        Register an Element in this window
+        :param elem:
+        :return:
+        """
+        self.all_elements.append(elem)
+
+        if not elem.has_flag(ElementFlag.DONT_REGISTER_KEY) and elem.key is not None:
+            if Debug.enable_key_warnings and elem.key in self.all_key_elements:
+                print(f"WARNING! Key {elem.key} is defined multiple times in its key-system! Disable this message by setting sg.Debug.enable_key_warnings = False before creating the layout.")
+
+            self.all_key_elements[elem.key] = elem
+
+    def throw_event(self, key: Any = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
+        """
+        Thread-safe method to generate a custom event.
+
+        :param function_kwargs: Will be passed to function
+        :param function_args: Will be passed to function
+        :param function: This function will be called on the main thread
+        :param key:
+        :param value: If not None, it will be saved inside the value-_dict until changed
+        :return:
+        """
+        if not self.exists:
+            return
+
+        if key is not None:
+            self._value_dict.set_extra_value(key, value)
+
+        if function_kwargs is None and function is not None:
+            function_kwargs = dict()
+
+        # Throw the event on the main window so it is thread-safe
+        main_window.throw_event(function= self._receive_event, function_kwargs={
+            "key": key,
+            "callback": function,
+            "callback_args": function_args,
+            "callback_kwargs": function_kwargs,
+        })
+
+    #@deprecated("WIP")
+    # Todo: def throw_event_on_next_loop(self,key:Any,value:Any=None):
+    #
+    #     """
+    #     NOT THREAD-SAFE!!!
+    #
+    #     Generate an event instantly when window returns to loop
+    #     :param key:
+    #     :param value: If not None, it will be saved inside the value-_dict until changed
+    #     :return:
+    #     """
+    #     raise NotImplementedError("sg.Window.throw_event_on_next_loop is not ready to use yet")
+
+    def _receive_event(self, key:Any = None, callback: Callable = None, callback_args: tuple = tuple(), callback_kwargs: dict = None):
+        """
+        Gets called when an event is evoked
+        :param key:
+        :return:
+        """
+        # Call the function if given
+        if callback is not None:
+            if callback_kwargs is None:
+                callback_kwargs = dict()
+
+            self._value_dict.invalidate_all_values()
+            callback(*callback_args, **callback_kwargs)
+
+        # Break out of the loop if a key is given
+        if key is not None:
+            self._value_dict.invalidate_all_values()
+            self._key_event_callback_function(key, self._value_dict)
+
+    def get_event_function(self,me:BaseElement = None,key:Any=None,key_function:Callable|Iterable[Callable]=None,
+                           )->Callable:
+        """
+        Returns a function that sets the event-variable accorting to key
+        :param me: Calling element
+        :param key_function: Will be called additionally to the event. YOU CAN PASS MULTIPLE FUNCTIONS as a list/tuple
+        :param key: If passed, main loop will return this key
+        :return: Function to use as a tk-event
+        """
+        if (key_function is not None) and not hasattr(key_function, "__iter__"):
+            key_function = (key_function,)
+
+        def single_event(*_):
+            did_refresh = False
+
+            if key_function: # Call key-functions
+                self.refresh_values()
+
+                kwargs = {  # Possible parameters for function
+                    "w": self,  # Reference to main window
+                    "e": key,   # Event-key, if there is one
+                    "v": self._value_dict,   # All values
+                    "val": None if me is None else me.value,    # Value of element that caused the event
+                    "elem": me,
+                }
+
+                for fkt in key_function:
+                    wanted = set(inspect.signature(fkt).parameters.keys())
+                    offers = kwargs.fromkeys(kwargs.keys() & wanted)
+                    did_refresh = False
+
+                    if fkt(**{i:kwargs[i] for i in offers}) is not None:
+                        if me is not None:
+                            kwargs["val"] = me.value
+                        self._value_dict.invalidate_all_values()
+                        did_refresh = True
+
+                if not did_refresh:
+                    self._value_dict.invalidate_all_values()
+                    did_refresh = True
+
+            if key is not None: # Call named event
+                if not did_refresh: # Not redundant, keep it!
+                    self._value_dict.invalidate_all_values()
+
+                self._receive_event(key)
+
+        return single_event
+
+    def refresh_values(self) -> ValueDict:
+        """
+        Invalidate all values from the value-dict so they will be refreshed the next time they are accessed
+        :return: new values
+        """
+        self._value_dict.invalidate_all_values()
+
+        return self._value_dict
+
+    def __getitem__(self, item) -> "AnyElement":
+        try:
+            return self.all_key_elements[item]
+        except KeyError:
+            raise KeyError(f"The requested Element ({item}) wasn't found. Did you forget to set its key?")
+
+    def _get_value(self) -> Any:
+        return self._value_dict
+
+    def set_value(self,val:Any) -> Self:
+        raise NotImplementedError("You can't change the value of this element like that.")
+
+    ### grap_anywhere methods.
+    ### Mainly inspired by this post: https://stackoverflow.com/questions/4055267/tkinter-mouse-drag-a-window-without-borders-eg-overridedirect1
+    _lastClickX = None
+    _lastClickY = None
+
+    def _SaveLastClickPos(self, event):
+        ...
+
+    def _DelLastClickPos(self, *_):
+        ...
+
+    def _Dragging(self, event):
+        ...
+
+    def bind_grab_anywhere_to_element(self, widget: tk.Widget) -> Self:
+        """
+        Add necessary bindings for window grab-and-move ("grab_anywhere") to the passed widget.
+        This should be called on every widget the user should be able to grab and pull the window from.
+
+        ONLY WORKS IF w._grab_anywhere == True
+
+        :param widget:
+        :return:
+        """
+        if self._grab_anywhere_window is not None:
+            self._grab_anywhere_window.bind_grab_anywhere_to_element(widget)
+        return Self
+
+class SubLayout(BaseKeyHandler):
+    """
+    Can be used as an sg-element.
+    Collects all containing keys and diverts them to a specified loop-"function"
+    """
+
+    def __init__(
+            self,
+            layout: Frame | Iterable[Iterable[BaseElement]],
+            event_loop_function: Callable = None,
+    ):
+        super().__init__(event_loop_function)
+
+        if not isinstance(layout, Frame):
+            layout = Frame(layout)
+
+        self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
+        self._frame = layout
+
+    def _init(self, parent:"BaseElement", window):
+        super()._init(parent, window)
+
+        self.init(self._frame, self.parent_tk_widget, self.window)
+
+    def _update_special_key(self,key:str,new_val:Any) -> bool|None:
+        if key == "background_color":
+            if self._frame.has_flag(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR):
+                self._frame.update(background_color = new_val)
+                return True
+
+        return super()._update_special_key(key, new_val)
+
+ttk_style: ttk.Style | None = None
+main_window: Union["Window", None] = None
+all_decorator_key_functions = dict() # All decorator-functions collected, key: function
+class Window(BaseKeyHandler):
+    """
+    Main Window-object.
+    Don't use for "second" windows
+    """
+
+    _prev_event:any = None  # Most recent event (-key)
     defaults = GlobalOptions.Window
 
     def __init__(
@@ -157,16 +480,23 @@ class Window(BaseElement):
         :param keep_on_top: True, if the window should always be on top of any other window
         :param grab_anywhere: True, if the window can be "held and dragged" anywhere (exclusing certain elements)
         """
-        super().__init__()
-        self.all_elements:list["AnyElement"] = list()   # Elements will be registered in here
-        self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
+        global ttk_style
+        global main_window
+
+        if main_window is None or not main_window.exists: # Some users might use sg.Window for popups, don't overwrite the global in that case
+            ttk_style = None
+            main_window = self
+
+        super().__init__(event_loop_function=self._keyed_event_callback)
         self._grab_anywhere = self.defaults.single("grab_anywhere", grab_anywhere)
 
+        self._sg_widget:Frame = Frame(layout,alignment= self.defaults.single("alignment", alignment), expand_y=True, expand=True)
         self.root = tk.Tk()
-
-        self._sg_widget:Frame = Frame(layout,alignment= self.defaults.single("alignment", alignment))
-
         self.ttk_style: ttk.Style = ttk.Style(self.root)
+
+        if ttk_style is None:
+            ttk_style = self.ttk_style
+
         self._update_initial(
             title=title,
             titlebar=titlebar,
@@ -185,34 +515,27 @@ class Window(BaseElement):
             _first_update=True
         )
 
-        self._sg_widget.window_entry_point(self.root, self)
-        self._config_ttk_queue = list()
+        self.init(self._sg_widget, self.root, grab_anywhere_window= self)
+        #self._sg_widget.window_entry_point(self.root, self)
 
-        for elem in self.all_elements:
-            elem.init_window_creation_done()
-        self.init_window_creation_done()
-        self._sg_widget.init_window_creation_done()
+        # for elem in self.all_elements:
+        #     elem.init_window_creation_done()
+        # self.init_window_creation_done()
+        # self._sg_widget.init_window_creation_done()
 
-        self._value_dict = ValueDict(self, set(self.all_key_elements.keys()))
+        # self._value_dict = ValueDict(self, set(self.all_key_elements.keys()))
 
         self.bind_grab_anywhere_to_element(self._sg_widget.tk_widget)
 
         if position == (None, None):
             self.center()
 
+        self._decorated_key_functions = dict()
+        for key, val in all_decorator_key_functions.items():
+            self._decorated_key_functions[key] = self.get_event_function(key= key, key_function= val)
 
-    def __iter__(self) -> Self:
-        return self
 
-    def __next__(self) -> tuple[any,dict[any:any]]:
-        e,v = self.loop()
-
-        if not self.exists:
-            raise StopIteration
-
-        return e,v
-
-    # Todo: This need to be changed to new routine
+    # Todo: This needs to be changed to new routine
     def _update_initial(
             self,
             title = None,
@@ -321,15 +644,6 @@ class Window(BaseElement):
         if self.has_flag(ElementFlag.IS_CREATED):
             self.root.destroy()
 
-    def loop_close(self) -> tuple[Any,dict[Any:Any]]:
-        """
-        Loop once, then close
-        :return:
-        """
-        e,v = self.loop()
-        self.close()
-        return e,v
-
     def loop(self) -> tuple[Any, ValueDict]:
         """
         Main loop
@@ -339,31 +653,27 @@ class Window(BaseElement):
         :return: Triggering event key; all values as _dict
         """
         self.exists = True
-        self.root.mainloop()
 
-        try:
-            assert self.root.winfo_exists()
-        except (AssertionError,tk.TclError):
-            self.exists = False # This looks redundant, but it's easier to use self.exists from outside. So leave it!
-            self.remove_flags(ElementFlag.IS_CREATED)
-            return None,self._value_dict
+        while True:
+            self.root.mainloop()
 
-        self._value_dict.invalidate_all_values()
+            try:
+                assert self.root.winfo_exists()
+            except (AssertionError,tk.TclError):
+                self.exists = False # This looks redundant, but it's easier to use self.exists from outside. So leave it!
+                self.remove_flags(ElementFlag.IS_CREATED)
+                return None,self._value_dict
+
+            self._value_dict.invalidate_all_values()
+
+            # decorator-keys
+            if self._prev_event in self._decorated_key_functions:
+                self._decorated_key_functions[self._prev_event]()
+                continue    # Go on looping, key is handled
+
+            break   # Actually escape the loop
+
         return self._prev_event, self._value_dict
-
-    def register_element(self,elem:BaseElement):
-        """
-        Register an Element in this window
-        :param elem:
-        :return:
-        """
-        self.all_elements.append(elem)
-
-        if not elem.has_flag(ElementFlag.DONT_REGISTER_KEY) and elem.key is not None:
-            if Debug.enable_key_warnings and elem.key in self.all_key_elements:
-                print(f"WARNING! Key {elem.key} is defined multiple times! Disable this message by setting sg.Debug.enable_key_warnings = False before creating the layout.")
-
-            self.all_key_elements[elem.key] = elem
 
     def throw_event(self, key: Any = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
         """
@@ -387,100 +697,9 @@ class Window(BaseElement):
 
         self.root.after(0, self._receive_event, key, function, function_args, function_kwargs)
 
-    #@deprecated("WIP")
-    def throw_event_on_next_loop(self,key:Any,value:Any=None):
-        """
-        NOT THREAD-SAFE!!!
-
-        Generate an event instantly when window returns to loop
-        :param key:
-        :param value: If not None, it will be saved inside the value-_dict until changed
-        :return:
-        """
-        # Todo
-        raise NotImplementedError("sg.Window.throw_event_on_next_loop is not ready to use yet")
-
-    def _receive_event(self, key:Any = None, callback: Callable = None, callback_args: tuple = tuple(), callback_kwargs: dict = None):
-        """
-        Gets called when an event is evoked
-        :param key:
-        :return:
-        """
-        # Call the function if given
-        if callback is not None:
-            if callback_kwargs is None:
-                callback_kwargs = dict()
-
-            callback(*callback_args, **callback_kwargs)
-
-        # Break out of the loop if a key is given
-        if key is not None:
-            self._prev_event = key
-            self.root.quit()
-
-    def get_event_function(self,me:BaseElement = None,key:Any=None,key_function:Callable|Iterable[Callable]=None,
-                           )->Callable:
-        """
-        Returns a function that sets the event-variable accorting to key
-        :param me: Calling element
-        :param key_function: Will be called additionally to the event. YOU CAN PASS MULTIPLE FUNCTIONS as a list/tuple
-        :param key: If passed, main loop will return this key
-        :return: Function to use as a tk-event
-        """
-        if (key_function is not None) and not hasattr(key_function, "__iter__"):
-            key_function = (key_function,)
-
-        def single_event(*_):
-            did_refresh = False
-
-            if key_function: # Call key-functions
-                self.refresh_values()
-
-                kwargs = {  # Possible parameters for function
-                    "w": self,  # Reference to main window
-                    "e": key,   # Event-key, if there is one
-                    "v": self._value_dict,   # All values
-                    "val": None if me is None else me.value,    # Value of element that caused the event
-                    "elem": me,
-                }
-
-                for fkt in key_function:
-                    wanted = set(inspect.signature(fkt).parameters.keys())
-                    offers = kwargs.fromkeys(kwargs.keys() & wanted)
-                    did_refresh = False
-
-                    if fkt(**{i:kwargs[i] for i in offers}) is not None:
-                        if me is not None:
-                            kwargs["val"] = me.value
-                        self._value_dict.invalidate_all_values()
-                        did_refresh = True
-
-                if not did_refresh:
-                    self._value_dict.invalidate_all_values()
-                    did_refresh = True
-
-            if key is not None: # Call named event
-                if not did_refresh: # Not redundant, keep it!
-                    self._value_dict.invalidate_all_values()
-
-                self._receive_event(key)
-
-        return single_event
-
-    def refresh_values(self) -> ValueDict:
-        """
-        Invalidate all values from the value-dict so they will be refreshed the next time they are accessed
-        :return: new values
-        """
-        self._value_dict.invalidate_all_values()
-
-        return self._value_dict
-
-    def __getitem__(self, item) -> "AnyElement":
-        try:
-            return self.all_key_elements[item]
-        except KeyError:
-            raise KeyError(f"The requested Element ({item}) wasn't found. Did you forget to set its key?")
+    def _keyed_event_callback(self, key: Any, _):
+        self._prev_event = key
+        self.root.quit()
 
     _icon = None
     def update_icon(self, icon: str | PathLike | Image.Image | io.BytesIO) -> Self:
@@ -525,6 +744,15 @@ class Window(BaseElement):
         self.root.geometry("+%s+%s" % (x , y))
 
     @BaseElement._run_after_window_creation
+    def center(self) -> Self:
+        """
+        Centers the window on the current screen
+        :return:
+        """
+        self.root.eval("tk::PlaceWindow . center")
+        return self
+
+    @BaseElement._run_after_window_creation
     def bind_grab_anywhere_to_element(self, widget: tk.Widget):
         """
         Add necessary bindings for window grab-and-move ("grab_anywhere") to the passed widget.
@@ -542,12 +770,3 @@ class Window(BaseElement):
             widget.bind('<ButtonPress-1>', self._SaveLastClickPos)
             widget.bind('<ButtonRelease-1>', self._DelLastClickPos)
             widget.bind('<B1-Motion>', self._Dragging)
-
-    @BaseElement._run_after_window_creation
-    def center(self) -> Self:
-        """
-        Centers the window on the current screen
-        :return:
-        """
-        self.root.eval("tk::PlaceWindow . center")
-        return self
