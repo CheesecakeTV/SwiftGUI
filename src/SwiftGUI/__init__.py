@@ -8,7 +8,7 @@ from . import GlobalOptions, Literals, Tools, Debug
 from .ElementFlags import ElementFlag
 
 from .Events import Event
-from .Base import BaseElement,BaseWidget,BaseWidgetContainer,ElementFlag,BaseWidgetTTK,BaseCombinedElement, BaseScrollbar
+from .Base import BaseElement,BaseWidget,BaseWidgetContainer,ElementFlag,BaseWidgetTTK, BaseScrollbar
 #from .KeyManager import Key,SEPARATOR,duplicate_warnings   # Todo: Make some decent key-manager
 
 from .Widget_Elements.Scrollbar import Scrollbar
@@ -32,9 +32,6 @@ from .Widget_Elements.Scale import Scale
 from .Widget_Elements.Combobox import Combobox
 from .Widget_Elements.Progressbar import Progressbar, ProgressbarVertical
 from .Widget_Elements.GridFrame import GridFrame
-
-from .Combined_Elements.Form import Form
-from .Combined_Elements.MultistateButton import MultistateButton
 
 from .Extended_Elements.FileBrowseButton import FileBrowseButton
 from .Extended_Elements.ColorChooserButton import ColorChooserButton
@@ -73,9 +70,12 @@ Slider = Scale
 
 Combo = Combobox
 
-AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton | Spinbox | Image | ImageButton | Scale | Combobox | Progressbar
 
 from .Windows import Window, BaseKeyHandler, ttk_style, main_window, SubLayout
+
+from .Combined_Elements.BaseCombinedElement import BaseCombinedElement
+from .Combined_Elements.Form import Form
+from .Combined_Elements.MultistateButton import MultistateButton
 
 #from .Extended_Elements.SubLayout import SubLayout
 
@@ -87,3 +87,5 @@ from . import Examples
 
 from .Utilities.Threads import clipboard_observer
 from .Utilities.Images import file_from_b64, file_to_b64
+
+AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton | Spinbox | Image | ImageButton | Scale | Combobox | Progressbar

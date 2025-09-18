@@ -1,11 +1,31 @@
+from typing import Any
+
 import SwiftGUI as sg
 import threading
 import time
+
+from SwiftGUI.Windows import ValueDict
 
 ### Global options ###
 sg.Themes.FourColors.SinCity()
 # sg.Examples.preview_all_elements()
 # exit()
+
+class ButtonMat(sg.BaseCombinedElement):
+    def __init__(self):
+        frame = sg.GridFrame([[
+            sg.Button(str(i), width= 3, key= str(i)) for i in range(15)
+        ]])
+
+        super().__init__(frame, "Hi")
+
+    def _event_loop(self, e: Any, v: ValueDict):
+        print("Combined loop:\t", e, v)
+        v[e] = "C"
+        self.w[e].update(background_color = "#" + sg.Themes.FourColors.SinCity.col3)
+
+        if e == "5":
+            self.throw_event()
 
 ### Layout ###
 my_frame = sg.Frame([
@@ -43,6 +63,8 @@ layout = [
     [
         sg.Input("Hallo Welt", key="In", default_event= True),
         subLay := sg.SubLayout(my_frame, custom_loop)
+    ],[
+        ButtonMat()
     ]
 ]
 
