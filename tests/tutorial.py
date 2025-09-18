@@ -12,12 +12,12 @@ layout = [
         grid := sg.GridFrame([
             [tex := sg.T("Hi", width=30), sg.VSep(), sg.T("World")],
             [sg.HSep() for i in range(4)],
-            [sg.T("World",expand_y=True, background_color="red", expand=False), sg.VSep(), sg.T("Hi"), sg.Listbox(range(15))],
+            [sg.T("World",expand_y=True, background_color="red", expand=False), sg.VSep(), sg.T("Hi"), sg.Listbox(range(15), key="LB", default_event=True)],
         ], alignment= "right")
     ]
 ]
 
-w = sg.Window(layout)
+w = sg.Window(layout, grab_anywhere=True)
 
 ### Additional configurations/actions ###
 
