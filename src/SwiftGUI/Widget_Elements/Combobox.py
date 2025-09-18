@@ -142,6 +142,8 @@ class Combobox(BaseWidgetTTK):
                 self._map_ttk_style(background=(("pressed", new_val), ))
 
             case "background_color":
+                if new_val is None:
+                    return
                 self._map_ttk_style(fieldbackground=(("!disabled", new_val), ))
                 self.tk_widget.tk.eval(
                     f"[ttk::combobox::PopdownWindow {self.tk_widget}].f.l configure -background {new_val}")
@@ -150,6 +152,8 @@ class Combobox(BaseWidgetTTK):
                 self._map_ttk_style(fieldbackground=(("disabled", new_val), ))
 
             case "text_color":
+                if new_val is None:
+                    return
                 self._map_ttk_style(foreground=(("!disabled", new_val),))
                 self.tk_widget.tk.eval(
                     f"[ttk::combobox::PopdownWindow {self.tk_widget}].f.l configure -foreground {new_val}")
@@ -157,10 +161,14 @@ class Combobox(BaseWidgetTTK):
                 self._map_ttk_style(foreground=(("disabled", new_val),))
 
             case "selectbackground_color":
+                if new_val is None:
+                    return
                 self._config_ttk_style(selectbackground= new_val)
                 self.tk_widget.tk.eval(
                     f"[ttk::combobox::PopdownWindow {self.tk_widget}].f.l configure -selectbackground {new_val}")
             case "select_text_color":
+                if new_val is None:
+                    return
                 self._config_ttk_style(selectforeground= new_val)
                 self.tk_widget.tk.eval(
                     f"[ttk::combobox::PopdownWindow {self.tk_widget}].f.l configure -selectforeground {new_val}")

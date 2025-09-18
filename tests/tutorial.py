@@ -4,7 +4,9 @@ import time
 
 ### Global options ###
 sg.Themes.FourColors.Emerald()
-sg.GlobalOptions.Separator.padding = 0
+# sg.GlobalOptions.Separator.padding = 0
+sg.Examples.preview_all_elements()
+exit()
 
 ### Layout ###
 layout = [
