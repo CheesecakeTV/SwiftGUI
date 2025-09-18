@@ -1,9 +1,10 @@
 import io
 import tkinter as tk
+from abc import abstractmethod
 from os import PathLike
-from tkinter import ttk
+from tkinter import ttk, Widget
 from collections.abc import Iterable,Callable
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Union
 from SwiftGUI.Compat import Self
 import inspect
 from PIL import Image, ImageTk
@@ -14,10 +15,10 @@ if TYPE_CHECKING:
     from SwiftGUI import AnyElement
 
 class ValueDict:
-    def __init__(self, window: "Window", keys: set[Any]):
+    def __init__(self, window: "BaseKeyHandler", keys: set[Any]):
         super().__init__()
         self._values = dict()
-        self._window: "Window" = window
+        self._window: "BaseKeyHandler" = window
 
         self._updated_keys: set = set()
         self._all_keys: set = keys
@@ -108,48 +109,48 @@ class ValueDict:
             self.__setitem__(key, val)
         return self
 
-class _KeyHandler(BaseElement):
+class BaseKeyHandler(BaseElement):
     """
     The base-class for anything window-ish.
+    Don't use unless you absolutely know what you're doing.
     """
     all_key_elements: dict[Any, "AnyElement"]   # Key:Element, if key is present
     all_elements: list["AnyElement"] = list()   # Every single element
 
-    exists:bool = False # True, if this window exists at the moment
+    exists: bool = False # True, if this window exists at the moment
 
-    # def __init__(
-    #         self,
-    #         layout:Iterable[Iterable[BaseElement]],
-    #         sg_element: Frame,
-    #         grab_anywhere: bool = None,
-    # ):
-    #     """
-    #
-    #     :param layout: Double-List (or other iterable) of your elements, row by row
-    #     :param grab_anywhere: True, if the window can be "held and dragged" anywhere (exclusing certain elements)
-    #     """
-    #     super().__init__()
-    #     self.all_elements:list["AnyElement"] = list()   # Elements will be registered in here
-    #     self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
-    #
-    #     self._sg_widget: Frame = sg_element
-    #
-    #     self.ttk_style: ttk.Style = ttk.Style(self.root)
-    #
-    #     self._sg_widget.window_entry_point(self.root, self)
-    #     self._config_ttk_queue = list()
-    #
-    #     for elem in self.all_elements:
-    #         elem.init_window_creation_done()
-    #     self.init_window_creation_done()
-    #     self._sg_widget.init_window_creation_done()
-    #
-    #     self._value_dict = ValueDict(self, set(self.all_key_elements.keys()))
-    #
-    #     self.bind_grab_anywhere_to_element(self._sg_widget.tk_widget)
-    #
-    #     if position == (None, None):
-    #         self.center()
+    def __init__(self):
+        super().__init__()
+
+        self.all_elements:list["AnyElement"] = list()   # Elements will be registered in here
+        self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
+
+    def _init(
+            self,
+            sg_element: Frame,
+            container: tk.Tk | Widget, # Container of this sub-window
+    ):
+        """Should be called by the window when/after it is being created"""
+        self._sg_widget: Frame = sg_element
+        self.ttk_style = ttk_style
+
+        self.root = container
+
+        # Todo: self.bind_grab_anywhere_to_element(self._sg_widget.tk_widget)
+        if not hasattr(self, "_grab_anywhere"):
+            self._grab_anywhere = False
+
+        self._sg_widget.window_entry_point(self.root, self)
+
+        self._value_dict = ValueDict(self, set(self.all_key_elements.keys()))
+
+        for elem in self.all_elements:
+            elem.init_window_creation_done()
+
+        self._sg_widget.init_window_creation_done()
+
+        super().init_window_creation_done()
+
 
     def __iter__(self) -> Self:
         return self
@@ -189,7 +190,7 @@ class _KeyHandler(BaseElement):
 
         :return: Triggering event key; all values as _dict
         """
-        ...
+        raise NotImplementedError(f"A {self.__class__.__name__}-object can't be looped (yet).")
 
     def register_element(self,elem:BaseElement):
         """
@@ -241,6 +242,7 @@ class _KeyHandler(BaseElement):
         # Todo
         raise NotImplementedError("sg.Window.throw_event_on_next_loop is not ready to use yet")
 
+    @abstractmethod
     def _receive_event(self, key:Any = None, callback: Callable = None, callback_args: tuple = tuple(), callback_kwargs: dict = None):
         """
         Gets called when an event is evoked
@@ -354,7 +356,14 @@ class _KeyHandler(BaseElement):
         """
         return self
 
-class Window(_KeyHandler):
+ttk_style: ttk.Style | None = None
+main_window: Union["Window", None] = None
+class Window(BaseKeyHandler):
+    """
+    Main Window-object.
+    Don't use for "second" windows
+    """
+
     _prev_event:any = None  # Most recent event (-key)
 
     def __init__(
@@ -396,16 +405,26 @@ class Window(_KeyHandler):
         :param keep_on_top: True, if the window should always be on top of any other window
         :param grab_anywhere: True, if the window can be "held and dragged" anywhere (exclusing certain elements)
         """
+        global ttk_style
+        global main_window
+
+        if main_window is None: # Some users might use sg.Window for popups, don't overwrite the global in that case
+            main_window = self
+
         super().__init__()
         self.all_elements:list["AnyElement"] = list()   # Elements will be registered in here
         self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
         self._grab_anywhere = self.defaults.single("grab_anywhere", grab_anywhere)
 
-        self.root = tk.Tk()
-
         self._sg_widget:Frame = Frame(layout,alignment= self.defaults.single("alignment", alignment))
-
+        self.root = tk.Tk()
         self.ttk_style: ttk.Style = ttk.Style(self.root)
+
+        if ttk_style is None:
+            ttk_style = self.ttk_style
+
+        self._init(self._sg_widget, self.root)
+
         self._update_initial(
             title=title,
             titlebar=titlebar,
@@ -424,15 +443,14 @@ class Window(_KeyHandler):
             _first_update=True
         )
 
-        self._sg_widget.window_entry_point(self.root, self)
-        self._config_ttk_queue = list()
+        #self._sg_widget.window_entry_point(self.root, self)
 
-        for elem in self.all_elements:
-            elem.init_window_creation_done()
-        self.init_window_creation_done()
-        self._sg_widget.init_window_creation_done()
+        # for elem in self.all_elements:
+        #     elem.init_window_creation_done()
+        # self.init_window_creation_done()
+        # self._sg_widget.init_window_creation_done()
 
-        self._value_dict = ValueDict(self, set(self.all_key_elements.keys()))
+        # self._value_dict = ValueDict(self, set(self.all_key_elements.keys()))
 
         self.bind_grab_anywhere_to_element(self._sg_widget.tk_widget)
 

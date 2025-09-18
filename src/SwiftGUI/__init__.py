@@ -75,7 +75,7 @@ Combo = Combobox
 
 AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton | Spinbox | Image | ImageButton | Scale | Combobox | Progressbar
 
-from .Windows import Window
+from .Windows import Window, BaseKeyHandler, ttk_style, main_window
 
 from . import KeyFunctions
 
