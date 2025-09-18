@@ -423,6 +423,7 @@ class SubLayout(BaseKeyHandler):
 
 ttk_style: ttk.Style | None = None
 main_window: Union["Window", None] = None
+all_decorator_key_functions = dict() # All decorator-functions collected, key: function
 class Window(BaseKeyHandler):
     """
     Main Window-object.
@@ -520,6 +521,10 @@ class Window(BaseKeyHandler):
 
         if position == (None, None):
             self.center()
+
+        self._decorated_key_functions = dict()
+        for key, val in all_decorator_key_functions.items():
+            self._decorated_key_functions[key] = self.get_event_function(key= key, key_function= val)
 
 
     # Todo: This needs to be changed to new routine
@@ -640,16 +645,26 @@ class Window(BaseKeyHandler):
         :return: Triggering event key; all values as _dict
         """
         self.exists = True
-        self.root.mainloop()
 
-        try:
-            assert self.root.winfo_exists()
-        except (AssertionError,tk.TclError):
-            self.exists = False # This looks redundant, but it's easier to use self.exists from outside. So leave it!
-            self.remove_flags(ElementFlag.IS_CREATED)
-            return None,self._value_dict
+        while True:
+            self.root.mainloop()
 
-        self._value_dict.invalidate_all_values()
+            try:
+                assert self.root.winfo_exists()
+            except (AssertionError,tk.TclError):
+                self.exists = False # This looks redundant, but it's easier to use self.exists from outside. So leave it!
+                self.remove_flags(ElementFlag.IS_CREATED)
+                return None,self._value_dict
+
+            self._value_dict.invalidate_all_values()
+
+            # decorator-keys
+            if self._prev_event in self._decorated_key_functions:
+                self._decorated_key_functions[self._prev_event]()
+                continue    # Go on looping, key is handled
+
+            break   # Actually escape the loop
+
         return self._prev_event, self._value_dict
 
     def throw_event(self, key: Any = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):

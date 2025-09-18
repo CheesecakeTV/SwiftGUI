@@ -71,7 +71,7 @@ Slider = Scale
 Combo = Combobox
 
 
-from .Windows import Window, BaseKeyHandler, ttk_style, main_window, SubLayout
+from .Windows import Window, BaseKeyHandler, ttk_style, main_window, SubLayout, all_decorator_key_functions
 
 from .Combined_Elements.BaseCombinedElement import BaseCombinedElement
 from .Combined_Elements.Form import Form
@@ -89,3 +89,6 @@ from .Utilities.Threads import clipboard_observer
 from .Utilities.Images import file_from_b64, file_to_b64
 
 AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton | Spinbox | Image | ImageButton | Scale | Combobox | Progressbar
+
+from .DecoratorKeys import attach_function_to_key
+
