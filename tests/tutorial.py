@@ -17,32 +17,46 @@ my_frame = sg.Frame([
                 sg.T("World",expand_y=True, background_color="red", expand=False),
                 sg.VSep(),
                 sg.T("Hi"),
-                sg.Listbox(range(15), key="LB", default_event=True, key_function= lambda w,e,val,v:print("EV:",e,val,w[e],v))
+                sg.Listbox(range(15), key="LB", default_event=True),
             ],
             [
                 sg.Table(),
                 sg.Combo(("Hi", "World"))
             ]
-        ], alignment= "right")
+        ], alignment= "right").bind_event(sg.Event.MouseEnter, key= "Mouse Enter")
     ]
 ])
 
-baseHandler = sg.BaseKeyHandler()
+def custom_loop(e,v):
+    print("Custom", e, v)
+
+def periodic_event():
+    n = 0
+    while True:
+        time.sleep(1)
+        baseHandler.throw_event("Hi", n)
+        n += 1
+
+baseHandler = sg.BaseKeyHandler(custom_loop)
 
 layout = [
     [
         sg.Input("Hallo Welt", key="In", default_event= True),
+        another_frame := sg.Frame([[]])
     ]
 ]
 
 w = sg.Window(layout, grab_anywhere=True)
-baseHandler._init(my_frame, w.root, grab_anywhere_window=w)
+baseHandler.init(my_frame, another_frame.tk_widget, grab_anywhere_window=w)
+another_frame.link_background_color(my_frame)
+w.update(background_color = "green")
 
 ### Additional configurations/actions ###
+threading.Thread(target=periodic_event, daemon= True).start()
 
 ### Main loop ###
 for e,v in w:
-    print(e, v)
+    print("Main Loop", e, v)
 
 
 ### After window was closed ###

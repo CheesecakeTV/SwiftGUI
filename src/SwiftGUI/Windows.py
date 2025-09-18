@@ -119,14 +119,39 @@ class BaseKeyHandler(BaseElement):
 
     exists: bool = False # True, if this window exists at the moment
 
-    def __init__(self):
+    def __init__(self, key_event_callback_function: Callable = None):
+        """
+
+        :param key_event_callback_function: This function is called when a keyed event occurs. Replaces the event-loop, needs e and v as parameters.
+        """
         super().__init__()
+
+        self._value_dict: ValueDict | None = None
+        self._grab_anywhere: bool | None = None
+        #self.ttk_style: ttk.Style | None = None
+        self.root: tk.Tk | Widget | None = None
+        self._sg_widget: Frame | None = None
 
         self.all_elements:list["AnyElement"] = list()   # Elements will be registered in here
         self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
         self._grab_anywhere_window: Self | None = None  # This window will handle the callbacks of the grab-anywhere methods
 
-    def _init(
+        self._key_event_callback_function = key_event_callback_function
+        if key_event_callback_function is None:
+            self._key_event_callback_function = lambda *_:None
+
+    @BaseElement._run_after_window_creation
+    def set_custom_event_loop(self, key_event_callback_function: Callable) -> Self:
+        """
+        Specify a function/method that gets called instead of breaking out of the loop
+        :param key_event_callback_function:
+        :return:
+        """
+
+        self._key_event_callback_function = key_event_callback_function
+        return self
+
+    def init(
             self,
             sg_element: Frame,
             container: tk.Tk | Widget, # Container of this sub-window
@@ -143,7 +168,6 @@ class BaseKeyHandler(BaseElement):
         if not hasattr(self, "ttk_style"):
             self.ttk_style = ttk_style
 
-        # Todo: self.bind_grab_anywhere_to_element(self._sg_widget.tk_widget)
         if not hasattr(self, "_grab_anywhere"):
             self._grab_anywhere = False
 
@@ -235,30 +259,43 @@ class BaseKeyHandler(BaseElement):
         if function_kwargs is None and function is not None:
             function_kwargs = dict()
 
-        #self.root.after(0, self._receive_event, key, function, function_args, function_kwargs)
-        # Todo: Throw event!
+        # Throw the event on the main window so it is thread-safe
+        main_window.throw_event(function= self._receive_event, function_kwargs={
+            "key": key,
+            "callback": function,
+            "callback_args": function_args,
+            "callback_kwargs": function_kwargs,
+        })
 
     #@deprecated("WIP")
-    def throw_event_on_next_loop(self,key:Any,value:Any=None):
-        """
-        NOT THREAD-SAFE!!!
+    # Todo: def throw_event_on_next_loop(self,key:Any,value:Any=None):
+    #
+    #     """
+    #     NOT THREAD-SAFE!!!
+    #
+    #     Generate an event instantly when window returns to loop
+    #     :param key:
+    #     :param value: If not None, it will be saved inside the value-_dict until changed
+    #     :return:
+    #     """
+    #     raise NotImplementedError("sg.Window.throw_event_on_next_loop is not ready to use yet")
 
-        Generate an event instantly when window returns to loop
-        :param key:
-        :param value: If not None, it will be saved inside the value-_dict until changed
-        :return:
-        """
-        # Todo
-        raise NotImplementedError("sg.Window.throw_event_on_next_loop is not ready to use yet")
-
-    @abstractmethod
     def _receive_event(self, key:Any = None, callback: Callable = None, callback_args: tuple = tuple(), callback_kwargs: dict = None):
         """
         Gets called when an event is evoked
         :param key:
         :return:
         """
-        ...
+        # Call the function if given
+        if callback is not None:
+            if callback_kwargs is None:
+                callback_kwargs = dict()
+
+            callback(*callback_args, **callback_kwargs)
+
+        # Break out of the loop if a key is given
+        if key is not None:
+            self._key_event_callback_function(key, self._value_dict)
 
     def get_event_function(self,me:BaseElement = None,key:Any=None,key_function:Callable|Iterable[Callable]=None,
                            )->Callable:
@@ -409,7 +446,7 @@ class Window(BaseKeyHandler):
             ttk_style = None
             main_window = self
 
-        super().__init__()
+        super().__init__(key_event_callback_function= self._keyed_event_callback)
         self._grab_anywhere = self.defaults.single("grab_anywhere", grab_anywhere)
 
         self._sg_widget:Frame = Frame(layout,alignment= self.defaults.single("alignment", alignment), expand_y=True, expand=True)
@@ -437,7 +474,7 @@ class Window(BaseKeyHandler):
             _first_update=True
         )
 
-        self._init(self._sg_widget, self.root, grab_anywhere_window= self)
+        self.init(self._sg_widget, self.root, grab_anywhere_window= self)
         #self._sg_widget.window_entry_point(self.root, self)
 
         # for elem in self.all_elements:
@@ -605,23 +642,9 @@ class Window(BaseKeyHandler):
 
         self.root.after(0, self._receive_event, key, function, function_args, function_kwargs)
 
-    def _receive_event(self, key:Any = None, callback: Callable = None, callback_args: tuple = tuple(), callback_kwargs: dict = None):
-        """
-        Gets called when an event is evoked
-        :param key:
-        :return:
-        """
-        # Call the function if given
-        if callback is not None:
-            if callback_kwargs is None:
-                callback_kwargs = dict()
-
-            callback(*callback_args, **callback_kwargs)
-
-        # Break out of the loop if a key is given
-        if key is not None:
-            self._prev_event = key
-            self.root.quit()
+    def _keyed_event_callback(self, key: Any, _):
+        self._prev_event = key
+        self.root.quit()
 
     _icon = None
     def update_icon(self, icon: str | PathLike | Image.Image | io.BytesIO) -> Self:
