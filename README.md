@@ -10,7 +10,7 @@ but their codebase is an utter mess.
 and allows writing less offputting code.
 
 ## Compatible with Python 3.10 and above
-, but intended for Python 3.13 and above.
+Has some minor optimizations when running in Python 3.12+.
 
 # Getting started
 [Start your journey here](https://github.com/CheesecakeTV/SwiftGUI/blob/60f839fd6dab1fa0e087ab0df4986a8b578d4fa3/Docs/01%20Basic%20tutorials/01%20Getting-started.md)
@@ -23,10 +23,10 @@ Just call `sg.Themes.FourColors.Emerald()` before creating the layout.
 See which themes are available by calling `sg.Examples.preview_all_themes()`.
 
 #  Alpha-phase!
-The package is useable and already has 23 (Version 0.6.0) finished elements.\
+The package is useable and already has 26 (Version 0.7.5) finished elements.\
 I am already using it for smaller projects and personally, like it a lot.
 
-However, until version 1.0.0, the package is not guaranteed to be down-compatible.
+However, until version 1.0.0, the package is not guaranteed to be downward-compatible.
 Names and functions/methods might change, which could destroy your code.
 
 For version 1.0.0, I'd like to sort and standardize names, so they are easier to remember.
@@ -37,7 +37,7 @@ Of course, older versions will stay available on pip, so if you worry about this
 
 I did not copy any code from the (once) popular Python-package PySimpleGUI.
 
-Even though some of the concepts are simmilar, everything was written bei me or a contributor.
+Even though some of the concepts are simmilar, everything was written by me or a contributor.
 Element-names like `Table` and `Input` are common and not owned by PySimpleGUI.
 Even if they were, they got published a long time ago under a different license.
 
@@ -48,19 +48,20 @@ Install using pip:
 pip install SwiftGUI
 ```
 
-## Why SwiftGUI?
+Update to use the newest features and elements:
+```bash
+pip install SwiftGUI -U
+```
+
+## Why SwiftGUI instead of PySimpleGUI?
 I have a lot of experience with `PySimpleGUI`, used it for years.
 It is very useful, but has a lot of super annoying aspects.
 
 This is what I hate about it:
-- PySimpleGUI is pretty much impossible to expand, because of the codebase.
-- PySimpleGUI is only efficient for smaller layouts.
+- PySimpleGUI is pretty much impossible to expand, because of its messy codebase.
+- PySimpleGUI is only "simple" for smaller layouts.
 There are just some things, you do in most bigger layouts, 
-which are very annoying and time-consuming.
-- PySimpleGUI doesn't really let you copy parts of your layout automatically.
-If you want to copy it, you must copy code (or create a custom function).
-When you want to change certain aspects of all copied elements, 
-you need to change it in every copy. Very inefficient.
+which are very annoying and time-consuming in PySimpleGUI.
 - The only ways to convey events in PySimpleGUI is through breaking out of `window.read()`, or
 writing events onto the tkinter-widget directly.
 Due to that, in bigger layouts, the code becomes cluttered quickly and has a lot of redundancy.

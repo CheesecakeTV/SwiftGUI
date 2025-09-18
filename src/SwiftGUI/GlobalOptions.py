@@ -4,7 +4,8 @@ from collections.abc import Iterable
 from os import PathLike
 from typing import Literal, Union, Any, Callable
 
-from SwiftGUI import Literals, Color, font_windows, Font
+from SwiftGUI import Literals, Color, font_windows, Font, Extras
+from SwiftGUI.Utilities.Images import file_from_b64
 
 # Every option-class will be stored in here
 all_option_classes:list[Union["_DefaultOptionsMeta",type]] = list()
@@ -336,7 +337,7 @@ class Window(Common_Background):
     position: tuple[int, int] = (None, None)  # Position on monitor # Todo: Center
     min_size: tuple[int, int] = (None, None)
     max_size: tuple[int, int] = (None, None)
-    icon: str = None  # .ico file
+    icon: str = file_from_b64(Extras.SwiftGUI.icon)
     keep_on_top: bool = False
     ttk_theme: str = "default"
     grab_anywhere: bool = False
