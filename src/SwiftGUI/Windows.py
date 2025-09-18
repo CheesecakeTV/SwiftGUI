@@ -124,17 +124,24 @@ class BaseKeyHandler(BaseElement):
 
         self.all_elements:list["AnyElement"] = list()   # Elements will be registered in here
         self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
+        self._grab_anywhere_window: Self | None = None  # This window will handle the callbacks of the grab-anywhere methods
 
     def _init(
             self,
             sg_element: Frame,
             container: tk.Tk | Widget, # Container of this sub-window
+            grab_anywhere_window: Self = None,
     ):
         """Should be called by the window when/after it is being created"""
         self._sg_widget: Frame = sg_element
-        self.ttk_style = ttk_style
 
         self.root = container
+
+        if grab_anywhere_window is not None:
+            self._grab_anywhere_window = grab_anywhere_window
+
+        if not hasattr(self, "ttk_style"):
+            self.ttk_style = ttk_style
 
         # Todo: self.bind_grab_anywhere_to_element(self._sg_widget.tk_widget)
         if not hasattr(self, "_grab_anywhere"):
@@ -143,6 +150,8 @@ class BaseKeyHandler(BaseElement):
         self._sg_widget.window_entry_point(self.root, self)
 
         self._value_dict = ValueDict(self, set(self.all_key_elements.keys()))
+
+        self.exists = True
 
         for elem in self.all_elements:
             elem.init_window_creation_done()
@@ -329,8 +338,7 @@ class BaseKeyHandler(BaseElement):
     def _Dragging(self, event):
         ...
 
-    @BaseElement._run_after_window_creation
-    def bind_grab_anywhere_to_element(self, widget: tk.Widget):
+    def bind_grab_anywhere_to_element(self, widget: tk.Widget) -> Self:
         """
         Add necessary bindings for window grab-and-move ("grab_anywhere") to the passed widget.
         This should be called on every widget the user should be able to grab and pull the window from.
@@ -340,21 +348,9 @@ class BaseKeyHandler(BaseElement):
         :param widget:
         :return:
         """
-        if self._grab_anywhere:
-            # Disable bindings if not necessary, for performance reasons
-            # The downside is that it can't be enabled later on.
-
-            widget.bind('<ButtonPress-1>', self._SaveLastClickPos)
-            widget.bind('<ButtonRelease-1>', self._DelLastClickPos)
-            widget.bind('<B1-Motion>', self._Dragging)
-
-    @BaseElement._run_after_window_creation
-    def center(self) -> Self:
-        """
-        Centers the window on the current screen
-        :return:
-        """
-        return self
+        if self._grab_anywhere_window is not None:
+            self._grab_anywhere_window.bind_grab_anywhere_to_element(widget)
+        return Self
 
 ttk_style: ttk.Style | None = None
 main_window: Union["Window", None] = None
@@ -365,6 +361,7 @@ class Window(BaseKeyHandler):
     """
 
     _prev_event:any = None  # Most recent event (-key)
+    defaults = GlobalOptions.Window
 
     def __init__(
             self,
@@ -408,22 +405,19 @@ class Window(BaseKeyHandler):
         global ttk_style
         global main_window
 
-        if main_window is None: # Some users might use sg.Window for popups, don't overwrite the global in that case
+        if main_window is None or not main_window.exists: # Some users might use sg.Window for popups, don't overwrite the global in that case
+            ttk_style = None
             main_window = self
 
         super().__init__()
-        self.all_elements:list["AnyElement"] = list()   # Elements will be registered in here
-        self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
         self._grab_anywhere = self.defaults.single("grab_anywhere", grab_anywhere)
 
-        self._sg_widget:Frame = Frame(layout,alignment= self.defaults.single("alignment", alignment))
+        self._sg_widget:Frame = Frame(layout,alignment= self.defaults.single("alignment", alignment), expand_y=True, expand=True)
         self.root = tk.Tk()
         self.ttk_style: ttk.Style = ttk.Style(self.root)
 
         if ttk_style is None:
             ttk_style = self.ttk_style
-
-        self._init(self._sg_widget, self.root)
 
         self._update_initial(
             title=title,
@@ -443,6 +437,7 @@ class Window(BaseKeyHandler):
             _first_update=True
         )
 
+        self._init(self._sg_widget, self.root, grab_anywhere_window= self)
         #self._sg_widget.window_entry_point(self.root, self)
 
         # for elem in self.all_elements:
@@ -678,3 +673,22 @@ class Window(BaseKeyHandler):
         """
         self.root.eval("tk::PlaceWindow . center")
         return self
+
+    @BaseElement._run_after_window_creation
+    def bind_grab_anywhere_to_element(self, widget: tk.Widget):
+        """
+        Add necessary bindings for window grab-and-move ("grab_anywhere") to the passed widget.
+        This should be called on every widget the user should be able to grab and pull the window from.
+
+        ONLY WORKS IF w._grab_anywhere == True
+
+        :param widget:
+        :return:
+        """
+        if self._grab_anywhere:
+            # Disable bindings if not necessary, for performance reasons
+            # The downside is that it can't be enabled later on.
+
+            widget.bind('<ButtonPress-1>', self._SaveLastClickPos)
+            widget.bind('<ButtonRelease-1>', self._DelLastClickPos)
+            widget.bind('<B1-Motion>', self._Dragging)
