@@ -3,7 +3,7 @@ import threading
 import time
 
 ### Global options ###
-sg.Themes.FourColors.Jungle()
+sg.Themes.FourColors.SinCity()
 # sg.Examples.preview_all_elements()
 # exit()
 
@@ -14,7 +14,7 @@ my_frame = sg.Frame([
             [tex := sg.T("Hi", width=30), sg.VSep(), sg.T("World")],
             [sg.HSep() for i in range(4)],
             [
-                sg.T("World",expand_y=True, background_color="red", expand=False),
+                sg.T("World",expand_y=True, relief= "sunken", expand=False),
                 sg.VSep(),
                 sg.T("Hi"),
                 sg.Listbox(range(15), key="LB", default_event=True),
@@ -42,14 +42,12 @@ baseHandler = sg.BaseKeyHandler(custom_loop)
 layout = [
     [
         sg.Input("Hallo Welt", key="In", default_event= True),
-        another_frame := sg.Frame([[]])
+        subLay := sg.SubLayout(my_frame, custom_loop)
     ]
 ]
 
 w = sg.Window(layout, grab_anywhere=True)
-baseHandler.init(my_frame, another_frame.tk_widget, grab_anywhere_window=w)
-another_frame.link_background_color(my_frame)
-w.update(background_color = "green")
+#w.update(background_color = "green")
 
 ### Additional configurations/actions ###
 threading.Thread(target=periodic_event, daemon= True).start()

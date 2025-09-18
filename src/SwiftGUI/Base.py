@@ -316,7 +316,7 @@ class BaseElement:
         ONLY FOR INHERITING CLASSES!!!
         DON'T CALL!!!
 
-        Will be called oncce as soon as the element exists
+        Will be called once all elements exist
         :return:
         """
         for fkt in self._run_when_window_exists:    # Call all those buffered functions
@@ -696,7 +696,6 @@ class BaseScrollbar:
             troughcolor = troughcolor,
         )
         return self
-
 
 class BaseWidgetContainer(BaseWidget):
     """

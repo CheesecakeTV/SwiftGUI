@@ -119,10 +119,10 @@ class BaseKeyHandler(BaseElement):
 
     exists: bool = False # True, if this window exists at the moment
 
-    def __init__(self, key_event_callback_function: Callable = None):
+    def __init__(self, event_loop_function: Callable = None):
         """
 
-        :param key_event_callback_function: This function is called when a keyed event occurs. Replaces the event-loop, needs e and v as parameters.
+        :param event_loop_function: This function is called when a keyed event occurs. Replaces the event-loop, needs e and v as parameters.
         """
         super().__init__()
 
@@ -136,8 +136,8 @@ class BaseKeyHandler(BaseElement):
         self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
         self._grab_anywhere_window: Self | None = None  # This window will handle the callbacks of the grab-anywhere methods
 
-        self._key_event_callback_function = key_event_callback_function
-        if key_event_callback_function is None:
+        self._key_event_callback_function = event_loop_function
+        if event_loop_function is None:
             self._key_event_callback_function = lambda *_:None
 
     @BaseElement._run_after_window_creation
@@ -389,6 +389,38 @@ class BaseKeyHandler(BaseElement):
             self._grab_anywhere_window.bind_grab_anywhere_to_element(widget)
         return Self
 
+class SubLayout(BaseKeyHandler):
+    """
+    Can be used as an sg-element.
+    Collects all containing keys and diverts them to a specified loop-"function"
+    """
+
+    def __init__(
+            self,
+            layout: Frame | Iterable[Iterable[BaseElement]],
+            event_loop_function: Callable = None,
+    ):
+        super().__init__(event_loop_function)
+
+        if not isinstance(layout, Frame):
+            layout = Frame(layout)
+
+        self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
+        self._frame = layout
+
+    def _init(self, parent:"BaseElement", window):
+        super()._init(parent, window)
+
+        self.init(self._frame, self.parent_tk_widget, self.window)
+
+    def _update_special_key(self,key:str,new_val:Any) -> bool|None:
+        if key == "background_color":
+            if self._frame.has_flag(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR):
+                self._frame.update(background_color = new_val)
+                return True
+
+        return super()._update_special_key(key, new_val)
+
 ttk_style: ttk.Style | None = None
 main_window: Union["Window", None] = None
 class Window(BaseKeyHandler):
@@ -446,7 +478,7 @@ class Window(BaseKeyHandler):
             ttk_style = None
             main_window = self
 
-        super().__init__(key_event_callback_function= self._keyed_event_callback)
+        super().__init__(event_loop_function=self._keyed_event_callback)
         self._grab_anywhere = self.defaults.single("grab_anywhere", grab_anywhere)
 
         self._sg_widget:Frame = Frame(layout,alignment= self.defaults.single("alignment", alignment), expand_y=True, expand=True)
