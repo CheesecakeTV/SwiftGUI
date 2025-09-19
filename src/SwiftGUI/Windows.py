@@ -1,4 +1,5 @@
 import ctypes
+import os
 import random
 import string
 import io
@@ -270,7 +271,6 @@ class BaseKeyHandler(BaseElement):
         })
 
     #@deprecated("WIP")
-    # Todo: def throw_event_on_next_loop(self,key:Any,value:Any=None):
     #
     #     """
     #     NOT THREAD-SAFE!!!
@@ -445,11 +445,12 @@ class Window(BaseKeyHandler):
 
     @staticmethod
     def _make_taskbar_icon_changeable(title: str = None):
-        myappid = "SwiftGUI." + "".join(random.choices(string.ascii_letters, k=8))
-        if title:
-            myappid += "." + title
+        if os.name == "nt": # This only works in windows
+            myappid = "SwiftGUI." + "".join(random.choices(string.ascii_letters, k=8))
+            if title:
+                myappid += "." + title
 
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
     def __init__(
             self,
@@ -462,7 +463,7 @@ class Window(BaseKeyHandler):
             resizeable_height: bool = None,
             transparency: Literals.transparency = None,  # 0-1, 1 meaning invisible
             size: int | tuple[int, int] = (None, None),
-            position: tuple[int, int] = (None, None),  # Position on monitor # Todo: Center
+            position: tuple[int, int] = (None, None),  # Position on monitor
             min_size: int | tuple[int, int] = (None, None),
             max_size: int | tuple[int, int] = (None, None),
             icon: str | PathLike | Image.Image | io.BytesIO = None,  # .ico file
@@ -637,7 +638,7 @@ class Window(BaseKeyHandler):
             fullscreen: bool = None,
             transparency: Literals.transparency = None,  # 0-1, 1 meaning invisible
             size: int | tuple[int, int] = (None, None),
-            position: tuple[int, int] = (None, None),  # Position on monitor # Todo: Center
+            position: tuple[int, int] = (None, None),  # Position on monitor
             min_size: int | tuple[int, int] = (None, None),
             max_size: int | tuple[int, int] = (None, None),
             icon: str | PathLike | Image.Image | io.BytesIO = None,  # .ico file
