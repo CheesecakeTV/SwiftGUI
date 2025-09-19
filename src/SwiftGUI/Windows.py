@@ -409,8 +409,10 @@ class SubLayout(BaseKeyHandler):
             self,
             layout: Frame | Iterable[Iterable[BaseElement]],
             event_loop_function: Callable = None,
+            key: Any = None,
     ):
         super().__init__(event_loop_function)
+        self.key = key
 
         if not isinstance(layout, Frame):
             layout = Frame(layout)
@@ -470,6 +472,7 @@ class Window(BaseKeyHandler):
             keep_on_top: bool = None,
             background_color: Color | str = None,
             grab_anywhere: bool = None,
+            event_loop_function: Callable = None,
             ttk_theme: str = None,
     ):
         """
@@ -498,7 +501,10 @@ class Window(BaseKeyHandler):
             ttk_style = None
             main_window = self
 
-        super().__init__(event_loop_function=self._keyed_event_callback)
+        if event_loop_function is None:
+            event_loop_function = self._keyed_event_callback
+
+        super().__init__(event_loop_function=event_loop_function)
         self._grab_anywhere = self.defaults.single("grab_anywhere", grab_anywhere)
 
         self._sg_widget:Frame = Frame(layout,alignment= self.defaults.single("alignment", alignment), expand_y=True, expand=True)
@@ -759,7 +765,12 @@ class Window(BaseKeyHandler):
             self._icon = icon
 
         self._icon: Any | str = ImageTk.PhotoImage(self._icon)  # Typehint is just so the typechecker doesn't get annoying
-        self.root.iconphoto(True, self._icon)
+        try:
+            self.root.iconphoto(True, self._icon)
+        except tk.TclError: #
+            print("Warning: Changing the icon of this window wasn't possible.")
+            print("This is probably because it is not the main window.")
+            pass
 
         return self
 

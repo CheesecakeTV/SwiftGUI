@@ -5,6 +5,9 @@ import SwiftGUI as sg
 from PIL import Image # pip install pillow
 from pathlib import Path    # pip install pathlib   (Should be builtin though...)
 
+my_theme = sg.Themes.FourColors.SinCity
+my_theme()
+
 def img_to_b64(img_path: str, force_size: tuple[int, int] = None) -> bytes:
     """
     Convert an image of various types to .ico
@@ -31,8 +34,7 @@ layout = [
             file_browse_type="open_multiple",
             key = "FileBrowse",
             #key_function = lambda elem: w["Convert"].update(background_color = sg.Color.PaleGreen1 if elem.value else sg.Color.coral).set_value(f"Convert ({len(elem.value)})"),
-            key_function = lambda elem: w["Convert"].update(
-            background_color=sg.Color.PaleGreen1 if elem.value else sg.Color.coral).set_value(f"Convert ({len(elem.value)})"),
+            key_function = lambda elem: w["Convert"].set_value(f"Convert ({len(elem.value)})"),
             dont_change_on_abort= True,
             file_browse_filetypes= (
                 ("Image/graphic", (
@@ -102,7 +104,6 @@ layout = [
         sg.Button(
             "Convert (0)",
             key="Convert",
-            background_color = sg.Color.coral,  # PaleGreen1
         )
     ],[
         textfield := sg.TextField(
@@ -135,6 +136,10 @@ for e,v in w:
                 pass
 
         ml_value = ""
+        if not w["FileBrowse"].value:
+            textfield.value = "Error, no file(s) selected"
+            continue
+
         for name in w["FileBrowse"].value:
             ml_value += f"{Path(name).stem.replace(' ','_')}: bytes = {img_to_b64(name, force_size=fs)}\n"
 

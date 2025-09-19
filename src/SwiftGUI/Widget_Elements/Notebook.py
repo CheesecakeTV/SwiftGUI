@@ -107,6 +107,7 @@ class Notebook(BaseWidgetTTK):
 
         # Todo: These could be parameters too
         self._config_ttk_style(tabmargins = 0)
+        self._config_ttk_style(borderwidth = 1)
 
 
     def _update_font(self):
