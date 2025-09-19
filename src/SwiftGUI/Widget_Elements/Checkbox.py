@@ -110,7 +110,7 @@ class Checkbox(BaseWidget):
             justify = justify,
             background_color = background_color,
             apply_parent_background_color = apply_parent_background_color,
-            #"highlightthickness": 5,
+            highlightthickness = 0,
             highlightcolor = highlightcolor,
             relief = relief,
             text_color = text_color,

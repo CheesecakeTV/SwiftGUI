@@ -162,7 +162,7 @@ class Radiobutton(BaseWidget):
                              takefocus=takefocus, underline=underline, anchor=anchor, justify=justify,
                              background_color=background_color,
                              apply_parent_background_color=apply_parent_background_color, overrelief=overrelief,
-                             offrelief=offrelief, text_color=text_color, relief=relief, **tk_kwargs)
+                             offrelief=offrelief, text_color=text_color, relief=relief, highlightthickness=0, **tk_kwargs)
 
         if default_value:
             self.select()
