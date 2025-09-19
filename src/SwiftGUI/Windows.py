@@ -1,6 +1,9 @@
+import ctypes
+import os
+import random
+import string
 import io
 import tkinter as tk
-from abc import abstractmethod
 from os import PathLike
 from tkinter import ttk, Widget
 from collections.abc import Iterable,Callable
@@ -268,7 +271,6 @@ class BaseKeyHandler(BaseElement):
         })
 
     #@deprecated("WIP")
-    # Todo: def throw_event_on_next_loop(self,key:Any,value:Any=None):
     #
     #     """
     #     NOT THREAD-SAFE!!!
@@ -407,8 +409,10 @@ class SubLayout(BaseKeyHandler):
             self,
             layout: Frame | Iterable[Iterable[BaseElement]],
             event_loop_function: Callable = None,
+            key: Any = None,
     ):
         super().__init__(event_loop_function)
+        self.key = key
 
         if not isinstance(layout, Frame):
             layout = Frame(layout)
@@ -441,6 +445,15 @@ class Window(BaseKeyHandler):
     _prev_event:any = None  # Most recent event (-key)
     defaults = GlobalOptions.Window
 
+    @staticmethod
+    def _make_taskbar_icon_changeable(title: str = None):
+        if os.name == "nt": # This only works in windows
+            myappid = "SwiftGUI." + "".join(random.choices(string.ascii_letters, k=8))
+            if title:
+                myappid += "." + title
+
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+
     def __init__(
             self,
             layout:Iterable[Iterable[BaseElement]],
@@ -448,18 +461,18 @@ class Window(BaseKeyHandler):
             title:str = None,
             alignment: Literals.alignment = None,
             titlebar: bool = None,  # Titlebar visible
-            resizeable_width=None,
-            resizeable_height=None,
-            fullscreen: bool = None,
+            resizeable_width: bool = None,
+            resizeable_height: bool = None,
             transparency: Literals.transparency = None,  # 0-1, 1 meaning invisible
-            size: tuple[int, int] = (None, None),
-            position: tuple[int, int] = (None, None),  # Position on monitor # Todo: Center
-            min_size: tuple[int, int] = (None, None),
-            max_size: tuple[int, int] = (None, None),
+            size: int | tuple[int, int] = (None, None),
+            position: tuple[int, int] = (None, None),  # Position on monitor
+            min_size: int | tuple[int, int] = (None, None),
+            max_size: int | tuple[int, int] = (None, None),
             icon: str | PathLike | Image.Image | io.BytesIO = None,  # .ico file
             keep_on_top: bool = None,
             background_color: Color | str = None,
             grab_anywhere: bool = None,
+            event_loop_function: Callable = None,
             ttk_theme: str = None,
     ):
         """
@@ -470,7 +483,6 @@ class Window(BaseKeyHandler):
         :param titlebar: False, if you want the window to have no titlebar
         :param resizeable_width: True, if you want the user to be able to resize the window's width
         :param resizeable_height: True, if you want the user to be able to resize the window's height
-        :param fullscreen: True, if the window should be in window-fullscreen mode
         :param transparency: 0 - 1, with 1 being invisible, 0 fully visible
         :param size: Size of the window in pixels. Leave this blank to determine this automatically
         :param position: Position of the upper left corner of the window
@@ -483,11 +495,16 @@ class Window(BaseKeyHandler):
         global ttk_style
         global main_window
 
+        self._make_taskbar_icon_changeable(title)
+
         if main_window is None or not main_window.exists: # Some users might use sg.Window for popups, don't overwrite the global in that case
             ttk_style = None
             main_window = self
 
-        super().__init__(event_loop_function=self._keyed_event_callback)
+        if event_loop_function is None:
+            event_loop_function = self._keyed_event_callback
+
+        super().__init__(event_loop_function=event_loop_function)
         self._grab_anywhere = self.defaults.single("grab_anywhere", grab_anywhere)
 
         self._sg_widget:Frame = Frame(layout,alignment= self.defaults.single("alignment", alignment), expand_y=True, expand=True)
@@ -497,12 +514,12 @@ class Window(BaseKeyHandler):
         if ttk_style is None:
             ttk_style = self.ttk_style
 
+        self.window = self
         self._update_initial(
             title=title,
             titlebar=titlebar,
             resizeable_width=resizeable_width,
             resizeable_height=resizeable_height,
-            fullscreen=fullscreen,
             transparency=transparency,
             size=size,
             position=position,
@@ -512,18 +529,9 @@ class Window(BaseKeyHandler):
             keep_on_top=keep_on_top,
             background_color=background_color,
             ttk_theme=ttk_theme,
-            _first_update=True
         )
 
         self.init(self._sg_widget, self.root, grab_anywhere_window= self)
-        #self._sg_widget.window_entry_point(self.root, self)
-
-        # for elem in self.all_elements:
-        #     elem.init_window_creation_done()
-        # self.init_window_creation_done()
-        # self._sg_widget.init_window_creation_done()
-
-        # self._value_dict = ValueDict(self, set(self.all_key_elements.keys()))
 
         self.bind_grab_anywhere_to_element(self._sg_widget.tk_widget)
 
@@ -534,100 +542,139 @@ class Window(BaseKeyHandler):
         for key, val in all_decorator_key_functions.items():
             self._decorated_key_functions[key] = self.get_event_function(key= key, key_function= val)
 
+    _resizeable_width = False
+    _resizeable_height = False
+    def _update_special_key(self, key:str, new_val:Any) -> bool|None:
+        # if not self.window.has_flag(ElementFlag.IS_CREATED) and key in ["fullscreen"]:
+        #     self.update_after_window_creation(**{key: new_val})
+        #     return True
 
-    # Todo: This needs to be changed to new routine
-    def _update_initial(
+        match key:
+            case "title":
+                if new_val is not None:
+                    self.root.title(new_val)
+            case "titlebar":
+                if new_val is not None:
+                    self.root.overrideredirect(not new_val)
+            case "resizeable_width":
+                if new_val is None:
+                    return True
+                self._resizeable_width = new_val
+                self.root.resizable(new_val, self._resizeable_height)
+            case "resizeable_height":
+                if new_val is None:
+                    return True
+                self._resizeable_height = new_val
+                self.root.resizable(self._resizeable_width, new_val)
+            case "fullscreen":
+                if new_val is None:
+                    return True
+                self.root.state("zoomed" if new_val else "normal")
+            case "transparency":
+                if new_val is not None:
+                    assert 0 <= new_val <= 1, "Window-Transparency must be between 0 and 1"
+                    self.root.attributes("-alpha", 1 - new_val)
+            case "size":
+                if new_val is None:
+                    return True
+
+                if isinstance(new_val, int):
+                    new_val = (new_val, new_val)
+
+                geometry = ""
+                if new_val[0]:
+                    assert new_val[1], "Window-width was specified, but not its height"
+                    geometry += str(new_val[0])
+                if new_val[1]:
+                    assert new_val[0], "Window-height was specified, but not its width"
+                    geometry += f"x{new_val[1]}"
+
+                if geometry:
+                    self.root.geometry(geometry)
+            case "position":
+                if new_val is None:
+                    return True
+
+                geometry = ""
+                if new_val != (None, None):
+                    assert len(new_val) == 2, "The window-position should be a tuple with x and y coordinate: (x, y)"
+                    assert new_val[0] is not None, "No x-coordinate was given as window-position"
+                    assert new_val[1] is not None, "No y-coordinate was given as window-position"
+
+                    geometry += f"+{int(new_val[0])}+{int(new_val[1])}".replace("+-", "-")
+                    self.root.geometry(geometry)
+
+            case "min_size":
+                if new_val is None:
+                    return True
+                if isinstance(new_val, int):
+                    new_val = (new_val, new_val)
+                if new_val != (None, None):
+                    self.root.minsize(*new_val)
+            case "max_size":
+                if new_val is None:
+                    return True
+                if isinstance(new_val, int):
+                    new_val = (new_val, new_val)
+                if new_val != (None, None):
+                    self.root.maxsize(*new_val)
+            case "icon":
+                if new_val is not None:
+                    self.update_icon(new_val)
+            case "keep_on_top":
+                if new_val is not None:
+                    self.root.attributes("-topmost", new_val)
+            case "background_color":
+                if new_val is not None:
+                    self._sg_widget.update(background_color=new_val)
+            case "ttk_theme":
+                if new_val is not None:
+                    self.ttk_style.theme_use(new_val)
+            case _:
+                return super()._update_special_key(key, new_val)
+
+        return True
+
+    def update(
             self,
             title = None,
             titlebar: bool = None,  # Titlebar visible
-            resizeable_width=None,
-            resizeable_height=None,
+            resizeable_width: bool = None,
+            resizeable_height: bool = None,
             fullscreen: bool = None,
             transparency: Literals.transparency = None,  # 0-1, 1 meaning invisible
-            size: tuple[int, int] = (None, None),
-            position: tuple[int, int] = (None, None),  # Position on monitor # Todo: Center
-            min_size: tuple[int, int] = (None, None),
-            max_size: tuple[int, int] = (None, None),
+            size: int | tuple[int, int] = (None, None),
+            position: tuple[int, int] = (None, None),  # Position on monitor
+            min_size: int | tuple[int, int] = (None, None),
+            max_size: int | tuple[int, int] = (None, None),
             icon: str | PathLike | Image.Image | io.BytesIO = None,  # .ico file
             keep_on_top: bool = None,
             background_color: Color | str = None,
             ttk_theme: str = None,
-            _first_update: bool = False,
     ):
-        # Todo: This method needs to be put in proper shape. It's disgusting
-        if _first_update:
-            title = self.defaults.single("title",title)
-            titlebar = self.defaults.single("titlebar",titlebar)
-            resizeable_width = self.defaults.single("resizeable_width",resizeable_width)
-            resizeable_height = self.defaults.single("resizeable_height",resizeable_height)
-            fullscreen = self.defaults.single("fullscreen",fullscreen)
-            transparency = self.defaults.single("transparency",transparency)
-            size = self.defaults.single("size",size)
-            position = self.defaults.single("position",position)
-            min_size = self.defaults.single("min_size",min_size)
-            max_size = self.defaults.single("max_size",max_size)
-            icon = self.defaults.single("icon",icon)
-            keep_on_top = self.defaults.single("keep_on_top",keep_on_top)
-            background_color = self.defaults.single("background_color",background_color)
-            ttk_theme = self.defaults.single("ttk_theme", ttk_theme)
-
-        if ttk_theme:
-            self.ttk_style.theme_use(ttk_theme)
-
-        if background_color is not None:
-            self._sg_widget._update_initial(background_color=background_color)
-
-        if title is not None:
-            self.root.title(title)
-
-        if titlebar is not None:
-            self.root.overrideredirect(not titlebar)
-
-        self.root.resizable(resizeable_width, resizeable_height)
-        self.root.state("zoomed" if fullscreen else "normal")
-
-        if transparency is not None:
-            assert 0 <= transparency <= 1, "Window-Transparency must be between 0 and 1"
-            self.root.attributes("-alpha", 1 - transparency)
-
-        geometry = ""
-        if size[0]:
-            assert size[1], "Window-height was specified, but not its height"
-            geometry += str(size[0])
-        if size[1]:
-            assert size[0], "Window-height was specified, but not its width"
-            geometry += f"x{size[1]}"
-
-        # if position == "center":
-        #     position = (
-        #         self._tk.winfo_screenwidth() / 2 - self._tk.winfo_width() / 2,
-        #         self._tk.winfo_screenheight() / 2 - self._tk.winfo_height()
-        #     )
-        if position != (None,None):
-            assert len(position) == 2, "The window-position should be a tuple with x and y coordinate: (x, y)"
-            assert position[0] is not None, "No x-coordinate was given as window-position"
-            assert position[1] is not None, "No y-coordinate was given as window-position"
-
-            geometry += f"+{int(position[0])}+{int(position[1])}".replace("+-","-")
-
-        if geometry:
-            self.root.geometry(geometry)
-
-        if min_size != (None,None):
-            self.root.minsize(*min_size)
-
-        if max_size != (None,None):
-            self.root.maxsize(*max_size)
-
-        # assert icon is None or icon.endswith(".ico"), "The window-icon has to be the path to a .ico-file. Other filetypes are not supported."
-        # self.root.iconbitmap(icon)
-        if icon is not None:
-            self.update_icon(icon)
-
-        if keep_on_top is not None:
-            self.root.attributes("-topmost", keep_on_top)
+        super().update(
+            title = title,
+            titlebar = titlebar,
+            resizeable_width = resizeable_width,
+            resizeable_height = resizeable_height,
+            fullscreen = fullscreen,
+            transparency = transparency,
+            size = size,
+            position = position,
+            min_size = min_size,
+            max_size = max_size,
+            icon = icon,
+            keep_on_top = keep_on_top,
+            background_color = background_color,
+            ttk_theme = ttk_theme,
+        )
 
         return self
+
+    # @BaseElement._run_after_window_creation
+    # def _update_initial(self,**kwargs) -> Self:
+    #     super()._update_initial(**kwargs)
+    #     return self
 
     def __contains__(self, item):
         return item in self.all_key_elements.keys()
@@ -718,7 +765,12 @@ class Window(BaseKeyHandler):
             self._icon = icon
 
         self._icon: Any | str = ImageTk.PhotoImage(self._icon)  # Typehint is just so the typechecker doesn't get annoying
-        self.root.iconphoto(True, self._icon)
+        try:
+            self.root.iconphoto(True, self._icon)
+        except tk.TclError: #
+            print("Warning: Changing the icon of this window wasn't possible.")
+            print("This is probably because it is not the main window.")
+            pass
 
         return self
 

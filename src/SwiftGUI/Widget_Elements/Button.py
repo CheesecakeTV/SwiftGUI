@@ -123,7 +123,7 @@ class Button(BaseWidget):
             justify = justify,
             background_color = background_color,
             #"highlightbackground_color":"cyan",
-            # "highlightthickness":5,
+            highlightthickness = 0,
             highlightcolor = highlightcolor,
             relief = relief,
             text_color = text_color,

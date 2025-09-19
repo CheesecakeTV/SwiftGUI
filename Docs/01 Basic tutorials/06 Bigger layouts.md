@@ -633,3 +633,118 @@ layout:list[list[sg.BaseElement]] = [
 
 Amazing.
 
+# Separate event-loops (Sub-layouts)
+GUIs with more elements don't only get crowded visually, but also in their code.
+
+Especially when you use a lot of keys, new/unused keys are harder and harder to find.
+Your keys will get longer and longer, which kinda undermines their purpose.
+
+That's why SwiftGUI offers a way to divide the main layout into sub-layouts, which each have their own key-system and event-loop.
+
+This way, you can use the same key multiple times and un-clutter your event-loop.
+
+Pro-tipp: If you want to copy/reuse parts of the layout, the best way to do so is creating a custom combined element.
+This topic has its own tutorial under the advanced topics: [Custom combined elements](https://github.com/CheesecakeTV/SwiftGUI/blob/f78bc5689c38706be70eceb7d1c46ba6292d0fb5/Docs/03%20Advanced%20tutorials/Custom%20combined%20elements.md)
+
+Other event-loops are not actually a loop, but a function:
+```py
+def other_loop(e, v):
+    ...
+```
+To assign the loop to some part of your layout, put that part in some type of frame and then in an `sg.SubLayout`:
+```py
+import SwiftGUI as sg
+
+sg.Themes.FourColors.Emerald()
+
+def other_loop(e, v):
+    print("Other loop:", e, v)
+
+other_layoutpart = sg.LabelFrame([
+    [
+        sg.Button("Button1", key="Button1"),
+        sg.Button("Button2", key="Button2"),
+        sg.Button("Button3", key="Button3"),
+    ]
+], text= "Other layout-part")
+
+layout = [
+    [
+        sg.SubLayout(
+            other_layoutpart,
+            event_loop_function= other_loop,
+        )
+    ],[
+        sg.Spacer(height= 15)
+    ],[
+        sg.Button("Button1", key="Button1"),
+        sg.Button("Button2", key="Button2"),
+        sg.Button("Button3", key="Button3"),
+    ]
+]
+
+w = sg.Window(layout)
+
+for e,v in w:
+    print("Loop:", e, v)
+```
+![](../assets/images/2025-09-19-17-23-03.png)
+
+When pressing buttons in the sub-layout, `other_layout` will be called.
+For the buttons in the main layout, `for e,v in w` runs once.
+
+## Accessing elements and values in sub-layouts
+Remember, `w[key]` returns the element with that key.
+
+With sub-layouts, you have to use the sub-layout-element instead of `w`:
+```py
+        my_sublayout := sg.SubLayout(
+            other_layoutpart,
+            event_loop_function= other_loop,
+        )
+
+...
+
+w = sg.Window(layout)
+my_sublayout["Button2"].value = "Works like a charm!"
+```
+![](../assets/images/2025-09-19-17-32-33.png)
+
+Access the value-dict of the sub-layout by calling `my_sublayout.value`.
+
+If you don't want to use an additional variable for the sub-layout, just set a key like with any other element:
+```py
+        sg.SubLayout(
+            other_layoutpart,
+            event_loop_function= other_loop,
+            key= "Sublayout"
+        )
+
+...
+
+w = sg.Window(layout)
+w["Sublayout"]["Button2"].value = "Works like a charm!"
+```
+This way, the main value-dict also contains the value-dict of the sub-layout.
+
+In this example, `v` of the main loop looks like this:\
+`{'Button1': 'Button1', 'Sublayout': {'Button1': 'Button1', 'Button3': 'Button3', 'Button2': 'Works like a charm!'}, 'Button3': 'Button3', 'Button2': 'Button2'}`
+
+## Chaining sub-layouts
+As you might have guessed, you can place sub-layouts inside other sub-layouts.
+
+This way, you could utilize a tree-like key structure:
+```py
+w["sublayout"]["additional_sublayout"]["subsubsublayout"]["Button1"].value = "Why would anyone do that?"
+```
+
+## Using a function as the main event-loop
+If you like these "event-loop-functions" better than the normal event-loop, you may pass a function to the main window too:
+```py
+w = sg.Window(layout, event_loop_function= other_loop)
+```
+Now, the main-loop is disabled and only `other_loop` will be used.
+
+The main-loop still blocks, but won't react to events.
+When the window is closed, the loop terminates like usual.
+

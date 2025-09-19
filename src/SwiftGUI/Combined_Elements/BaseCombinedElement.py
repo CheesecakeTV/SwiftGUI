@@ -3,7 +3,6 @@ from typing import Any
 
 from SwiftGUI import BaseElement, SubLayout
 from SwiftGUI.ElementFlags import ElementFlag
-from SwiftGUI.Widget_Elements.Frame import Frame
 from SwiftGUI.Windows import ValueDict
 
 class BaseCombinedElement(BaseElement):
@@ -28,8 +27,10 @@ class BaseCombinedElement(BaseElement):
         super().__init__()
 
         if disable_key_collection:
+            self._has_sublayout = False
             self._sg_widget = frame
         else:
+            self._has_sublayout = True
             self._sg_widget = SubLayout(frame, self._event_loop)
 
         self.key = key
@@ -90,15 +91,21 @@ class BaseCombinedElement(BaseElement):
 
     @property
     def w(self):
-        if isinstance(self._sg_widget, Frame):
-            raise AttributeError("You tried to get .w from a combined element that does not have a sub-layout.\nUse ._sg_widget instead.")
+        if not self._has_sublayout:
+            raise AttributeError("You tried to get .w from a combined element that does not have a sub-layout.\nAparrently, you set disable_key_collection to true.")
 
         return self._sg_widget
 
     def _get_value(self) -> Any:
-        if isinstance(self._sg_widget, Frame):
-            return None
-
         return self._sg_widget.value
 
+    def __getitem__(self, item):
+        if not self._has_sublayout:
+            raise NotImplementedError(f"{self} has no sub-layout, so __getitem__ is not defined.")
+        return self._sg_widget[item]
+
+    def __setitem__(self, key, value):
+        if not self._has_sublayout:
+            raise NotImplementedError(f"{self} has no sub-layout, so __getitem__ is not defined.")
+        self._sg_widget[key].value = value
 

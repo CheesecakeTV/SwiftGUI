@@ -4,6 +4,9 @@ from pathlib import Path    # pip install pathlib   (Should be builtin though...
 import tempfile as temp
 import os
 
+my_theme = sg.Themes.FourColors.DarkGold
+my_theme()
+
 def img_to_ico(img_path: str, output_folder: Path, force_size: tuple[int, int] = None):
     """
     Convert an image of various types to .ico
@@ -29,8 +32,7 @@ layout = [
             file_browse_type="open_multiple",
             key = "FileBrowse",
             #key_function = lambda elem: w["Convert"].update(background_color = sg.Color.PaleGreen1 if elem.value else sg.Color.coral).set_value(f"Convert ({len(elem.value)})"),
-            key_function = lambda elem: w["Convert"].update(
-            background_color=sg.Color.PaleGreen1 if elem.value else sg.Color.coral).set_value(f"Convert ({len(elem.value)})"),
+            key_function = lambda elem: w["Convert"].set_value(f"Convert ({len(elem.value)})"),
             dont_change_on_abort= True,
             file_browse_filetypes= (
                 ("Image/graphic", (
@@ -101,7 +103,6 @@ layout = [
         sg.Button(
             "Convert (0)",
             key="Convert",
-            background_color = sg.Color.coral,  # PaleGreen1
         )
     ]
 ]
@@ -123,6 +124,9 @@ for e,v in w:
                 fs = (int(fs_x), int(fs_y))
             except ValueError:
                 pass
+
+        if not w["FileBrowse"].value:
+            continue
 
         for name in w["FileBrowse"].value:
             img_to_ico(name, _tempfolder, force_size= fs)
