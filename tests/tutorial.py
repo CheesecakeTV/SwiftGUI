@@ -14,6 +14,8 @@ layout = [
         sg.Button(" 1 ", key="Button1"),
         sg.Button(" 2 ", key="Button2"),
         sg.Button(" 3 ", key="Button3"),
+    ],[
+        sg.T("Hallo",padding=150)
     ]
 ]
 

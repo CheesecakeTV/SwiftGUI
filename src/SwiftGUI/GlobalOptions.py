@@ -329,14 +329,14 @@ class Radiobutton(Checkbox):
 class Window(Common_Background):
     title = "SwiftGUI Window"
     titlebar: bool = True  # Titlebar visible
-    resizeable_width = False
-    resizeable_height = False
+    resizeable_width: bool = False
+    resizeable_height: bool = False
     fullscreen: bool = False
     transparency: Literals.transparency = 0  # 0-1, 1 meaning invisible
-    size: tuple[int, int] = (None, None)
+    size: int | tuple[int, int] = (None, None)
     position: tuple[int, int] = (None, None)  # Position on monitor # Todo: Center
-    min_size: tuple[int, int] = (None, None)
-    max_size: tuple[int, int] = (None, None)
+    min_size: int | tuple[int, int] = (None, None)
+    max_size: int | tuple[int, int] = (None, None)
     icon: str = file_from_b64(Extras.SwiftGUI.icon)
     keep_on_top: bool = False
     ttk_theme: str = "default"
