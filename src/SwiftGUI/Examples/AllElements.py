@@ -190,8 +190,8 @@ def preview_all_elements(include_images: bool = True):
     layout = [
         [
             sg.T("If this looks a bit shitty, try applying a theme.\n"
-                 "This example is used to test themes,\n"
-                 "so it's not supposed to look good without it.")
+                 "Just call sg.Themes.FourColors.Emerald()\n"
+                 "before starting this example.")
         ],[
             sg.Spacer(height=10)
         ],[

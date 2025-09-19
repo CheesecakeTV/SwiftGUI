@@ -1,5 +1,7 @@
 import SwiftGUI as sg
 
+sg.Themes.FourColors.Goldenberry()
+
 @sg.attach_function_to_key("Button1")
 def do_something():
     print("Button 1 was pressed")
@@ -14,6 +16,8 @@ layout = [
         sg.Button(" 1 ", key="Button1"),
         sg.Button(" 2 ", key="Button2"),
         sg.Button(" 3 ", key="Button3"),
+    ],[
+        sg.HSep()
     ],[
         sg.T("Hallo",padding=150)
     ]

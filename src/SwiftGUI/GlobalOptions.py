@@ -159,7 +159,7 @@ class Common_Background(DEFAULT_OPTIONS_CLASS):
     """
     Common background-color
     """
-    background_color: str | Color = "#FEFEFE"
+    background_color: str | Color = None
 
 class Common_Field_Background(DEFAULT_OPTIONS_CLASS):
     """

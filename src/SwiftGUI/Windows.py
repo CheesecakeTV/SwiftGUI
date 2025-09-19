@@ -620,12 +620,12 @@ class Window(BaseKeyHandler):
                     self.root.attributes("-topmost", new_val)
             case "background_color":
                 if new_val is not None:
-                    self._sg_widget._update_initial(background_color=new_val)
+                    self._sg_widget.update(background_color=new_val)
             case "ttk_theme":
                 if new_val is not None:
                     self.ttk_style.theme_use(new_val)
             case _:
-                return False
+                return super()._update_special_key(key, new_val)
 
         return True
 
