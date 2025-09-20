@@ -3,7 +3,7 @@ from typing import Any
 
 import SwiftGUI as sg
 
-def attach_function_to_key(key: Any) -> Callable:
+def attach_function_to_key(*key: Any) -> Callable:
     """
     This decorator will "extend the main loop".
     When the main loop receives the passed key, the decorated function is called, roughly equivalent to
@@ -20,14 +20,15 @@ def attach_function_to_key(key: Any) -> Callable:
     e     - Event-key (Will be the same every time in this case)
     v     - Value-"dict"
 
-    :param key: Which key to look out for
+    :param key: Which key(s) to look out for
     :return:
     """
     if sg.main_window is not None:
         raise RuntimeError("You can only use decorator-keys BEFORE creating the main window.\nMove your decorated functions up.")
 
     def decorator(fct: Callable) -> Callable:
-        sg.all_decorator_key_functions[key] = fct
+        for k in key:
+            sg.all_decorator_key_functions[k] = fct
         return fct
 
     return decorator
