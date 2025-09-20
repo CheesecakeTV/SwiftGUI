@@ -6,12 +6,40 @@ from SwiftGUI.Compat import Self
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, Scrollbar, BaseScrollbar
 
+def _forced_value_change(fct):
+    """
+    Use this decorator for all functions that edit the value of this element.
+    It will enable the element if needed and disable it again later
+    :param fct:
+    :return:
+    """
 
+    def new_fct(self: "TextField", *args, **kwargs):
+        if self._readonly:
+            self.tk_widget.configure(state="normal")
+
+        ret = fct(self, *args, **kwargs)    # Call the decorated function
+
+        # If backend-changes are not allowed to be reset by the user, clear the undo-stack
+        if not self._can_reset_value_changes:
+            self.tk_widget.edit_reset()
+
+        if self._readonly:
+            self.tk_widget.configure(state="disabled")
+
+        return ret
+
+    return new_fct
+
+
+# Todo: tk.Text has a ton of features, so this element should too.
 class TextField(BaseWidget, BaseScrollbar):
     tk_widget:tk.Text
     _tk_widget:tk.Text
     _tk_widget_class:type = tk.Text # Class of the connected widget
     defaults = GlobalOptions.TextField
+
+    _forced_value_change = _forced_value_change # So you can legally use it when deriving TextField
 
     _transfer_keys = {
         # "background_color_disabled":"disabledbackground",
@@ -247,17 +275,10 @@ class TextField(BaseWidget, BaseScrollbar):
     def _get_value(self) -> Any:
         return self.tk_widget.get("1.0","end")[:-1]
 
+    @_forced_value_change
     def set_value(self,val:Any):
-        if self._readonly:
-            self.tk_widget.configure(state = "normal")
         self.tk_widget.delete("1.0","end")
         self.tk_widget.insert("1.0",val)
-
-        if self._can_reset_value_changes:
-            self.tk_widget.edit_reset()
-
-        if self._readonly:
-            self.tk_widget.configure(state = "disabled")
 
     def init_window_creation_done(self):
         super().init_window_creation_done()
@@ -293,3 +314,18 @@ class TextField(BaseWidget, BaseScrollbar):
     #     """
     #     self.tk_widget.see(0)
     #     return self
+
+    @BaseWidget._run_after_window_creation
+    @_forced_value_change
+    def append(self, text: str, add_newline: bool = True) -> Self:
+        """
+        Add text to the end
+        :param add_newline: Add a new-line before the text if there is already text in the widget
+        :param text:
+        :return:
+        """
+        if add_newline and self.value != "":
+            text = "\n" + text
+
+        self.tk_widget.insert("end", text)
+        return self
