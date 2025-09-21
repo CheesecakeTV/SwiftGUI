@@ -8,6 +8,12 @@ If you haven't already, install SwiftGUI using pip:
 pip install swiftGUI
 ```
 
+You'll notice, that your GUIs might look quite different to the screenshots in these tutorials.
+I'm writing these tutorials parallel to programming new features.
+The visuals improved a lot after writing some of the earlier tutorials.
+
+Functionally, the tutorials will stay up to date, I promise!
+
 This library is simmilar to PySimpleGUI, but has a lot of different/additional features.
 If you already know PySimpleGUI, this tutorial will be very easy.
 

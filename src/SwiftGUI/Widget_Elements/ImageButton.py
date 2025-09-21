@@ -5,6 +5,7 @@ from typing import Callable, Iterable, Any
 from PIL import Image as PIL_Image
 
 from SwiftGUI import GlobalOptions, Image, Button, Literals, Color
+from SwiftGUI.Compat import Self
 
 
 class ImageButton(Button, Image):
@@ -20,12 +21,18 @@ class ImageButton(Button, Image):
             key: Any = None,
             key_function: Callable | Iterable[Callable] = None,
 
+            text: str = None,
+            compound: Literals.compound = None,
+
             borderwidth: int = None,
 
             disabled: bool = None,
             text_color_disabled: str | Color = None,
             background_color_active: str | Color = None,
 
+            image_width: int = None,
+            image_height: int = None,
+            
             width: int = None,
             height: int = None,
 
@@ -45,9 +52,9 @@ class ImageButton(Button, Image):
             tk_kwargs: dict[str:Any] = None
     ):
         super().__init__(
+            text,
             key= key,
             key_function= key_function,
-            tk_kwargs= tk_kwargs,
             expand= expand,
             expand_y= expand_y,
             cursor = cursor,
@@ -61,10 +68,20 @@ class ImageButton(Button, Image):
             disabled = disabled,
             text_color_disabled = text_color_disabled,
             background_color_active = background_color_active,
+            width=width,
+            height=height,
+            tk_kwargs=tk_kwargs,
         )
 
         self._height = None
         self._width = None
 
-        self._update_initial(image=image, height=height, width=width)
+        self._update_initial(image=image, image_height=image_height, image_width=image_width, compound=compound)
+
+    def _get_value(self) -> Any:
+        return self._tk_target_value.get()
+
+    def set_value(self,val: Any) -> Self:
+        self._tk_target_value.set(val)
+        return self
 
