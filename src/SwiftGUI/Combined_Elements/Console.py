@@ -118,7 +118,7 @@ class Console(sg.BaseCombinedElement):
         return dt.now().strftime("%H:%M:%S")
 
     @sg.BaseCombinedElement._run_after_window_creation
-    def print(self, *text: str, sep: str = " ", end = "\n") -> Self:
+    def print(self, *text: Any, sep: str = " ", end = "\n") -> Self:
         """
         Print to the console.
         Arguments are the same as with normal print(...)
@@ -127,6 +127,8 @@ class Console(sg.BaseCombinedElement):
         :param end:
         :return:
         """
+        text = map(str, text)
+
         text = self._print_prefix + sep.join(text)
 
         if self._add_timestamp:

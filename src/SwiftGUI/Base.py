@@ -384,6 +384,17 @@ class BaseWidget(BaseElement):
         if expand_y:
             self.add_flags(ElementFlag.EXPAND_VERTICALLY)
 
+    # Somehow doesn't work with run_after_window_creation-decorator :C
+    # No exceptions, the focus just doesn't get set.
+    # Open to suggestions...
+    def set_focus(self) -> Self:
+        """
+        Set focus on this element
+        :return:
+        """
+        self.tk_widget.focus_set()
+        return self
+
     def _window_is_dead(self) -> bool:
         """
         Returns True, if the window doesn't exist (anymore?)
@@ -393,6 +404,8 @@ class BaseWidget(BaseElement):
 
     @property
     def tk_widget(self) -> tk.Widget:
+        assert hasattr(self, "_tk_widget"), ("The tk_widget doesn't exist (yet?).\n"
+                                             "Do whatever caused the exception AFTER creating the window, that should fix it.")
         return self._tk_widget
 
     @run_after_window_creation

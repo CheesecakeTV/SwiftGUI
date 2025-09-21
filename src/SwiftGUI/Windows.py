@@ -180,13 +180,12 @@ class BaseKeyHandler(BaseElement):
 
         self.exists = True
 
+        self.init_window_creation_done()    # This is before the rest on purpose...
+
         for elem in self.all_elements:
             elem.init_window_creation_done()
 
         self._sg_widget.init_window_creation_done()
-
-        super().init_window_creation_done()
-
 
     def __iter__(self) -> Self:
         return self
@@ -755,6 +754,12 @@ class Window(BaseKeyHandler):
             function_kwargs = dict()
 
         self.root.after(0, self._receive_event, key, function, function_args, function_kwargs)
+
+    def init_window_creation_done(self):
+        """Called BEFORE the elements get their call in this case"""
+        # self.root.after(10, lambda :self.root.quit())
+        # self.root.mainloop()
+        super().init_window_creation_done()
 
     def _keyed_event_callback(self, key: Any, _):
         self._prev_event = key
