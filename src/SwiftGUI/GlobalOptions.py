@@ -512,6 +512,9 @@ class Progressbar(Common_Field_Background):
 class ImageButton(Button):
     compound: Literals.compound = "left"
 
+class Console(TextField):
+    ...
+
 def reset_all_options():
     """
     Reset everything done to the global options on runtime.

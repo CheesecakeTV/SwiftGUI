@@ -359,13 +359,10 @@ class BaseWidget(BaseElement):
 
     _transfer_keys: dict[str:str] = dict()   # Rename a key from the update-function. from -> to; from_user -> to_widget
 
-    _events_to_bind_later: list[dict]
-
     _tk_scrollbar_y: tk.Scrollbar | None = None
 
     def __init__(self,key:Any=None,tk_kwargs:dict[str:Any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
         super().__init__()
-        self._events_to_bind_later = list()
 
         if tk_kwargs is None:
             tk_kwargs = dict()
@@ -398,6 +395,7 @@ class BaseWidget(BaseElement):
     def tk_widget(self) -> tk.Widget:
         return self._tk_widget
 
+    @run_after_window_creation
     def bind_event(self,tk_event:str|Event,key_extention:Union[str,Any]=None,key:Any=None,key_function:Callable|Iterable[Callable]=None)->Self:
         """
         Bind a tk-event onto the underlying tk-widget
@@ -411,15 +409,6 @@ class BaseWidget(BaseElement):
         :return: Calling element for inline-calls
         """
         new_key = None
-
-        if not self.has_flag(ElementFlag.IS_CREATED):
-            self._events_to_bind_later.append({
-                "tk_event":tk_event,
-                "key_extention":key_extention,
-                "key":key,
-                "key_function":key_function,
-            })
-            return self
 
         if hasattr(tk_event,"value"):
             tk_event = tk_event.value
@@ -635,10 +624,6 @@ class BaseWidget(BaseElement):
 
     def init_window_creation_done(self):
         super().init_window_creation_done()
-
-        for params in self._events_to_bind_later:
-            self.bind_event(**params)
-        del self._events_to_bind_later  # Free some ram, because why not
 
         if self._grab_anywhere_on_this:
             self.window.bind_grab_anywhere_to_element(self.tk_widget)
