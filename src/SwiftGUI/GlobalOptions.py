@@ -513,7 +513,10 @@ class ImageButton(Button):
     compound: Literals.compound = "left"
 
 class Console(TextField):
-    ...
+    input_prefix: str = " >>> "
+    print_prefix: str = " "
+    add_timestamp: bool = True
+    scrollbar: bool = True
 
 def reset_all_options():
     """

@@ -320,7 +320,7 @@ class TextField(BaseWidget, BaseScrollbar):
     def append(self, text: str, add_newline: bool = True) -> Self:
         """
         Add text to the end
-        :param add_newline: Add a new-line before the text if there is already text in the widget
+        :param add_newline: Add a new-line BEFORE the text if there is already text in the widget
         :param text:
         :return:
         """
