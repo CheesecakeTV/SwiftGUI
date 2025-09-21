@@ -473,6 +473,8 @@ class Window(BaseKeyHandler):
             background_color: Color | str = None,
             grab_anywhere: bool = None,
             event_loop_function: Callable = None,
+            padx: int = None,
+            pady: int = None,
             ttk_theme: str = None,
     ):
         """
@@ -529,6 +531,8 @@ class Window(BaseKeyHandler):
             keep_on_top=keep_on_top,
             background_color=background_color,
             ttk_theme=ttk_theme,
+            padx=padx,
+            pady=pady,
         )
 
         self.init(self._sg_widget, self.root, grab_anywhere_window= self)
@@ -630,6 +634,10 @@ class Window(BaseKeyHandler):
             case "ttk_theme":
                 if new_val is not None:
                     self.ttk_style.theme_use(new_val)
+            case "padx":
+                self._sg_widget.update(padx=new_val)
+            case "pady":
+                self._sg_widget.update(pady=new_val)
             case _:
                 return super()._update_special_key(key, new_val)
 
@@ -650,6 +658,8 @@ class Window(BaseKeyHandler):
             icon: str | PathLike | Image.Image | io.BytesIO = None,  # .ico file
             keep_on_top: bool = None,
             background_color: Color | str = None,
+            padx: int = None,
+            pady: int = None,
             ttk_theme: str = None,
     ):
         super().update(
@@ -666,6 +676,8 @@ class Window(BaseKeyHandler):
             icon = icon,
             keep_on_top = keep_on_top,
             background_color = background_color,
+            padx = padx,
+            pady = pady,
             ttk_theme = ttk_theme,
         )
 

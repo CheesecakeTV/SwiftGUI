@@ -109,11 +109,47 @@ def preview_all_elements(include_images: bool = True):
             ], alignment="left", fake_key= "A")
         ],[
             sg.Spacer(height=20)
+        ], [
+            sg.GridFrame([
+                [
+                    sg.T("sg.Gridframe", padding=5),
+                    sg.VSep(padding=0),
+                ],[
+                    sg.HSep(),
+                    sg.T(),
+                    sg.HSep(),
+                ],[
+                    sg.T(),
+                    sg.VSep(padding=0),
+                    sg.T("Arrange things in a grid", padding=5)
+                ],[
+                    sg.HSep(),
+                    sg.T(),
+                    sg.HSep(),
+                ],[
+                    sg.T("Cool, isn't it?", padding=5),
+                    sg.VSep(padding=0)
+                ]
+            ])
+        ], [
+            sg.Spacer(height=20)
         ],[
             sg.Notebook(
                 sg.TabFrame([[sg.T("sg.Notebook")]], fake_key="Tab1"),
                 sg.TabFrame([[sg.T("still sg.Notebook")]], fake_key="Tab2"),
             )
+        ],[
+            sg.Spacer(height=20)
+        ],[
+            sg.SubLayout(sg.Frame([
+                [
+                    sg.T("sg.SubLayout"),
+                ],[
+                    sg.T("A seperate layout inside your layout.")
+                ],[
+                    sg.T("It has seperate keys and its own segregated event-loop.")
+                ]
+            ], alignment="left"))
         ]
     ], fake_key= "containers")
 

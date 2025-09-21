@@ -26,8 +26,8 @@ class Image(BaseWidget):
             image: str | PathLike | PIL_Image.Image | IO[bytes] = None,
             /,
             key: Any = None,
-            height: int = None,
-            width: int = None,
+            image_height: int = None,
+            image_width: int = None,
             background_color: str | Color = None,
             apply_parent_background_color:bool = None,
             tk_kwargs: dict = None,
@@ -42,7 +42,7 @@ class Image(BaseWidget):
         if background_color and not apply_parent_background_color:
             apply_parent_background_color = False
 
-        self._update_initial(image=image, height=height, width=width,
+        self._update_initial(image=image, image_height=image_height, image_width=image_width,
                              apply_parent_background_color=apply_parent_background_color,
                              background_color=background_color)
 
@@ -51,10 +51,10 @@ class Image(BaseWidget):
             case "image":
                 self._image = new_val
                 self.add_flags(ElementFlag.UPDATE_IMAGE)
-            case "height":
+            case "image_height":
                 self._height = new_val
                 self.add_flags(ElementFlag.UPDATE_IMAGE)
-            case "width":
+            case "image_width":
                 self._width = new_val
                 self.add_flags(ElementFlag.UPDATE_IMAGE)
             case "apply_parent_background_color":

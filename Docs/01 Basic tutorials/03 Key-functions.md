@@ -234,14 +234,23 @@ The loop does not run here either.
 Other than actual key-functions, these "decorated functions" should only take `e`, `v`, or `w` as parameters.
 `elem` and `val` will always be `None`.
 
-Some things to keep in mind when using this feature:
+It is also possible to attach multiple keys using the decorator:
+```py
+@sg.attach_function_to_key("Button1", "Button2")
+def do_something(e):
+    print(f"{e} was pressed")
+    v[e] = "Pressed"
+```
+
+Some things to keep in mind when using this feature though:
 - All "decorations" must be done before creating the window using `w = sg.Window(layout)`
 - The decorator only applies to the main event-loop.
 Since SwiftGUI version 0.8.0, it is possible to create other event-loops.
 Keys for these loops are not affected.
 - If you create multiple windows using `sg.Window` in a single program (which has risks on its own), the decorated functions apply to all windows.
-Also, the parameter `w` will always be filled by the first window created.
-So better avoid used keys alltogether.\
+Also, the parameter `w` will always hold the first window created.
+So better avoid reusing decorator-keys, even through different windows.\
 There will be a way to create additional windows before version 1.0.0, I promise!
+- Don't decorate multiple functions with the same key. Only the last declared function will be called.
 
 

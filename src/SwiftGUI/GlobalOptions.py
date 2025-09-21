@@ -273,6 +273,7 @@ class Button(Common,Common_Textual,Common_Field_Background):
     repeatdelay: int = None
     repeatinterval: int = None
 
+
 class MultistateButton(Button):
     can_deselect: bool = True
 
@@ -341,6 +342,8 @@ class Window(Common_Background):
     keep_on_top: bool = False
     ttk_theme: str = "default"
     grab_anywhere: bool = False
+    padx: int = 5
+    pady: int = 5
 
 class Listbox(Common,Common_Textual,Common_Field_Background):
     no_selection_returns: Any = ""  # Returned when nothing is selected
@@ -507,7 +510,7 @@ class Progressbar(Common_Field_Background):
     mode: Literals.progress_mode = "determinate"
 
 class ImageButton(Button):
-    ...
+    compound: Literals.compound = "left"
 
 def reset_all_options():
     """
