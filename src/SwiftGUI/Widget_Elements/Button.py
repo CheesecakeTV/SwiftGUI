@@ -237,5 +237,6 @@ class Button(BaseWidget):
         self.tk_widget.invoke()
 
     def init_window_creation_done(self):
+        super().init_window_creation_done()
         if self._disabled_at_start:
             self._update_initial(disabled=True)

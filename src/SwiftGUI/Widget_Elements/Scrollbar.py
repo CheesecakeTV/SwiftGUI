@@ -76,10 +76,6 @@ class Scrollbar(BaseWidgetTTK):
 
         return True
 
-    def init_window_creation_done(self):
-        """Don't touch!"""
-        super().init_window_creation_done()
-
     @BaseWidgetTTK._run_after_window_creation
     def bind_to_element(self, elem: BaseWidget) -> Self:
         """

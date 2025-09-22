@@ -78,8 +78,7 @@ from .Windows import Window, BaseKeyHandler, ttk_style, main_window, SubLayout, 
 from .Combined_Elements.BaseCombinedElement import BaseCombinedElement
 from .Combined_Elements.Form import Form
 from .Combined_Elements.MultistateButton import MultistateButton
-
-#from .Extended_Elements.SubLayout import SubLayout
+from .Combined_Elements.Console import Console
 
 from . import KeyFunctions
 
@@ -90,7 +89,7 @@ from . import Examples
 from .Utilities.Threads import clipboard_observer
 from .Utilities.Images import file_from_b64, file_to_b64
 
-AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton | Spinbox | Image | ImageButton | Scale | Combobox | Progressbar
+AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton | Spinbox | Image | ImageButton | Scale | Combobox | Progressbar | Console
 
 from .DecoratorKeys import attach_function_to_key
 

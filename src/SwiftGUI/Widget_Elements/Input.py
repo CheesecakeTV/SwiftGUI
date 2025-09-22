@@ -184,6 +184,7 @@ class Input(BaseWidget):
         self._set_tk_target_variable(default_key="text")
 
     def init_window_creation_done(self):
+        super().init_window_creation_done()
         self._value_change_callback = self.window.get_event_function(self, key= self.key, key_function= self._key_function)
         self._tk_target_value.trace_add("write", self._event_callback)
 
