@@ -2,6 +2,7 @@ from tkinter import ttk, font
 from typing import Any, Iterable, Callable
 
 from SwiftGUI import BaseWidget
+from SwiftGUI.Base import run_after_window_creation
 from SwiftGUI.Compat import Self
 
 from SwiftGUI import GlobalOptions, BaseWidgetTTK, Literals, Color, ElementFlag, BaseElement
@@ -18,7 +19,7 @@ class Combobox(BaseWidgetTTK):
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Notebook.html
     def __init__(
             self,
-            values: Iterable[str] = tuple(),
+            choices: Iterable[str] = tuple(),
             /,
             key: Any = None,
             key_function: Callable | Iterable[Callable] = None,
@@ -72,9 +73,9 @@ class Combobox(BaseWidgetTTK):
     ):
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
 
-        values = tuple(values)
-        if default_value is None and values:
-            default_value = values[0]
+        choices = tuple(choices)
+        if default_value is None and choices:
+            default_value = choices[0]
 
         self._key_function = key_function
 
@@ -85,7 +86,7 @@ class Combobox(BaseWidgetTTK):
 
         self._update_initial(
             default_value = default_value,
-            values = values,
+            choices = choices,
             cursor = cursor,
             exportselection = exportselection,
             height = height,
@@ -121,12 +122,11 @@ class Combobox(BaseWidgetTTK):
             return True
 
         match key:
-            case "values":
+            case "choices":
                 if new_val:
                     self._tk_kwargs["values"] = tuple(new_val)
                 else:
                     self._tk_kwargs["values"] = tuple()
-                return False
 
             case "insertbackground":
                 self._config_ttk_style(insertcolor=new_val)
@@ -259,3 +259,31 @@ class Combobox(BaseWidgetTTK):
 
         # So not everything gets selected when chosing something from the drop-down
         self.tk_widget.bind("<<ComboboxSelected>>", lambda *_:self.tk_widget.selection_clear())
+
+    @property
+    def choices(self) -> tuple[str]:
+        """
+        Elements in the drop-down-menu
+        :return:
+        """
+        return self.get_option("choices", tuple())
+
+    @choices.setter
+    def choices(self, new_val: Iterable[str]):
+        """
+
+        :param new_val:
+        :return:
+        """
+        self.set_choices(new_val)
+
+    @run_after_window_creation
+    def set_choices(self, new_val: Iterable[str]) -> Self:
+        """
+        Change the elements in the drop-down-menu
+
+        :param new_val:
+        :return:
+        """
+        self.update(choices=new_val)
+        return self

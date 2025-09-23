@@ -157,15 +157,15 @@ def preview_all_elements(include_images: bool = True):
         [
             sg.T("sg.Image:"),
         ],[
-            sg.Image(sg.file_from_b64(python_logo), width= 200),
-            sg.Image(sg.file_from_b64(python_logo), width= 150),
-            sg.Image(sg.file_from_b64(python_logo), width=100),
+            sg.Image(sg.file_from_b64(python_logo), image_width= 200),
+            sg.Image(sg.file_from_b64(python_logo), image_width= 150),
+            sg.Image(sg.file_from_b64(python_logo), image_width=100),
         ],[
             sg.HSep()
         ],[
             sg.T("sg.ImageButton")
         ],[
-            sg.ImageButton(sg.file_from_b64(python_logo), height=150),
+            sg.ImageButton(sg.file_from_b64(python_logo), image_height=150),
             sg.T("(The image has a strange format)")
         ]
     ], fake_key = "images")
