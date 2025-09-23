@@ -4,6 +4,7 @@ import SwiftGUI as sg
 import time
 
 from SwiftGUI import clipboard_paste
+import pyperclip
 
 
 def _clipboard_observer(w: sg.Window, key: Any, check_interval: float = 0.3, throw_initial_value: bool = True) -> None:
@@ -16,7 +17,12 @@ def _clipboard_observer(w: sg.Window, key: Any, check_interval: float = 0.3, thr
         w.throw_event(key, clipboard_paste())
 
     while True:
-        prev_paste = clipboard_paste()
+        try:
+            prev_paste = clipboard_paste()
+        except pyperclip.PyperclipException:
+            time.sleep(check_interval)
+            continue
+
         temp = prev_paste
 
         while temp == prev_paste:
