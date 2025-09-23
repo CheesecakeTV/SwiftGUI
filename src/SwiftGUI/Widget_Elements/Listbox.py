@@ -173,6 +173,7 @@ class Listbox(BaseWidget, BaseScrollbar):
         :param new_val:
         :return:
         """
+        self.tk_widget.selection_clear(0, "end")
         self.tk_widget.selection_set(new_val)
         return self
 
@@ -285,6 +286,13 @@ class Listbox(BaseWidget, BaseScrollbar):
         self._list_elements = list(element) + self._list_elements
         return self
 
+    def _transform_index(self, i:int) -> int:
+        if i >= 0:
+            return i
+
+        i = len(self._list_elements) + i
+        return i
+
     @BaseWidget._run_after_window_creation
     def delete_index(self,*index:int) -> Self:
         """
@@ -292,7 +300,8 @@ class Listbox(BaseWidget, BaseScrollbar):
         :param index:
         :return:
         """
-        index = sorted(index,reverse=True)
+        index = map(self._transform_index, sorted(index,reverse=True))
+
         for i in index:
             self.tk_widget.delete(i)
             del self._list_elements[i]
@@ -325,7 +334,7 @@ class Listbox(BaseWidget, BaseScrollbar):
         :param new_val:
         :return:
         """
-        select = self.index == index
+        select = self.index == self._transform_index(index)
 
         self.tk_widget.delete(index)
         self.tk_widget.insert(index, new_val)
@@ -406,20 +415,21 @@ class Listbox(BaseWidget, BaseScrollbar):
         rows = set(rows)
         rows_str = set(filter(lambda a:isinstance(a,str),rows))  # Get all rows passed as a string
         rows = rows - rows_str  # Remove those strings
+        rows = set(map(self._transform_index, rows))
         rows_str = self.get_all_indexes_of(*rows_str)
         rows.update(rows_str)   # Add those indexes
 
-        try:
-            for i in rows:
-                self.tk_widget.itemconfig(
-                    i,
-                    background=background_color,
-                    foreground=text_color,
-                    selectbackground=background_color_selected,
-                    selectforeground=text_color_selected
-                )
-        except AttributeError:
-            raise SyntaxError(f"You cannot change row-colors before creating the window. You probably tried to on some Listbox-element.")
+        # try:
+        for i in rows:
+            self.tk_widget.itemconfig(
+                i,
+                background=background_color,
+                foreground=text_color,
+                selectbackground=background_color_selected,
+                selectforeground=text_color_selected
+            )
+        # except AttributeError:
+        #     raise SyntaxError(f"You cannot change row-colors before creating the window. You probably tried to on some Listbox-element.")
 
         return self
 
