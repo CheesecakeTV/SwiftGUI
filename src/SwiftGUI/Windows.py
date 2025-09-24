@@ -1007,22 +1007,31 @@ class SubWindow(Window):
             main_window.register_element(self)
             main_window._value_dict.set_extra_value(key, self.value)
 
-    def loop_close(self) -> tuple[Any,dict[Any:Any]]:
+    def loop_close(self, block_others: bool = True) -> tuple[Any,dict[Any:Any]]:
         """
         Loop until the first keyed event.
         Then close the window and return e,v like with a normal window.
+        :param block_others: True, if the other windows should be unresponsive to events
         :return:
         """
         e = None
+        v = None
+
         def _event_callback(key, _):
-            nonlocal e
+            nonlocal e, v
             e = key
+            v = self.value
+            v.refresh_all()  # Save the values so they can be read later
+
+            self.close()
 
         self.set_custom_event_loop(_event_callback)
-        v: ValueDict = self.value
-        v.refresh_all() # Save the values so they can be read later
-
+        if block_others:
+            self.block_others_until_close()
+        else:
+            self.root.wait_window()
         self.close()
+
         return e,v
 
     def close(self):
