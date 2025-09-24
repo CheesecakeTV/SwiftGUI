@@ -8,7 +8,6 @@ sg.Themes.FourColors.DarkGold()  # Use a different theme, as you please
 #sg.Examples.preview_all_elements()
 #sg.Examples.preview_all_themes()
 
-
 first_layout = [
     [
         sg.T("Still works", padding=150),
@@ -41,8 +40,8 @@ def tl_eventloop(e, v):
 
 w = sg.Window(layout, padx=50, pady=50)
 
-sl = sg.SubWindow(toplevel_layout, padx= 50, pady= 50, icon= "fingerprint.png", event_loop_function=tl_eventloop, grab_anywhere=True)
-sl2 = sg.SubWindow(first_layout, padx= 50, pady= 50, icon= "Star.png", event_loop_function=tl_eventloop)
+sl = sg.SubWindow(toplevel_layout, padx= 50, pady= 50, event_loop_function=tl_eventloop, grab_anywhere=True)
+sl2 = sg.SubWindow(first_layout, padx= 50, pady= 50, event_loop_function=tl_eventloop, grab_anywhere=True)
 #sl.root.grab_set()
 
 def blinker():
@@ -51,7 +50,7 @@ def blinker():
         w.throw_event(key= "Test", value="Hallo")
 
 #threading.Thread(target=blinker, daemon=True).start()
-print(sg.Popups.VirtualKeyboard.popup_virtual_keyboard())
+#print(sg.Popups.VirtualKeyboard.popup_virtual_keyboard())
 
 for e,v in w:
     print(e,v)

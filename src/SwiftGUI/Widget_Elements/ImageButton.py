@@ -14,6 +14,8 @@ class ImageButton(Button, Image):
 
     defaults = GlobalOptions.ImageButton
 
+    _grab_anywhere_on_this = False
+
     def __init__(
             self,
             image: str | PathLike | PIL_Image.Image | io.BytesIO = None,

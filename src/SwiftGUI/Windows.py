@@ -812,7 +812,7 @@ class Window(BaseKeyHandler):
 
         self._icon: Any | str = ImageTk.PhotoImage(self._icon)  # Typehint is just so the typechecker doesn't get annoying
         try:
-            self.root.iconphoto(True, self._icon)
+            self.root.iconphoto(main_window is self, self._icon)
         except tk.TclError: #
             print("Warning: Changing the icon of this window wasn't possible.")
             print("This is probably because it is not the main window.")
@@ -971,6 +971,9 @@ class SubWindow(Window):
         self._sg_widget:Frame = Frame(layout,alignment= self.defaults.single("alignment", alignment), expand_y=True, expand=True)
         self.root: tk.Toplevel = tk.Toplevel()
         self.ttk_style: ttk.Style = main_window.ttk_style
+
+        if icon is None:
+            icon = main_window.get_option("icon")
 
         self.window = self
         self._update_initial(
