@@ -157,7 +157,7 @@ class BaseKeyHandler(BaseElement):
     def init(
             self,
             sg_element: Frame,
-            container: tk.Tk | Widget, # Container of this sub-window
+            container: tk.Tk | Widget | tk.Toplevel, # Container of this sub-window
             grab_anywhere_window: Self = None,
     ):
         """Should be called by the window when/after it is being created"""
@@ -240,6 +240,21 @@ class BaseKeyHandler(BaseElement):
                 print(f"WARNING! Key {elem.key} is defined multiple times in its key-system! Disable this message by setting sg.Debug.enable_key_warnings = False before creating the layout.")
 
             self.all_key_elements[elem.key] = elem
+
+    def unregister_element(self, elem:BaseElement):
+        """
+        Tell the KeyHandler that an element is no longer available.
+        :param elem:
+        :return:
+        """
+        try:
+            index = self.all_elements.index(elem)
+            del self.all_elements[index]
+        except ValueError:
+            ...
+
+        if hasattr(elem, "key") and elem.key in self.all_key_elements:
+            del self.all_key_elements[elem.key]
 
     def throw_event(self, key: Any = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
         """
@@ -441,7 +456,7 @@ class Window(BaseKeyHandler):
     Don't use for "second" windows
     """
 
-    _prev_event:any = None  # Most recent event (-key)
+    _prev_event: Any = None  # Most recent event (-key)
     defaults = GlobalOptions.Window
 
     @staticmethod
@@ -501,6 +516,10 @@ class Window(BaseKeyHandler):
         if main_window is None or not main_window.exists: # Some users might use sg.Window for popups, don't overwrite the global in that case
             ttk_style = None
             main_window = self
+        else:
+            raise RuntimeError("\nYou tried to create an sg.Window while another sg.Window still exists.\n"
+                               "Don't do that.\n"
+                               "Use sg.SubWindow instead.")
 
         if event_loop_function is None:
             event_loop_function = self._keyed_event_callback
@@ -702,6 +721,9 @@ class Window(BaseKeyHandler):
         if self.has_flag(ElementFlag.IS_CREATED):
             self.root.destroy()
 
+            global main_window
+            main_window = None  # un-register this window as the main window
+
     def loop(self) -> tuple[Any, ValueDict]:
         """
         Main loop
@@ -720,6 +742,10 @@ class Window(BaseKeyHandler):
             except (AssertionError,tk.TclError):
                 self.exists = False # This looks redundant, but it's easier to use self.exists from outside. So leave it!
                 self.remove_flags(ElementFlag.IS_CREATED)
+
+                global main_window
+                main_window = None  # Un-register this window
+
                 return None,self._value_dict
 
             self._value_dict.invalidate_all_values()
@@ -839,3 +865,182 @@ class Window(BaseKeyHandler):
             widget.bind('<ButtonPress-1>', self._SaveLastClickPos)
             widget.bind('<ButtonRelease-1>', self._DelLastClickPos)
             widget.bind('<B1-Motion>', self._Dragging)
+
+class SubWindow(Window):
+    """
+    Window-Object for additional windows
+    """
+
+    defaults = GlobalOptions.SubWindow
+
+    def __new__(cls, *args, **kwargs):
+        if main_window is None:
+            # If there is no main window, this one should be it instead
+            if "key" in kwargs:
+                del kwargs["key"]
+
+            return  Window(*args, **kwargs)
+
+        return super().__new__(cls)
+
+    def __init__(
+            self,
+            layout:Iterable[Iterable[BaseElement]],
+            /,
+            key: Any = None,
+            title:str = None,
+            alignment: Literals.alignment = None,
+            titlebar: bool = None,  # Titlebar visible
+            resizeable_width: bool = None,
+            resizeable_height: bool = None,
+            transparency: Literals.transparency = None,  # 0-1, 1 meaning invisible
+            size: int | tuple[int, int] = (None, None),
+            position: tuple[int, int] = (None, None),  # Position on monitor
+            min_size: int | tuple[int, int] = (None, None),
+            max_size: int | tuple[int, int] = (None, None),
+            icon: str | PathLike | Image.Image | io.BytesIO = None,  # .ico file
+            keep_on_top: bool = None,
+            background_color: Color | str = None,
+            grab_anywhere: bool = None,
+            event_loop_function: Callable = None,
+            padx: int = None,
+            pady: int = None,
+            ttk_theme: str = None,
+    ):
+        """
+
+        :param layout: Double-List (or other iterable) of your elements, row by row
+        :param title: Window-title (seen in titlebar)
+        :param alignment: How the elements inside the main layout should be aligned
+        :param titlebar: False, if you want the window to have no titlebar
+        :param resizeable_width: True, if you want the user to be able to resize the window's width
+        :param resizeable_height: True, if you want the user to be able to resize the window's height
+        :param transparency: 0 - 1, with 1 being invisible, 0 fully visible
+        :param size: Size of the window in pixels. Leave this blank to determine this automatically
+        :param position: Position of the upper left corner of the window
+        :param min_size: Minimal size of the window, when the user can resize it
+        :param max_size: Maximum size of the window, when the user can resize it
+        :param icon: Icon of the window. Has to be .ico
+        :param keep_on_top: True, if the window should always be on top of any other window
+        :param grab_anywhere: True, if the window can be "held and dragged" anywhere (exclusing certain elements)
+        """
+        global ttk_style
+        global main_window
+
+        #self._make_taskbar_icon_changeable(title)
+
+        if event_loop_function is None:
+            event_loop_function = main_window._key_event_callback_function
+
+        super(Window, self).__init__(event_loop_function=event_loop_function)
+        self._grab_anywhere = self.defaults.single("grab_anywhere", grab_anywhere)
+
+        self._sg_widget:Frame = Frame(layout,alignment= self.defaults.single("alignment", alignment), expand_y=True, expand=True)
+        self.root: tk.Toplevel = tk.Toplevel()
+        self.ttk_style: ttk.Style = main_window.ttk_style
+
+        self.window = self
+        self._update_initial(
+            title=title,
+            titlebar=titlebar,
+            resizeable_width=resizeable_width,
+            resizeable_height=resizeable_height,
+            transparency=transparency,
+            size=size,
+            position=position,
+            min_size=min_size,
+            max_size=max_size,
+            icon=icon,
+            keep_on_top=keep_on_top,
+            background_color=background_color,
+            ttk_theme=ttk_theme,
+            padx=padx,
+            pady=pady,
+        )
+
+        self.init(self._sg_widget, self.root, grab_anywhere_window= self)
+
+        self.bind_grab_anywhere_to_element(self._sg_widget.tk_widget)
+
+        if position == (None, None):
+            self.root.wait_visibility()
+            self.center()
+
+        self.key = key
+        if key is not None:
+            main_window.register_element(self)
+            main_window._value_dict.set_extra_value(key, self.value)
+
+    # def _update_special_key(self, key:str, new_val:Any) -> bool|None:
+    #     match key:
+    #         case _:
+    #             return super()._update_special_key(key, new_val)
+    #
+    #     return True
+
+    def close(self):
+        """
+        Kill the window
+        :return:
+        """
+        if self.has_flag(ElementFlag.IS_CREATED):
+            self.root.destroy()
+            self.remove_flags(ElementFlag.IS_CREATED)
+            main_window.unregister_element(self)
+
+    def loop(self) -> tuple[Any, ValueDict]:
+        """
+        Main loop
+
+        When window is closed, None is returned as the key.
+
+        :return: Triggering event key; all values as _dict
+        """
+        raise NotImplementedError("SubWindows can't be looped. You need to define a loop-function")
+
+    def throw_event(self, key: Any = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
+        """
+        Thread-safe method to generate a custom event.
+
+        :param function_kwargs: Will be passed to function
+        :param function_args: Will be passed to function
+        :param function: This function will be called on the main thread
+        :param key:
+        :param value: If not None, it will be saved inside the value-_dict until changed
+        :return:
+        """
+        if not self.exists:
+            return
+
+        if key is not None:
+            self._value_dict.set_extra_value(key, value)
+
+        if function_kwargs is None and function is not None:
+            function_kwargs = dict()
+
+        main_window.throw_event(function= self._receive_event, function_kwargs={
+            "key": key,
+            "callback": function,
+            "callback_args": function_args,
+            "callback_kwargs": function_kwargs,
+        })
+
+    def init_window_creation_done(self):
+        """Called BEFORE the elements get their call in this case"""
+        super().init_window_creation_done()
+
+    @BaseElement._run_after_window_creation
+    def center(self) -> Self:
+        """
+        Centers the window on the parent-window
+        :return:
+        """
+        window = main_window.root
+        x = window.winfo_x() + window.winfo_width()//2 - self.root.winfo_width()//2
+        y = window.winfo_y() + window.winfo_height()//2 - self.root.winfo_height()//2
+        self.update(position=(x, y))
+        return self
+
+    def _keyed_event_callback(self, key: Any, _):
+        pass
+        #main_window._key_event_callback_function(key, _)

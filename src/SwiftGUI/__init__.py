@@ -73,7 +73,7 @@ Slider = Scale
 Combo = Combobox
 
 
-from .Windows import Window, BaseKeyHandler, ttk_style, main_window, SubLayout, all_decorator_key_functions
+from .Windows import Window, BaseKeyHandler, ttk_style, main_window, SubLayout, all_decorator_key_functions, SubWindow
 
 from .Combined_Elements.BaseCombinedElement import BaseCombinedElement
 from .Combined_Elements.Form import Form

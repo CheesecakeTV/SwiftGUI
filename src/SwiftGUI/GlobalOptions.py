@@ -345,6 +345,9 @@ class Window(Common_Background):
     padx: int = 5
     pady: int = 5
 
+class SubWindow(Window):
+    ...
+
 class Listbox(Common,Common_Textual,Common_Field_Background):
     no_selection_returns: Any = ""  # Returned when nothing is selected
     activestyle:Literals.activestyle = "none"

@@ -1,32 +1,58 @@
+import threading
+import time
+
 import SwiftGUI as sg
+import tkinter as tk
 
-_max_characters = 50    # How many characters should be displayed maximum
-_TextField_height = 5   # How many rows are shown in the text-field
-_Listbox_height = 5     # How many rows the listbox has
-_max_history = 30    # How many previous clipboards are saved
+sg.Themes.FourColors.SlateBlue()  # Use a different theme, as you please
 
-sg.Themes.FourColors.Emerald()  # Use a different theme, as you please
-
-layout = [
+first_layout = [
     [
-        cb := sg.Combobox(
-            ["Hallo", "Welt"],
-            key= "CB",
-            default_event= True,
-        )
+        sg.T("Still works", padding=150),
+    ],[
+        sg.Button("Buuuutton", key="Button")
     ]
 ]
 
+# w = sg.Window(first_layout)
+# for e,v in w:
+#     print("First", e,v)
 
-w = sg.Window(layout, title="Clipboard history", alignment="left")
-sg.clipboard_observer(w, key="ClipboardChanged", throw_initial_value=True)  # Throws an event every time the clipboard changes
+layout = [
+    [
+        sg.T("Test!", anchor="nw", relief="sunken", width=50, padding=15),
+        sg.Button("Event", key="TestEvent")
+    ]
+]
 
-print(cb.choices)
+toplevel_layout = [
+    [
+        sg.T("Toplevel!"),
+        sg.ImageButton("Star.png", key= "Star")
+    ]
+]
 
-previous_clp = None # Clipboard previous loop
+def tl_eventloop(e, v):
+    print("TL:",e,v)
+
+#w = sg.Window(layout, padx=50, pady=50)
+
+w = sg.Window(toplevel_layout, padx= 50, pady= 50, icon= "Star.png", event_loop_function=tl_eventloop)
+sg.SubWindow(layout)
+
+# tl = tk.Toplevel(w.root, padx=50)
+# tl.title("Toplevel")
+#
+# fake_elem = sg.BaseElement()
+# fake_elem._fake_tk_element = tl
+# toplevel_layout._init(fake_elem, w)
+
+def blinker():
+    while True:
+        time.sleep(1)
+        w.throw_event(key= "Test", value="Hallo")
+
+threading.Thread(target=blinker, daemon=True).start()
 
 for e,v in w:
     print(e,v)
-
-
-
