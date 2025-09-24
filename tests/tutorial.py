@@ -5,6 +5,8 @@ import SwiftGUI as sg
 import tkinter as tk
 
 sg.Themes.FourColors.SlateBlue()  # Use a different theme, as you please
+#sg.Examples.preview_all_elements()
+#sg.Examples.preview_all_themes()
 
 first_layout = [
     [
@@ -42,8 +44,6 @@ sl = sg.SubWindow(toplevel_layout, padx= 50, pady= 50, icon= "fingerprint.png", 
 sl2 = sg.SubWindow(first_layout, padx= 50, pady= 50, icon= "Star.png", event_loop_function=tl_eventloop)
 #sl.root.grab_set()
 
-print(sg.Popups.popup_yes_no("Hallo?"))
-
 def blinker():
     while True:
         time.sleep(1)
@@ -52,9 +52,5 @@ def blinker():
 #threading.Thread(target=blinker, daemon=True).start()
 
 for e,v in w:
-    #print(e,v)
-
-    sg.Popups.popup_text("Hallo Welt")
-
-    w.close()
+    print(e,v)
 

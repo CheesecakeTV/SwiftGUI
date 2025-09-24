@@ -78,8 +78,6 @@ def popup_button_menu(
     :param elements:
     :return: Selected element, or None if closed
     """
-    raise NotImplementedError("This popup is under maintnance...")
-
     length = max(map(len,elements))
 
     layout = [
@@ -91,7 +89,7 @@ def popup_button_menu(
         ]
     ]
 
-    e,v = sg.Window(layout).loop_close()
+    e,v = sg.SubWindow(layout).loop_close()
     return e
 
 def popup_get_form() -> dict:
@@ -109,8 +107,6 @@ def popup_get_text(
     :param text:
     :return:
     """
-    raise NotImplementedError("This popup is under maintnance...")
-
     layout = [
         [
             sg.T(text,anchor="center") if text else sg.HSep()

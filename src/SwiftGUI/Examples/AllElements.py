@@ -237,9 +237,8 @@ def preview_all_elements(include_images: bool = True):
         ]
     ]
 
-    w = sg.Window(layout, title="Preview of all currently available elements")
+    w = sg.SubWindow(layout, title="Preview of all currently available elements")
     w["List"].index = 2
 
-    for e,v in w:
-        ...
+    #w.block_others_until_close()
 

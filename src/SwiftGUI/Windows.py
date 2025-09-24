@@ -899,7 +899,6 @@ class Window(BaseKeyHandler):
 
         return self
 
-
 class SubWindow(Window):
     """
     Window-Object for additional windows
@@ -907,13 +906,13 @@ class SubWindow(Window):
 
     defaults = GlobalOptions.SubWindow
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, layout, *args, **kwargs):
         if main_window is None:
             # If there is no main window, this one should be it instead
             if "key" in kwargs:
                 del kwargs["key"]
 
-            return  Window(*args, **kwargs)
+            return  Window(layout, *args, **kwargs)
 
         return super().__new__(cls)
 
@@ -1005,12 +1004,23 @@ class SubWindow(Window):
             main_window.register_element(self)
             main_window._value_dict.set_extra_value(key, self.value)
 
-    # def _update_special_key(self, key:str, new_val:Any) -> bool|None:
-    #     match key:
-    #         case _:
-    #             return super()._update_special_key(key, new_val)
-    #
-    #     return True
+    def loop_close(self) -> tuple[Any,dict[Any:Any]]:
+        """
+        Loop until the first keyed event.
+        Then close the window and return e,v like with a normal window.
+        :return:
+        """
+        e = None
+        def _event_callback(key, _):
+            nonlocal e
+            e = key
+
+        self.set_custom_event_loop(_event_callback)
+        v: ValueDict = self.value
+        v.refresh_all() # Save the values so they can be read later
+
+        self.close()
+        return e,v
 
     def close(self):
         """
@@ -1030,7 +1040,7 @@ class SubWindow(Window):
 
         :return: Triggering event key; all values as _dict
         """
-        raise NotImplementedError("SubWindows can't be looped. You need to define a loop-function")
+        raise NotImplementedError("SubWindows can't be looped. You need to define a loop-function instead.")
 
     def throw_event(self, key: Any = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
         """
