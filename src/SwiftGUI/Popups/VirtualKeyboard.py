@@ -9,7 +9,6 @@ class _popup_virtual_keyboard:
     I'll clean it up later, pinky promise!
     """
 
-
     rows_default = [
         "^1234567890ß´",
         "qwertzuiopü+",
@@ -38,8 +37,12 @@ class _popup_virtual_keyboard:
     ):
         # background_normal = sg.GlobalOptions.Button.single("background_color", None, "white")
         # background_active = sg.GlobalOptions.Button.single("background_color_active", None, Color.light_blue)
+        repeat_kwargs = {
+            "repeatdelay": 300,
+            "repeatinterval": 100,
+        }
 
-        layout = list()
+        layout:list = list()
         for n, row in enumerate(self.rows_default):
             layout.append([])
             for m, char in enumerate(row):
@@ -48,6 +51,7 @@ class _popup_virtual_keyboard:
                         #char,
                         key = (n, m),
                         width= 2,
+                        **repeat_kwargs,
                     )
                 )
 
@@ -59,7 +63,8 @@ class _popup_virtual_keyboard:
         layout[0].append(
             sg.Button(
                 "◄──",
-                key= "Backspace"
+                key= "Backspace",
+                **repeat_kwargs,
             )
         )
         layout[1] = [_get_button("Tab")] + layout[1]
@@ -95,7 +100,12 @@ class _popup_virtual_keyboard:
                 key= "Special",
                 default_event=True,
             ),
-            sg.Button("Spacebar", key= "Spacebar", expand=True),
+            sg.Button(
+                "Spacebar",
+                key= "Spacebar",
+                expand=True,
+                **repeat_kwargs,
+            ),
             sg.Button(
                 "Cancel",
                 key="Cancel",
@@ -109,7 +119,7 @@ class _popup_virtual_keyboard:
                 #expand= True,
                 scrollbar= True,
                 height= 5,
-                width= 56,
+                width= 40,
             )
         else:
             elem = sg.Input(
@@ -123,13 +133,9 @@ class _popup_virtual_keyboard:
 
         self.input = elem
 
-        w = sg.Window(layout, title="Keyboard", alignment="left", keep_on_top=True)
-
-        self.use_charmap(self.rows_default)
-
         _return = text
-
-        for e,v in w:
+        def loop(e,v):
+            nonlocal _return
             # print(e,v)
 
             if isinstance(e, tuple):
@@ -180,6 +186,11 @@ class _popup_virtual_keyboard:
                 case "Cancel":
                     w.close()
 
+        w = sg.SubWindow(layout, title="Keyboard", alignment="left", keep_on_top=True, event_loop_function= loop)
+
+        self.use_charmap(self.rows_default)
+
+        w.block_others_until_close()
         self.rreturn = _return
 
     def use_charmap(self, charmap: list[str]):
@@ -195,7 +206,6 @@ def popup_virtual_keyboard(
         text: str = "",
         multiline: bool = False,
 ):
-    raise NotImplementedError("This popup is under maintnance...")
     return _popup_virtual_keyboard(
         text= text,
         multiline= multiline,

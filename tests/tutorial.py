@@ -4,9 +4,10 @@ import time
 import SwiftGUI as sg
 import tkinter as tk
 
-sg.Themes.FourColors.SlateBlue()  # Use a different theme, as you please
+sg.Themes.FourColors.DarkGold()  # Use a different theme, as you please
 #sg.Examples.preview_all_elements()
 #sg.Examples.preview_all_themes()
+
 
 first_layout = [
     [
@@ -50,6 +51,7 @@ def blinker():
         w.throw_event(key= "Test", value="Hallo")
 
 #threading.Thread(target=blinker, daemon=True).start()
+print(sg.Popups.VirtualKeyboard.popup_virtual_keyboard())
 
 for e,v in w:
     print(e,v)
