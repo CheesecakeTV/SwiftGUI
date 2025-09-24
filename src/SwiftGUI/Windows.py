@@ -718,11 +718,16 @@ class Window(BaseKeyHandler):
         Kill the window
         :return:
         """
-        if self.has_flag(ElementFlag.IS_CREATED):
+        try:
             self.root.destroy()
+        except tk.TclError:
+            pass
 
-            global main_window
-            main_window = None  # un-register this window as the main window
+        global main_window
+        main_window = None  # un-register this window as the main window
+
+        self.exists = False
+        self.remove_flags(ElementFlag.IS_CREATED)
 
     def loop(self) -> tuple[Any, ValueDict]:
         """
@@ -741,12 +746,10 @@ class Window(BaseKeyHandler):
                 assert self.root.winfo_exists()
             except (AssertionError,tk.TclError):
                 self.exists = False # This looks redundant, but it's easier to use self.exists from outside. So leave it!
-                self.remove_flags(ElementFlag.IS_CREATED)
 
-                global main_window
-                main_window = None  # Un-register this window
+                self.close()
 
-                return None,self._value_dict
+                return None, self._value_dict
 
             self._value_dict.invalidate_all_values()
 
@@ -865,6 +868,37 @@ class Window(BaseKeyHandler):
             widget.bind('<ButtonPress-1>', self._SaveLastClickPos)
             widget.bind('<ButtonRelease-1>', self._DelLastClickPos)
             widget.bind('<B1-Motion>', self._Dragging)
+
+    def block_others(self) -> Self:
+        """
+        Disable all (except self-made) events of all other windows
+        :return:
+        """
+        self.root.grab_set()
+        return self
+
+    def unblock_others(self) -> Self:
+        """
+        Resume execution of the other windows
+        :return:
+        """
+        self.root.grab_release()
+        return self
+
+    def block_others_until_close(self) -> Self:
+        """
+        Disable all (except self-made) events of all other windows,
+        until the sub-window was closed
+        :return:
+        """
+
+        self.block_others()
+        self.root.wait_window()
+
+        self.close()
+
+        return self
+
 
 class SubWindow(Window):
     """
@@ -1044,3 +1078,33 @@ class SubWindow(Window):
     def _keyed_event_callback(self, key: Any, _):
         pass
         #main_window._key_event_callback_function(key, _)
+
+    def block_others(self) -> Self:
+        """
+        Disable all (except self-made) events of all other windows
+        :return:
+        """
+        self.root.grab_set()
+        return self
+
+    def unblock_others(self) -> Self:
+        """
+        Resume execution of the other windows
+        :return:
+        """
+        self.root.grab_release()
+        return self
+
+    def block_others_until_close(self) -> Self:
+        """
+        Disable all (except self-made) events of all other windows,
+        until the sub-window was closed
+        :return:
+        """
+
+        self.block_others()
+        self.root.wait_window()
+        self.unblock_others()
+
+        return self
+

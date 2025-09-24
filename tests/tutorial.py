@@ -35,24 +35,26 @@ toplevel_layout = [
 def tl_eventloop(e, v):
     print("TL:",e,v)
 
-#w = sg.Window(layout, padx=50, pady=50)
 
-w = sg.Window(toplevel_layout, padx= 50, pady= 50, icon= "Star.png", event_loop_function=tl_eventloop)
-sg.SubWindow(layout)
+w = sg.Window(layout, padx=50, pady=50)
 
-# tl = tk.Toplevel(w.root, padx=50)
-# tl.title("Toplevel")
-#
-# fake_elem = sg.BaseElement()
-# fake_elem._fake_tk_element = tl
-# toplevel_layout._init(fake_elem, w)
+sl = sg.SubWindow(toplevel_layout, padx= 50, pady= 50, icon= "fingerprint.png", event_loop_function=tl_eventloop, grab_anywhere=True)
+sl2 = sg.SubWindow(first_layout, padx= 50, pady= 50, icon= "Star.png", event_loop_function=tl_eventloop)
+#sl.root.grab_set()
+
+print(sg.Popups.popup_yes_no("Hallo?"))
 
 def blinker():
     while True:
         time.sleep(1)
         w.throw_event(key= "Test", value="Hallo")
 
-threading.Thread(target=blinker, daemon=True).start()
+#threading.Thread(target=blinker, daemon=True).start()
 
 for e,v in w:
-    print(e,v)
+    #print(e,v)
+
+    sg.Popups.popup_text("Hallo Welt")
+
+    w.close()
+

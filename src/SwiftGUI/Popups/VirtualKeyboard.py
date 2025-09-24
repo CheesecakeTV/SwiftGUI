@@ -1,7 +1,7 @@
 import SwiftGUI as sg
 from SwiftGUI import Color
 
-sg.GlobalOptions.Button.fontsize = 12
+#sg.GlobalOptions.Button.fontsize = 12
 
 class _popup_virtual_keyboard:
     """
@@ -195,6 +195,7 @@ def popup_virtual_keyboard(
         text: str = "",
         multiline: bool = False,
 ):
+    raise NotImplementedError("This popup is under maintnance...")
     return _popup_virtual_keyboard(
         text= text,
         multiline= multiline,
