@@ -208,6 +208,17 @@ def preview_all_elements(include_images: bool = True):
                 ],
                 default_select_first= True,
                 horizontal_orientation= True,
+                key_function= lambda val:console.print(val),
+            )
+        ],[
+            sg.HSep()
+        ], [
+            sg.T("sg.Console:")
+        ], [
+            console := sg.Console(
+
+            ).update_after_window_creation(
+                width= 40,
             )
         ]
     ], fake_key= "Combined elements")

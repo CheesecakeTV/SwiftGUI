@@ -1,8 +1,8 @@
 import SwiftGUI as sg
 
-sg.Themes.FourColors.Froggy()
-#sg.Examples.preview_all_elements()
-sg.Examples.preview_all_themes()
+sg.Themes.FourColors.DarkTeal()
+sg.Examples.preview_all_elements()
+#sg.Examples.preview_all_themes()
 exit()
 
 main_layout = [
