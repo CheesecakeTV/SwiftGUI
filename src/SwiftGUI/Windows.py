@@ -277,7 +277,7 @@ class BaseKeyHandler(BaseElement):
             function_kwargs = dict()
 
         # Throw the event on the main window so it is thread-safe
-        main_window.throw_event(function= self._receive_event, function_kwargs={
+        _main_window.throw_event(function= self._receive_event, function_kwargs={
             "key": key,
             "callback": function,
             "callback_args": function_args,
@@ -447,8 +447,17 @@ class SubLayout(BaseKeyHandler):
 
         return super()._update_special_key(key, new_val)
 
+all_windows: list["Window"] = list()
+def close_all_windows():
+    for w in all_windows:
+        w.close()
+
 ttk_style: ttk.Style | None = None
-main_window: Union["Window", None] = None
+_main_window: Union["Window", None] = None
+def main_window() -> Union["Window", None]:
+    """Always returns the active sg.Window, or None"""
+    return _main_window
+
 all_decorator_key_functions = dict() # All decorator-functions collected, key: function
 class Window(BaseKeyHandler):
     """
@@ -509,13 +518,15 @@ class Window(BaseKeyHandler):
         :param grab_anywhere: True, if the window can be "held and dragged" anywhere (exclusing certain elements)
         """
         global ttk_style
-        global main_window
+        global _main_window
+
+        all_windows.append(self)
 
         self._make_taskbar_icon_changeable(title)
 
-        if main_window is None or not main_window.exists: # Some users might use sg.Window for popups, don't overwrite the global in that case
+        if _main_window is None or not _main_window.exists: # Some users might use sg.Window for popups, don't overwrite the global in that case
             ttk_style = None
-            main_window = self
+            _main_window = self
         else:
             raise RuntimeError("\nYou tried to create an sg.Window while another sg.Window still exists.\n"
                                "Don't do that.\n"
@@ -723,8 +734,9 @@ class Window(BaseKeyHandler):
         except tk.TclError:
             pass
 
-        global main_window
-        main_window = None  # un-register this window as the main window
+        global _main_window
+        if _main_window is self: # Maybe close was called again?
+            _main_window = None  # un-register this window as the main window
 
         self.exists = False
         self.remove_flags(ElementFlag.IS_CREATED)
@@ -812,7 +824,7 @@ class Window(BaseKeyHandler):
 
         self._icon: Any | str = ImageTk.PhotoImage(self._icon)  # Typehint is just so the typechecker doesn't get annoying
         try:
-            self.root.iconphoto(main_window is self, self._icon)
+            self.root.iconphoto(_main_window is self, self._icon)
         except tk.TclError: #
             print("Warning: Changing the icon of this window wasn't possible.")
             print("This is probably because it is not the main window.")
@@ -907,7 +919,7 @@ class SubWindow(Window):
     defaults = GlobalOptions.SubWindow
 
     def __new__(cls, layout, *args, **kwargs):
-        if main_window is None:
+        if _main_window is None:
             # If there is no main window, this one should be it instead
             if "key" in kwargs:
                 del kwargs["key"]
@@ -958,22 +970,22 @@ class SubWindow(Window):
         :param grab_anywhere: True, if the window can be "held and dragged" anywhere (exclusing certain elements)
         """
         global ttk_style
-        global main_window
+        global _main_window
 
         #self._make_taskbar_icon_changeable(title)
 
         if event_loop_function is None:
-            event_loop_function = main_window._key_event_callback_function
+            event_loop_function = _main_window._key_event_callback_function
 
         super(Window, self).__init__(event_loop_function=event_loop_function)
         self._grab_anywhere = self.defaults.single("grab_anywhere", grab_anywhere)
 
         self._sg_widget:Frame = Frame(layout,alignment= self.defaults.single("alignment", alignment), expand_y=True, expand=True)
         self.root: tk.Toplevel = tk.Toplevel()
-        self.ttk_style: ttk.Style = main_window.ttk_style
+        self.ttk_style: ttk.Style = _main_window.ttk_style
 
         if icon is None:
-            icon = main_window.get_option("icon")
+            icon = _main_window.get_option("icon")
 
         self.window = self
         self._update_initial(
@@ -1004,8 +1016,8 @@ class SubWindow(Window):
 
         self.key = key
         if key is not None:
-            main_window.register_element(self)
-            main_window._value_dict.set_extra_value(key, self.value)
+            _main_window.register_element(self)
+            _main_window._value_dict.set_extra_value(key, self.value)
 
     def loop_close(self, block_others: bool = True) -> tuple[Any,dict[Any:Any]]:
         """
@@ -1042,9 +1054,9 @@ class SubWindow(Window):
         if self.has_flag(ElementFlag.IS_CREATED):
             self.root.destroy()
             self.remove_flags(ElementFlag.IS_CREATED)
-            main_window.unregister_element(self)
+            _main_window.unregister_element(self)
 
-    def loop(self) -> tuple[Any, ValueDict]:
+    def loop(self):
         """
         Main loop
 
@@ -1052,6 +1064,9 @@ class SubWindow(Window):
 
         :return: Triggering event key; all values as _dict
         """
+        self.root.wait_window()
+
+    def __iter__(self):
         raise NotImplementedError("SubWindows can't be looped. You need to define a loop-function instead.")
 
     def throw_event(self, key: Any = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
@@ -1074,7 +1089,7 @@ class SubWindow(Window):
         if function_kwargs is None and function is not None:
             function_kwargs = dict()
 
-        main_window.throw_event(function= self._receive_event, function_kwargs={
+        _main_window.throw_event(function= self._receive_event, function_kwargs={
             "key": key,
             "callback": function,
             "callback_args": function_args,
@@ -1091,7 +1106,7 @@ class SubWindow(Window):
         Centers the window on the parent-window
         :return:
         """
-        window = main_window.root
+        window = _main_window.root
         x = window.winfo_x() + window.winfo_width()//2 - self.root.winfo_width()//2
         y = window.winfo_y() + window.winfo_height()//2 - self.root.winfo_height()//2
         self.update(position=(x, y))
