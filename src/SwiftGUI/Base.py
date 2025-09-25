@@ -246,7 +246,7 @@ class BaseElement:
 
         kwargs = self.defaults.apply(kwargs)
 
-        self._update_options = kwargs.copy()
+        self._update_options.update(kwargs)
 
         kwargs = dict(filter(lambda a: not self._update_special_key(*a), kwargs.items()))
         self._update_default_keys(kwargs)
@@ -264,8 +264,6 @@ class BaseElement:
         :return:
         """
         kwargs = remove_None_vals(kwargs)
-
-        self._update_options.update(kwargs)
 
         self._update_initial(**kwargs)
 

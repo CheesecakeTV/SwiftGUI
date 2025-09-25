@@ -6,10 +6,12 @@ import SwiftGUI as sg
 # New popups need to be "registered" at the end of the file!
 
 def popup_text(
-        text:str,
+        text: str,
+        block: bool = True,
 ):
     """
     Simple text-popup
+    :param block: True, if the main window should be suspended/blocked
     :param text:
     :return:
     """
@@ -19,31 +21,52 @@ def popup_text(
         ]
     ]
 
-    sg.Window(layout).loop_close()
+    w = sg.SubWindow(layout, padx= 30, pady= 30, keep_on_top=True)
+
+    if block:
+        w.block_others_until_close()
 
 def popup_yes_no(
         text:str,
-) -> bool:
+        /,
+        title: str = "",
+) -> bool | None:
     """
     Simple yes-or-no-question.
 
     If the user selects "Yes", True will be returned.
+    If the user selects nothing, None is returned.
     Otherwise False.
 
+    :param title: Name of the window
     :param text:
     :return:
     """
+    answer = None
+    def set_answer(a):
+        nonlocal answer
+        answer = a
+        w.close()
+
     layout = [
         [
-            sg.T(text,anchor="center")
+            sg.T(text,anchor="center", padding=(0,0,0,10))
         ],[
-            sg.Button("Yes",key=True),
-            sg.Button("No",key=False),
+            sg.Button("Yes", key_function=lambda :set_answer(True), width=3),
+            sg.Button("No", key_function=lambda :set_answer(False), width=3)
         ]
     ]
 
-    e,v = sg.Window(layout).loop_close()
-    return bool(e)
+    w = sg.SubWindow(
+        layout,
+        keep_on_top= True,
+        padx= 50 if len(text) < 50 else 0,
+        pady= 5,
+        title= title,
+    )
+
+    w.block_others_until_close()
+    return answer
 
 def popup_button_menu(
         elements:Iterable[str],
@@ -66,7 +89,7 @@ def popup_button_menu(
         ]
     ]
 
-    e,v = sg.Window(layout).loop_close()
+    e,v = sg.SubWindow(layout).loop_close()
     return e
 
 def popup_get_form() -> dict:

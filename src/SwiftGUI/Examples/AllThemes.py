@@ -86,10 +86,14 @@ def preview_all_themes(max_rows: int = 4, max_cols: int = 5) -> None:
         ]
     ]
 
-    w = sg.Window(layout, title="Preview of all elements", alignment="left")
-
-    for e,v in w:
+    def loop(e, v):
         sg.GlobalOptions.reset_all_options()
         sg.Themes.all_themes[e]()
-        sg.Examples.preview_all_elements(include_images= False)
+        sg.Examples.preview_all_elements()
+
+    w = sg.SubWindow(layout, title="Preview of all Themes", alignment="left", event_loop_function=loop)
+    w.block_others_until_close()    # Equivalent to the main loop
+
+
+
 
