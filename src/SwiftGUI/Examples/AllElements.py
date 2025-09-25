@@ -241,4 +241,5 @@ def preview_all_elements(include_images: bool = True):
     w["List"].index = 2
 
     #w.block_others_until_close()
+    w.loop()
 
