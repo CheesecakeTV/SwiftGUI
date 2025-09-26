@@ -451,6 +451,7 @@ all_windows: list["Window"] = list()
 def close_all_windows():
     for w in all_windows:
         w.close()
+    all_windows.clear()
 
 ttk_style: ttk.Style | None = None
 _main_window: Union["Window", None] = None

@@ -219,6 +219,7 @@ def preview_all_elements(include_images: bool = True):
 
             ).update_after_window_creation(
                 width= 40,
+                height= 8
             )
         ]
     ], fake_key= "Combined elements")
