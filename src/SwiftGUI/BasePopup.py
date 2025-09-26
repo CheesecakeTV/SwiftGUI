@@ -22,6 +22,7 @@ class BasePopup:
             icon: str | PathLike | Image.Image | io.BytesIO = None,  # .ico file
             background_color: Color | str = None,
             grab_anywhere: bool = None,
+            **kwargs,
     ):
 
         self._return = None
@@ -37,6 +38,7 @@ class BasePopup:
             icon = icon,
             background_color = background_color,
             grab_anywhere = grab_anywhere,
+            **kwargs,
         )
 
     def _event_loop(self, e: Hashable, v: sg.ValueDict):

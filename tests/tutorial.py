@@ -3,6 +3,8 @@ from typing import Hashable
 import SwiftGUI as sg
 
 sg.Themes.FourColors.DarkTeal()
+sg.Popups.ListPicker(range(15))
+exit()
 
 class Example(sg.Popups.BasePopup, str):
 

@@ -83,6 +83,7 @@ from .Combined_Elements.Console import Console
 from . import KeyFunctions
 
 from . import Themes
+from .BasePopup import BasePopup
 from . import Popups
 from . import Examples
 

@@ -953,7 +953,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
             assert by_column in self._headings, "You tried to filter a Table by a column that doesn't exist. Recheck your arguments, column-names are case-sensitive."
             by_column = self._headings.index(by_column)
 
-        if not self._elements:
+        if not self._elements and not self._elements_before_filter:
             return self
 
         if by_column is None:
