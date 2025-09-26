@@ -56,7 +56,7 @@ class Frame(BaseWidgetContainer):
             # Add here
             tk_kwargs: dict[str:Any]=None,
     ):
-        super().__init__(key=key, tk_kwargs=tk_kwargs, expand_y=expand_y)
+        super().__init__(key=key, tk_kwargs=tk_kwargs, expand=expand, expand_y=expand_y)
 
         self._contains = layout
         self._linked_background_elements = list()
@@ -74,7 +74,7 @@ class Frame(BaseWidgetContainer):
                              highlightcolor=highlightcolor, highlightthickness=highlightthickness, padx=padx, pady=pady,
                              relief=relief, takefocus=takefocus, **tk_kwargs)
 
-        self._insert_kwargs["expand"] = self.defaults.single("expand",expand)
+        #self._insert_kwargs["expand"] = self.defaults.single("expand",expand)
 
         self._side = self.defaults.single("alignment", alignment)
         self._insert_kwargs_rows.update({

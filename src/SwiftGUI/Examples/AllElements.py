@@ -208,6 +208,18 @@ def preview_all_elements(include_images: bool = True):
                 ],
                 default_select_first= True,
                 horizontal_orientation= True,
+                key_function= lambda val:console.print(val),
+            )
+        ],[
+            sg.HSep()
+        ], [
+            sg.T("sg.Console:")
+        ], [
+            console := sg.Console(
+
+            ).update_after_window_creation(
+                width= 40,
+                height= 8
             )
         ]
     ], fake_key= "Combined elements")
@@ -241,4 +253,5 @@ def preview_all_elements(include_images: bool = True):
     w["List"].index = 2
 
     #w.block_others_until_close()
+    w.loop()
 

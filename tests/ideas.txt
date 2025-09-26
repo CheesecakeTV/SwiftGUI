@@ -12,13 +12,9 @@ Tool to convert png/jpg into ico
 Hide headings of sg.Table so it can be used as a listbox
 sg.Table could have widgets inserted into rows
 
-Throw out the value-dict, because it's not needed
-
 "Key-collection" with local instead of global keys
 
 Additional event-loops for combined elements
-
-Coloring of scrollbars
 
 Bug: LabelFrames without label still have a widget with its own background-color attached to them.
 

@@ -24,10 +24,10 @@ class _popup_virtual_keyboard:
     ]
 
     rows_special_chars = [
-        " NOT         ",
-        " IMPLEMENTED",
-        " YET        ",
-        "           ",
+        r"•   Ω₿⌂{[]}\¿",
+        r"@∩€∆∑√∞≈←→ ~",
+        r"¼½¾ »«£₩¥☺█░",
+        r"|♠♣♥♦♪♫▲►▼◄"
     ]
 
     def __init__(
