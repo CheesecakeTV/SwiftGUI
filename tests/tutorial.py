@@ -1,60 +1,106 @@
-from typing import Hashable
-
 import SwiftGUI as sg
+from pathlib import Path
+import os
 
-sg.Themes.FourColors.DarkTeal()
-sg.Popups.ListPicker(range(15))
-exit()
+_foldername = "notes"  # Where the note is saved
+_foldername = Path(_foldername)
 
-class Example(sg.Popups.BasePopup, str):
+_foldername.mkdir(exist_ok= True)
 
-    def __init__(self, question: str, fontsize: int = 12):
-        layout = [
-            [
-                sg.T(question, fontsize=fontsize),
-            ],[
-                sg.Button("Yes", key="Yes", fontsize=fontsize),
-                sg.Button("No", key="No", fontsize=fontsize)
-            ]
-        ]
+all_filenames = list(os.listdir(_foldername))
 
-        super().__init__(layout, default= "")
+if not all_filenames:
+    (_foldername / "note.txt").write_text("New note")
+    all_filenames.append("note.txt")
 
-    def _event_loop(self, e: Hashable, v: sg.ValueDict):
-        self.done(e)
+sg.Themes.FourColors.IvoryTerracotta()  # Use a different theme, as you please
 
-answer: str = Example("How are you today?")
-print("Answer:",answer)
+note_text = ""
+opened_file = all_filenames[0]
 
-exit()
-main_layout = [
+def load_file(name:str):
+    global note_text, opened_file
+
+    note_text = (_foldername / name).read_text()
+    my_textfield.value = note_text
+    my_combo.value = name
+    opened_file = name
+
+def save_file():
+    (_foldername / opened_file).write_text(note_text)
+
+def new_file(filename: str | None):
+    if not filename:
+        return
+
+    filename += ".txt"
+    if filename in all_filenames:
+        save_file()
+        load_file(filename)
+        return
+
+    save_file()
+    (_foldername / filename).write_text("")
+    all_filenames.append(filename)
+    all_filenames.sort()
+    my_combo.choices = all_filenames
+    load_file(filename)
+
+def del_file(filename: str | None):
+    if not filename in all_filenames:   # Already non-existant
+        return
+
+    all_filenames.remove(filename)
+    os.remove(_foldername / filename)
+
+    if not all_filenames:
+        all_filenames.append("note.txt")
+        (_foldername / all_filenames[0]).write_text("")
+
+    my_combo.choices = all_filenames
+    load_file(all_filenames[0])
+
+layout = [
     [
+        my_combo := sg.Combobox(
+            all_filenames,
+            key= "File",
+            expand= True,
+            default_event= True,
+        ),
         sg.Button(
-            "Some Button",
+            "New",
+            key_function= lambda :new_file(sg.Popups.popup_get_text("Filename (without .txt):"))
+        ),
+        sg.Button(
+            "Delete",
+            key="Delete"
+        )
+    ],[
+        my_textfield := sg.TextField(   # Multiline-input-element
+            note_text,
+            key= "TF",
+            default_event= True,    # Text-changes should cause an event
             width= 30,
-            height= 5,
-            key= "Main Button",
+            height= 10,
         )
     ]
 ]
 
-another_layout = [
-    [
-        sg.Input(key= "Input"),
-        sg.Button("Button 1", key="B1"),
-        sg.Button("Button 2", key="B2"),
-        sg.Button("Button 3", key="B3"),
-    ]
-]
+w = sg.Window(layout, title="Notes", keep_on_top=True)   # Keep the window on top, so it doesn't always hide behind other windows
 
-def sw_loop(e,v):
-    # Some example-loop
-    print("Button-press:", e)
-    print("Input-value:", v["Input"])
-    sw["Input"].value = e
+load_file(all_filenames[0])
 
-w = sg.Window(main_layout)
-sw = sg.SubWindow(another_layout, event_loop_function=sw_loop)
+for e,v in w:
 
-w.loop()
+    if e == "File":
+        save_file()
+        load_file(v[e])
 
+    if e == "TF":
+        note_text = v[e]
+
+    if e == "Delete" and sg.Popups.popup_yes_no(f"Delete {opened_file}?", title="Delete?"):
+        del_file(opened_file)
+
+save_file() # Save after window is closed
