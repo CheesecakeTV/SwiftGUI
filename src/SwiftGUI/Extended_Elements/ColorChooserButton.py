@@ -32,6 +32,7 @@ class ColorChooserButton(Button):
 
             bitmap:Literals.bitmap = None,
             disabled:bool = None,
+
             text_color_disabled: str | Color = None,
             background_color_active: str | Color = None,
             text_color_active: str | Color = None,

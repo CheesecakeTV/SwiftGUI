@@ -180,6 +180,9 @@ class Common_Textual(DEFAULT_OPTIONS_CLASS):
     anchor:Literals.anchor = "w"
     text_color:Color|str = None
 
+class Canvas(Common_Field_Background):
+    ...
+
 class Text(Common, Common_Textual, Common_Background):
     text:str = ""
     takefocus:bool = False

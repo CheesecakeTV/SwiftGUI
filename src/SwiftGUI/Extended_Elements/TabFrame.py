@@ -27,13 +27,13 @@ class TabFrame(Frame):
 
             # Normal sg.Frame-options
             alignment: Literals.alignment = None,
-            expand: bool = False,
-            expand_y: bool = False,
-            background_color: str | Color = None,
+
             apply_parent_background_color: bool = None,
             pass_down_background_color: bool = None,
             borderwidth: int = None,
             cursor: Literals.cursor = None,
+
+            background_color: str | Color = None,
             highlightbackground_color: Color | str = None,
             highlightcolor: Color | str = None,
             highlightthickness: int = None,
@@ -45,23 +45,26 @@ class TabFrame(Frame):
 
             takefocus: bool = None,
 
+            expand: bool = False,
+            expand_y: bool = False,
+
             # Add here
             tk_kwargs: dict[str:Any]=None,
     ):
         """
 
         :param layout:
-        :param text: Text on the tab
-        :param fake_key: Key to be used by the sg.Notebook
-        :param key: Key to be registered into the main window
+        :param text:
+        :param fake_key:
+        :param default_event:
+        :param key:
+        :param key_function:
         :param alignment:
-        :param expand:
-        :param expand_y:
-        :param background_color:
         :param apply_parent_background_color:
         :param pass_down_background_color:
         :param borderwidth:
         :param cursor:
+        :param background_color:
         :param highlightbackground_color:
         :param highlightcolor:
         :param highlightthickness:
@@ -69,6 +72,8 @@ class TabFrame(Frame):
         :param pady:
         :param relief:
         :param takefocus:
+        :param expand:
+        :param expand_y:
         :param tk_kwargs:
         """
 

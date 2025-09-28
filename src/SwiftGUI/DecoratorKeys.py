@@ -23,7 +23,7 @@ def attach_function_to_key(*key: Any) -> Callable:
     :param key: Which key(s) to look out for
     :return:
     """
-    if sg._main_window is not None:
+    if sg.main_window() is not None:
         raise RuntimeError("You can only use decorator-keys BEFORE creating the main window.\nMove your decorated functions up.")
 
     def decorator(fct: Callable) -> Callable:

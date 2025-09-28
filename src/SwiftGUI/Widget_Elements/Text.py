@@ -27,19 +27,15 @@ class Text(BaseWidget):
             key:Any=None,
             width:int=None,
 
-            # Standard-Tkinter options
             cursor:Literals.cursor = None,
             takefocus:bool = None,
 
-            # Special Tkinter-options
-            underline:int = None,
             anchor:Literals.anchor = None,
             justify:Literal["left","right","center"] = None,
+
             background_color:str|Color = None,
-            apply_parent_background_color:bool = None,
             text_color:str|Color = None,
-            relief:Literals.relief = None,
-            padding:Literals.padding = None,
+            apply_parent_background_color:bool = None,
 
             # Mixed options
             fonttype:str = None,
@@ -49,21 +45,39 @@ class Text(BaseWidget):
             font_underline:bool = None,
             font_overstrike:bool = None,
 
+            relief:Literals.relief = None,
+            padding:Literals.padding = None,
+            underline:int = None,
+
             expand: bool = None,
             expand_y: bool = None,
             tk_kwargs:dict[str:Any]=None
     ):
         """
 
-        :param text: Default text to be displayed
-        :param key: Element-Key. Can be used to change the text later
-        :param cursor: Cursor-Type. Changes how the cursor looks when hovering over this element
-        :param takefocus: True, if you want this element to be able to be focused when pressing tab. Most likely False for texts.
-        :param tk_kwargs: Additional kwargs to pass to the ttk-widget
-        :param background_color: Background-Color
+        :param text:
+        :param key:
+        :param width:
+        :param cursor:
+        :param takefocus:
+        :param anchor:
+        :param justify:
+        :param background_color:
+        :param text_color:
+        :param apply_parent_background_color:
+        :param fonttype:
+        :param fontsize:
+        :param font_bold:
+        :param font_italic:
+        :param font_underline:
+        :param font_overstrike:
+        :param relief:
+        :param padding:
+        :param underline:
+        :param expand:
+        :param expand_y:
+        :param tk_kwargs:
         """
-        # Not used:
-        # :param underline: Which character to underline for alt+character selection of this element
 
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
 
