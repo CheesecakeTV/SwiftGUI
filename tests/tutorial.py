@@ -48,6 +48,9 @@ canv_elem.bind_event(sg.Event.ClickLeft, key="Hello")
 w = sg.Window(layout)
 canv:tk.Canvas = my_canv.tk_widget
 
+canv_elem.update_coords(*(canv_elem.get_coords() + ([50, 10], )))
+print(canv_elem.get_boundary())
+
 #canv_elem.delete()
 
 #canv.moveto(1, 50, 50) # Bewegen

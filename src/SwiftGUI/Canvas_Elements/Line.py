@@ -1,8 +1,7 @@
-from typing import Any, Hashable
+from typing import Hashable
 
 import SwiftGUI as sg
 from SwiftGUI import Canvas_Elements
-from SwiftGUI.Compat import Self
 
 
 class Line(Canvas_Elements.BaseCanvasElement):
@@ -64,7 +63,7 @@ class Line(Canvas_Elements.BaseCanvasElement):
     ):
         super().__init__(key=key, tk_kwargs=tk_kwargs)
 
-        points = [x for xs in points for x in xs]   # Flatten the list
+        points = self._flatten(points)
 
         self._update_initial(
             *points,

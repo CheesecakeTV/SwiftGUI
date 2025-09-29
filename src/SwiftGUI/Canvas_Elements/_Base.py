@@ -1,4 +1,4 @@
-from typing import Any, Callable, Hashable
+from typing import Any, Callable, Hashable, Iterable
 
 import SwiftGUI as sg
 from SwiftGUI.Compat import Self
@@ -89,3 +89,46 @@ class BaseCanvasElement(sg.BaseWidget): # Inheritance mainly for the update-rout
         self.canvas.tk_widget.moveto(self.canvas_id, x, y)
         return self
 
+    @staticmethod
+    def _flatten(tuplelist: Iterable[tuple[Any, ...]]) -> list[Any]:
+        """
+        Turn a list of tuples into a flat list
+        :param tuplelist: (x0, y0), (x1, y0), ...
+        :return: [x0, y0, x1, y1, ...]
+        """
+        return [x for xs in tuplelist for x in xs]
+
+    @staticmethod
+    def _unflatten(flatlist: Iterable[Any]) -> tuple[tuple[Any]]:
+        """
+        Opposite of flatten
+        :param flatlist:
+        :return:
+        """
+        return tuple(sg.Compat.batched(flatlist, 2))
+
+    @sg.BaseWidget._run_after_window_creation
+    def update_coords(self, *new_coords: tuple[float, float]) -> Self:
+        """
+        Update the coordinates of this element.
+        What the exact coordinates do is dependent on the actual type of element.
+        :param new_coords: (x0, y0), (x1, y1), ...
+        :return:
+        """
+        self.canvas.tk_widget.coords(self.canvas_id, self._flatten(new_coords))
+        return self
+
+    def get_coords(self) -> tuple[Iterable[float]]:
+        """
+        Return the coordinates of this element.
+        What the exact coordinates represent is dependent on the actual type of element.
+        :return:
+        """
+        return self._unflatten(self.canvas.tk_widget.coords(self.canvas_id))
+
+    def get_boundary(self) -> tuple[Iterable[int]]:
+        """
+        Return the coordinates of a rectangle that just fits around this element
+        :return:
+        """
+        return self._unflatten(self.canvas.tk_widget.bbox(self.canvas_id))
