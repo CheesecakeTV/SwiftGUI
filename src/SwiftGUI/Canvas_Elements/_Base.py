@@ -22,8 +22,15 @@ class BaseCanvasElement(sg.BaseWidget): # Inheritance mainly for the update-rout
         self._is_created = False    # True, if _update_default_keys ran at least once
         self.canvas_id: int | None = None   # This is used to identify the element in the canvas-widget
 
-    def attach_to_canvas(self, my_canvas: sg.Canvas):
+    def attach_to_canvas(self, my_canvas: sg.Canvas) -> Self:
+        """
+        Add this element to a canvas.
+        Same as my_canvas.add_canvas_element(...)
+        :param my_canvas:
+        :return:
+        """
         my_canvas.add_canvas_element(self)
+        return self
 
     @sg.BaseElement._run_after_window_creation
     def _update_initial(self,*args,**kwargs) -> Self:

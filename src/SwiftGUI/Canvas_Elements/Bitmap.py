@@ -2,6 +2,7 @@ from typing import Hashable
 
 import SwiftGUI as sg
 from SwiftGUI import Canvas_Elements
+from SwiftGUI.Compat import Self
 
 
 class Bitmap(Canvas_Elements.BaseCanvasElement):
@@ -62,4 +63,7 @@ class Bitmap(Canvas_Elements.BaseCanvasElement):
             state = state,
         )
 
+    def update_coords(self, x: float, y: float) -> Self:
+        super().update_coords((x, y))
+        return self
 

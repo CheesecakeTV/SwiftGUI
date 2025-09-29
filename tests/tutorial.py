@@ -64,8 +64,16 @@ canv_bitmap = sg.Canvas_Elements.Bitmap(
     (80, 80),
     "info",
     color= "yellow",
+    bitmap_active="question",
 )
 my_canv.add_canvas_element(canv_bitmap)
+
+canv_oval = sg.Canvas_Elements.Oval(
+    (40, 40),
+    (60, 60),
+    width= 3,
+    color = "yellow",
+).attach_to_canvas(my_canv)
 
 #canv_elem.delete()
 

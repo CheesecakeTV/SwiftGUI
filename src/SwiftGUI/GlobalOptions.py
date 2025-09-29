@@ -536,6 +536,9 @@ class Canvas_Arc(Common_Canvas_Element):
 class Canvas_Bitmap(Common_Canvas_Element):
     ...
 
+class Canvas_Oval(Common_Canvas_Element):
+    ...
+
 def reset_all_options():
     """
     Reset everything done to the global options on runtime.
