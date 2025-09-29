@@ -99,7 +99,7 @@ class BaseCanvasElement(sg.BaseWidget): # Inheritance mainly for the update-rout
         return [x for xs in tuplelist for x in xs]
 
     @staticmethod
-    def _unflatten(flatlist: Iterable[Any]) -> tuple[tuple[Any]]:
+    def _unflatten(flatlist: Iterable[Any]) -> tuple[tuple[Any], ...]:
         """
         Opposite of flatten
         :param flatlist:
@@ -118,7 +118,7 @@ class BaseCanvasElement(sg.BaseWidget): # Inheritance mainly for the update-rout
         self.canvas.tk_widget.coords(self.canvas_id, self._flatten(new_coords))
         return self
 
-    def get_coords(self) -> tuple[Iterable[float]]:
+    def get_coords(self) -> tuple[tuple[float], ...]:
         """
         Return the coordinates of this element.
         What the exact coordinates represent is dependent on the actual type of element.
@@ -126,7 +126,7 @@ class BaseCanvasElement(sg.BaseWidget): # Inheritance mainly for the update-rout
         """
         return self._unflatten(self.canvas.tk_widget.coords(self.canvas_id))
 
-    def get_boundary(self) -> tuple[Iterable[int]]:
+    def get_boundary(self) -> tuple[tuple[int], ...]:
         """
         Return the coordinates of a rectangle that just fits around this element
         :return:

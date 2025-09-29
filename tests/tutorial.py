@@ -41,15 +41,24 @@ layout = [
     ]
 ]
 
-canv_elem = sg.Canvas_Elements.Line((10,50), (10, 90), (90,10), key= "Test", color="red", color_active="green", width=3,arrowshape=(5.5, 5.5, 5.5), capstyle="round", joinstyle="miter", arrow="both")
-my_canv.add_canvas_element(canv_elem)
-canv_elem.bind_event(sg.Event.ClickLeft, key="Hello")
+canv_line = sg.Canvas_Elements.Line((10, 50), (10, 90), (90, 10), key="Test", color="red", color_active="green", width=3, arrowshape=(5.5, 5.5, 5.5), capstyle="round", joinstyle="miter", arrow="both")
+my_canv.add_canvas_element(canv_line)
+canv_line.bind_event(sg.Event.ClickLeft, key="Hello")
 
 w = sg.Window(layout)
 canv:tk.Canvas = my_canv.tk_widget
 
-canv_elem.update_coords(*(canv_elem.get_coords() + ([50, 10], )))
-print(canv_elem.get_boundary())
+canv_line.update_coords(*(canv_line.get_coords() + ([50, 10],)))
+
+canv_arc = sg.Canvas_Elements.Arc(
+    (20, 20),
+    (50, 50),
+    start_angle= 45,
+    extent_angle= 135,
+    infill_color="red",
+    width= 3,
+)
+my_canv.add_canvas_element(canv_arc)
 
 #canv_elem.delete()
 

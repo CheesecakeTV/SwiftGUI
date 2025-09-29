@@ -530,6 +530,9 @@ class Common_Canvas_Element(DEFAULT_OPTIONS_CLASS):
 class Canvas_Line(Common_Canvas_Element):
     ...
 
+class Canvas_Arc(Common_Canvas_Element):
+    ...
+
 def reset_all_options():
     """
     Reset everything done to the global options on runtime.
