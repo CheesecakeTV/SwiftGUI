@@ -91,7 +91,13 @@ canv_rectangle = sg.Canvas_Elements.Rectangle(
     width= 3
 ).attach_to_canvas(my_canv)
 
-
+canv_text = sg.Canvas_Elements.Text(
+    (10, 90),
+    "Hallo Welt",
+    color = "beige",
+    font_bold= True,
+    fontsize= 14,
+).attach_to_canvas(my_canv)
 
 for e,v in w:
     print(e, v)

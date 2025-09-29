@@ -545,6 +545,9 @@ class Canvas_Polygon(Common_Canvas_Element):
 class Canvas_Rectangle(Common_Canvas_Element):
     ...
 
+class Canvas_Text(Common_Canvas_Element, Common_Textual):
+    ...
+
 def reset_all_options():
     """
     Reset everything done to the global options on runtime.
