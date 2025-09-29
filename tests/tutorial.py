@@ -85,7 +85,11 @@ canv_polygon = sg.Canvas_Elements.Polygon(
     width= 3,
 ).attach_to_canvas(my_canv)
 
-
+canv_rectangle = sg.Canvas_Elements.Rectangle(
+    *canv_line.get_boundary(),
+    color= "lightblue",
+    width= 3
+).attach_to_canvas(my_canv)
 
 
 

@@ -133,7 +133,7 @@ class BaseCanvasElement(sg.BaseWidget): # Inheritance mainly for the update-rout
         """
         return self._unflatten(self.canvas.tk_widget.coords(self.canvas_id))
 
-    def get_boundary(self) -> tuple[tuple[int], ...]:
+    def get_boundary(self) -> tuple[tuple[int], ...] | tuple[tuple[int], tuple[int]]:
         """
         Return the coordinates of a rectangle that just fits around this element
         :return:

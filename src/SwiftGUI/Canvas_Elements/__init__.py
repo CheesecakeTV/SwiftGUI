@@ -5,3 +5,4 @@ from .Arc import Arc
 from .Bitmap import Bitmap
 from .Oval import Oval
 from .Polygon import Polygon
+from .Rectangle import Rectangle
