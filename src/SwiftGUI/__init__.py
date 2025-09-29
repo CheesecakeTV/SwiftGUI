@@ -95,3 +95,5 @@ AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input
 
 from .DecoratorKeys import attach_function_to_key
 
+from . import Canvas_Elements
+

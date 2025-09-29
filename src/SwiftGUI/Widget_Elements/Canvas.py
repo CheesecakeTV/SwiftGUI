@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal, Any
+from typing import Literal, Any, Hashable
 
 import SwiftGUI as sg
 from SwiftGUI.Compat import Self
@@ -13,6 +13,8 @@ class Canvas(BaseWidget):
     tk_widget: tk.Canvas
     defaults = GlobalOptions.Canvas  # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
     value: None
+
+    _key_elements: dict[Hashable, "sg.Canvas_Elements.BaseCanvasElement"]   # Elements that can be referenced by a key
 
     _transfer_keys = {
         # "background_color_disabled": "disabledbackground",
@@ -30,7 +32,8 @@ class Canvas(BaseWidget):
 
     def __init__(
             self,
-            /,
+            *canvas_elements: "sg.Canvas_Elements.BaseCanvasElement",   # Elements to add in the beginning
+
             key: Any = None,
             default_event: bool = False,
             key_function: Callable | Iterable[Callable] = None,
@@ -67,12 +70,18 @@ class Canvas(BaseWidget):
     ):
         super().__init__(key, tk_kwargs=tk_kwargs, expand=expand,expand_y=expand_y)
 
+        self._key_elements = dict()
+
         self._key_function = key_function
 
         if background_color and not apply_parent_background_color:
             apply_parent_background_color = False
 
         self._default_event = default_event
+
+        self._contains: list[sg.Canvas_Elements.BaseCanvasElement] = list() # All elements inside this element
+
+        self.add_canvas_element(*canvas_elements)
 
         self._update_initial(
             width = width,
@@ -107,6 +116,9 @@ class Canvas(BaseWidget):
         if self._default_event:
             self.bind_event("<Button-1>", key=self.key, key_function=self._key_function)
 
+        for elem in self._contains:
+            elem.init_window_creation_done()
+
     def _update_special_key(self, key: str, new_val: Any) -> bool | None:
         # Fish out all special keys to process them seperately
         match key:
@@ -119,4 +131,32 @@ class Canvas(BaseWidget):
                 return super()._update_special_key(key, new_val)
 
         return True
+
+    def add_canvas_element(self, *elements: "sg.Canvas_Elements.BaseCanvasElement") -> Self:
+        """
+        Add one or more canvas-elements to this canvas
+
+        :param elements:
+        :return:
+        """
+        for elem in elements:
+            self._contains.append(elem)
+            elem.canvas = self
+
+            if self.window:
+                elem.init_window_creation_done()
+
+            if elem.key is not None:
+                self._key_elements[elem.key] = elem
+
+        return self
+
+    def __getitem__(self, item) -> "sg.Canvas_Elements.BaseCanvasElement":
+        return self._key_elements[item]
+
+    def __delitem__(self, key):
+        elem = self._key_elements[key]
+        elem.delete()
+        del self._key_elements[key]
+
 

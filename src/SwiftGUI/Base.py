@@ -406,6 +406,14 @@ class BaseWidget(BaseElement):
                                              "Do whatever caused the exception AFTER creating the window, that should fix it.")
         return self._tk_widget
 
+    def _bind_event_to_widget(self, tk_event: str, event_function: Callable) -> Self:
+        """Called in 'bind_event'. Inherit this is the event must be bound differently."""
+        self._tk_widget.bind(
+            tk_event,
+            event_function,
+        )
+        return self
+
     @run_after_window_creation
     def bind_event(self,tk_event:str|Event,key_extention:Union[str,Any]=None,key:Any=None,key_function:Callable|Iterable[Callable]=None)->Self:
         """
@@ -438,12 +446,9 @@ class BaseWidget(BaseElement):
                 new_key = self.key
                 assert new_key or key_function, f"You forgot to add either a key or key_function to this element... {self}"
 
-        temp = self.window.get_event_function(self, new_key, key_function=key_function)
+        event_function = self.window.get_event_function(self, new_key, key_function=key_function)
 
-        self._tk_widget.bind(
-            tk_event,
-            temp
-        )
+        self._bind_event_to_widget(tk_event, event_function)
 
         return self
 

@@ -30,8 +30,8 @@ class Scrollbar(BaseWidgetTTK):
             troughcolor: str | Color = None,
 
             # Add here
-            expand: bool = None,
-            expand_y: bool = None,
+            expand: bool = False,
+            expand_y: bool = True,
             tk_kwargs: dict[str:Any]=None
     ):
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)

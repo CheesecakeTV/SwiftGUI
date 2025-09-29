@@ -1,6 +1,14 @@
 import SwiftGUI as sg
+from SwiftGUI import Canvas_Elements as sgc
 from pathlib import Path
 import os
+from PIL import Image
+import tkinter as tk
+
+#inp = Image.open("Star.png")
+
+#outp = inp.convert("1")
+#inp.save("Star.bmp")
 
 sg.Themes.FourColors.SinCity()
 
@@ -8,14 +16,22 @@ layout = [
     [
         sg.T("Hallo Welt"),
     ],[
-        sg.Canvas(
+        my_canv := sg.Canvas(
+            sgc.Line(
+                (20, 10),
+                (50, 10),
+                width= 3,
+            ),
             highlightbackground_color="red",
             key= "Canvas",
-            default_event=True
-        ).bind_event(
-            "<Return>",
-            key_function= lambda :print("Hi")
-        )
+            #default_event=True,
+            width= 100,
+            height= 100,
+            #closeenough= 5,
+            confine= True,
+            scrollregion= (0, 0, 200, 210)  # x1, y1, x2, y2
+        ),
+        sg.Scrollbar().bind_to_element(my_canv)
     ],[
         sg.Scale(
             default_event=True,
@@ -25,7 +41,18 @@ layout = [
     ]
 ]
 
+canv_elem = sg.Canvas_Elements.Line((10,50), (10, 90), (90,10), key= "Test", color="red", color_active="green", width=3,arrowshape=(5.5, 5.5, 5.5), capstyle="round", joinstyle="miter", arrow="both")
+my_canv.add_canvas_element(canv_elem)
+canv_elem.bind_event(sg.Event.ClickLeft, key="Hello")
+
 w = sg.Window(layout)
+canv:tk.Canvas = my_canv.tk_widget
+
+#canv_elem.delete()
+
+#canv.moveto(1, 50, 50) # Bewegen
+#canv.delete(1) # Löschen
+#canv.tag_bind(1, "<Button-1>", func= lambda *_:print("Clicked on Arrow!"))    # Event hinzufügen
 
 for e,v in w:
     print(e, v)

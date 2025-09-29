@@ -180,9 +180,6 @@ class Common_Textual(DEFAULT_OPTIONS_CLASS):
     anchor:Literals.anchor = "w"
     text_color:Color|str = None
 
-class Canvas(Common_Field_Background):
-    ...
-
 class Text(Common, Common_Textual, Common_Background):
     text:str = ""
     takefocus:bool = False
@@ -524,6 +521,15 @@ class Console(TextField):
     add_timestamp: bool = True
     scrollbar: bool = True
 
+class Canvas(Common_Field_Background):
+    ...
+
+class Common_Canvas_Element(DEFAULT_OPTIONS_CLASS):
+    ...
+
+class Canvas_Line(Common_Canvas_Element):
+    ...
+
 def reset_all_options():
     """
     Reset everything done to the global options on runtime.
@@ -534,21 +540,3 @@ def reset_all_options():
     for cls in all_option_classes:
         cls.reset_to_default()
 
-def _make_dict_format_because_lazy(the_class:DEFAULT_OPTIONS_CLASS):
-    """
-    Use this to print a dict you can just copy instead of making everything yourself
-
-    YOU HAVE TO REMOVE INHERITANCE OF BASE CLASS BEFORE USING THIS!
-    Otherwise None-Values will be filtered out
-
-    :param the_class:
-    :return:
-    """
-    for key in the_class._all_defaults:
-        if key in _ignore_keys:
-            continue
-
-        if key.startswith("_"):
-            continue
-
-        print(f'"{key}" : {key},')
