@@ -60,6 +60,13 @@ canv_arc = sg.Canvas_Elements.Arc(
 )
 my_canv.add_canvas_element(canv_arc)
 
+canv_bitmap = sg.Canvas_Elements.Bitmap(
+    (80, 80),
+    "info",
+    color= "yellow",
+)
+my_canv.add_canvas_element(canv_bitmap)
+
 #canv_elem.delete()
 
 #canv.moveto(1, 50, 50) # Bewegen
