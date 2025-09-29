@@ -75,11 +75,19 @@ canv_oval = sg.Canvas_Elements.Oval(
     color = "yellow",
 ).attach_to_canvas(my_canv)
 
-#canv_elem.delete()
+canv_polygon = sg.Canvas_Elements.Polygon(
+    (20, 20),
+    (30, 10),
+    (40, 20),
+    (30, 60),
+    color= "lime",
+    infill_color= "",
+    width= 3,
+).attach_to_canvas(my_canv)
 
-#canv.moveto(1, 50, 50) # Bewegen
-#canv.delete(1) # Löschen
-#canv.tag_bind(1, "<Button-1>", func= lambda *_:print("Clicked on Arrow!"))    # Event hinzufügen
+
+
+
 
 for e,v in w:
     print(e, v)
