@@ -10,7 +10,9 @@ import tkinter as tk
 #outp = inp.convert("1")
 #inp.save("Star.bmp")
 
-sg.Themes.FourColors.SinCity()
+sg.Themes.FourColors.Emerald()
+sg.Examples.preview_all_elements()
+exit()
 
 layout = [
     [

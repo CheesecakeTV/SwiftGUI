@@ -139,3 +139,6 @@ class BaseCanvasElement(sg.BaseWidget): # Inheritance mainly for the update-rout
         :return:
         """
         return self._unflatten(self.canvas.tk_widget.bbox(self.canvas_id))
+
+    def __repr__(self):
+        return f"<sgc.{self.__class__.__name__} element at {id(self)}>"

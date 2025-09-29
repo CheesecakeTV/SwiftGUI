@@ -80,10 +80,11 @@ class Text(Canvas_Elements.BaseCanvasElement):
             font_overstrike = font_overstrike,
         )
 
+    @sg.BaseElement._run_after_window_creation
     def _update_font(self):
         # self._tk_kwargs will be passed to tk_widget later
         new_font = font.Font(
-            self.window.parent_tk_widget,
+            self.canvas.tk_widget,
             family=self._fonttype,
             size=self._fontsize,
             weight="bold" if self._bold else "normal",
@@ -124,12 +125,12 @@ class Text(Canvas_Elements.BaseCanvasElement):
 
         return True
 
-    def _apply_update(self):
+    def _update_default_keys(self,kwargs: dict,transfer_keys: bool = True):
+        super()._update_default_keys(kwargs, transfer_keys)
+
         if self.has_flag(sg.ElementFlag.UPDATE_FONT):
             self._update_font()
             self.remove_flags(sg.ElementFlag.UPDATE_FONT)
-
-        super()._apply_update()  # Actually apply the update
 
     def _get_value(self) -> str:
         return self.get_option("text", "")

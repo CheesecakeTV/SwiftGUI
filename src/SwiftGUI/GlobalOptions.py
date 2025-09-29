@@ -6,6 +6,7 @@ from typing import Literal, Union, Any, Callable
 
 from SwiftGUI import Literals, Color, font_windows, Font, Extras
 from SwiftGUI.Utilities.Images import file_from_b64
+import SwiftGUI as sg
 
 # Every option-class will be stored in here
 all_option_classes:list[Union["_DefaultOptionsMeta",type]] = list()
@@ -154,6 +155,7 @@ class Common(DEFAULT_OPTIONS_CLASS):
     expand:bool = False
     expand_y: bool = False
     highlightcolor: Color | str = None
+    highlightbackground_color: str | Color = None
 
 class Common_Background(DEFAULT_OPTIONS_CLASS):
     """
@@ -232,7 +234,6 @@ class Input(Common,Common_Textual,Common_Field_Background):
     # background_color_disabled: str | Color = None
     background_color_readonly: str | Color = None
     text_color_disabled: str | Color = None
-    highlightbackground_color: str | Color = None
     selectbackground_color: str | Color = None
     select_text_color: str | Color = None
     selectborderwidth: int = None
@@ -286,7 +287,6 @@ class Frame(Common, Common_Background):
     pass_down_background_color: bool = True
 
     borderwidth: int = None
-    highlightbackground_color: Color | str = None
     highlightthickness: int = None
 
     padx: int = 2
@@ -363,7 +363,6 @@ class Listbox(Common,Common_Textual,Common_Field_Background):
     width: int = None
     height: int = None
     relief: Literals.relief = None
-    highlightbackground_color: str | Color = None
     highlightthickness: int = None
 
 class Scrollbar(Scale):
@@ -521,32 +520,113 @@ class Console(TextField):
     add_timestamp: bool = True
     scrollbar: bool = True
 
-class Canvas(Common_Field_Background):
-    ...
+class Canvas(Common, Common_Field_Background):
+    width: int = None
+    height: int = None
+    select_text_color: str | Color = None
+    selectbackground_color: str | Color = None
+    selectborderwidth: int = None
+    borderwidth:int = None
+    takefocus: bool = False
+    apply_parent_background_color: bool = None
+    highlightthickness: int = None
+    confine: bool = None
+    scrollregion: tuple[int, int, int, int] = None
+    closeenough: int = None
+    relief: Literals.relief = None
 
 class Common_Canvas_Element(DEFAULT_OPTIONS_CLASS):
-    ...
+    color: str | sg.Color = None
+    color_active: str | sg.Color = None
+    color_disabled: str | sg.Color = None
+    infill_color: str | sg.Color = ""
+    infill_color_active: str | sg.Color = None
+    infill_color_disabled: str | sg.Color = None
+    state: sg.Literals.canv_elem_state = "normal"
 
-class Canvas_Line(Common_Canvas_Element):
-    ...
+class Common_Canvas_Line(Common_Canvas_Element):
+    width: float = 2
+    width_active: float = None
+    width_disabled: float = None
+    dash: tuple[int, ...] = None
+    dashoffset: int = None
+    dash_active: tuple[int, ...] = None
+    dash_disabled: tuple[int, ...] = None
 
-class Canvas_Arc(Common_Canvas_Element):
-    ...
+class Canvas_Line(Common_Canvas_Line):
+    smooth: bool = None
+    splinesteps: int = None
+    stipple: sg.Literals.bitmap = None
+    stippleoffset: str | tuple[float, float] = None
+    stipple_active: sg.Literals.bitmap = None
+    stipple_disabled: sg.Literals.bitmap = None
+    arrow: sg.Literals.arrow = None
+    arrowshape: tuple[float, float, float] = None
+    capstyle: sg.Literals.capstyle = "round"
+    joinstyle: sg.Literals.joinstyle = "round"
+
+class Canvas_Arc(Common_Canvas_Line):
+    style: sg.Literals.canv_arc_style = None
+    start_angle: float = None
+    extent_angle: float = None
+    stipple: sg.Literals.bitmap = None
+    stippleoffset: str | tuple[float, float] = None
+    stipple_active: sg.Literals.bitmap = None
+    stipple_disabled: sg.Literals.bitmap = None
+    infillstipple: sg.Literals.bitmap = None
+    infill_stippleoffset: str | tuple[float, float] = None
+    infill_stipple_active: sg.Literals.bitmap = None
+    infill_stipple_disabled: sg.Literals.bitmap = None
 
 class Canvas_Bitmap(Common_Canvas_Element):
-    ...
+    bitmap: sg.Literals.bitmap = "question"
+    bitmap_active: sg.Literals.bitmap = None
+    bitmap_disabled: sg.Literals.bitmap = None
+    anchor: sg.Literals.anchor = None
+    background_color: sg.Color | str = None
+    background_color_active: sg.Color | str = None
+    background_color_disabled: sg.Color | str = None
 
-class Canvas_Oval(Common_Canvas_Element):
-    ...
+class Canvas_Oval(Common_Canvas_Line):
+    stipple: sg.Literals.bitmap = None
+    stippleoffset: str | tuple[float, float] = None
+    stipple_active: sg.Literals.bitmap = None
+    stipple_disabled: sg.Literals.bitmap = None
+    infillstipple: sg.Literals.bitmap = None
+    infill_stippleoffset: str | tuple[float, float] = None
+    infill_stipple_active: sg.Literals.bitmap = None
+    infill_stipple_disabled: sg.Literals.bitmap = None
 
-class Canvas_Polygon(Common_Canvas_Element):
-    ...
+class Canvas_Polygon(Common_Canvas_Line):
+    stipple: sg.Literals.bitmap = None
+    stippleoffset: str | tuple[float, float] = None
+    stipple_active: sg.Literals.bitmap = None
+    stipple_disabled: sg.Literals.bitmap = None
+    infillstipple: sg.Literals.bitmap = None
+    infill_stippleoffset: str | tuple[float, float] = None
+    infill_stipple_active: sg.Literals.bitmap = None
+    infill_stipple_disabled: sg.Literals.bitmap = None
+    smooth: bool = None
+    splinesteps: int = None
+    joinstyle: sg.Literals.joinstyle = "round"
 
-class Canvas_Rectangle(Common_Canvas_Element):
-    ...
+class Canvas_Rectangle(Common_Canvas_Line):
+    stipple: sg.Literals.bitmap = None
+    stippleoffset: str | tuple[float, float] = None
+    stipple_active: sg.Literals.bitmap = None
+    stipple_disabled: sg.Literals.bitmap = None
+    infillstipple: sg.Literals.bitmap = None
+    infill_stippleoffset: str | tuple[float, float] = None
+    infill_stipple_active: sg.Literals.bitmap = None
+    infill_stipple_disabled: sg.Literals.bitmap = None
 
 class Canvas_Text(Common_Canvas_Element, Common_Textual):
-    ...
+    width: float = None
+    stipple: sg.Literals.bitmap = None
+    stippleoffset: str | tuple[float, float] = None
+    stipple_active: sg.Literals.bitmap = None
+    stipple_disabled: sg.Literals.bitmap = None
+    justify: Literal["left", "right", "center"] = None
 
 def reset_all_options():
     """

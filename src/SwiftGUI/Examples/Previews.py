@@ -69,7 +69,7 @@ def preview_all_fonts_windows() -> None:
         )
 
 
-    w = sg.SubWindow(layout)
+    w = sg.SubWindow(layout, grab_anywhere= True)
 
     w.block_others_until_close()
 
