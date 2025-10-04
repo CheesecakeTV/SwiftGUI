@@ -628,6 +628,14 @@ class Canvas_Text(Common_Canvas_Element, Common_Textual):
     stipple_disabled: sg.Literals.bitmap = None
     justify: Literal["left", "right", "center"] = None
 
+class Canvas_Element(Common_Canvas_Element):
+    anchor: sg.Literals.anchor = None
+
+class Canvas_Image(Common_Canvas_Element, Image):
+    image_width: int = None
+    image_height: int = None
+    anchor: sg.Literals.anchor = None
+
 def reset_all_options():
     """
     Reset everything done to the global options on runtime.

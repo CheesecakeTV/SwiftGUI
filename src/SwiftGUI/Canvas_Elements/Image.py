@@ -9,7 +9,7 @@ from SwiftGUI.Utilities.Images import image_to_tk_image
 
 
 class Image(Canvas_Elements.BaseCanvasElement):
-    defaults = sg.GlobalOptions.Canvas_Bitmap
+    defaults = sg.GlobalOptions.Canvas_Image
 
     _create_method = "create_image"
 
@@ -21,8 +21,8 @@ class Image(Canvas_Elements.BaseCanvasElement):
     def __init__(
             self,
             position: tuple[float, float],
-            /,
             image: PathLike | str | PIL_Image.Image | IO[bytes] = None,
+            /,
             image_width: int = None,
             image_height: int = None,
 

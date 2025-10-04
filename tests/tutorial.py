@@ -13,8 +13,8 @@ import tkinter as tk
 #inp.save("Star.bmp")
 
 sg.Themes.FourColors.SinCity()
-# sg.Examples.preview_all_elements()
-# exit()
+sg.Examples.preview_all_elements()
+exit()
 
 layout = [
     [
@@ -105,12 +105,26 @@ canv_text = sg.Canvas_Elements.Text(
 
 canv_image = sg.Canvas_Elements.Image(
     (80, 50),
-    image= "fingerprint.png",
+    "fingerprint.png",
     image_active= "Star.png",
     image_width= 30,
 ).attach_to_canvas(my_canv)
 # img = PIL.ImageTk.PhotoImage(Image.open("Star.png"))
 # canv.create_image(30, 110, image=img, anchor="nw")
+
+my_frame = sg.SubLayout([
+    [
+        sg.T("Hallo Welt!")
+    ],[
+        sg.Button("Click me!")
+    ]
+])
+# my_frame._init(my_canv, w)
+# canv.create_window(50, 50, window = my_frame.tk_widget)
+canv_element = sg.Canvas_Elements.Element(
+    (50, 50),
+    my_frame
+).attach_to_canvas(my_canv)
 
 
 for e,v in w:

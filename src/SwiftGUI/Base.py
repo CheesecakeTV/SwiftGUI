@@ -192,7 +192,7 @@ class BaseElement:
         self.set_value(val)
 
     @property
-    def parent_tk_widget(self) ->tk.Widget:
+    def parent_tk_widget(self) -> tk.Widget:
         """
         This will be used to store all contained Widgets into
         :return:
