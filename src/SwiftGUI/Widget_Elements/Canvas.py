@@ -120,7 +120,7 @@ class Canvas(BaseWidget):
             elem.init_window_creation_done()
 
     def _update_special_key(self, key: str, new_val: Any) -> bool | None:
-        # Fish out all special keys to process them seperately
+        # Todo: Canvas: Background-color-propagation, but not a priority
         match key:
             case "apply_parent_background_color":
                 if new_val:

@@ -13,8 +13,8 @@ import tkinter as tk
 #inp.save("Star.bmp")
 
 sg.Themes.FourColors.SinCity()
-sg.Examples.preview_all_elements()
-exit()
+# sg.Examples.preview_all_elements()
+# exit()
 
 layout = [
     [
@@ -42,6 +42,8 @@ layout = [
             key= "Scale",
             expand= True,
         )
+    ],[
+        sg.In().bind_event(sg.Event.MouseMove, key_function = lambda args: print(args))
     ]
 ]
 

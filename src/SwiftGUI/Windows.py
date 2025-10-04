@@ -327,7 +327,7 @@ class BaseKeyHandler(BaseElement):
         if (key_function is not None) and not hasattr(key_function, "__iter__"):
             key_function = (key_function,)
 
-        def single_event(*_):
+        def single_event(*args):
             did_refresh = False
 
             if key_function: # Call key-functions
@@ -338,7 +338,8 @@ class BaseKeyHandler(BaseElement):
                     "e": key,   # Event-key, if there is one
                     "v": self._value_dict,   # All values
                     "val": None if me is None else me.value,    # Value of element that caused the event
-                    "elem": me,
+                    "elem": me, # Element causing the event
+                    "args": args,   # Event-arguments
                 }
 
                 for fkt in key_function:
