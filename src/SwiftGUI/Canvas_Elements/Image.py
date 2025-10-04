@@ -22,7 +22,7 @@ class Image(Canvas_Elements.BaseCanvasElement):
             self,
             position: tuple[float, float],
             /,
-            image: str | PathLike | PIL_Image.Image | IO[bytes] = None,
+            image: PathLike | str | PIL_Image.Image | IO[bytes] = None,
             image_width: int = None,
             image_height: int = None,
 
@@ -86,14 +86,17 @@ class Image(Canvas_Elements.BaseCanvasElement):
         """
         image = image_to_tk_image(self._image, self._width, self._height)
         if image is not None:
+            self._image_tk = image  # If the image doesn't get saved inside this element, it will be garbage-collected away...
             self.canvas.tk_widget.itemconfigure(self.canvas_id, image= image)
 
         image = image_to_tk_image(self._image_active, self._width, self._height)
         if image is not None:
+            self._image_tk_active = image
             self.canvas.tk_widget.itemconfigure(self.canvas_id, activeimage= image)
 
         image = image_to_tk_image(self._image_disabled, self._width, self._height)
         if image is not None:
+            self._image_tk_disabled = image
             self.canvas.tk_widget.itemconfigure(self.canvas_id, disabledimage= image)
 
         return self

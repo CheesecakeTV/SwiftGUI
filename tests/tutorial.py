@@ -103,12 +103,14 @@ canv_text = sg.Canvas_Elements.Text(
     fontsize= 14,
 ).attach_to_canvas(my_canv)
 
-# canv_image = sg.Canvas_Elements.Image(
-#     (50, 50),
-#     image= "fingerprint.png"
-# )
-img = Image.open("Star.png")
-canv.create_image(10, 110, image=PIL.ImageTk.PhotoImage(img), anchor="ne")
+canv_image = sg.Canvas_Elements.Image(
+    (80, 50),
+    image= "fingerprint.png",
+    image_active= "Star.png",
+    image_width= 30,
+).attach_to_canvas(my_canv)
+# img = PIL.ImageTk.PhotoImage(Image.open("Star.png"))
+# canv.create_image(30, 110, image=img, anchor="nw")
 
 
 for e,v in w:
