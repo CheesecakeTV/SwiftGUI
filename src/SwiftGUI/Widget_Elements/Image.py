@@ -1,4 +1,3 @@
-import io
 import tkinter as tk
 from os import PathLike
 from typing import Any, IO

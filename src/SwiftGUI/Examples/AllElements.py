@@ -262,6 +262,9 @@ def preview_all_elements():
 
                 sgc.Text((10, 195), "sgc.Text:"),
                 sgc.Text((90, 195), "Example", fonttype= sg.font_windows.Comic_Sans_MS, font_underline= True, font_bold= True),
+
+                sgc.Text((10, 225), "sgc.Image:"),
+                sgc.Image((90, 225), image = sg.file_from_b64(python_logo), anchor= "center")
             )
         ]
     ], fake_key= "Canvas")

@@ -7,3 +7,4 @@ from .Oval import Oval
 from .Polygon import Polygon
 from .Rectangle import Rectangle
 from .Text import Text
+from .Image import Image

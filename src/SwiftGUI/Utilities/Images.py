@@ -4,7 +4,6 @@ from os import PathLike
 from typing import IO
 
 from PIL import Image as PIL_Image
-
 from PIL import ImageTk
 
 

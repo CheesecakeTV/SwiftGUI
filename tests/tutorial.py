@@ -1,3 +1,5 @@
+import PIL.ImageTk
+
 import SwiftGUI as sg
 from SwiftGUI import Canvas_Elements as sgc
 from pathlib import Path
@@ -10,9 +12,9 @@ import tkinter as tk
 #outp = inp.convert("1")
 #inp.save("Star.bmp")
 
-sg.Themes.FourColors.Emerald()
-sg.Examples.preview_all_elements()
-exit()
+sg.Themes.FourColors.SinCity()
+# sg.Examples.preview_all_elements()
+# exit()
 
 layout = [
     [
@@ -100,6 +102,14 @@ canv_text = sg.Canvas_Elements.Text(
     font_bold= True,
     fontsize= 14,
 ).attach_to_canvas(my_canv)
+
+# canv_image = sg.Canvas_Elements.Image(
+#     (50, 50),
+#     image= "fingerprint.png"
+# )
+img = Image.open("Star.png")
+canv.create_image(10, 110, image=PIL.ImageTk.PhotoImage(img), anchor="ne")
+
 
 for e,v in w:
     print(e, v)
