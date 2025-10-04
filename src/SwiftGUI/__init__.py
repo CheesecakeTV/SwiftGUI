@@ -1,5 +1,6 @@
 
 from . import Extras
+from .Utilities.Images import file_from_b64, file_to_b64, image_to_tk_image
 
 from . import Compat
 from .Tools import clipboard_copy, clipboard_paste, remove_None_vals
@@ -89,7 +90,6 @@ from . import Popups
 from . import Examples
 
 from .Utilities.Threads import clipboard_observer
-from .Utilities.Images import file_from_b64, file_to_b64
 
 AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton | Spinbox | Image | ImageButton | Scale | Combobox | Progressbar | Console
 
