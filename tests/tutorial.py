@@ -2,6 +2,8 @@ import SwiftGUI as sg
 import SwiftGUI.Canvas_Elements as sgc
 
 sg.Themes.FourColors.RoyalBlue()
+sg.Examples.preview_all_elements()
+exit()
 
 canv = sg.Canvas(
     sgc.Line(  # Add an element directly

@@ -33,12 +33,12 @@ This applies the `Emerald`-theme.
 
 See which themes are available by calling `sg.Examples.preview_all_themes()`.
 
-# 30 different elements
-(Version 0.9.0)
+# 32 different elements, 9 different canvas-elements
+(Version 0.10.0)
 
 `import SwiftGUI as sg`
 
-Call `sg.Examples.preview_all_elements()` for an overview over all the elements.
+Call `sg.Examples.preview_all_elements()` for an overview of all the elements.
 
 #  Alpha-phase!
 I am already using SwiftGUI for smaller projects and personally, like it a lot so far.
