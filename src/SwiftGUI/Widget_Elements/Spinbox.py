@@ -43,7 +43,7 @@ class Spinbox(BaseWidget):
             key:Any=None,
             key_function:Callable|Iterable[Callable] = None,
             default_event:bool = False,
-            #
+
             cursor: Literals.cursor = None,
             cursor_button: Literals.cursor = None,
             takefocus: bool = None,
@@ -70,7 +70,6 @@ class Spinbox(BaseWidget):
             relief_button_up: Literals.relief = None,
             cursor_color: str | Color = None,
 
-            # Mixed options
             fonttype: str = None,
             fontsize: int = None,
             font_bold: bool = None,

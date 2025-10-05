@@ -117,7 +117,7 @@ def popup_get_text(
         ]
     ]
 
-    e,v = sg.Window(layout).loop_close()
+    e,v = sg.SubWindow(layout, keep_on_top=True).loop_close()
 
     if e is None:
         return default

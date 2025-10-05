@@ -74,17 +74,20 @@ class TextField(BaseWidget, BaseScrollbar):
             takefocus:bool = None,
             background_color:str|Color = None,
             insertbackground: str|Color = None,
+
             text_color: str|Color = None,
+            select_text_color:str|Color = None,
             highlightbackground_color:str|Color = None,
             selectbackground_color:str|Color = None,
-            select_text_color:str|Color = None,
             cursor_color: str | Color = None,
+            highlightcolor: str | Color = None,
+            highlightthickness: int = None,
+
             selectborderwidth:int = None,
-            highlightcolor:str|Color = None,
-            highlightthickness:int = None,
             readonly: bool = None,   # Set state to tk.Normal, or 'readonly'
             relief: Literals.relief = None,
             exportselection:bool = None,
+
             padx: int = None,
             pady: int = None,
 

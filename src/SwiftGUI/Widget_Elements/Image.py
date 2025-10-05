@@ -1,4 +1,3 @@
-import io
 import tkinter as tk
 from os import PathLike
 from typing import Any, IO
@@ -6,7 +5,7 @@ from SwiftGUI.Compat import Self
 from PIL import Image as PIL_Image
 from PIL import ImageTk
 
-from SwiftGUI import GlobalOptions, BaseWidget, ElementFlag, Color
+from SwiftGUI import GlobalOptions, BaseWidget, ElementFlag, Color, image_to_tk_image
 
 
 class Image(BaseWidget):
@@ -78,32 +77,10 @@ class Image(BaseWidget):
         :param image:
         :return:
         """
-        if image is None:
-            return self
-
-        #if isinstance(image, str) or isinstance(image, PathLike) or isinstance(image, IO) or isinstance(image, bytes):
-
-        if not isinstance(image, PIL_Image.Image):
-            image = PIL_Image.open(image)
-        self._image = image
-
-        if self._width is not None and self._height is not None:
-            image = image.resize((self._width, self._height))
-        elif self._width is not None:
-            factor = self._width / image.size[0]
-            height = int(image.size[1] * factor)
-            image = image.resize((self._width, height))
-        elif self._height is not None:
-            factor = self._height / image.size[1]
-            width = int(image.size[0] * factor)
-            image = image.resize((width, self._height))
-
-        if isinstance(image, PIL_Image.Image):
-            image = ImageTk.PhotoImage(image)
-
-        assert isinstance(image, ImageTk.PhotoImage), "Whatever you supplied to .update(image= ...) of the sg.Image can't be used (Wrong type)."
-        self._photo_image: Any | str = image
-        self.tk_widget.configure(image = self._photo_image)
+        temp = image_to_tk_image(image, self._width, self._height)
+        if temp is not None:
+            self._photo_image: Any | str = temp
+            self.tk_widget.configure(image = self._photo_image)
 
         return self
 

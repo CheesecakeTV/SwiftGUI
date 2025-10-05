@@ -36,3 +36,11 @@ Spinbox_State  = Literal["normal", "disabled", "readonly"]
 
 left_center_right = Literal["center", "left", "right"]
 progress_mode = Literal["determinate", "indeterminate"]
+
+arrow = Literal["first", "both", "last"]
+capstyle = Literal["butt", "projecting", "round"]
+joinstyle = Literal["round", "bevel", "miter"]
+canv_elem_state = Literal["normal", "hidden", "disabled"]
+canv_arc_style = Literal["piesicle", "chord", "arc"]
+canv_dash = Literal[".", "-", "-.", "-..", ","] | tuple[int, int, int, int]
+

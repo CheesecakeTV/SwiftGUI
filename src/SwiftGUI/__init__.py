@@ -1,5 +1,6 @@
 
 from . import Extras
+from .Utilities.Images import file_from_b64, file_to_b64, image_to_tk_image
 
 from . import Compat
 from .Tools import clipboard_copy, clipboard_paste, remove_None_vals
@@ -13,7 +14,7 @@ from .Events import Event
 from .Base import BaseElement,BaseWidget,BaseWidgetContainer,ElementFlag,BaseWidgetTTK, BaseScrollbar
 #from .KeyManager import Key,SEPARATOR,duplicate_warnings   # Todo: Make some decent key-manager
 
-from .Widget_Elements.Scrollbar import Scrollbar
+from .Widget_Elements.Scrollbar import Scrollbar, ScrollbarHorizontal
 from .Widget_Elements.Text import Text
 from .Widget_Elements.Button import Button
 from .Widget_Elements.Checkbox import Checkbox
@@ -34,6 +35,7 @@ from .Widget_Elements.Scale import Scale
 from .Widget_Elements.Combobox import Combobox
 from .Widget_Elements.Progressbar import Progressbar, ProgressbarVertical
 from .Widget_Elements.GridFrame import GridFrame
+from .Widget_Elements.Canvas import Canvas
 
 from .Extended_Elements.FileBrowseButton import FileBrowseButton
 from .Extended_Elements.ColorChooserButton import ColorChooserButton
@@ -88,9 +90,10 @@ from . import Popups
 from . import Examples
 
 from .Utilities.Threads import clipboard_observer
-from .Utilities.Images import file_from_b64, file_to_b64
 
 AnyElement = BaseElement | BaseWidget | Text | Button | Checkbox | Frame | Input | VerticalSeparator | HorizontalSeparator | Spacer | Form | Listbox | FileBrowseButton | ColorChooserButton | TKContainer | TextField | Treeview | Table | Notebook | LabelFrame | Radiobutton | Spinbox | Image | ImageButton | Scale | Combobox | Progressbar | Console
 
 from .DecoratorKeys import attach_function_to_key
+
+from . import Canvas_Elements
 
