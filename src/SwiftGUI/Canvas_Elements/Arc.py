@@ -64,10 +64,10 @@ class Arc(Canvas_Elements.BaseCanvasElement):
             color_active: str | sg.Color = None,
             color_disabled: str | sg.Color = None,
 
-            dash: tuple[int, ...] = None,
+            dash: sg.Literals.canv_dash = None,
             dashoffset: int = None,
-            dash_active: tuple[int, ...] = None,
-            dash_disabled: tuple[int, ...] = None,
+            dash_active: sg.Literals.canv_dash = None,
+            dash_disabled: sg.Literals.canv_dash = None,
 
             stipple: sg.Literals.bitmap = None,
             stippleoffset: str | tuple[float, float] = None,

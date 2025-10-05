@@ -548,10 +548,10 @@ class Common_Canvas_Line(Common_Canvas_Element):
     width: float = 2
     width_active: float = None
     width_disabled: float = None
-    dash: tuple[int, ...] = None
+    dash: sg.Literals.canv_dash = None
     dashoffset: int = None
-    dash_active: tuple[int, ...] = None
-    dash_disabled: tuple[int, ...] = None
+    dash_active: sg.Literals.canv_dash = None
+    dash_disabled: sg.Literals.canv_dash = None
 
 class Canvas_Line(Common_Canvas_Line):
     smooth: bool = None
@@ -562,8 +562,8 @@ class Canvas_Line(Common_Canvas_Line):
     stipple_disabled: sg.Literals.bitmap = None
     arrow: sg.Literals.arrow = None
     arrowshape: tuple[float, float, float] = None
-    capstyle: sg.Literals.capstyle = "round"
-    joinstyle: sg.Literals.joinstyle = "round"
+    capstyle: sg.Literals.capstyle = None
+    joinstyle: sg.Literals.joinstyle = None
 
 class Canvas_Arc(Common_Canvas_Line):
     style: sg.Literals.canv_arc_style = None

@@ -3,6 +3,7 @@ from typing import Any, Callable, Hashable, Iterable
 import SwiftGUI as sg
 from SwiftGUI.Compat import Self
 
+# Todo: Combined canvas-elements
 
 class BaseCanvasElement(sg.BaseWidget): # Inheritance mainly for the update-routine
     defaults = sg.GlobalOptions.Common_Canvas_Element

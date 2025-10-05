@@ -1,3 +1,4 @@
+import tkinter as tk
 from tkinter import ttk
 from typing import Any
 from SwiftGUI.Compat import Self
@@ -12,6 +13,7 @@ class Scrollbar(BaseWidgetTTK):
     defaults = GlobalOptions.Scrollbar
 
     _styletype:str = "Vertical.TScrollbar"
+    _orient: str = "vertical"
 
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Notebook.html
     def __init__(
@@ -24,7 +26,7 @@ class Scrollbar(BaseWidgetTTK):
             background_color: str | Color = None,
             background_color_active: str | Color = None,
 
-            text_color: str | Color = None,
+            text_color: str | Color = None, # Todo: Rename these options
             text_color_active: str | Color = None,
 
             troughcolor: str | Color = None,
@@ -45,6 +47,8 @@ class Scrollbar(BaseWidgetTTK):
             text_color_active = text_color_active,
 
             troughcolor = troughcolor,
+
+            orient = self._orient,
         )
 
     def _update_special_key(self,key:str,new_val:Any) -> bool|None:
@@ -85,4 +89,55 @@ class Scrollbar(BaseWidgetTTK):
         """
         elem._update_initial(yscrollcommand=self.tk_widget.set)
         self.tk_widget.configure(command=elem.tk_widget.yview)
+        return self
+    
+    def _init_widget_for_inherrit(self,container) -> tk.Widget:
+        return super()._init_widget_for_inherrit(container)
+
+class ScrollbarHorizontal(Scrollbar):
+    _styletype:str = "Horizontal.TScrollbar"
+    _orient = "horizontal"
+
+    def __init__(
+            self,
+            /,
+            key: Any = None,
+
+            cursor: Literals.cursor = None,
+
+            background_color: str | Color = None,
+            background_color_active: str | Color = None,
+
+            text_color: str | Color = None, # Todo: Rename these options
+            text_color_active: str | Color = None,
+
+            troughcolor: str | Color = None,
+
+            expand: bool = True,
+            expand_y: bool = False,
+            tk_kwargs: dict[str:Any]=None
+    ):
+        super().__init__(
+            key = key,
+            cursor = cursor,
+            background_color = background_color,
+            background_color_active = background_color_active,
+            text_color = text_color,
+            text_color_active = text_color_active,
+            troughcolor = troughcolor,
+            expand = expand,
+            expand_y = expand_y,
+            tk_kwargs = tk_kwargs,
+        )
+
+
+    @BaseWidgetTTK._run_after_window_creation
+    def bind_to_element(self, elem: BaseWidget) -> Self:
+        """
+        Bind this scrollbar to its element/widget
+        :param elem:
+        :return:
+        """
+        elem._update_initial(xscrollcommand=self.tk_widget.set)
+        self.tk_widget.configure(command=elem.tk_widget.xview)
         return self
