@@ -41,6 +41,6 @@ arrow = Literal["first", "both", "last"]
 capstyle = Literal["butt", "projecting", "round"]
 joinstyle = Literal["round", "bevel", "miter"]
 canv_elem_state = Literal["normal", "hidden", "disabled"]
-canv_arc_style = Literal["piesicle", "chord", "arc"]
+canv_arc_style = Literal["pieslice", "chord", "arc"]
 canv_dash = Literal[".", "-", "-.", "-..", ","] | tuple[int, int, int, int]
 

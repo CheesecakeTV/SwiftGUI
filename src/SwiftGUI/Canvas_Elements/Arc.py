@@ -25,7 +25,7 @@ class Arc(Canvas_Elements.BaseCanvasElement):
         "dash_disabled": "disableddash",
         "dash_active": "activedash",
 
-        "infillstipple": "stipple",
+        "infill_stipple": "stipple",
         "infill_stippleoffset": "offset",
         "infill_stipple_disabled": "disabledstipple",
         "infill_stipple_active": "activestipple",
@@ -74,7 +74,7 @@ class Arc(Canvas_Elements.BaseCanvasElement):
             stipple_active: sg.Literals.bitmap = None,
             stipple_disabled: sg.Literals.bitmap = None,
 
-            infillstipple: sg.Literals.bitmap = None,
+            infill_stipple: sg.Literals.bitmap = None,
             infill_stippleoffset: str | tuple[float, float] = None,
             infill_stipple_active: sg.Literals.bitmap = None,
             infill_stipple_disabled: sg.Literals.bitmap = None,
@@ -109,7 +109,7 @@ class Arc(Canvas_Elements.BaseCanvasElement):
             color_active = color_active,
             color_disabled = color_disabled,
             state = state,
-            infillstipple = infillstipple,
+            infill_stipple = infill_stipple,
             infill_stippleoffset = infill_stippleoffset,
             infill_stipple_active = infill_stipple_active,
             infill_stipple_disabled = infill_stipple_disabled,

@@ -25,7 +25,7 @@ class Rectangle(Canvas_Elements.BaseCanvasElement):
         "dash_disabled": "disableddash",
         "dash_active": "activedash",
 
-        "infillstipple": "stipple",
+        "infill_stipple": "stipple",    # Todo: Sometimes this works, sometimes it doesn't...
         "infill_stippleoffset": "offset",
         "infill_stipple_disabled": "disabledstipple",
         "infill_stipple_active": "activestipple",
@@ -70,7 +70,7 @@ class Rectangle(Canvas_Elements.BaseCanvasElement):
             stipple_active: sg.Literals.bitmap = None,
             stipple_disabled: sg.Literals.bitmap = None,
 
-            infillstipple: sg.Literals.bitmap = None,
+            infill_stipple: sg.Literals.bitmap = None,
             infill_stippleoffset: str | tuple[float, float] = None,
             infill_stipple_active: sg.Literals.bitmap = None,
             infill_stipple_disabled: sg.Literals.bitmap = None,
@@ -101,7 +101,7 @@ class Rectangle(Canvas_Elements.BaseCanvasElement):
             stippleoffset = stippleoffset,
             stipple_active = stipple_active,
             stipple_disabled = stipple_disabled,
-            infillstipple = infillstipple,
+            infill_stipple = infill_stipple,
             infill_stippleoffset = infill_stippleoffset,
             infill_stipple_active = infill_stipple_active,
             infill_stipple_disabled = infill_stipple_disabled,

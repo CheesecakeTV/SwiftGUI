@@ -233,7 +233,7 @@ def preview_all_elements():
         ],[
             sg.GridFrame([
                 [
-                    canv := sg.Canvas(
+                    canv := sg.Canvas(  # The indentation is great, I know :D
                         sgc.Text((10, 15), "sgc.Arc:"),
                         sgc.Arc((80, 10), (95, 25), width=2, extent_angle= 120),
                         sgc.Arc((100, 10), (115, 25), width=2, extent_angle=120, style= "arc"),

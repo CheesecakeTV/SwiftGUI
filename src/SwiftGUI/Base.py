@@ -435,7 +435,7 @@ class BaseWidget(BaseElement):
         if len(tk_event) > 1 and not tk_event.startswith("<"):
             tk_event = f"<{tk_event}>"
 
-        match (key_extention is not None,key is not None):
+        match (key_extention is not None, key is not None):
             case (True,True):
                 new_key = key + key_extention
             case (False,True):

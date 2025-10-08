@@ -51,10 +51,6 @@ class Image(Canvas_Elements.BaseCanvasElement):
             state = state,
         )
 
-    def update_coords(self, x: float, y: float) -> Self:
-        super().update_coords((x, y))
-        return self
-
     def _update_special_key(self, key: str, new_val: Any) -> bool | None:
         match key:
             case "image":
