@@ -22,7 +22,8 @@ dependencies = [
     "datetime",
 ]
 [project.urls]
-Homepage = "https://github.com/CheesecakeTV/SwiftGUI"
+Repository = "https://github.com/CheesecakeTV/SwiftGUI"
+Documentation = "https://github.com/CheesecakeTV/SwiftGUI-Docs"
 issues = "https://github.com/CheesecakeTV/SwiftGUI/issues"
 
 [build-system]

@@ -500,6 +500,47 @@ class BaseWidget(BaseElement):
         self._tk_target_value = value_type(self.parent_tk_widget, value=default_value)
         self._tk_kwargs[kwargs_key] = self._tk_target_value
 
+    # This does work, but will put an element on the end of its row every time it is "unhidden".
+    _container: tk.Widget | tk.Tk | None = None # Saves the container from _init_widget for .visible
+    @run_after_window_creation
+    def hide(self) -> Self:
+        """
+        Hide the element.
+        WIP!!! Should only be used if the element is "alone" inside the parent, because the order of elements might change.
+        :return:
+        """
+        try:
+            temp: dict = self.tk_widget.pack_info()
+            self._container = temp.pop("in")
+            self._insert_kwargs = temp
+            self.tk_widget.pack_forget()
+        except tk.TclError: # Not packed/gridded
+            pass
+        return self
+
+    @run_after_window_creation
+    def show(self) -> Self:
+        """
+        Show the element after it was hidden
+        WIP!!! Should only be used if the element is "alone" inside the parent, because the order of elements might change.
+        :return:
+        """
+        self.tk_widget.pack(**self._insert_kwargs)
+        return self
+
+    def set_visible(self, visible: bool = True) -> Self:
+        """
+        Calls .show(), or .hide() depending on "visible".
+        WIP!!! Should only be used if the element is "alone" inside the parent, because the order of elements might change.
+        :param visible: True, if element should be shown, False to hide it.
+        :return:
+        """
+        if visible:
+            self.show()
+        else:
+            self.hide()
+        return self
+
     def _init_widget(self,container:tk.Widget|tk.Tk) -> None:
         """
         Initialize the widget to the container
@@ -577,10 +618,7 @@ class BaseWidget(BaseElement):
             else:
                 ins_kwargs_rows["fill"] = "none"
                 ins_kwargs_rows["expand"] = False
-            #self._insert_kwargs_rows["fill"] = "x"
 
-            #line.pack(side="top",fill="both",expand=True)
-            #line.grid(sticky="ew")
             if expand_y:
                 line.pack(fill="both", expand=True)
             else:
