@@ -2,8 +2,8 @@ import SwiftGUI as sg
 import SwiftGUI.Canvas_Elements as sgc
 import cProfile
 
-#sg.Themes.FourColors.Emerald()
-print(cProfile.run("sg.Examples.preview_all_fonts_windows()", sort=0))
+sg.Themes.FourColors.Emerald()
+print(cProfile.run("sg.Examples.preview_all_elements()", sort=0))
 exit()
 
 layout = [
