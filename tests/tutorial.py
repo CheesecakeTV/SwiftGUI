@@ -1,35 +1,30 @@
 import SwiftGUI as sg
-import SwiftGUI.Canvas_Elements as sgc
-import cProfile
 
 sg.Themes.FourColors.Emerald()
-print(cProfile.run("sg.Examples.preview_all_elements()", sort=0))
-exit()
 
-layout = [
+### Layout ###
+inner_layout = [
+    [sg.T("Smaller element")],
+    [sg.HorizontalSeparator()], # <-- here
+    [sg.Button("Another smaller element")],
+    [sg.T("<-- sg.Listbox")]
+]
+
+layout:list[list[sg.BaseElement]] = [
     [
-        sg.Text("Hide example")
-    ],[
-        sg.T("Maybe some hidden button?"),
-        my_button := sg.Button(
-            "Hide me!",
-            key="Ev",
+        sg.Listbox(
+            range(10),
+            scrollbar= False,
         ),
-        sg.T("Seems to work suspiciously well...?")
-    ],[
-        sg.Button("Hide", key="Hide"),
-        sg.Button("Show", key="Show")
+        sg.VerticalSeparator(), # <-- here
+        sg.Frame(
+            inner_layout,
+        )
     ]
 ]
 
 w = sg.Window(layout)
 
 for e,v in w:
-    print(e) # Text
-
-    #print(my_button.tk_widget.pack_info())
-    if e == "Hide":
-        my_button.hide()
-    if e == "Show":
-        my_button.show()
+    ...
 

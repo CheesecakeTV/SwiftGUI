@@ -315,7 +315,7 @@ def preview_all_elements():
 
     layout = [
         [
-            sg.T("If this looks a bit shitty, try applying a theme.\n"
+            sg.T("If this looks bad, try applying a theme.\n"
                  "Just call sg.Themes.FourColors.Emerald()\n"
                  "before starting this example.")
         ],[

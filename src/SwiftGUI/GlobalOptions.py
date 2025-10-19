@@ -59,6 +59,9 @@ class _DefaultOptionsMeta(type):
             if key in cl._up_to_date and not key in cl._provides:   # Invalidate this key, if the class itself doesn't provide it too
                 cl._up_to_date.remove(key)
 
+    def __delattr__(self, item):
+        self.__setattr__(item, None)
+
         #super().__setattr__(key, value)
 
     # Todo: __getattribute__ so you can use this like a normal class too
