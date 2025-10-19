@@ -1,7 +1,6 @@
 import tkinter as tk
-import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal, Any, Hashable
+from typing import Any, Hashable
 
 import SwiftGUI as sg
 from SwiftGUI.Compat import Self
@@ -120,7 +119,7 @@ class Canvas(BaseWidget):
             elem.init_window_creation_done()
 
     def _update_special_key(self, key: str, new_val: Any) -> bool | None:
-        # Todo: Canvas: Background-color-propagation, but not a priority
+        # Todo: Canvas: Option for background-color-propagation, but not a priority
         match key:
             case "apply_parent_background_color":
                 if new_val:

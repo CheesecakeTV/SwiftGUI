@@ -231,54 +231,75 @@ def preview_all_elements():
         ],[
             sg.T("(import SwiftGUI.Canvas_Elements as sgc)")
         ],[
-            sg.Canvas(
-                sgc.Text((10, 15), "sgc.Arc:"),
-                sgc.Arc((80, 10), (95, 25), width=2, extent_angle= 120),
-                sgc.Arc((100, 10), (115, 25), width=2, extent_angle=120, style= "arc"),
-                sgc.Arc((120, 10), (135, 25), width=2, extent_angle=120, style= "chord"),
+            sg.GridFrame([
+                [
+                    canv := sg.Canvas(  # The indentation is great, I know :D
+                        sgc.Text((10, 15), "sgc.Arc:"),
+                        sgc.Arc((80, 10), (95, 25), width=2, extent_angle= 120),
+                        sgc.Arc((100, 10), (115, 25), width=2, extent_angle=120, style= "arc"),
+                        sgc.Arc((120, 10), (135, 25), width=2, extent_angle=120, style= "chord"),
 
-                sgc.Text((10, 45), "sgc.Bitmap:"),
-                sgc.Bitmap((115, 45),  "hourglass"),
-                sgc.Bitmap((135, 45), "warning"),
-                sgc.Bitmap((155, 45), "questhead"),
+                        sgc.Text((10, 45), "sgc.Bitmap:"),
+                        sgc.Bitmap((115, 45),  "hourglass"),
+                        sgc.Bitmap((135, 45), "warning"),
+                        sgc.Bitmap((155, 45), "questhead"),
 
-                sgc.Text((10, 75), "sgc.Line:"),
-                sgc.Line((100, 75), (110, 85), width= 2),
-                sgc.Line((115, 75), (125, 85), (125, 75), (135, 75), smooth=True, width= 2),
-                sgc.Line((140, 75), (170, 85), width=2, arrow="both"),
+                        sgc.Text((10, 75), "sgc.Line:"),
+                        sgc.Line((100, 75), (110, 85), width= 2),
+                        sgc.Line((115, 75), (125, 85), (125, 75), (135, 75), smooth=True, width= 2),
+                        sgc.Line((140, 75), (170, 85), width=2, arrow="both"),
 
-                sgc.Text((10, 105), "sgc.Oval:"),
-                sgc.Oval((100, 95), (120, 115), width= 2, dash= (5,5)),
-                sgc.Oval((130, 95), (140, 115), width=2),
+                        sgc.Text((10, 105), "sgc.Oval:"),
+                        sgc.Oval((100, 95), (120, 115), width= 2, dash= (5,5)),
+                        sgc.Oval((130, 95), (140, 115), width=2),
 
-                sgc.Text((10, 135), "sgc.Polygon:"),
-                sgc.Polygon((130, 125), (140, 135), (135, 145)),
-                sgc.Polygon((140, 120), (160, 140), (180, 140), (160, 120), width= 3, joinstyle= "round", infill_color= ""),
+                        sgc.Text((10, 135), "sgc.Polygon:"),
+                        sgc.Polygon((130, 125), (140, 135), (135, 145)),
+                        sgc.Polygon((140, 120), (160, 140), (180, 140), (160, 120), width= 3, joinstyle= "round", infill_color= ""),
 
-                sgc.Text((10, 165), "sgc.Rectangle:"),
-                sgc.Rectangle((130, 155), (150, 175), width= 5),
-                sgc.Rectangle((160, 155), (190, 175), width=2, dash=(11, 1)),
+                        sgc.Text((10, 165), "sgc.Rectangle:"),
+                        sgc.Rectangle((130, 155), (150, 175), width= 5),
+                        sgc.Rectangle((160, 155), (190, 175), width=2, dash=(11, 1)),
 
-                sgc.Text((10, 195), "sgc.Text:"),
-                sgc.Text((90, 195), "Example", fonttype= sg.font_windows.Comic_Sans_MS, font_underline= True, font_bold= True),
+                        sgc.Text((10, 195), "sgc.Text:"),
+                        sgc.Text((90, 195), "Example", fonttype= sg.font_windows.Comic_Sans_MS, font_underline= True, font_bold= True),
 
-                sgc.Text((10, 225), "sgc.Image:"),
-                sgc.Image((100, 225), sg.file_from_b64(python_logo), anchor= "w", image_width= 15),
+                        sgc.Text((10, 225), "sgc.Image:"),
+                        sgc.Image((100, 225), sg.file_from_b64(python_logo), anchor= "w", image_width= 15),
 
-                sgc.Element(
-                    (10, 245),
-                    sg.Frame([
-                        [
-                            sg.T("sgc.Element")
-                        ],[
-                            sg.Button("Put any sg-element onto your canvas!!")
-                        ]
-                    ]),
-                    anchor= "nw",
-                ),
+                        sgc.Element(
+                            (10, 245),
+                            sg.Frame([
+                                [
+                                    sg.T("sgc.Element")
+                                ],[
+                                    sg.Button("Put any sg-element onto your canvas!!")
+                                ]
+                            ]),
+                            anchor= "nw",
+                        ),
 
-                height= 300,
-            )
+                        sgc.Text(
+                            (295, 100),
+                            "sg.Scrollbar ->",
+                            anchor= "e"
+                        ),
+                        sgc.Text(
+                            (150, 325),
+                            "↓ sg.ScrollbarHorizontal ↓",
+                            anchor= "s"
+                        ),
+
+                        height= 330,
+                        width= 300,
+                        confine= True,
+                        scrollregion= (0, 0, 500, 500),
+                    ),
+                    sg.Scrollbar().bind_to_element(canv)
+                ],[
+                    sg.ScrollbarHorizontal().bind_to_element(canv)
+                ]
+            ])
         ]
     ], fake_key= "Canvas")
 
@@ -294,7 +315,7 @@ def preview_all_elements():
 
     layout = [
         [
-            sg.T("If this looks a bit shitty, try applying a theme.\n"
+            sg.T("If this looks bad, try applying a theme.\n"
                  "Just call sg.Themes.FourColors.Emerald()\n"
                  "before starting this example.")
         ],[

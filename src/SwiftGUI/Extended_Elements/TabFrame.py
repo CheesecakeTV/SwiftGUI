@@ -8,9 +8,6 @@ from SwiftGUI.Widget_Elements.Notebook import Notebook
 
 
 class TabFrame(Frame):
-    """
-    Copy this class ot create your own Widget
-    """
     _tk_widget_class: type[tk.Frame] = tk.Frame  # Class of the connected widget
     defaults = GlobalOptions.TabFrame
 
@@ -99,7 +96,10 @@ class TabFrame(Frame):
         )
 
         if fake_key is None:
-            fake_key = key
+            if key is not None:
+                fake_key = key
+            elif text is not None:
+                fake_key = text
 
         self.fake_key = fake_key
         assert fake_key is not None, "You have to supply a fake_key, or a key to every TabFrame. fake_key only has to be unique inside the corresponding sg.Notebook!"

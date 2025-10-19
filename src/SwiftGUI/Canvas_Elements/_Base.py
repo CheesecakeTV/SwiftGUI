@@ -97,6 +97,18 @@ class BaseCanvasElement(sg.BaseWidget): # Inheritance mainly for the update-rout
         self.canvas.tk_widget.moveto(self.canvas_id, x, y)
         return self
 
+    #@sg.BaseWidget._run_after_window_creation
+    def move(self, x: float, y: float) -> Self:
+        """
+        Move the element in the specified direction
+
+        :param x: Change in x
+        :param y: Change in y
+        :return:
+        """
+        self.canvas.tk_widget.move(self.canvas_id, x, y)
+        return self
+
     @staticmethod
     def _flatten(tuplelist: Iterable[tuple[Any, ...]]) -> list[Any]:
         """

@@ -63,7 +63,3 @@ class Bitmap(Canvas_Elements.BaseCanvasElement):
             state = state,
         )
 
-    def update_coords(self, x: float, y: float) -> Self:
-        super().update_coords((x, y))
-        return self
-

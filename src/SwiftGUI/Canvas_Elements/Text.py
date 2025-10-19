@@ -37,10 +37,13 @@ class Text(Canvas_Elements.BaseCanvasElement):
             color_active: str | sg.Color = None,
             color_disabled: str | sg.Color = None,
 
-            stipple: sg.Literals.bitmap = None,
-            stippleoffset: str | tuple[float, float] = None,
-            stipple_active: sg.Literals.bitmap = None,
-            stipple_disabled: sg.Literals.bitmap = None,
+            # Doesn't work and won't be used anyways...
+            # If you do want to stipple your text, pass it via the tk_kwargs, or tell me how to fix it.
+
+            # stipple: sg.Literals.bitmap = None,
+            # stippleoffset: str | tuple[float, float] = None,
+            # stipple_active: sg.Literals.bitmap = None,
+            # stipple_disabled: sg.Literals.bitmap = None,
 
             state: sg.Literals.canv_elem_state = None,
 
@@ -65,10 +68,10 @@ class Text(Canvas_Elements.BaseCanvasElement):
             color = color,
             color_active = color_active,
             color_disabled = color_disabled,
-            stipple = stipple,
-            stippleoffset = stippleoffset,
-            stipple_active = stipple_active,
-            stipple_disabled = stipple_disabled,
+            # stipple = stipple,
+            # stippleoffset = stippleoffset,
+            # stipple_active = stipple_active,
+            # stipple_disabled = stipple_disabled,
             state = state,
             anchor = anchor,
             justify = justify,

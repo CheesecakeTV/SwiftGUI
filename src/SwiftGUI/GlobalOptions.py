@@ -11,123 +11,111 @@ import SwiftGUI as sg
 # Every option-class will be stored in here
 all_option_classes:list[Union["_DefaultOptionsMeta",type]] = list()
 
-_ignore_keys = ["apply","reset_to_default","single","persist_changes","made_changes"]
+# Those keys aren't an option
+_ignore_keys = {"apply","reset_to_default","single","persist_changes","made_changes"}
+
+"""
+This code is written with performance as the main focus.
+It's not clean, not beautiful, just quick.
+"""
 
 class _DefaultOptionsMeta(type):
 
     def __new__(mcs, name, bases, namespace):
-        _all_defaults = dict(filter(lambda a: not a[0].startswith("_") and not a[0] in _ignore_keys, namespace.items()))
+        _all_defaults = dict(filter(lambda a: a[1] is not None and not a[0].startswith("_") and not a[0] in _ignore_keys, namespace.items()))
+        namespace["_all_defaults"] = _all_defaults
 
-        # Remove NONE-values so they don't overwrite non-None-values of higher classes
-        namespace = dict(filter(lambda a: a[1] is not None, namespace.items()))
         cls:"DEFAULT_OPTIONS_CLASS"|type = super().__new__(mcs, name, bases, namespace)
-
-        cls._all_defaults = _all_defaults # All attributes including None-Attributes
-
-        prev = cls.__mro__[1]
-        cls._dict = dict(cls.__dict__)
-        cls._reset_all = False
-
-        if hasattr(prev,"_dict"):
-            cls._dict.update(dict(prev.__dict__))
-
-        cls.made_changes = True
-        cls._persist_changes()
+        #cls._all_defaults = _all_defaults
 
         all_option_classes.append(cls)
 
         return cls
 
     def __setattr__(self, key, value):
-        if not key.startswith("_") and not key == "made_changes":
-            self.made_changes = True
-
-        super().__setattr__(key,value)
+        if key[0] == "_":
+            super().__setattr__(key, value)
+            return
 
         if value is None:
-            delattr(self,key)
+            # Remove the attribute from this class
+            if key in self._provides:
+                self._provides.remove(key)
+            if key in self._up_to_date:
+                self._up_to_date.remove(key)
+        else:
+            self._values[key] = value
+            self._provides.add(key)
+            self._up_to_date.add(key)
 
+            if key in self._unavailable:
+                self._unavailable.remove(key)
+
+            for cl in self._subscriptions:
+                if key in cl._unavailable:
+                    cl._unavailable.remove(key)
+
+        for cl in self._subscriptions:
+            if key in cl._up_to_date and not key in cl._provides:   # Invalidate this key, if the class itself doesn't provide it too
+                cl._up_to_date.remove(key)
+
+    def __delattr__(self, item):
+        self.__setattr__(item, None)
+
+        #super().__setattr__(key, value)
+
+    # Todo: __getattribute__ so you can use this like a normal class too
+
+    _subscriptions: set["_DefaultOptionsMeta"]
+    def _subscribe(cls, me: "_DefaultOptionsMeta"):
+        """
+        Subscribed classes will invalidate their value if parent-class value changes
+
+        :param me:
+        :return:
+        """
+        cls._subscriptions.add(me)
+
+    def _update_what_you_need(cls, update_from: "_DefaultOptionsMeta"):
+        """
+        Update all keys that aren't up to date from "update_from".
+        :param update_from: class to take the options from
+        :return:
+        """
+        not_up_to_date = update_from._up_to_date.difference(cls._up_to_date)
+        new_values = {key:update_from._values[key] for key in not_up_to_date}
+        cls._values.update(new_values)
+        cls._up_to_date.update(not_up_to_date)  # These values are now up to date
+
+    _provides: set[str]     # What values this class had defined. Don't overwrite these from superclasses!
+    _values: dict[str: Any] # The actual, saved values
+    _up_to_date: set[str]   # What values are refreshed and can be used
+    _unavailable: set[str]  # All keys that weren't found before
     def reset_to_default(self):
         """
         Reset all configuration done to any options inside this class
         :return:
         """
-        # I know this is very inefficient, but it's not used that often.
-        # Don't speed up a function that only runs once every program execution...
-        attributes = set(filter(lambda a: not a.startswith("_") and not a in _ignore_keys, self.__dict__.keys()))
+        self._provides = set(self._all_defaults.keys())
+        self._up_to_date = self._provides.copy()
+        self._values = self._all_defaults.copy()
+        self._unavailable = set()
 
-        for key,val in self._all_defaults.items():
-            setattr(self,key,val)
-
-        for key in attributes.difference(self._all_defaults.keys()):
-            delattr(self,key)
-
-class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
-    """
-    Derive from this class to create a "blank" global-options template.
-
-    DON'T ADD ANY OPTIONS HERE!
-    """
-
-    _prev_dict:dict = None
-    _prev_class_dict:dict = None
-
-    @classmethod
-    def _persist_changes(cls):
+    _superclasses: list["_DefaultOptionsMeta"]
+    def _fetch(self, keys: set):
         """
-        Refreshes the _dict if necessary
+        Update the given keys from super-classes, if necessary.
+
+        :param keys:
         :return:
         """
-        cls._check_for_changes()
-        if not cls.made_changes:
-            return
-        cls.made_changes = False
+        for cl in self._superclasses:
+            if not keys.difference(self._up_to_date):   # Done
+                return
 
-        collected = dict()
-        for i in cls.__mro__[-1::-1]:
-            collected.update(i.__dict__)
+            self._update_what_you_need(cl)  # Fetch non-up-to-date values
 
-        cls._dict = dict(filter(lambda a: not a[0].startswith("_") and not a[0] in _ignore_keys, collected.items()))
-
-    @classmethod
-    def _check_for_changes(cls):
-        """
-        Check if any parent-class changed anything
-        :return:
-        """
-        if cls.made_changes:
-            return
-
-        my_iter = iter(cls.__mro__[-3::-1])
-        for i in my_iter:    # Check higher classes
-            if i.made_changes:
-                cls.made_changes = True
-                break
-
-        for i in my_iter:   # Set changes for all the other classes between you and changed
-            i.made_changes = True
-
-    @classmethod
-    def apply(cls,apply_to:dict) -> dict:
-        """
-        Apply default configuration TO EVERY NONE-ELEMENT of apply_to
-
-        :param apply_to: It will be changed AND returned
-        :return: apply_to will be changed AND returned
-        """
-        cls._persist_changes()
-        my_dict = cls._dict
-
-        # Get keys with value None that are also in the global options
-        items_change:Iterable[tuple] = filter(lambda a: a[1] is None and a[0] in my_dict , apply_to.items())
-
-        for key,_ in items_change:
-            apply_to[key] = my_dict[key]
-
-        return apply_to
-
-    @classmethod
-    def single(cls,key:str,val:Any = None,default:Any=None) -> Any:
+    def single(self, key: str, val: Any = None, default: Any = None) -> Any:
         """
         val will be returned.
         If val is None, cls.key will be returned.
@@ -137,14 +125,75 @@ class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
         :param val: User-val
         :return:
         """
-        cls._persist_changes()
-        if not val is None:
+        if val is not None:
             return val
 
-        if hasattr(cls,key):
-            return getattr(cls,key)
+        if not key in self._up_to_date and not key in self._unavailable:
+            self._fetch({key})
 
-        return default
+        if key in self._up_to_date:
+            return self._values.get(key)
+        else:
+            return default
+
+    def apply(self, apply_to: dict) -> dict:
+        """
+        Apply default configuration TO EVERY NONE-ELEMENT of apply_to
+
+        :param apply_to: It will be changed AND returned
+        :return: apply_to will be changed AND returned
+        """
+        none_vals = dict(filter(lambda a: a[1] is None, apply_to.items()))  # Get all None-vals
+
+        needed_keys = set(none_vals.keys()).difference(
+            self._up_to_date.union(self._unavailable)    # Ignore up_to_date and unavailable keys
+        )
+
+        if needed_keys:
+            self._fetch(needed_keys)
+
+        none_vals.update({
+            key: self._values.get(key) for key in none_vals.keys() if key in self._up_to_date
+        })
+        apply_to.update(none_vals)
+
+        return apply_to
+
+
+class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
+    """
+    Derive from this class to create a "blank" global-options template.
+
+    DON'T ADD ANY OPTIONS HERE!
+    """
+
+    def __init_subclass__(cls, **kwargs):
+        cls.reset_to_default()
+
+        cls._subscriptions = set()  # All classes deriving this class
+        cls._superclasses = cls.__mro__[1:-2]
+        for mc in cls._superclasses:
+            mc._subscribe(cls)
+
+
+# class Test(DEFAULT_OPTIONS_CLASS):
+#     #hallo = "Welt"
+#     ...
+#
+# class TestSub(Test):
+#     wie_gehts = "Gut"
+#
+# Test.hallo = "Neu"
+#
+# print(Test.apply({"hallo":None}))
+# print(TestSub.apply({"hallo":None}))
+#
+# Test.hallo = None
+#
+# print(Test.apply({"hallo":None}))
+# print(TestSub.apply({"hallo":None}))
+#
+# exit()
 
 class Common(DEFAULT_OPTIONS_CLASS):
     """
