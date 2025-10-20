@@ -1,6 +1,8 @@
 import SwiftGUI as sg
 
-sg.Themes.FourColors.Emerald()
+#sg.Themes.FourColors.Emerald()
+sg.Examples.preview_all_elements()
+exit()
 
 ### Layout ###
 inner_layout = [

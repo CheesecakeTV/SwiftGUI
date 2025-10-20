@@ -16,7 +16,7 @@ _ignore_keys = {"apply","reset_to_default","single","persist_changes","made_chan
 
 """
 This code is written with performance as the main focus.
-It's not clean, not beautiful, just quick.
+It's not clean, not beautiful, just efficient.
 """
 
 class _DefaultOptionsMeta(type):
@@ -208,9 +208,9 @@ class Common(DEFAULT_OPTIONS_CLASS):
 
 class Common_Background(DEFAULT_OPTIONS_CLASS):
     """
-    Common background-color
+    Common background-color, mainly for pseudo-transparent elements
     """
-    background_color: str | Color = None
+    background_color: str | Color = "#F0F0F0"
 
 class Common_Field_Background(DEFAULT_OPTIONS_CLASS):
     """
