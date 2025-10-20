@@ -1,13 +1,13 @@
 [project]
 name = "SwiftGUI"
-version = "0.10.4"
+version = "0.10.5"
 packages = [
     { include = "SwiftGUI", from = "src" }
 ]
 authors = [
-  { name="Eric aka LeButch", email="cheesecaketv53+pypi@gmail.com" },
+  { name="Eric aka CheesecakeTV", email="cheesecaketv53+pypi@gmail.com" },
 ]
-description = "An easy-to-use package for creating functional GUIs very quickly"
+description = "An easy-to-use package for quickly creating smaller and bigger GUIs"
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [
