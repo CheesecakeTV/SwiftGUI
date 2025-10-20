@@ -24,6 +24,7 @@ class Notebook(BaseWidgetTTK):
             *tabs: Frame,
 
             default_event: bool = None,
+            event_on_backend_selection: bool = None,
 
             tab_texts: dict[Any, str] = None,
 
@@ -100,7 +101,8 @@ class Notebook(BaseWidgetTTK):
                              text_color_tabs_active=text_color_tabs_active, tabposition=tabposition,
                              fonttype_tabs=fonttype_tabs, fontsize_tabs=fontsize_tabs, font_bold_tabs=font_bold_tabs,
                              font_italic_tabs=font_italic_tabs, font_underline_tabs=font_underline_tabs,
-                             font_overstrike_tabs=font_overstrike_tabs, **tk_kwargs)
+                             font_overstrike_tabs=font_overstrike_tabs, event_on_backend_selection=event_on_backend_selection,
+                             **tk_kwargs)
 
 
         self._default_event = default_event
@@ -136,6 +138,9 @@ class Notebook(BaseWidgetTTK):
     _background_color_tabs_active = None   # If this stays None, normal background_color will be applied
     def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         match key:
+            case "event_on_backend_selection":
+                self._event_on_backend_selection = new_val
+
             case "tabposition":
                 self._config_ttk_style(tabposition=new_val)
             case "apply_parent_background_color":
@@ -223,6 +228,7 @@ class Notebook(BaseWidgetTTK):
         :param index:
         :return:
         """
+        self._prev_index = index
         self.tk_widget.select(index)
 
     def _get_value(self) -> Any | None: # Key of current tab
@@ -231,8 +237,10 @@ class Notebook(BaseWidgetTTK):
     @BaseElement._run_after_window_creation
     def set_value(self,val: Any):
         assert val in self._element_keys, "You tried to set the value of a Notebook (Tabview) to a key that doesn't exist. If you want to set an index, use .index instead"
-        val = self._element_keys.index(val)
-        self.tk_widget.select(val)
+
+        index = self._element_keys.index(val)
+        self._prev_index = index
+        self.tk_widget.select(index)
 
     def _init_containing(self):
         for tab in self._elements:
@@ -263,15 +271,22 @@ class Notebook(BaseWidgetTTK):
 
     _default_event_callback_function: Callable = None
     def init_window_creation_done(self):
-        """Don't touch!"""
         super().init_window_creation_done()
 
+        self._prev_index = self.index
         self._default_event_callback_function = self.window.get_event_function(self, self.key, key_function=self._key_function)
         self.tk_widget.bind("<<NotebookTabChanged>>", self._tab_change_callback)
 
+    _prev_index: int
+    _event_on_backend_selection: bool
     def _tab_change_callback(self, *_):
         """Called when the tab changes"""
         index = self.index
+        if not self._event_on_backend_selection and index == self._prev_index:
+            return
+
+        self._prev_index = index
+
         if self._tab_event_functions[index]:
             self._tab_event_functions[index]()
             return
@@ -296,7 +311,7 @@ class Notebook(BaseWidgetTTK):
         """
 
         new_key = ""
-        match (key_extention is not None,key is not None):
+        match (key_extention is not None, key is not None):
             case (True,True):
                 new_key = key + key_extention
             case (False,True):

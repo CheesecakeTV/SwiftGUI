@@ -494,6 +494,7 @@ class SeparatorVertical(Separator):
 
 class Notebook(Common_Textual, Common_Background):
     borderwidth: int = 2
+    event_on_backend_selection: bool = False
     apply_parent_background_color: bool = True
     takefocus: bool = False
     background_color_tabs: str | Color = None

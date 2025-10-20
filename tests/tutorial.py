@@ -1,32 +1,45 @@
 import SwiftGUI as sg
 
-#sg.Themes.FourColors.Emerald()
-sg.Examples.preview_all_elements()
-exit()
+sg.Themes.FourColors.HotAsh()
 
-### Layout ###
-inner_layout = [
-    [sg.T("Smaller element")],
-    [sg.HorizontalSeparator()], # <-- here
-    [sg.Button("Another smaller element")],
-    [sg.T("<-- sg.Listbox")]
-]
-
-layout:list[list[sg.BaseElement]] = [
+tab1 = sg.Frame([
     [
-        sg.Listbox(
-            range(10),
-            scrollbar= False,
-        ),
-        sg.VerticalSeparator(), # <-- here
-        sg.Frame(
-            inner_layout,
+        sg.T("This is Tab 1!")
+    ],[
+        sg.Button("Some elements")
+    ],[
+        sg.Listbox(range(10)).set_index(3)
+    ]
+], key= "Tab 1")
+
+tab2 = sg.Frame([
+    [
+        sg.T("This is Tab 2!")
+    ],[
+        sg.Button("Some elements")
+    ]
+], key= "Tab 2")
+
+tab3 = sg.Frame([
+    [
+        sg.T("This is Tab 3!")
+    ],[
+        sg.Button("Some elements")
+    ]
+], key= "Tab 3")
+
+layout = [
+    [
+        my_nb := sg.Notebook(
+            tab1, tab2, tab3,
+            default_event= True,
+            key_function= lambda: print("Tab changed!"),
         )
     ]
 ]
 
-w = sg.Window(layout)
+w = sg.Window(layout, padx=30, pady=30)
 
 for e,v in w:
-    ...
+    print(e, v)
 
