@@ -1,6 +1,6 @@
 import tkinter.ttk as ttk
 from collections.abc import Iterable, Callable
-from typing import Any
+from typing import Any, Hashable
 from SwiftGUI.Compat import Self
 
 from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement, Frame, Font
@@ -26,9 +26,9 @@ class Notebook(BaseWidgetTTK):
             default_event: bool = None,
             event_on_backend_selection: bool = None,
 
-            tab_texts: dict[Any, str] = None,
+            tab_texts: dict[Hashable, str] = None,
 
-            key: Any = None,
+            key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
 
             background_color: str | Color = None,
@@ -83,7 +83,7 @@ class Notebook(BaseWidgetTTK):
         if tk_kwargs is None:
             tk_kwargs = dict()
 
-        if tab_texts is None:
+        if tab_texts is None:   # Todo: This should be changeable in .update()
             tab_texts = dict()
         self._tab_texts = tab_texts
 
@@ -109,7 +109,7 @@ class Notebook(BaseWidgetTTK):
 
         # Todo: These could be parameters too
         self._config_ttk_style(tabmargins = 0)
-        self._config_ttk_style(borderwidth = 1)
+        #self._config_ttk_style(borderwidth = 1)
 
 
     def _update_font(self):
@@ -330,3 +330,10 @@ class Notebook(BaseWidgetTTK):
         self._tab_event_functions[tab_index] = self.window.get_event_function(self._elements[tab_index], new_key, key_function=key_function)
 
         return self
+
+    def __len__(self) -> int:
+        """
+        Returns how many tabs are contained in this notebook
+        :return:
+        """
+        return len(self._elements)
