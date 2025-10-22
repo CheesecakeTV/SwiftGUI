@@ -201,8 +201,8 @@ class Common(DEFAULT_OPTIONS_CLASS):
     """
     cursor:Literals.cursor = None   # Find available cursors here (2025): https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/cursors.html
     takefocus:bool = True
-    expand:bool = False
-    expand_y: bool = False
+    # expand:bool = False
+    # expand_y: bool = False
     highlightcolor: Color | str = None
     highlightbackground_color: str | Color = None
 

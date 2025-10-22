@@ -7,8 +7,6 @@ Copy elements/parts of the layout
 
 Simplified Elements/Widgets with less options for beginners
 
-Tool to convert png/jpg into ico
-
 Hide headings of sg.Table so it can be used as a listbox
 sg.Table could have widgets inserted into rows
 
@@ -18,6 +16,5 @@ Additional event-loops for combined elements
 
 Bug: LabelFrames without label still have a widget with its own background-color attached to them.
 
-Add a way to include matplotlib graphs
 
 

@@ -1,6 +1,8 @@
 import SwiftGUI as sg
 
 sg.Themes.FourColors.HotAsh()
+sg.Examples.preview_all_elements()
+exit()
 
 tab1 = sg.Frame([
     [
