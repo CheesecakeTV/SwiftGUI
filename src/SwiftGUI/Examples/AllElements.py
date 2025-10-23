@@ -321,7 +321,7 @@ def preview_all_elements():
                 sg.T("Module not found!"),
             ],[
                 sg.T("Install "),
-                sg.In("SwiftGUI_Matplot", readonly= True, takefocus=False),
+                sg.In("SwiftGUI_Matplot", readonly= True, takefocus=False, justify="center"),
                 sg.T(" to use this feature")
             ]
         ]

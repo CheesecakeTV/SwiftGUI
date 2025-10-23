@@ -1,5 +1,11 @@
 
 # This is used to make SwiftGUI compatible with python 3.10
+def ErrorThrower(text: str, error_type:type = ModuleNotFoundError):
+    class ErrorThrower_Class:
+        def __init__(self, *_, **__):
+            raise error_type(text)
+
+    return ErrorThrower_Class
 
 import sys
 from collections.abc import Iterator

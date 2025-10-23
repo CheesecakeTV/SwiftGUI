@@ -175,7 +175,6 @@ class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
         for mc in cls._superclasses:
             mc._subscribe(cls)
 
-
 # class Test(DEFAULT_OPTIONS_CLASS):
 #     #hallo = "Welt"
 #     ...
@@ -194,6 +193,12 @@ class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
 # print(TestSub.apply({"hallo":None}))
 #
 # exit()
+
+class EMPTY(DEFAULT_OPTIONS_CLASS):
+    """
+    Use this class if no global options should be applied
+    """
+    pass
 
 class Common(DEFAULT_OPTIONS_CLASS):
     """

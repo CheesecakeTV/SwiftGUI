@@ -97,3 +97,9 @@ from .DecoratorKeys import attach_function_to_key
 
 from . import Canvas_Elements
 
+try:
+    from SwiftGUI_Matplot import Matplot
+except ImportError:
+    Matplot: "Matplot" = Compat.ErrorThrower("To use sg.Matplot, SwiftGUI_Matplot must be installed!")
+
+
