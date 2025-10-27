@@ -1,29 +1,20 @@
 import SwiftGUI as sg
+import numpy as np
 
-sg.Themes.FourColors.Emerald()
+sg.Themes.FourColors.SinCity()
 
-### Layout ###
-inner_layout = [
-    [sg.T("Smaller element")],
-    [sg.HorizontalSeparator()], # <-- here
-    [sg.Button("Another smaller element")],
-    [sg.T("<-- sg.Listbox")]
-]
-
-layout:list[list[sg.BaseElement]] = [
+layout = [
     [
-        sg.Listbox(
-            range(10),
-            scrollbar= False,
-        ),
-        sg.VerticalSeparator(), # <-- here
-        sg.Frame(
-            inner_layout,
-        )
+        my_plot := sg.Matplot(navigation_bar=True)
     ]
 ]
 
-w = sg.Window(layout)
+x = np.linspace(-20, 20, 100)
+y = np.sin(x) / x
+
+my_plot.plot(x, y)
+
+w = sg.Window(layout, padx=30, pady=30)
 
 for e,v in w:
     ...

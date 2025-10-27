@@ -16,7 +16,7 @@ _ignore_keys = {"apply","reset_to_default","single","persist_changes","made_chan
 
 """
 This code is written with performance as the main focus.
-It's not clean, not beautiful, just quick.
+It's not clean, not beautiful, just efficient.
 """
 
 class _DefaultOptionsMeta(type):
@@ -175,7 +175,6 @@ class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
         for mc in cls._superclasses:
             mc._subscribe(cls)
 
-
 # class Test(DEFAULT_OPTIONS_CLASS):
 #     #hallo = "Welt"
 #     ...
@@ -195,22 +194,28 @@ class DEFAULT_OPTIONS_CLASS(metaclass=_DefaultOptionsMeta):
 #
 # exit()
 
+class EMPTY(DEFAULT_OPTIONS_CLASS):
+    """
+    Use this class if no global options should be applied
+    """
+    pass
+
 class Common(DEFAULT_OPTIONS_CLASS):
     """
     Every widget
     """
     cursor:Literals.cursor = None   # Find available cursors here (2025): https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/cursors.html
     takefocus:bool = True
-    expand:bool = False
-    expand_y: bool = False
+    # expand:bool = False
+    # expand_y: bool = False
     highlightcolor: Color | str = None
     highlightbackground_color: str | Color = None
 
 class Common_Background(DEFAULT_OPTIONS_CLASS):
     """
-    Common background-color
+    Common background-color, mainly for pseudo-transparent elements
     """
-    background_color: str | Color = None
+    background_color: str | Color = "#F0F0F0"
 
 class Common_Field_Background(DEFAULT_OPTIONS_CLASS):
     """
@@ -493,7 +498,8 @@ class SeparatorVertical(Separator):
     ...
 
 class Notebook(Common_Textual, Common_Background):
-    borderwidth: int = 2
+    borderwidth: int = 1
+    event_on_backend_selection: bool = False
     apply_parent_background_color: bool = True
     takefocus: bool = False
     background_color_tabs: str | Color = None

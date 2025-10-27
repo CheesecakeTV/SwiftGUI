@@ -57,7 +57,7 @@ class BaseElement:
     key:Any = None  # If given, this will be written to the event-value. Elements without a key can not throw key-events
     _key_function: Callable | Iterable[Callable] = None  # Called as an event
 
-    defaults:type[GlobalOptions.DEFAULT_OPTIONS_CLASS] = GlobalOptions.Common  # Change this to apply a different default configuration
+    defaults:type[GlobalOptions.DEFAULT_OPTIONS_CLASS] = GlobalOptions.EMPTY  # Change this to apply a different default configuration
 
     # So you can use it on inheriting classes without importing it
     _run_after_window_creation = run_after_window_creation

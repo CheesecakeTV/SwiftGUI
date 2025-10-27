@@ -303,6 +303,31 @@ def preview_all_elements():
         ]
     ], fake_key= "Canvas")
 
+    try:
+        import SwiftGUI_Matplot
+        swiftgui_matplotlib = [
+            [
+                my_plot := SwiftGUI_Matplot.Matplot(
+                    title= "SwiftGUI_Matplot.Matplot"
+                )
+            ]
+        ]
+        x = list(range(-11, 12))
+        y = [(i / 3) ** 3 for i in x]
+        my_plot.plot(x, y)
+    except ImportError:
+        swiftgui_matplotlib = [
+            [
+                sg.T("Module not found!"),
+            ],[
+                sg.T("Install "),
+                sg.In("SwiftGUI_Matplot", readonly= True, takefocus=False, justify="center"),
+                sg.T(" to use this feature")
+            ]
+        ]
+
+    swiftgui_matplot = sg.TabFrame(swiftgui_matplotlib, text= "Matplot", pady=30)
+
     tabs = [
         smaller_widgets,
         extended_elements,
@@ -311,6 +336,7 @@ def preview_all_elements():
         combined_elements,
         images,
         canvas_tab,
+        swiftgui_matplot,
     ]
 
     layout = [
