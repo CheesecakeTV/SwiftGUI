@@ -42,7 +42,7 @@ class global_option_browser(sg.BasePopup):
             ],[
                 my_table := sg.Table(
                     [[i, ""] for i in all_options],
-                    headings= ["Provided option", "Value"],
+                    headings= ["Directly provided option", "Value"],
                     column_width= [40, 20],
                 ).sort(),
             ]
@@ -58,7 +58,7 @@ class global_option_browser(sg.BasePopup):
             ],[
                 my_table := sg.Table(
                     [[i, ""] for i in all_options],
-                    headings= ["Available option", "Value"],
+                    headings= ["All available option", "Value"],
                     column_width= [40, 20],
                 ).sort(),
             ]
@@ -83,15 +83,30 @@ class global_option_browser(sg.BasePopup):
 
         self._inherits_table = my_table
 
+        description = sg.Frame([
+            [
+                sg.T("Inherits from: Super-classes of the selection. These classes can provide options for the selected class.")
+            ],[
+                sg.T()
+            ], [
+                sg.T("Directly provided options: Options that were set inside this class")
+            ],[
+                sg.T()
+            ], [
+                sg.T("All available options: Options inherited from super-classes and directly provided ones")
+            ]
+        ], alignment= "left", padx=15)
+
         layout = [
             [
                 layout_left,
+                description,
             ],[
-                sg.Button(
-                    "Clear selection",
-                    key_function= self._clear_selection
-                )
-            ],[
+            #     sg.Button(
+            #         "Clear selection",
+            #         key_function= self._clear_selection
+            #     )
+            # ],[
                 layout_inheritance,
                 layout_middle,
                 layout_right,
@@ -100,6 +115,9 @@ class global_option_browser(sg.BasePopup):
 
         super().__init__(
             layout,
+            title= "Currently available global options",
+            alignment = "left",
+            keep_on_top= False,
         )
 
     def _event_loop(self, e: Hashable, v: sg.ValueDict):
@@ -127,6 +145,7 @@ class global_option_browser(sg.BasePopup):
 
         if refresh_inherit:
             self._inherits_table.overwrite_table(self._tablefy(cls.__mro__[:-1]))
+            self._inherits_table.set_index(0)
 
     def _clear_selection(self):
         self._provided_table.reset_filter()

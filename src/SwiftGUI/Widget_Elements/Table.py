@@ -126,6 +126,8 @@ class Table(BaseWidgetTTK, BaseScrollbar):
     table_elements: tuple[TableRow[Any]]   # Prevent users from tampering with _elements...
     _element_dict: dict[int:TableRow[Any]] # Hash:Element ~ Elements as a dict to find them quicker
 
+    _tk_event_callback: Callable
+
     _headings: tuple    # Column headings
 
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Treeview.html
@@ -216,8 +218,20 @@ class Table(BaseWidgetTTK, BaseScrollbar):
                              font_overstrike_headings=font_overstrike_headings, sort_col_by_click=sort_col_by_click,
                              takefocus=takefocus, height=height, cursor=cursor, padding=padding, **tk_kwargs)
 
-        if default_event:
-            self.bind_event("<<TreeviewSelect>>",key=key,key_function=key_function)
+        self._default_event = default_event
+        self._key_function = key_function
+
+    _prev_selection = None
+    def _event_callback(self, *args):
+        if not self._default_event:
+            return
+
+        all_indexes = self.all_indexes
+        if self._prev_selection == all_indexes:
+            return
+        self._prev_selection = all_indexes
+
+        self._tk_event_callback(*args)
 
     _last_sort_direction: bool = None  # True, if sorted non-reversed, False if sorted reversed
     _last_sort_col: int = -1    # Col that got sorted last time
@@ -615,6 +629,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         :return:
         """
         new_vals = tuple(new_vals)
+        self._prev_selection = new_vals
 
         # if new_vals:  # No need, .value and .index don't work in extended mode anyways
         #     self.set_index(new_vals[0])
@@ -647,9 +662,12 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         :return:
         """
         if new_index is None:
+            self._prev_selection = tuple()
             self.tk_widget.selection_set()
             self.tk_widget.focus("")
             return
+
+        self._prev_selection = (new_index, )
 
         temp = str(hash(self._elements[new_index]))
         self.tk_widget.selection_set(temp)
@@ -658,6 +676,9 @@ class Table(BaseWidgetTTK, BaseScrollbar):
     def init_window_creation_done(self):
         """Don't touch!"""
         super().init_window_creation_done()
+
+        self._tk_event_callback = self.window.get_event_function(self, key=self.key, key_function=self._key_function)
+        self.tk_widget.bind("<<TreeviewSelect>>", self._event_callback)
 
         if self._headings:
             headings = iter(self._headings)
