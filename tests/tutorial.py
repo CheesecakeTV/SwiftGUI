@@ -2,6 +2,8 @@ import SwiftGUI as sg
 import numpy as np
 
 sg.Themes.FourColors.SinCity()
+sg.Examples.global_option_browser()
+exit()
 
 layout = [
     [

@@ -87,10 +87,10 @@ class _DefaultOptionsMeta(type):
         cls._values.update(new_values)
         cls._up_to_date.update(not_up_to_date)  # These values are now up to date
 
-    _provides: set[str]     # What values this class had defined. Don't overwrite these from superclasses!
-    _values: dict[str: Any] # The actual, saved values
-    _up_to_date: set[str]   # What values are refreshed and can be used
-    _unavailable: set[str]  # All keys that weren't found before
+    _provides: set[str] = set()      # What values this class had defined. Don't overwrite these from superclasses!
+    _values: dict[str: Any] = dict() # The actual, saved values
+    _up_to_date: set[str] = set()    # What values are refreshed and can be used
+    _unavailable: set[str] = set()   # All keys that weren't found before
     def reset_to_default(self):
         """
         Reset all configuration done to any options inside this class
@@ -101,7 +101,7 @@ class _DefaultOptionsMeta(type):
         self._values = self._all_defaults.copy()
         self._unavailable = set()
 
-    _superclasses: list["_DefaultOptionsMeta"]
+    _superclasses: list["_DefaultOptionsMeta"] = list()
     def _fetch(self, keys: set):
         """
         Update the given keys from super-classes, if necessary.
@@ -351,7 +351,6 @@ class GridFrame(Frame):
 
 class Checkbox(Common,Common_Textual, Common_Background):
     default_value: bool = False
-    default_event: bool = False,
     readonly: bool = None
     apply_parent_background_color: bool = True
     borderwidth:int = None
@@ -426,10 +425,10 @@ class FileBrowseButton(Button):
     file_browse_type: Literals.file_browse_types = "open_single"
     file_browse_filetypes: Literals.file_browse_filetypes = (("All files","*"),)
     dont_change_on_abort: bool = False
-    file_browse_initial_dir: PathLike | str = None,  # initialdir
-    file_browse_initial_file: str = None,  # initialfile
-    file_browse_title: str = None,  # title
-    file_browse_save_defaultextension: str = None,  # defaultextension
+    file_browse_initial_dir: PathLike | str = None  # initialdir
+    file_browse_initial_file: str = None  # initialfile
+    file_browse_title: str = None  # title
+    file_browse_save_defaultextension: str = None  # defaultextension
 
 class ColorChooserButton(Button):
     color_chooser_title: str = None

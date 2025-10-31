@@ -112,7 +112,7 @@ class TableRow(list):
         if isinstance(other,TableRow):  # Make comparisons a little quicker (hopefully)
             return hash(self) == hash(other)
 
-        return super().__eq__(other)
+        return tuple(self) == tuple(other)
 
 class Table(BaseWidgetTTK, BaseScrollbar):
     tk_widget:ttk.Treeview
@@ -564,7 +564,8 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         if isinstance(item, TableRow):
             return self._element_dict.get(str(hash(item)))
 
-        return self._elements.index(TableRow(self, item))
+        as_tuple = tuple(map(tuple, self._elements))
+        return as_tuple.index(tuple(item))
 
     def __len__(self):
         """Item-Count"""
@@ -637,7 +638,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         selections = map(self._element_dict.get, selections)
         return tuple(selections)
 
-    def set_index(self, new_index: int | None):
+    def set_index(self, new_index: int | None = None):
         """
         Select a specified row of the table
 
