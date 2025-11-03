@@ -2,22 +2,19 @@ import SwiftGUI as sg
 import numpy as np
 
 sg.Themes.FourColors.SinCity()
-sg.Examples.global_option_browser()
-exit()
 
 layout = [
     [
-        my_plot := sg.Matplot(navigation_bar=True)
+        sg.Button(
+            "Event",
+            key= "Event"
+        )
     ]
 ]
 
-x = np.linspace(-20, 20, 100)
-y = np.sin(x) / x
-
-my_plot.plot(x, y)
-
-w = sg.Window(layout, padx=30, pady=30)
+w = sg.Window(layout, padx=30, pady=30).init_timeout(key="Hi", seconds=0.5)
+w.init_timeout("Ho")
 
 for e,v in w:
-    ...
+    print(e,v)
 

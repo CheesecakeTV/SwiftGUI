@@ -3,14 +3,16 @@ import os
 import random
 import string
 import io
+import threading
 import tkinter as tk
 from os import PathLike
 from tkinter import ttk, Widget
 from collections.abc import Iterable,Callable
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any, Union, Hashable
 from SwiftGUI.Compat import Self
 import inspect
 from PIL import Image, ImageTk
+import time
 
 from SwiftGUI import BaseElement, Frame, ElementFlag, Literals, GlobalOptions, Color, Debug
 
@@ -328,13 +330,15 @@ class BaseKeyHandler(BaseElement):
             key_function = (key_function,)
 
         def single_event(*args):
+            self._timeout_last_event = time.time()
+
             did_refresh = False
 
             if key_function: # Call key-functions
                 self.refresh_values()
 
                 kwargs = {  # Possible parameters for function
-                    "w": self,  # Reference to main window
+                    "w": self,  # Reference to this "window"    # Todo: Decide if this should be a window instead
                     "e": key,   # Event-key, if there is one
                     "v": self._value_dict,   # All values
                     "val": None if me is None else me.value,    # Value of element that caused the event
@@ -413,6 +417,59 @@ class BaseKeyHandler(BaseElement):
         if self._grab_anywhere_window is not None:
             self._grab_anywhere_window.bind_grab_anywhere_to_element(widget)
         return Self
+
+    _timeout_fct: Callable  # Timeout-event-function
+    timeout_seconds: float # Timeout-time in seconds
+    timeout_active: bool = True # True, if the timeout should be active.
+    _timeout_last_event: float = 0  # When the last event occured
+    _timeout_thread: threading.Thread
+    @BaseElement._run_after_window_creation
+    def init_timeout(
+            self,
+            key: Hashable = None,
+            key_function: Callable | Iterable[Callable] = None,
+            seconds: float = 1,
+    ) -> Self:
+        """
+        Initialize the timeout-functionality.
+        Timeout includes key-function events.
+
+        :param key: key to throw for a keyed event
+        :param key_function: key-function to call
+        :param seconds: How many seconds until timeout occurs
+        :return:
+        """
+        assert key is not None or key_function is not None, "You defined neither a key, nor a key_function in init_timeout(...).\nYou need to define at least one of those."
+        assert not hasattr(self, "_timeout_fct"), ("\nThis key-handler (probably a Window) already has a timeout, you tried to initialize another one.\n"
+                                                   "To change the timeout-time, modify .timeout_seconds accordingly.\n"
+                                                   "To enable/disable the timeout, set .timeout_active to True/False.")
+
+        self.timeout_seconds = seconds
+        self._timeout_fct = self.get_event_function(
+            key= key,
+            key_function= key_function,
+        )
+        self._timeout_last_event = time.time()
+
+        self._timeout_thread = threading.Thread(daemon= True, target= self._timeout_thread_fct)
+        self._timeout_thread.start()
+
+        return self
+
+    def _timeout_thread_fct(self):
+        while True:
+            time.sleep(self.timeout_seconds)
+
+            time_since_timeout = time.time() - self._timeout_last_event - self.timeout_seconds
+            while time_since_timeout < 0:
+                # Some event was called while sleeping
+                time.sleep(- time_since_timeout)
+                time_since_timeout = time.time() - self._timeout_last_event - self.timeout_seconds
+
+            if not self.timeout_active:
+                continue
+
+            self._timeout_fct()
 
 class SubLayout(BaseKeyHandler):
     """
