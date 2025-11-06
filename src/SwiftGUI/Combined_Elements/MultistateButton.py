@@ -68,7 +68,8 @@ class MultistateButton(sg.BaseCombinedElement):
         if label_text:
             frame.update_after_window_creation(text = label_text)
 
-        super().__init__(frame = frame, key=key, key_function=key_function, apply_parent_background_color=apply_parent_background_color)
+        super().__init__(frame, key=key, key_function=key_function,
+                         apply_parent_background_color=apply_parent_background_color)
 
         self._update_initial(
             text_color = text_color,

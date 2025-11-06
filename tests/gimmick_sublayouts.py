@@ -17,7 +17,7 @@ class ButtonMat(sg.BaseCombinedElement):
             sg.Button(str(i), width= 3, key= str(i)) for i in range(15)
         ]])
 
-        super().__init__(frame, "Hi", disable_key_collection=True)
+        super().__init__(frame, "Hi", disable_internal_key_system=True)
 
     def _event_loop(self, e: Any, v: ValueDict):
         print("Combined loop:\t", e, v)
