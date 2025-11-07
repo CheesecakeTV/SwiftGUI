@@ -93,7 +93,7 @@ class Form(BaseCombinedElement):
                 key_function= (self.clear_all_values, self._throw_default_event)
             ))
 
-        super().__init__(frame= Frame(self.layout), key= key, key_function= key_function)
+        super().__init__(Frame(self.layout), key=key, key_function=key_function)
 
         if default_values:
             if isinstance(default_values, dict):

@@ -15,12 +15,8 @@ class Example(sg.BaseCombinedElement):
 
         ]
 
-        super().__init__(
-            frame= sg.Frame(self._layout),   # You can use any kind of Frame, e.g. LabelFrame
-            key= key,
-            key_function= key_function,
-            apply_parent_background_color= apply_parent_background_color,
-        )
+        super().__init__(frame=sg.Frame(self._layout), key=key, key_function=key_function,
+                         apply_parent_background_color=apply_parent_background_color)
 
         self._update_initial(
             # Put all of your options in here

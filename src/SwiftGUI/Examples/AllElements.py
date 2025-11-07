@@ -308,7 +308,7 @@ def preview_all_elements():
         swiftgui_matplotlib = [
             [
                 my_plot := SwiftGUI_Matplot.Matplot(
-                    title= "SwiftGUI_Matplot.Matplot"
+                    title= "sg.Matplot (or SwiftGUI_Matplot.Matplot)"
                 )
             ]
         ]

@@ -1,21 +1,25 @@
 import SwiftGUI as sg
-import numpy as np
 
-sg.Themes.FourColors.SinCity()
+
+class Example(sg.BaseCombinedElement):
+    def __init__(self):
+        layout = [
+            [
+                sg.Button("Hi")
+            ]
+        ]
+
+        super().__init__(
+            layout,
+        )
 
 layout = [
     [
-        my_plot := sg.Matplot(navigation_bar=True)
+        Example()
     ]
 ]
 
-x = np.linspace(-20, 20, 100)
-y = np.sin(x) / x
-
-my_plot.plot(x, y)
-
-w = sg.Window(layout, padx=30, pady=30)
+w = sg.Window(layout)
 
 for e,v in w:
     ...
-

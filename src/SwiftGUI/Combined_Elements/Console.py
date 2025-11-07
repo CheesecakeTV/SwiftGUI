@@ -48,13 +48,8 @@ class Console(sg.BaseCombinedElement):
         self.input: sg.Input = _input
         self.textField: sg.TextField = _textField
 
-        super().__init__(
-            frame= sg.Frame(self._layout),   # You can use any kind of Frame, e.g. LabelFrame
-            key= key,
-            key_function= key_function,
-            apply_parent_background_color= apply_parent_background_color,
-            disable_key_collection= True,   # Not required in this case, so let's save some performance
-        )
+        super().__init__(sg.Frame(self._layout), key=key, key_function=key_function,
+                         apply_parent_background_color=apply_parent_background_color, internal_key_system=False)
 
         self._update_initial(
             input_prefix = input_prefix,

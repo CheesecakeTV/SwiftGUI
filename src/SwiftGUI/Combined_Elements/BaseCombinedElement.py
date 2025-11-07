@@ -1,7 +1,7 @@
 from collections.abc import Iterable, Callable
 from typing import Any
 
-from SwiftGUI import BaseElement, SubLayout
+from SwiftGUI import BaseElement, SubLayout, Frame
 from SwiftGUI.ElementFlags import ElementFlag
 from SwiftGUI.Windows import ValueDict
 
@@ -9,29 +9,37 @@ class BaseCombinedElement(BaseElement):
     """
     Derive from this class to create an element consisting of multiple inner elements.
     """
+    _sg_widget: Frame | SubLayout
+
     def __init__(
             self,
-            frame,
+            layout: Frame | Iterable[Iterable[BaseElement]],
+            /,
             key: Any = None,
             key_function: Callable | Iterable[Callable] = None,
             apply_parent_background_color: bool = True,
-            disable_key_collection: bool = False,
+            internal_key_system: bool = True,
     ):
         """
 
-        :param frame: Pass a Frame containing all the elements you'd like to have inside this element
+        :param layout: Pass a layout or a Frame containing all the elements you'd like to have inside this element
         :param key: Pass a key to register it in main window
         :param apply_parent_background_color: True, if the background_color of the parent container should also apply to this frame
-        :param disable_key_collection: True, if keys should be passed up to the main event loop instead of .event_loop
+        :param internal_key_system: True, if keys should be passed up to the main event loop instead of ._event_loop
         """
         super().__init__()
 
-        if disable_key_collection:
-            self._has_sublayout = False
-            self._sg_widget = frame
+        if isinstance(layout, Frame):
+            frame = layout
         else:
+            frame = Frame(layout)
+
+        if internal_key_system:
             self._has_sublayout = True
             self._sg_widget = SubLayout(frame, self._event_loop)
+        else:
+            self._has_sublayout = False
+            self._sg_widget = frame
 
         self.key = key
         self._key_function = key_function
@@ -43,7 +51,7 @@ class BaseCombinedElement(BaseElement):
 
     def _event_loop(self, e: Any, v: ValueDict):
         """
-        All key-events will call this method.
+        All key-events will call this method, if internal key-system is enabled.
         You can use it exactly like your normal event-loop.
 
         :param e: Contains the element-key
@@ -91,12 +99,20 @@ class BaseCombinedElement(BaseElement):
 
     @property
     def w(self):
+        """
+        References the "window" (Sub-layout)
+        :return:
+        """
         if not self._has_sublayout:
-            raise AttributeError("You tried to get .w from a combined element that does not have a sub-layout.\nAparrently, you set disable_key_collection to true.")
+            return self.window
 
         return self._sg_widget
 
     def _get_value(self) -> Any:
+        """
+        Overwrite this to return a custom value
+        :return:
+        """
         return self._sg_widget.value
 
     def __getitem__(self, item):
