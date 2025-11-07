@@ -9,7 +9,7 @@ While most packages focus either on small, or big applications, SwiftGUI does bo
 Has some minor optimizations when running in Python 3.12+.
 
 # Getting started / documentation
-[Start your journey here](https://github.com/CheesecakeTV/SwiftGUI-Docs/blob/c1d77a97ba9f07cc72434592f46abbe416d00456/01%20Basic%20tutorials/01%20Getting-started.md)
+[Start your journey here](https://github.com/CheesecakeTV/SwiftGUI-Docs/blob/main/01%20Basic%20tutorials/01%20Getting-started.md)
 
 The documentation now has [its own repository](https://github.com/CheesecakeTV/SwiftGUI-Docs).
 
