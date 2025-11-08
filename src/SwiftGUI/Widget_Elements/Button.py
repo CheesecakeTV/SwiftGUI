@@ -56,10 +56,10 @@ class Button(BaseWidget):
             anchor: Literals.anchor = None,
             justify: Literal["left", "right", "center"] = None,
             background_color: str | Color = None,
-            overrelief: Literals.relief = None,
             text_color: str | Color = None,
 
             relief: Literals.relief = None,
+            overrelief: Literals.relief = None,
 
             repeatdelay:int = None,
             repeatinterval:int = None,

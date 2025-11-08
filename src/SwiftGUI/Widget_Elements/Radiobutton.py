@@ -1,19 +1,19 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal, Any
+from typing import Literal, Any, Hashable
 from SwiftGUI.Compat import Self
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
 _radio_id:int = 1
-_named_radio_groups: dict = dict()  # All groups with an actual name instead of ids
+_named_radio_groups: dict[Hashable, "RadioGroup"] = dict()  # All groups with an actual name instead of ids
 
 class RadioGroup:
     """
     This is used to identify which radio-buttons belong together.
     """
-    _name: str = ""
+    _name: Hashable = ""
 
     def __new__(cls, *args, **kwargs):
         if args:
@@ -38,7 +38,7 @@ class RadioGroup:
 
         return new_instance
 
-    def __init__(self, name: str = None):
+    def __init__(self, name: Hashable = None):
         """
         Pass a name, if you want to grap an already existing Group.
         :param name:
@@ -69,13 +69,9 @@ class Radiobutton(BaseWidget):
     _grab_anywhere_on_this = True
 
     _transfer_keys = {
-        # "background_color_disabled": "disabledbackground",
         "background_color": "background",
         "text_color_disabled": "disabledforeground",
         "highlightbackground_color": "highlightbackground",
-        # "selectbackground_color": "selectbackground",
-        # "select_text_color": "selectforeground",
-        # "pass_char":"show",
         "background_color_active": "activebackground",
         "text_color_active": "activeforeground",
         "text_color": "fg",
@@ -87,48 +83,55 @@ class Radiobutton(BaseWidget):
             self,
             text: str = None,
             /,
-            group: str | RadioGroup = None,
-            key: Any = None,
-            default_event: bool = False,
+            group: Hashable | RadioGroup = None,
+
+            key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
+            default_event: bool = False,
+
             default_value: bool = False,
+
+            disabled: bool = None,
+
+            background_color: str | Color = None,
+            background_color_active: str | Color = None,
+            apply_parent_background_color: bool = None,
+
+            text_color: str | Color = None,
+            text_color_disabled: str | Color = None,
+            text_color_active: str | Color = None,
+
+            borderwidth:int = None,
+
+            bitmap: Literals.bitmap = None,
+            bitmap_position: Literals.compound = None,
+
+            check_background_color: str | Color = None,
+            check_type: Literals.indicatoron = None,
+
+            width: int = None,
+            height: int = None,
+            padx: int = None,
+            pady: int = None,
+
+            cursor: Literals.cursor = None,
+            takefocus: bool = None,
+
+            anchor: Literals.anchor = None,
+            justify: Literal["left", "right", "center"] = None,
+
+            relief: Literals.relief = None,
+            overrelief: Literals.relief = None,
+            offrelief: Literals.relief = None,
+
             fonttype: str = None,
             fontsize: int = None,
             font_bold: bool = None,
             font_italic: bool = None,
             font_underline: bool = None,
             font_overstrike: bool = None,
-            readonly: bool = None,
-            borderwidth:int = None,
-            #
-            bitmap: Literals.bitmap = None,
-            text_color_disabled: str | Color = None,
-            check_background_color: str | Color = None,
-            bitmap_position: Literals.compound = None,
-            background_color_active: str | Color = None,
-            text_color_active: str | Color = None,
-            check_type: Literals.indicatoron = None,
-            #
-            width: int = None,
-            height: int = None,
-            padx: int = None,
-            pady: int = None,
-            #
-            cursor: Literals.cursor = None,
-            takefocus: bool = None,
-            #
             underline: int = None,
-            anchor: Literals.anchor = None,
-            justify: Literal["left", "right", "center"] = None,
-            background_color: str | Color = None,
-            apply_parent_background_color: bool = None,
-            overrelief: Literals.relief = None,
-            offrelief: Literals.relief = None,
-            text_color: str | Color = None,
-            relief: Literals.relief = None,
-            # hilightbackground_color: str | Color = None,
-            # highlightcolor: str | Color = None,
-            # highlightthickness: int = None,
+
             expand: bool = None,
             expand_y: bool = None,
             tk_kwargs: dict = None,
@@ -154,7 +157,7 @@ class Radiobutton(BaseWidget):
 
         self._update_initial(variable=self._group.tk_variable, text=text, value=self._my_value, fonttype=fonttype,
                              fontsize=fontsize, font_bold=font_bold, font_italic=font_italic,
-                             font_underline=font_underline, font_overstrike=font_overstrike, readonly=readonly,
+                             font_underline=font_underline, font_overstrike=font_overstrike, disabled=disabled,
                              borderwidth=borderwidth, bitmap=bitmap, text_color_disabled=text_color_disabled,
                              check_background_color=check_background_color, bitmap_position=bitmap_position,
                              background_color_active=background_color_active, text_color_active=text_color_active,
@@ -218,7 +221,7 @@ class Radiobutton(BaseWidget):
             case "font_overstrike":
                 self._overstrike = self.defaults.single(key, new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
-            case "readonly":
+            case "disabled":
                 self._tk_kwargs["state"] = "disabled" if new_val else "normal"
             case "check_type":
                 self._tk_kwargs["indicatoron"] = int(new_val == "check")

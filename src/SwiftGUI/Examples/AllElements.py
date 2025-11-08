@@ -36,8 +36,8 @@ def preview_all_elements():
         ],[
             sg.HSep()
         ],[
-            sg.Radiobutton("sg.Radiobutton", group= group),
-            sg.Radiobutton("or sg.Radio", group= group)
+            sg.Radiobutton("sg.Radiobutton", group=group),
+            sg.Radiobutton("or sg.Radio", group=group)
         ],[
             sg.HSep()
         ],[
