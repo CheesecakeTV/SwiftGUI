@@ -711,7 +711,7 @@ class BaseScrollbar:
     """
     scrollbar_y: BaseWidget # Actually type sg.Scrollbar, but yeah...
 
-    @run_after_window_creation
+    #@run_after_window_creation
     def update_scrollbar_y(
             self,
             cursor: Literals.cursor = None,

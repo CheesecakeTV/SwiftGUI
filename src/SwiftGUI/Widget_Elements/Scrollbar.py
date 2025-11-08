@@ -26,7 +26,7 @@ class Scrollbar(BaseWidgetTTK):
             background_color: str | Color = None,
             background_color_active: str | Color = None,
 
-            text_color: str | Color = None, # Todo: Rename these options
+            text_color: str | Color = None,
             text_color_active: str | Color = None,
 
             troughcolor: str | Color = None,
@@ -34,7 +34,7 @@ class Scrollbar(BaseWidgetTTK):
             # Add here
             expand: bool = False,
             expand_y: bool = True,
-            tk_kwargs: dict[str:Any]=None
+            tk_kwargs: dict[str:Any]=None,
     ):
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
 
@@ -90,9 +90,6 @@ class Scrollbar(BaseWidgetTTK):
         elem._update_initial(yscrollcommand=self.tk_widget.set)
         self.tk_widget.configure(command=elem.tk_widget.yview)
         return self
-    
-    def _init_widget_for_inherrit(self,container) -> tk.Widget:
-        return super()._init_widget_for_inherrit(container)
 
 class ScrollbarHorizontal(Scrollbar):
     _styletype:str = "Horizontal.TScrollbar"
@@ -108,7 +105,7 @@ class ScrollbarHorizontal(Scrollbar):
             background_color: str | Color = None,
             background_color_active: str | Color = None,
 
-            text_color: str | Color = None, # Todo: Rename these options
+            text_color: str | Color = None,
             text_color_active: str | Color = None,
 
             troughcolor: str | Color = None,

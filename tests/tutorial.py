@@ -1,25 +1,20 @@
 import SwiftGUI as sg
 
-sg.Themes.FourColors.Jungle()
-#sg.Examples.preview_all_elements()
+sg.Themes.FourColors.NeonDiamond()
 
 layout = [
     [
-        sg.Combobox(
-            range(15),
-            key= "combo",
-            default_event=True,
-        ),
-        sg.Combobox(
-            range(15),
-            key="combo1",
-            default_event=True,
-        ).update_scrollbar_y(background_color= "red"),
+        my_combo := sg.Combobox(
+            ["", "Hello", "World", "Choice3", "Choice4", "Another choice"],
+            can_change_text= True,
+        )
     ]
 ]
 
-w = sg.Window(layout)
+w = sg.Window(layout, padx=30, pady=30)
 
-for e,v in w:
-    print(e,v)
+my_combo.update(choices= ["New", "Choice"])
+
+for e, v in w:
+    print(e, v)
 
