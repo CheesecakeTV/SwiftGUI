@@ -279,22 +279,20 @@ class Combobox(BaseWidgetTTK):
         self._set_tk_target_variable(default_key="default_value", kwargs_key= "textvariable")
         self._tk_target_value.trace_add("write", self._value_change_callback)
 
+        # Fake-initialize this widget
+        self.scrollbar.window = self.window
+
     def init_window_creation_done(self):
         super().init_window_creation_done()
 
-        # Fake-initialize this widget
-        self.scrollbar.window = self.window
         self.scrollbar.init_window_creation_done()
+
+        # Apply the theme to the actual scrollbar-widget
         frame_path = f"[ttk::combobox::PopdownWindow {self.tk_widget}].f"
         self.tk_widget.tk.eval(f"{frame_path}.sb configure -style {self.scrollbar.ttk_style}")
 
         # So not everything gets selected when chosing something from the drop-down
         self.tk_widget.bind("<<ComboboxSelected>>", lambda *_:self.tk_widget.selection_clear())
-
-        # print(self.tk_widget.tk.eval(f"{frame_path}.sb configure -style {style}"))
-
-        # root_style: ttk.Style = self.window.ttk_style
-        # root_style.configure(style, background="red")
 
     @property
     def choices(self) -> tuple[str]:
