@@ -1,25 +1,20 @@
 import SwiftGUI as sg
 
-
-class Example(sg.BaseCombinedElement):
-    def __init__(self):
-        layout = [
-            [
-                sg.Button("Hi")
-            ]
-        ]
-
-        super().__init__(
-            layout,
-        )
+sg.Themes.FourColors.Jungle()
+#sg.Examples.preview_all_elements()
 
 layout = [
     [
-        Example()
+        sg.Combobox(
+            range(15),
+            key= "combo",
+            default_event=True,
+        )
     ]
 ]
 
 w = sg.Window(layout)
 
 for e,v in w:
-    ...
+    print(e,v)
+

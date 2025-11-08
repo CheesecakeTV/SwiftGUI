@@ -761,17 +761,19 @@ class BaseWidgetContainer(BaseWidget):
         # Todo: update_all_containing
 
 class BaseWidgetTTK(BaseWidget):
+    ttk_style: str = None  # Will contain the full, default style
     _styletype: str = None  # Style will be named n.styletype
-    _style: str = None  # Registered style of this widget
+    _stylecounter_str: str = None  # Registered style of this widget
     _stylecounter: int = 0   # This ensures every style has an unique number
 
-
     def __init__(self, *args, **kwargs):
-        self._style = str(BaseWidgetTTK._stylecounter)
+        self._stylecounter_str = str(BaseWidgetTTK._stylecounter)
         BaseWidgetTTK._stylecounter += 1
 
+        self.ttk_style = self._stylecounter_str + "." + self._styletype
+
         if not "style" in kwargs:
-            kwargs["style"] = self._style + "." + self._styletype
+            kwargs["style"] = self.ttk_style
 
         super().__init__(*args, **kwargs)
 
@@ -798,7 +800,7 @@ class BaseWidgetTTK(BaseWidget):
         if not styletype:
             styletype = self._styletype
 
-        self.window.ttk_style.configure(self._style + "." + styletype + style_ext, **kwargs)
+        self.window.ttk_style.configure(self._stylecounter_str + "." + styletype + style_ext, **kwargs)
 
     @run_after_window_creation
     def _map_ttk_style(self, style_ext: str = "", styletype: str = None, overwrite_all: bool = False, **kwargs):
@@ -819,7 +821,7 @@ class BaseWidgetTTK(BaseWidget):
         if not styletype:
             styletype = self._styletype
 
-        stylename = self._style + "." + styletype + style_ext
+        stylename = self._stylecounter_str + "." + styletype + style_ext
 
         kwargs: dict[str, tuple]
         if not overwrite_all:
