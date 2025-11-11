@@ -3,7 +3,7 @@ from collections.abc import Iterable, Hashable
 import SwiftGUI as sg
 
 # Todo: Turn this into a combined element
-class ListPicker(sg.BasePopup, tuple):
+class list_picker(sg.BasePopup, tuple):
     text_available = "Available"
     text_picked = "Picked"
     text_filter = "Filter: "

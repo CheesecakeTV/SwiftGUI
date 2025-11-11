@@ -5,7 +5,7 @@ import time
 def test(count):
     print(count)
 
-sg.Popups.popup_text("Test")
+sg.Popups.show_text("Test")
 time.sleep(3)
 
 layout = [

@@ -1,5 +1,5 @@
 
-from .ListPicker import ListPicker
-from .Popups import popup_text, popup_get_text, popup_get_form, popup_yes_no, popup_button_menu
-from .VirtualKeyboard import popup_virtual_keyboard
+from .ListPicker import list_picker
+from .Popups import get_text, button_menu, yes_no, show_text
+from .VirtualKeyboard import virtual_keyboard
 

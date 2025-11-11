@@ -5,7 +5,7 @@ import SwiftGUI as sg
 # Note to myself:
 # New popups need to be "registered" at the end of the file!
 
-def popup_text(
+def show_text(
         text: str,
         block: bool = True,
 ):
@@ -26,7 +26,7 @@ def popup_text(
     if block:
         w.block_others_until_close()
 
-def popup_yes_no(
+def yes_no(
         text:str,
         /,
         title: str = "",
@@ -36,7 +36,7 @@ def popup_yes_no(
 
     If the user selects "Yes", True will be returned.
     If the user selects nothing, None is returned.
-    Otherwise False.
+    Otherwise, False.
 
     :param title: Name of the window
     :param text:
@@ -68,7 +68,7 @@ def popup_yes_no(
     w.block_others_until_close()
     return answer
 
-def popup_button_menu(
+def button_menu(
         elements:Iterable[str],
         text:str="",
 ) -> str:
@@ -92,10 +92,10 @@ def popup_button_menu(
     e,v = sg.SubWindow(layout).loop_close()
     return e
 
-def popup_get_form() -> dict:
+def get_form() -> dict:
     ...
 
-def popup_get_text(
+def get_text(
         text:str = "",
         default:str = None,
 ) -> str:
