@@ -1,13 +1,16 @@
 import SwiftGUI as sg
+import time
 
-sg.Themes.FourColors.GarnetFlair()
+@sg.call_periodically(1, counter_reset= 0)
+def test(count):
+    print(count)
+
+sg.Popups.popup_text("Test")
+time.sleep(3)
 
 layout = [
     [
-        sg.Radiobutton("Choice 1", group=0, check_background_color="red"),
-        sg.Radiobutton("Choice 2", group=0, check_background_color="blue"),
-        sg.Radiobutton("Choice 3", group=0, check_background_color="green"),
-        sg.Radiobutton("Choice 4", group=0, check_background_color="pink"),
+        sg.T("Test")
     ]
 ]
 

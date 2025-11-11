@@ -5,6 +5,7 @@ import string
 import io
 import threading
 import tkinter as tk
+from functools import wraps
 from os import PathLike
 from tkinter import ttk, Widget
 from collections.abc import Iterable,Callable
@@ -517,6 +518,56 @@ def main_window() -> Union["Window", None]:
     """Always returns the active sg.Window, or None"""
     return _main_window
 
+# Cyclically called functions.
+# Have to be called once when main window is created
+all_periodic_functions: list[Callable] = list()
+def call_periodically(delay: float = 1, counter_reset: int = None) -> Callable:
+    """
+    Decorator.
+    Decorated functions are called periodically WHILE A WINDOW EXISTS.
+
+    Counter:
+    Set counter_reset to an integer to enable the counter.
+    If enabled, the counter-value is passed AS THE FIRST ARGUMENT to the function
+    The counter is restarted at that value.
+    If counter_reset == 0, the counter never resets.
+
+    :param delay: Delay between two calls in seconds
+    :param counter_reset: The first value NOT PASSED TO THE COUNTER because it resets
+    :return:
+    """
+
+    delay = int(delay * 1000)
+    def dec(fct: Callable) -> Callable:
+
+        if counter_reset is not None:
+            counter = -1
+
+            @wraps(fct)
+            def _return(*args, **kwargs):
+                if _main_window is not None:
+                    _main_window.root.after(delay, _return)
+
+                nonlocal counter
+                counter += 1
+                if counter_reset and counter >= counter_reset:
+                    counter = 0
+
+                return fct(counter, *args, **kwargs)
+
+        else:
+            @wraps(fct)
+            def _return(*args, **kwargs):
+                if _main_window is not None:
+                    _main_window.root.after(delay, _return)
+
+                return fct(*args, **kwargs)
+
+        all_periodic_functions.append(_return)
+        return _return
+
+    return dec
+
 all_decorator_key_functions = dict() # All decorator-functions collected, key: function
 class Window(BaseKeyHandler):
     """
@@ -860,6 +911,9 @@ class Window(BaseKeyHandler):
         # self.root.after(10, lambda :self.root.quit())
         # self.root.mainloop()
         super().init_window_creation_done()
+
+        for fct in all_periodic_functions:
+            fct()
 
     def _keyed_event_callback(self, key: Any, _):
         self._prev_event = key
