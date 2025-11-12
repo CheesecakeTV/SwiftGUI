@@ -1,9 +1,7 @@
 import tkinter as tk
-from collections.abc import Iterable
-from typing import Any
 
-from SwiftGUI import BaseElement, ElementFlag, BaseWidgetContainer, GlobalOptions, Literals, Color, BaseWidget, Frame
-from SwiftGUI.Widget_Elements.Separator import VerticalSeparator
+from SwiftGUI import BaseElement, ElementFlag, GlobalOptions, Color, Frame
+from SwiftGUI.Extended_Elements.Separator import VerticalSeparator
 
 
 class GridFrame(Frame):

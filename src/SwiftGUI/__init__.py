@@ -20,13 +20,13 @@ from .Widget_Elements.Button import Button
 from .Widget_Elements.Checkbox import Checkbox
 from .Widget_Elements.Frame import Frame
 from .Widget_Elements.Input import Input
-from .Widget_Elements.Separator import VerticalSeparator,HorizontalSeparator
-from .Widget_Elements.Spacer import Spacer
+from SwiftGUI.Extended_Elements.Separator import VerticalSeparator,HorizontalSeparator
+from SwiftGUI.Extended_Elements.Spacer import Spacer
 from .Widget_Elements.Listbox import Listbox
 from .Widget_Elements.TKContainer import TKContainer
 from .Widget_Elements.TextField import TextField
 from .Widget_Elements.Treeview import Treeview
-from .Widget_Elements.Table import Table
+from SwiftGUI.Extended_Elements.Table import Table
 from .Widget_Elements.Notebook import Notebook
 from .Widget_Elements.LabelFrame import LabelFrame
 from .Widget_Elements.Radiobutton import Radiobutton, RadioGroup
@@ -41,8 +41,8 @@ from .Extended_Elements.FileBrowseButton import FileBrowseButton
 from .Extended_Elements.ColorChooserButton import ColorChooserButton
 from .Extended_Elements.TabFrame import TabFrame
 
-from SwiftGUI.Widget_Elements.Image import Image
-from SwiftGUI.Widget_Elements.ImageButton import ImageButton
+from SwiftGUI.Extended_Elements.Image import Image
+from SwiftGUI.Extended_Elements.ImageButton import ImageButton
 
 T = Text
 Label = Text

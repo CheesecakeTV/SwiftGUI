@@ -4,7 +4,7 @@ from typing import Any, Hashable
 from SwiftGUI.Compat import Self
 
 from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement, Frame, Font
-from SwiftGUI.Widget_Elements.Spacer import Spacer
+from SwiftGUI.Extended_Elements.Spacer import Spacer
 
 
 class Notebook(BaseWidgetTTK):

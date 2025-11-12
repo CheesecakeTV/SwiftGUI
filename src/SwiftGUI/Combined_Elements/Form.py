@@ -7,7 +7,7 @@ import json
 
 from SwiftGUI import BaseElement, Frame, Text, Input, BaseCombinedElement, Button
 #from SwiftGUI.Widget_Elements.Separator import HorizontalSeparator
-from SwiftGUI.Widget_Elements.Spacer import Spacer
+from SwiftGUI.Extended_Elements.Spacer import Spacer
 
 
 # Advanced / Combined elements

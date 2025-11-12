@@ -1,6 +1,9 @@
 import SwiftGUI as sg
 import time
 
+sg.Examples.preview_all_elements()
+exit()
+
 @sg.call_periodically(1, counter_reset= 0)
 def test(count):
     print(count)
