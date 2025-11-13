@@ -1,19 +1,14 @@
 import SwiftGUI as sg
-import time
 
-sg.Examples.preview_all_elements()
-exit()
-
-@sg.call_periodically(1, counter_reset= 0)
-def test(count):
-    print(count)
-
-sg.Popups.show_text("Test")
-time.sleep(3)
+sg.Themes.FourColors.Emerald()
 
 layout = [
     [
-        sg.T("Test")
+        sg.MultistateButton(
+            ["Choice 1", "Choice 2", "Choice 3"],
+            default_selection= "Choice 1",
+            key= "Key",
+        )
     ]
 ]
 
