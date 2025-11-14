@@ -520,8 +520,12 @@ def main_window() -> Union["Window", None]:
 
 # Cyclically called functions.
 # Have to be called once when main window is created
-all_periodic_functions: list[Callable] = list()
-def call_periodically(delay: float = 1, counter_reset: int = None) -> Callable:
+autostart_periodic_functions: list[Callable] = list()
+def call_periodically(
+        delay: float = 1,
+        counter_reset: int = None,
+        autostart: bool = True,
+) -> Callable:
     """
     Decorator.
     Decorated functions are called periodically WHILE A WINDOW EXISTS.
@@ -534,6 +538,7 @@ def call_periodically(delay: float = 1, counter_reset: int = None) -> Callable:
 
     :param delay: Delay between two calls in seconds
     :param counter_reset: The first value NOT PASSED TO THE COUNTER because it resets
+    :param autostart: True, if this function should be called automatically when a window opens
     :return:
     """
 
@@ -563,7 +568,9 @@ def call_periodically(delay: float = 1, counter_reset: int = None) -> Callable:
 
                 return fct(*args, **kwargs)
 
-        all_periodic_functions.append(_return)
+        if autostart:
+            autostart_periodic_functions.append(_return)
+
         return _return
 
     return dec
@@ -912,7 +919,7 @@ class Window(BaseKeyHandler):
         # self.root.mainloop()
         super().init_window_creation_done()
 
-        for fct in all_periodic_functions:
+        for fct in autostart_periodic_functions:
             fct()
 
     def _keyed_event_callback(self, key: Any, _):

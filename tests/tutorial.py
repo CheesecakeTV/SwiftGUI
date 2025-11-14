@@ -1,18 +1,19 @@
 import SwiftGUI as sg
 
-sg.Themes.FourColors.Emerald()
+sg.Themes.FourColors.DeepSea()
+
+@sg.call_periodically(counter_reset= 0, autostart= False)
+def count(counter):
+    my_text.value = str(counter)
 
 layout = [
     [
-        sg.MultistateButton(
-            ["Choice 1", "Choice 2", "Choice 3"],
-            default_selection= "Choice 1",
-            key= "Key",
-        )
+        my_text := sg.Text("0")
     ]
 ]
 
 w = sg.Window(layout, padx=30, pady=30)
+count()
 
 for e, v in w:
     print(e, v)
