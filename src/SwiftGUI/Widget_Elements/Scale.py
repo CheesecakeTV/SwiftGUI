@@ -15,7 +15,6 @@ class Scale(BaseWidget):
     _transfer_keys = {
         # "background_color_disabled": "disabledbackground",
         "background_color": "bg",
-        "text_color_disabled": "disabledforeground",
         "highlightbackground_color": "highlightbackground",
         # "selectbackground_color": "selectbackground",
         # "select_text_color": "selectforeground",

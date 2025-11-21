@@ -19,11 +19,10 @@ class Input(BaseWidget):
     defaults = GlobalOptions.Input   # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
 
     _transfer_keys = {
-        "background_color_disabled":"disabledbackground",
         "background_color_readonly":"readonlybackground",
         "background_color":"background",
         "text_color":"foreground",
-        "text_color_disabled": "disabledforeground",
+        #"text_color_disabled": "disabledforeground",
         "highlightbackground_color": "highlightbackground",
         "selectbackground_color": "selectbackground",
         "select_text_color": "selectforeground",
@@ -48,7 +47,7 @@ class Input(BaseWidget):
             background_color: str|Color = None,
             background_color_readonly: str|Color = None,
             text_color: str|Color = None,
-            text_color_disabled: str|Color = None,
+            #text_color_disabled: str|Color = None,
             highlightbackground_color: str|Color = None,
             selectbackground_color: str|Color = None,
             select_text_color: str|Color = None,
@@ -63,7 +62,6 @@ class Input(BaseWidget):
             validate: Literals.validate = None,
             validatecommand: Callable = None,
             #
-            # Mixed options
             fonttype: str = None,
             fontsize: int = None,
             font_bold: bool = None,
@@ -122,7 +120,7 @@ class Input(BaseWidget):
             selectborderwidth = selectborderwidth,
             text = text,
             text_color = text_color,
-            text_color_disabled = text_color_disabled,
+            #text_color_disabled = text_color_disabled,
             validate = validate,
             validatecommand = validatecommand,
             width = width,
