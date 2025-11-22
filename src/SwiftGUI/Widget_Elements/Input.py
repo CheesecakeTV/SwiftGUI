@@ -27,7 +27,7 @@ class Input(BaseWidget):
         "selectbackground_color": "selectbackground",
         "select_text_color": "selectforeground",
         "pass_char":"show",
-        "cursor_color":"insertbackground",
+        "insertbackground_color":"insertbackground",
     }
 
     def __init__(
@@ -51,7 +51,7 @@ class Input(BaseWidget):
             highlightbackground_color: str|Color = None,
             selectbackground_color: str|Color = None,
             select_text_color: str|Color = None,
-            cursor_color: str | Color = None,
+            insertbackground_color: str | Color = None,
             selectborderwidth: int = None,
             highlightcolor: str|Color = None,
             highlightthickness: int = None,
@@ -124,7 +124,7 @@ class Input(BaseWidget):
             validate = validate,
             validatecommand = validatecommand,
             width = width,
-            cursor_color = cursor_color,
+            insertbackground_color = insertbackground_color,
             **tk_kwargs,
         )
 

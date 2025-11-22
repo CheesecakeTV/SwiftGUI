@@ -61,7 +61,7 @@ class BaseFourColors(BaseTheme):
         temp = go.Input
         temp.selectbackground_color = c3
         temp.select_text_color = c1
-        temp.cursor_color = c3
+        temp.insertbackground_color = c3
         temp.text_color_disabled = c3
         temp.background_color_readonly = c1
 

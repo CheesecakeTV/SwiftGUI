@@ -19,7 +19,7 @@ class Spinbox(BaseWidget):
         "text_color": "foreground",
         "text_color_disabled": "disabledforeground",
         "text_color_active": "activeforeground",
-        "cursor_color": "insertbackground",
+        "insertbackground_color": "insertbackground",
 
         "highlightbackground_color": "highlightbackground",
         "selectbackground_color": "selectbackground",
@@ -73,7 +73,7 @@ class Spinbox(BaseWidget):
             relief: Literals.relief = None,
             relief_button_down: Literals.relief = None,
             relief_button_up: Literals.relief = None,
-            cursor_color: str | Color = None,
+            insertbackground_color: str | Color = None,
 
             fonttype: str = None,
             fontsize: int = None,
@@ -100,6 +100,8 @@ class Spinbox(BaseWidget):
             tk_kwargs: dict[str:Any]= None,
     ):
 
+
+
         if tk_kwargs is None:
             tk_kwargs = dict()
 
@@ -124,7 +126,7 @@ class Spinbox(BaseWidget):
                              values=tuple(values) if values else None, wrap=wrap, number_format=number_format,
                              number_min=number_min, number_max=number_max, increment=increment, width=width,
                              repeatdelay=repeatdelay, repeatinterval=repeatinterval, state=state,
-                             cursor_color=cursor_color, **tk_kwargs)
+                             insertbackground_color=insertbackground_color, **tk_kwargs)
 
         self._default_event = default_event
 

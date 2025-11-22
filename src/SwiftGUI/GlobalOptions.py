@@ -279,11 +279,9 @@ class Scale(Common_Background, Common_Textual):
 class Input(Common,Common_Textual,Common_Field_Background):
     text: str = None
     width: int = None
-    #
-    # Standard-Tkinter options
+
     take_focus: bool = None
-    #
-    # Special Tkinter-options
+
     justify: Literal["left", "right", "center"] = None
     # background_color_disabled: str | Color = None
     background_color_readonly: str | Color = None
@@ -298,7 +296,7 @@ class Input(Common,Common_Textual,Common_Field_Background):
     exportselection: bool = None
     validate: Literals.validate = None
     validatecommand: callable = None
-    cursor_color: str | Color = None
+    insertbackground_color: str | Color = None
     #
     # Mixed options
 
@@ -437,7 +435,7 @@ class TextField(Input):
     borderwidth: int = None
     scrollbar: bool = False
     height: int = None
-    insertbackground: str | Color = None
+    #insertbackground: str | Color = None
     readonly: bool = False  # Set state to tk.Normal, or 'readonly'
     padx: int = None
     pady: int = None

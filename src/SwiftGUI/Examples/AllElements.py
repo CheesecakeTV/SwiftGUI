@@ -41,7 +41,7 @@ def preview_all_elements():
         ],[
             sg.HSep()
         ],[
-            sg.Spinbox(5, number_max= 100, number_min= -100),
+            sg.Spinbox(default_value= 5, number_max= 100, number_min= -100),
             sg.T("<-- sg.Spinbox / sg.Spin")
         ],[
             sg.HSep()

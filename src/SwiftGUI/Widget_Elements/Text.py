@@ -1,16 +1,15 @@
 import tkinter.font as font
 import tkinter.ttk as ttk
-from typing import Literal, Any
+from typing import Literal, Any, Hashable
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
 
 class Text(BaseWidget):
-    """
-    Copy this class ot create your own Widget
-    """
     _tk_widget_class:type = ttk.Label # Class of the connected widget
     defaults = GlobalOptions.Text   # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
+
+    #_styletype = "TLabel"
 
     _grab_anywhere_on_this = True
 
@@ -24,14 +23,14 @@ class Text(BaseWidget):
             # Add here
             text:str = None,
             /,
-            key:Any=None,
-            width:int=None,
+            key: Hashable = None,
+            width: int = None,
 
-            cursor:Literals.cursor = None,
-            takefocus:bool = None,
+            cursor: Literals.cursor = None,
+            #takefocus:bool = None,
 
-            anchor:Literals.anchor = None,
-            justify:Literal["left","right","center"] = None,
+            anchor: Literals.anchor = None,
+            justify: Literal["left","right","center"] = None,
 
             background_color:str|Color = None,
             text_color:str|Color = None,
@@ -54,29 +53,29 @@ class Text(BaseWidget):
             tk_kwargs:dict[str:Any]=None
     ):
         """
+        This element has a dedicated element-tutorial in the documentation with detailed descriptions of each parameter.
 
-        :param text:
-        :param key:
-        :param width:
-        :param cursor:
-        :param takefocus:
-        :param anchor:
-        :param justify:
-        :param background_color:
-        :param text_color:
-        :param apply_parent_background_color:
-        :param fonttype:
-        :param fontsize:
-        :param font_bold:
-        :param font_italic:
-        :param font_underline:
-        :param font_overstrike:
-        :param relief:
-        :param padding:
-        :param underline:
-        :param expand:
-        :param expand_y:
-        :param tk_kwargs:
+        :param text: Text to be displayed
+        :param key: (Refer to the docs)
+        :param width: Horizontal space to reserve for the text in characters
+        :param cursor: Type of cursor while the cursor hovers over this element
+        :param anchor: Position of the text inside the element.
+        :param justify: Position of additional rows
+        :param background_color: Color of the background
+        :param text_color: Color of the text
+        :param apply_parent_background_color: Set to False to disable background-color-propagation
+        :param fonttype: Type/style of the font
+        :param fontsize: Height of the font in pixels
+        :param font_bold: Bold text
+        :param font_italic: Italic text
+        :param font_underline: Undelined text
+        :param font_overstrike: Overstruck text
+        :param relief: Border-style of this element
+        :param padding: Additional space around the text. See the documentation for further details
+        :param underline: A single underline under the indexed character
+        :param expand: (Refer to the docs)
+        :param expand_y: (Refer to the docs)
+        :param tk_kwargs: Additional options passed to the tkinter-widget
         """
 
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
@@ -90,7 +89,7 @@ class Text(BaseWidget):
         self._update_initial(
             text = text,
             cursor = cursor,
-            takefocus = takefocus,
+            #takefocus = takefocus,
             underline = underline,
             justify = justify,
             background_color = background_color,

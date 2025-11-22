@@ -1,20 +1,17 @@
 import SwiftGUI as sg
 
-sg.Themes.FourColors.DeepSea()
-
-@sg.call_periodically(counter_reset= 0, autostart= False)
-def count(counter):
-    my_text.value = str(counter)
+sg.Themes.FourColors.GarnetFlair()
+sg.Examples.preview_all_elements()
+exit()
 
 layout = [
     [
-        my_text := sg.Text("0")
+        my_text := sg.Text(),
     ]
 ]
 
 w = sg.Window(layout, padx=30, pady=30)
-count()
+my_text.value = "Awesome!"
 
 for e, v in w:
     print(e, v)
-

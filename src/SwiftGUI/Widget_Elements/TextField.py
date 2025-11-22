@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal, Any
+from typing import Literal, Any, Hashable
 from SwiftGUI.Compat import Self
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, Scrollbar, BaseScrollbar
@@ -55,7 +55,7 @@ class TextField(BaseWidget, BaseScrollbar):
         "paragraph_spacing_above": "spacing1",
         "autoline_spacing": "spacing2",
         "paragraph_spacing": "spacing3",
-        "cursor_color": "insertbackground",
+        "insertbackground_color": "insertbackground",
     }
 
     def __init__(
@@ -63,35 +63,35 @@ class TextField(BaseWidget, BaseScrollbar):
             # Add here
             text:str = "",
             /,
-            key: Any = None,
+            key: Hashable = None,
             key_function: Callable|Iterable[Callable] = None,
             scrollbar: bool = None,
-            borderwidth: int = None,
-            width: int=None,
+
+            width: int = None,
             height: int = None,
+            borderwidth: int = None,
+            relief: Literals.relief = None,
+
             default_event:bool = False,
-            cursor:Literals.cursor = None,
-            takefocus:bool = None,
-            background_color:str|Color = None,
-            insertbackground: str|Color = None,
+            cursor: Literals.cursor = None,
+            takefocus: bool = None,
+            background_color: str|Color = None,
 
             text_color: str|Color = None,
-            select_text_color:str|Color = None,
-            highlightbackground_color:str|Color = None,
-            selectbackground_color:str|Color = None,
-            cursor_color: str | Color = None,
+            select_text_color: str|Color = None,
+            highlightbackground_color: str|Color = None,
+            selectbackground_color: str|Color = None,
             highlightcolor: str | Color = None,
             highlightthickness: int = None,
-
+            insertbackground_color: str | Color = None,
             selectborderwidth:int = None,
-            readonly: bool = None,   # Set state to tk.Normal, or 'readonly'
-            relief: Literals.relief = None,
             exportselection:bool = None,
+
+            readonly: bool = None,  # Set state to tk.Normal, or 'readonly'
 
             padx: int = None,
             pady: int = None,
 
-            # Font
             fonttype:str = None,
             fontsize:int = None,
             font_bold:bool = None,
@@ -99,14 +99,12 @@ class TextField(BaseWidget, BaseScrollbar):
             font_underline:bool = None,
             font_overstrike:bool = None,
 
-            # Text spacing
             paragraph_spacing: int = None,
             paragraph_spacing_above: int = None,
             autoline_spacing: int = None,
             tabs: int = None,   # Size of tabs in characters
             wrap: Literals.wrap = None,
 
-            # undo-stack
             undo: bool = None,
             can_reset_value_changes: bool = None,
             maxundo: int | Literal[-1] = None,
@@ -118,17 +116,17 @@ class TextField(BaseWidget, BaseScrollbar):
         """
         An Input-Element with multiple rows
 
-        :param text:
-        :param key: See docs for more details
-        :param key_function: See docs for more details
+        :param text: Text to show in the beginning
+        :param key: (Refer to the docs)
+        :param key_function: (Refer to the docs)
+        :param default_event: True, to throw an event when the text changes
         :param borderwidth: Thickness of the border around the element
         :param width: Width in characters
         :param height: Height in rows
-        :param default_event: True, to throw an event when a key is lifted up (text changed is included)
         :param cursor: Type of cursor when the cursor hovers over this element
         :param takefocus: True, if you want to be able to select this element by pressing "tab"
         :param background_color:
-        :param insertbackground: Color of the text-cursor
+        :param insertbackground_color: Color of the text-cursor
         :param text_color: font-color
         :param highlightcolor: Color of the outer border (highlightthickness must be > 0) when in focus
         :param highlightbackground_color: Color of the outer border (highlightthickness must be > 0) when not in focus
@@ -171,7 +169,6 @@ class TextField(BaseWidget, BaseScrollbar):
             borderwidth = borderwidth,
             width = width,
             height = height,
-            insertbackground = insertbackground,
             highlightbackground_color = highlightbackground_color,
             selectbackground_color = selectbackground_color,
             select_text_color = select_text_color,
@@ -201,7 +198,7 @@ class TextField(BaseWidget, BaseScrollbar):
             font_underline = font_underline,
             font_overstrike = font_overstrike,
             takefocus = takefocus,
-            cursor_color = cursor_color,
+            insertbackground_color = insertbackground_color,
             **tk_kwargs,
         )
 

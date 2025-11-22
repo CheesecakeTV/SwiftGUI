@@ -550,8 +550,10 @@ def call_periodically(
 
             @wraps(fct)
             def _return(*args, **kwargs):
-                if _main_window is not None:
-                    _main_window.root.after(delay, _return)
+                if _main_window is None:
+                    return
+
+                _main_window.root.after(delay, _return)
 
                 nonlocal counter
                 counter += 1
@@ -563,8 +565,9 @@ def call_periodically(
         else:
             @wraps(fct)
             def _return(*args, **kwargs):
-                if _main_window is not None:
-                    _main_window.root.after(delay, _return)
+                if _main_window is None:
+                    return
+                _main_window.root.after(delay, _return)
 
                 return fct(*args, **kwargs)
 
