@@ -6,16 +6,14 @@ from PIL import Image
 
 import SwiftGUI as sg
 from SwiftGUI import Color
+from SwiftGUI.Compat import Self
 
-
-class BasePopup:
-
+class BasePopupNonblocking:
     def __init__(
             self,
             layout: Iterable[Iterable[sg.BaseElement]],
             /,
-            default: Any = None,     # Returned instead of None
-            keep_on_top: bool = True,
+            keep_on_top: bool = None,
             title: str = None,
             titlebar: bool = None,
             size: int | tuple[int, int] = (None, None),
@@ -24,9 +22,6 @@ class BasePopup:
             grab_anywhere: bool = None,
             **kwargs,
     ):
-
-        self._return = None
-        self._default = default
 
         self.w = sg.SubWindow(
             layout,
@@ -51,6 +46,46 @@ class BasePopup:
         :return:
         """
         ...
+
+    def close(self) -> Self:
+        """
+        Closes the window.
+        This is implemented so you can use it in key-functions of the internal layout better.
+        :return:
+        """
+        self.w.close()
+        return self
+
+class BasePopup(BasePopupNonblocking):
+    def __init__(
+            self,
+            layout: Iterable[Iterable[sg.BaseElement]],
+            /,
+            default: Any = None,     # Returned instead of None
+            keep_on_top: bool = True,
+            title: str = None,
+            titlebar: bool = None,
+            size: int | tuple[int, int] = (None, None),
+            icon: str | PathLike | Image.Image | io.BytesIO = None,  # .ico file
+            background_color: Color | str = None,
+            grab_anywhere: bool = None,
+            **kwargs,
+    ):
+
+        self._return = None
+        self._default = default
+
+        super().__init__(
+            layout,
+            keep_on_top= keep_on_top,
+            title = title,
+            titlebar = titlebar,
+            size = size,
+            icon = icon,
+            background_color = background_color,
+            grab_anywhere = grab_anywhere,
+            **kwargs,
+        )
 
     def __new__(cls, *args, **kwargs) -> Any:
         me = super().__new__(cls)

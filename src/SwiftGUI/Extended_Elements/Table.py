@@ -329,12 +329,25 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         return map(str, map(hash, elements))
 
     @property
-    def table_elements(self):
+    def all_remaining_rows(self):
+        """All rows currently in the table, so AFTER filtering"""
         return tuple(self._elements)
 
-    @table_elements.setter
-    def table_elements(self, new_val):
-        raise AttributeError("You tried to set table_elements directly on an sg.Table. If you want to replace the whole table, use .overwrite_table instead.\n"
+    @all_remaining_rows.setter
+    def all_remaining_rows(self, new_val):
+        raise AttributeError("You tried to set all_remaining_rows directly on an sg.Table. If you want to replace the whole table, use .overwrite_table instead.\n"
+                             "I highly recommend not overwriting the whole table though, sg.Table offers a lot of methods to change it.")
+
+    @property
+    def all_rows(self):
+        """All rows that exist in the table, so BEFORE filtering"""
+        if self.filter_mode:
+            return tuple(self._elements_before_filter)
+        return tuple(self._elements)
+
+    @all_rows.setter
+    def all_rows(self, new_val):
+        raise AttributeError("You tried to set all_rows directly on an sg.Table. If you want to replace the whole table, use .overwrite_table instead.\n"
                              "I highly recommend not overwriting the whole table though, sg.Table offers a lot of methods to change it.")
 
     def _update_special_key(self,key:str,new_val:Any) -> bool|None:
@@ -575,7 +588,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         :return:
         """
         if isinstance(item, TableRow):
-            return self._element_dict.get(str(hash(item)))
+            return self._elements.index(self._element_dict.get(str(hash(item))))
 
         as_tuple = tuple(map(tuple, self._elements))
         return as_tuple.index(tuple(item))

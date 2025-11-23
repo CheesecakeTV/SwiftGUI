@@ -5,7 +5,7 @@ from typing import Any
 from SwiftGUI.Compat import Self
 import json
 
-from SwiftGUI import BaseElement, Frame, Text, Input, BaseCombinedElement, Button
+from SwiftGUI import BaseElement, Frame, Text, Input, BaseCombinedElement, Button, Event
 #from SwiftGUI.Widget_Elements.Separator import HorizontalSeparator
 from SwiftGUI.Extended_Elements.Spacer import Spacer
 
@@ -15,7 +15,7 @@ class Form(BaseCombinedElement):
     """
     Grid-Layout-Form with text-Input-combinations
 
-    Still very WIP (of course), just a proof of concept
+    It is WIP, but I'm adding more functionality regularely
     """
 
     def __init__(
@@ -29,8 +29,21 @@ class Form(BaseCombinedElement):
             small_clear_buttons: bool = None,
             big_clear_button: bool = None,
             submit_button: bool = None,
-            submit_key: Any = None,
+            #submit_key: Any = None,
+            return_submits: bool = None,
     ):
+        """
+
+        :param texts:
+        :param default_values:
+        :param key:
+        :param key_function:
+        :param default_event:
+        :param small_clear_buttons:
+        :param big_clear_button:
+        :param submit_button: True, if there should be a submit-button that throws an event when clicked
+        :param return_submits: True, if pressing enter should be equal to pressing submit
+        """
         texts = list(texts)
         self._default_event = default_event
 
@@ -81,7 +94,7 @@ class Form(BaseCombinedElement):
         if submit_button:
             self._submit_button_element = Button(
                 "Submit",
-                key= submit_key if submit_key is not None else None,
+                #key= submit_key if submit_key is not None else None,
                 key_function=self.throw_event
                 #key_function= submit_key_function if submit_key_function else self.throw_event,
             )
@@ -92,6 +105,14 @@ class Form(BaseCombinedElement):
                 "Clear",
                 key_function= (self.clear_all_values, self._throw_default_event)
             ))
+
+        if return_submits:
+            temp = self.throw_event
+            # if submit_button: # Looks cool, but slows down the code...
+            #     temp = (self.throw_event, self._submit_button_element.flash)
+
+            for elem in self._input_elements:
+                elem.bind_event(Event.KeyEnter, key_function=temp)
 
         super().__init__(Frame(self.layout), key=key, key_function=key_function)
 
@@ -156,15 +177,22 @@ class Form(BaseCombinedElement):
         return self
 
     @BaseElement._run_after_window_creation
-    def set_value(self,val:dict[str:str]) -> Self:
+    def set_value(self,val:Iterable[str] | dict[str:str]) -> Self:
         """
-        Update only passed keys with their value
+        Update only passed keys with their value.
+        Or pass a list to update the elements one after another.
         :param val:
         :return:
         """
-        for i,text in enumerate(self._input_keys):
-            if text in val.keys():
-                self._input_elements[i].value = val[text]
+
+        if isinstance(val, dict):
+            for i,text in enumerate(self._input_keys):
+                if text in val.keys():
+                    self._input_elements[i].value = val[text]
+            return self
+
+        for elem, new_val in zip(self._input_elements, val):
+            elem.value = new_val
 
         return self
 

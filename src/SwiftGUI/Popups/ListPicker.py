@@ -171,7 +171,7 @@ class list_picker(sg.BasePopup, tuple):
             # Return everything from the chosen table
             self.chosen.reset_filter()
             self.done(
-                tuple(map(lambda a:a[0], self.chosen.table_elements))
+                tuple(map(lambda a:a[0], self.chosen.all_remaining_rows))
             )
 
         if e == "Cancel":
@@ -188,7 +188,7 @@ class list_picker(sg.BasePopup, tuple):
 
     @staticmethod
     def _move_all(from_t: sg.Table, to_t: sg.Table):
-        to_t.extend(from_t.table_elements)
-        for i in range(len(from_t.table_elements)):
+        to_t.extend(from_t.all_remaining_rows)
+        for i in range(len(from_t.all_remaining_rows)):
             del from_t[0]
 
