@@ -47,7 +47,7 @@ class BaseCanvasElement(sg.BaseWidget): # Inheritance mainly for the update-rout
             args = kwargs["_args"]
             del kwargs["_args"]
 
-            self.canvas_id = fct(args, **kwargs)
+            self.canvas_id = fct(args, **kwargs)    # This row actually adds the geometry to the canvas
 
             self._is_created = True
             return

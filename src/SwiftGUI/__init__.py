@@ -1,4 +1,7 @@
 
+loaded_addons: set[str] = set() # Contains all included SwiftGUI-addons.
+# If you'd like your own addon officially included, create an issue on GitHub.
+
 from . import Extras
 from .Utilities.Images import file_from_b64, file_to_b64, image_to_tk_image
 
@@ -99,6 +102,7 @@ from . import Canvas_Elements
 
 try:
     from SwiftGUI_Matplot import Matplot
+    loaded_addons.add("Matplot")
 except ImportError:
     Matplot: "Matplot" = Compat.ErrorThrower("To use sg.Matplot, SwiftGUI_Matplot must be installed!")
 

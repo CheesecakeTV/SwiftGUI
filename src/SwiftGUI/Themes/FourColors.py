@@ -27,8 +27,6 @@ class BaseFourColors(BaseTheme):
 
         #temp = go.Table
         go.Table.background_color = c2
-        go.Table.background_color_rows = c2
-        go.Table.background_color_active_rows = c3
         go.Table.text_color_active = c1
         go.Table.background_color_headings = c4
         go.Table.background_color_active_headings = c3
@@ -39,6 +37,7 @@ class BaseFourColors(BaseTheme):
         temp.check_background_color = c1
         temp.background_color_active = c1
         temp.text_color_active = c4
+        temp.text_color_disabled = c3
 
         temp = go.Common_Background
         temp.background_color = c1
@@ -57,6 +56,7 @@ class BaseFourColors(BaseTheme):
         temp = go.Button
         temp.background_color_active = c3
         temp.text_color_active = c1
+        temp.text_color_disabled = c3
 
         temp = go.Input
         temp.selectbackground_color = c3
@@ -67,6 +67,9 @@ class BaseFourColors(BaseTheme):
 
         temp = go.Spinbox
         temp.background_color_button = c2
+        temp.background_color_disabled = c1
+        temp.background_color_readonly = c1
+        temp.text_color_disabled = c3
 
         temp = go.Separator
         temp.color = c3
@@ -77,10 +80,11 @@ class BaseFourColors(BaseTheme):
         temp.text_color = c3
 
         temp = go.Listbox
-        temp.background_color_selected = c3
-        temp.text_color_selected = c1
+        temp.background_color_active = c3
+        temp.text_color_active = c1
         temp.text_color = c4
         temp.background_color = c2
+        temp.text_color_disabled = c3
 
         temp = go.Scale
         temp.highlightbackground_color = c1
@@ -93,6 +97,7 @@ class BaseFourColors(BaseTheme):
         temp.arrow_color_active = c1
         temp.button_background_color_active = c3
         temp.insertbackground = c3
+        temp.background_color_disabled = c1
 
         temp = go.Progressbar
         temp.bar_color = c3

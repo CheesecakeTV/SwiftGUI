@@ -216,12 +216,14 @@ class Common_Background(DEFAULT_OPTIONS_CLASS):
     Common background-color, mainly for pseudo-transparent elements
     """
     background_color: str | Color = "#F0F0F0"
+    background_color_disabled: str | Color = None
 
 class Common_Field_Background(DEFAULT_OPTIONS_CLASS):
     """
     Common background-color for fields with texts not covered by Common_Background
     """
     background_color: str | Color = None
+    background_color_disabled: str | Color = None
 
 class Common_Textual(DEFAULT_OPTIONS_CLASS):
     """
@@ -235,6 +237,7 @@ class Common_Textual(DEFAULT_OPTIONS_CLASS):
     font_overstrike:bool = False
     anchor:Literals.anchor = "w"
     text_color:Color|str = None
+    text_color_disabled: str | Color = None
 
 class Text(Common, Common_Textual, Common_Background):
     text:str = ""
@@ -285,7 +288,8 @@ class Input(Common,Common_Textual,Common_Field_Background):
     justify: Literal["left", "right", "center"] = None
     # background_color_disabled: str | Color = None
     background_color_readonly: str | Color = None
-    text_color_disabled: str | Color = None
+    #text_color_disabled: str | Color = None
+    readonly: bool = False
     selectbackground_color: str | Color = None
     select_text_color: str | Color = None
     selectborderwidth: int = None
@@ -347,13 +351,12 @@ class Frame(Common, Common_Background):
 class GridFrame(Frame):
     ...
 
-class Checkbox(Common,Common_Textual, Common_Background):
+class Checkbox(Common, Common_Textual, Common_Background):
     default_value: bool = False
-    readonly: bool = None
+    disabled: bool = None
     apply_parent_background_color: bool = True
     borderwidth:int = None
     #
-    text_color_disabled: str | Color = None
     check_background_color: str | Color = None
     bitmap_position: Literals.compound = None
     background_color_active: str | Color = None
@@ -406,10 +409,9 @@ class Listbox(Common,Common_Textual,Common_Field_Background):
     disabled: bool = None
     scrollbar: bool = True
     borderwidth: int = None
-    background_color_selected: str | Color = None
+    background_color_active: str | Color = None
     selectborderwidth: int = None
-    text_color_selected: str | Color = None
-    text_color_disabled: str | Color = None
+    text_color_active: str | Color = None
     selectmode: Literals.selectmode_single = "browse"
     width: int = None
     height: int = None
@@ -455,7 +457,7 @@ class TextField(Input):
 class Treeview(Common_Field_Background):
     ...
 
-class Table(Common, Common_Textual,Common_Field_Background):
+class Table(Listbox):
     fonttype_headings: str = None
     fontsize_headings: int = None
     font_bold_headings: bool = None
@@ -463,23 +465,16 @@ class Table(Common, Common_Textual,Common_Field_Background):
     font_underline_headings: bool = None
     font_overstrike_headings: bool = None
 
-    background_color_rows: str | Color = None
-    background_color_active_rows: str | Color = Color.light_blue
-
     background_color_headings: str | Color = None
     background_color_active_headings: str | Color = Color.light_blue
 
     text_color_headings: str | Color = None
-    text_color_active: str | Color = None
     text_color_active_headings: str | Color = None
 
     sort_col_by_click: bool = True
     takefocus:bool = False
-    scrollbar: bool = True
 
     selectmode: Literals.selectmode_tree = "browse"
-    cursor: Literals.cursor = None
-    height: int = None
     padding: int | tuple[int, ...] = None
 
 
@@ -528,7 +523,6 @@ class TabFrame(Frame):
 class Spinbox(Button, Input):
     default_value: float = None
     cursor_button: Literals.cursor = None
-    background_color_disabled: str | Color = None
     background_color_button: Color | str = None
     relief_button_down: Literals.relief = None
     relief_button_up: Literals.relief = None

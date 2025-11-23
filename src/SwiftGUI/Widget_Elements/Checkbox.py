@@ -43,7 +43,7 @@ class Checkbox(BaseWidget):
             font_italic: bool = None,
             font_underline: bool = None,
             font_overstrike: bool = None,
-            readonly: bool = None,
+            disabled: bool = None,
             borderwidth:int = None,
             #
             bitmap: Literals.bitmap = None,
@@ -85,7 +85,7 @@ class Checkbox(BaseWidget):
         if tk_kwargs is None:
             tk_kwargs = dict()
 
-        if background_color and not apply_parent_background_color:
+        if self.defaults.single("background_color", background_color) and not apply_parent_background_color:
             apply_parent_background_color = False
 
         if check_type == "button":
@@ -99,7 +99,7 @@ class Checkbox(BaseWidget):
             font_underline = font_underline,
             fontsize = fontsize,
             fonttype = fonttype,
-            readonly = readonly,
+            disabled = disabled,
             bitmap_position = bitmap_position,
             bitmap = bitmap,
             check_background_color = check_background_color,
@@ -179,7 +179,7 @@ class Checkbox(BaseWidget):
             case "font_overstrike":
                 self._overstrike = self.defaults.single(key, new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
-            case "readonly":
+            case "disabled":
                 self._tk_kwargs["state"] = "disabled" if new_val else "normal"
             case "check_type":
                 self._tk_kwargs["indicatoron"] = int(new_val == "check")

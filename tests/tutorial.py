@@ -1,6 +1,8 @@
 import SwiftGUI as sg
 
-sg.Themes.FourColors.GarnetFlair()
+sg.Themes.Thematic.FacebookMom()
+#sg.Themes.FourColors.SinCity()
+#sg.Examples.preview_all_elements(flip_readonly= True)
 sg.Examples.preview_all_elements()
 exit()
 

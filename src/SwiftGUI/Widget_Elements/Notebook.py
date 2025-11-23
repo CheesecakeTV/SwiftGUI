@@ -77,7 +77,7 @@ class Notebook(BaseWidgetTTK):
 
         self._tab_event_functions: list[Callable | None] = [None] * len(self._elements) # The functions that will be called when the corresponding tab is selected
 
-        if background_color and not apply_parent_background_color:
+        if self.defaults.single("background_color", background_color) and not apply_parent_background_color:
             apply_parent_background_color = False
 
         if tk_kwargs is None:

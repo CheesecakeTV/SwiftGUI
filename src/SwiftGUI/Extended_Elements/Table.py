@@ -163,8 +163,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
             font_overstrike_headings: bool = None,
 
             background_color: str | Color = None,
-            background_color_rows: str | Color = None,
-            background_color_active_rows: str | Color = None,
+            background_color_active: str | Color = None,
             background_color_headings: str | Color = None,
             background_color_active_headings: str | Color = None,
 
@@ -204,8 +203,8 @@ class Table(BaseWidgetTTK, BaseScrollbar):
             tk_kwargs = dict()
 
         self._update_initial(columns=self._headings, column_width=column_width, selectmode=selectmode,
-                             background_color=background_color, background_color_rows=background_color_rows,
-                             background_color_active_rows=background_color_active_rows,
+                             background_color=background_color,
+                             background_color_active=background_color_active,
                              background_color_headings=background_color_headings,
                              background_color_active_headings=background_color_active_headings, text_color=text_color,
                              text_color_active=text_color_active, text_color_headings=text_color_headings,
@@ -376,11 +375,11 @@ class Table(BaseWidgetTTK, BaseScrollbar):
 
             case "background_color":
                 self._config_ttk_style(fieldbackground=new_val)
-            case "background_color_rows":
+            #case "background_color_rows":
                 self._map_ttk_style(background = [
                     ("!selected",new_val)]
                 )
-            case "background_color_active_rows":
+            case "background_color_active":
                 self._map_ttk_style(background = [
                     ("selected",new_val)]
                 )

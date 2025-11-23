@@ -61,7 +61,7 @@ class Frame(BaseWidgetContainer):
         self._contains = layout
         self._linked_background_elements = list()
 
-        if background_color and not apply_parent_background_color:
+        if self.defaults.single("background_color", background_color) and not apply_parent_background_color:
             apply_parent_background_color = False
 
         if tk_kwargs is None:
