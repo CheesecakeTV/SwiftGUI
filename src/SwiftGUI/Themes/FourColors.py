@@ -264,7 +264,7 @@ class FairyPink(BaseFourColors):
     col2 = "B4AEE8"
     col1 = "FFE3FE"
 
-class DeepPurple(BaseFourColors):
+class UnderlyingPurple(BaseFourColors):
     col1 = "440A67"
     col2 = "93329E"
     col3 = "B4AEE8"
@@ -337,7 +337,7 @@ class Chocolate(BaseFourColors):
     col3 = "B85C38"
     col4 = "E0C097"
 
-class SinCity(BaseFourColors):
+class TransgressionTown(BaseFourColors):
     col1 = "171717"
     col2 = "444444"
     col3 = "DA0037"

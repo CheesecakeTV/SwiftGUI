@@ -3,7 +3,7 @@ import SwiftGUI as sg
 import json
 import pathlib
 
-sg.Themes.FourColors.MilkTea()
+sg.Themes.FourColors.TransgressionTown()
 
 # Look at the other class first to understand this one!
 class SingleAddress(sg.BasePopupNonblocking):
@@ -96,12 +96,15 @@ class Addressbook(sg.BasePopupNonblocking):
                     default_event= True,
                 ),
                 sg.T(expand= True), # This way, the other expanded element only covers roughly half the row. Leave it out and see how it looks
-                                    # The proper way to do this would be a separate column for table and searchbar, but the layout is complicated enough.
+                                    # The proper way to do this would be a separate frame for table and searchbar, but the layout is complicated enough.
             ],[
+                sg.Spacer(height= 10)    # Some space between the rows
+            ], [
                 table := sg.Table(
                     default_event= True,
                     key_function= self._select_row, # Call self._selected_row when the selection changes
                     headings= self._attributes,
+                    scrollbar= False,
                 ).bind_event(
                     sg.Event.ClickDoubleLeft,   # Doubleclicking should do the same as clicking the button "Pin" (later)
                     key= "Pin",
@@ -136,7 +139,7 @@ class Addressbook(sg.BasePopupNonblocking):
         self.form: sg.Form = form
 
         # Simmilar to w = sg.Window(...)
-        super().__init__(layout, alignment = "left")
+        super().__init__(layout, alignment = "left", padx = 10, pady = 10, title= f"SwiftGUI Addressbook example opening {self._filepath}")
 
         try:
             # If the filepath is in some sub-folders, create said folders

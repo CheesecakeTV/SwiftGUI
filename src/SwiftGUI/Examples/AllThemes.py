@@ -1,3 +1,5 @@
+from typing import Callable
+
 from SwiftGUI.Compat import batched
 import SwiftGUI as sg
 
@@ -33,11 +35,14 @@ def _get_single_preview(theme: type, name: str) -> sg.Frame:
         ]
     ], apply_parent_background_color= False)
 
-def preview_all_themes(max_rows: int = 4, max_cols: int = 5) -> None:
+def preview_all_themes(max_rows: int = 4, max_cols: int = 5, take_a_closer_look: sg.BasePopupNonblocking | Callable = None) -> None:
     """
     Have a look at all possible (prebuilt) themes
     :return:
     """
+    if take_a_closer_look is None:
+        take_a_closer_look = sg.Examples.preview_all_elements
+
     layout = list()
     grouped = dict()
 
@@ -89,7 +94,9 @@ def preview_all_themes(max_rows: int = 4, max_cols: int = 5) -> None:
     def loop(e, v):
         sg.GlobalOptions.reset_all_options()
         sg.Themes.all_themes[e]()
-        sg.Examples.preview_all_elements()
+
+        #if isinstance(take_a_closer_look, sg.BasePopupNonblocking):
+        take_a_closer_look()
 
     w = sg.SubWindow(layout, title="Preview of all Themes", alignment="left", event_loop_function=loop)
     w.block_others_until_close()    # Equivalent to the main loop
