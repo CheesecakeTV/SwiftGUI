@@ -5,7 +5,7 @@ import SwiftGUI as sg
 from PIL import Image # pip install pillow
 from pathlib import Path    # pip install pathlib   (Should be builtin though...)
 
-my_theme = sg.Themes.FourColors.SinCity
+my_theme = sg.Themes.FourColors.TransgressionTown
 my_theme()
 
 def img_to_b64(img_path: str, force_size: tuple[int, int] = None) -> bytes:

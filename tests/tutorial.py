@@ -4,6 +4,8 @@ import json
 import pathlib
 
 sg.Themes.FourColors.TransgressionTown()
+sg.Popups.get_text()
+exit()
 
 # Look at the other class first to understand this one!
 class SingleAddress(sg.BasePopupNonblocking):
