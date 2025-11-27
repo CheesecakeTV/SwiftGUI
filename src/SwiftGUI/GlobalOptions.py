@@ -522,6 +522,7 @@ class TabFrame(Frame):
 
 class Spinbox(Button, Input):
     default_value: float = None
+    value_type: type = float
     cursor_button: Literals.cursor = None
     background_color_button: Color | str = None
     relief_button_down: Literals.relief = None
