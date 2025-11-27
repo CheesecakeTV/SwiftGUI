@@ -5,7 +5,7 @@ from typing import Hashable, Any
 from PIL import Image
 
 import SwiftGUI as sg
-from SwiftGUI import Color
+from SwiftGUI import Color, ValueDict
 from SwiftGUI.Compat import Self
 
 class BasePopupNonblocking:
@@ -36,6 +36,8 @@ class BasePopupNonblocking:
             **kwargs,
         )
 
+        self.w.bind_destroy_event(self._on_destruction)
+
     def _event_loop(self, e: Hashable, v: sg.ValueDict):
         """
         All key-events will call this method.
@@ -55,6 +57,13 @@ class BasePopupNonblocking:
         """
         self.w.close()
         return self
+
+    def _on_destruction(self, v: ValueDict):
+        """
+        This is called when the popup gets destroyed (closed) for any reason.
+        :return:
+        """
+        ...
 
 class BasePopup(BasePopupNonblocking):
     def __init__(

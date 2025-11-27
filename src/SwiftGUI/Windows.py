@@ -1034,6 +1034,28 @@ class Window(BaseKeyHandler):
 
         return self
 
+    _destroy_event_function: Callable | None = None
+    def _destroy_callback(self, event: tk.Event):
+        """
+        Called when the (sub-)window is destroyed
+        :return:
+        """
+        # The event is also called if any of the children is destroyed...
+        if self.root == event.widget:
+            self._destroy_event_function(event)
+
+    @BaseElement._run_after_window_creation
+    def bind_destroy_event(self, key_function: Callable | Iterable[Callable]) -> Self:
+        """
+        This event will be called when the (sub-)window is destroyed for any reason.
+        :param key_function: Supports parameters w, v and args
+        :return:
+        """
+        self._destroy_event_function = self.get_event_function(self, key_function= key_function)
+        self.root.bind("<Destroy>", self._destroy_callback)
+
+        return self
+
 class SubWindow(Window):
     """
     Window-Object for additional windows

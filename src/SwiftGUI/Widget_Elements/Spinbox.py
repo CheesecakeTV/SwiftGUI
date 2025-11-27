@@ -236,7 +236,7 @@ class Spinbox(BaseWidget):
 
         self._update_initial(
             validate= "key",
-            validatecommand = (self.parent_tk_widget.register(self._validate), "%P")
+            validatecommand = (self.tk_widget.register(self._validate), "%P")
         )
 
         if self._default_val is not None:   # No idea why the usual way doesn't work in this case...
