@@ -34,6 +34,7 @@ class Button(BaseWidget):
             /,
             key:any = None,
             key_function:Callable|Iterable[Callable] = None,
+            default_event = True,
 
             borderwidth:int = None,
 
@@ -150,6 +151,7 @@ class Button(BaseWidget):
             pady = pady,
         )
 
+        self._default_event = default_event
         self._key_function = key_function
 
     _disabled_at_start = False
@@ -194,9 +196,10 @@ class Button(BaseWidget):
         super()._apply_update() # Actually apply the update
 
     def _personal_init(self):
-        self._tk_kwargs.update({
-            "command": self.window.get_event_function(self, self.key, self._key_function)
-        })
+        if self._default_event:
+            self._tk_kwargs.update({
+                "command": self.window.get_event_function(self, self.key, self._key_function)
+            })
 
         super()._personal_init()
 
