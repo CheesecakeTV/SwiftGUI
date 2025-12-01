@@ -311,6 +311,7 @@ class Button(Common,Common_Textual,Common_Field_Background):
     borderwidth: int = None
 
     bitmap: Literals.bitmap = None
+    bitmap_position: Literals.compound = None
     disabled: bool = None
     text_color_disabled: str | Color = None
     background_color_active: str | Color = None

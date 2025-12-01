@@ -22,7 +22,7 @@ class Button(BaseWidget):
         "background_color_active" : "activebackground",
         "text_color_active" : "activeforeground",
         "text_color":"fg",
-
+        "bitmap_position": "compound",
     }
 
     def __init__(
@@ -39,6 +39,7 @@ class Button(BaseWidget):
             borderwidth:int = None,
 
             bitmap:Literals.bitmap = None,
+            bitmap_position: Literals.compound = None,
             disabled:bool = None,
             text_color_disabled: str | Color = None,
             background_color_active: str | Color = None,
@@ -149,6 +150,7 @@ class Button(BaseWidget):
             height = height,
             padx = padx,
             pady = pady,
+            bitmap_position = bitmap_position,
         )
 
         self._default_event = default_event

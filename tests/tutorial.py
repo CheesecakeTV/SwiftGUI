@@ -5,10 +5,11 @@ sg.Themes.FourColors.Chocolate()
 layout = [
     [
         sg.Button(
-            "SwiftGUI",
-            disabled= True,
-            text_color_disabled= "#E0C097",
-        )
+            "SwiftGUI!",
+            key= "Button",
+            repeatdelay= 500,
+            repeatinterval= 100,
+        ),
     ]
 ]
 
