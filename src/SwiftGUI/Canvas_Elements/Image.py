@@ -23,10 +23,10 @@ class Image(Canvas_Elements.BaseCanvasElement):
             position: tuple[float, float],
             image: PathLike | str | PIL_Image.Image | IO[bytes] = None,
             /,
+            key: Hashable = None,
+
             image_width: int = None,
             image_height: int = None,
-
-            key: Hashable = None,
 
             image_active: str | PathLike | PIL_Image.Image | IO[bytes] = None,
             image_disabled: str | PathLike | PIL_Image.Image | IO[bytes] = None,

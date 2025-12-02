@@ -1,7 +1,7 @@
 import io
 import tkinter as tk
 from os import PathLike
-from typing import Callable, Iterable, Any
+from typing import Callable, Iterable, Any, Hashable
 from PIL import Image as PIL_Image
 
 from SwiftGUI import GlobalOptions, Image, Button, Literals, Color
@@ -20,7 +20,7 @@ class ImageButton(Button, Image):
             self,
             image: str | PathLike | PIL_Image.Image | io.BytesIO = None,
             /,
-            key: Any = None,
+            key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
 
             text: str = None,

@@ -208,6 +208,11 @@ class Common(DEFAULT_OPTIONS_CLASS):
     takefocus:bool = True
     # expand:bool = False
     # expand_y: bool = False
+
+    # These are reserves for now.
+    # They don't work on windows.
+    # If you want them included, tell me on GitHub.
+    highlightthickness: int = 0
     highlightcolor: Color | str = None
     highlightbackground_color: str | Color = None
 

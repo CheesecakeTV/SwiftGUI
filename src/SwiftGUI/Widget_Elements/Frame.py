@@ -1,6 +1,6 @@
 import tkinter as tk
 from collections.abc import Iterable
-from typing import Any
+from typing import Any, Hashable
 
 from SwiftGUI import BaseElement, ElementFlag, BaseWidgetContainer, GlobalOptions, Literals, Color, BaseWidget
 
@@ -30,7 +30,7 @@ class Frame(BaseWidgetContainer):
             self,
             layout: Iterable[Iterable[BaseElement]],
             /,
-            key: str = None,
+            key: Hashable = None,
             alignment: Literals.alignment = None,
             expand: bool = False,
             expand_y: bool = False,

@@ -1,9 +1,10 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal
+from typing import Literal, Hashable
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
+from SwiftGUI.Compat import Self
 
 
 class Button(BaseWidget):
@@ -32,7 +33,7 @@ class Button(BaseWidget):
             # Add here
             text:str = "",
             /,
-            key:any = None,
+            key: Hashable = None,
             key_function:Callable|Iterable[Callable] = None,
             default_event = True,
 
@@ -44,7 +45,10 @@ class Button(BaseWidget):
             text_color_disabled: str | Color = None,
             background_color_active: str | Color = None,
             text_color_active: str | Color = None,
-            highlightcolor: str | Color = None,
+
+            #highlightcolor: str | Color = None,
+            #highlightbackground_color: str | Color = None,
+            #highlightthickness: int = None,
 
             width: int = None,
             height: int = None,
@@ -125,8 +129,10 @@ class Button(BaseWidget):
             justify = justify,
             background_color = background_color,
             #"highlightbackground_color":"cyan",
+            #highlightbackground_color = highlightbackground_color,
+            #highlightthickness = highlightthickness,
+            #highlightcolor = highlightcolor,
             highlightthickness = 0,
-            highlightcolor = highlightcolor,
             relief = relief,
             text_color = text_color,
             width = width,
@@ -221,25 +227,27 @@ class Button(BaseWidget):
         self._set_tk_target_variable(default_key="text")
 
 
-    def flash(self):
+    def flash(self) -> Self:
         """
         Flash the button visually
         :return:
         """
         if self._window_is_dead():
-            return
+            return self
 
         self.tk_widget.flash()
+        return self
 
-    def push_once(self):
+    def push_once(self) -> Self:
         """
         "Push" the button virtually
         :return:
         """
         if self._window_is_dead():
-            return
+            return self
 
         self.tk_widget.invoke()
+        return self
 
     def init_window_creation_done(self):
         super().init_window_creation_done()

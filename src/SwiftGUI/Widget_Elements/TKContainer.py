@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from typing import Hashable
 
 from SwiftGUI import BaseWidget, GlobalOptions
 
@@ -16,7 +17,7 @@ class TKContainer(BaseWidget):
             # Add here
             widget_type: type[tk.Widget | ttk.Widget],
             /,
-            key: str = None,
+            key: Hashable = None,
             pack_kwargs: dict = None,
             expand: bool = False,
             expand_y: bool = None,

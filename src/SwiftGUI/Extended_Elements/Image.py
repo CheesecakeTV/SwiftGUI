@@ -1,6 +1,6 @@
 import tkinter as tk
 from os import PathLike
-from typing import Any, IO
+from typing import Any, IO, Hashable
 from SwiftGUI.Compat import Self
 from PIL import Image as PIL_Image
 from PIL import ImageTk
@@ -24,7 +24,7 @@ class Image(BaseWidget):
             self,
             image: str | PathLike | PIL_Image.Image | IO[bytes] = None,
             /,
-            key: Any = None,
+            key: Hashable = None,
             image_height: int = None,
             image_width: int = None,
             background_color: str | Color = None,

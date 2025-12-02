@@ -1,7 +1,7 @@
 
 from collections.abc import Iterable, Callable
 from functools import partial
-from typing import Any
+from typing import Any, Hashable
 from SwiftGUI.Compat import Self
 import json
 
@@ -22,8 +22,8 @@ class Form(BaseCombinedElement):
             self,
             texts:Iterable[str] | Iterable[tuple[str, str]],    # Text = keys, or (Text, key)-pairs
             /,
-            default_values: Iterable[str] | dict[str:str] = None,
-            key:Any = None,
+            default_values: Iterable[str] | dict[str, str] = None,
+            key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
             default_event: bool = None,
             small_clear_buttons: bool = None,

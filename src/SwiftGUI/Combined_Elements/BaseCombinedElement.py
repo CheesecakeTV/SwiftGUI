@@ -1,5 +1,5 @@
 from collections.abc import Iterable, Callable
-from typing import Any
+from typing import Any, Hashable
 
 from SwiftGUI import BaseElement, SubLayout, Frame
 from SwiftGUI.ElementFlags import ElementFlag
@@ -15,7 +15,7 @@ class BaseCombinedElement(BaseElement):
             self,
             layout: Frame | Iterable[Iterable[BaseElement]],
             /,
-            key: Any = None,
+            key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
             apply_parent_background_color: bool = True,
             internal_key_system: bool = True,
@@ -108,6 +108,13 @@ class BaseCombinedElement(BaseElement):
 
         return self._sg_widget
 
+    @property
+    def v(self):
+        """
+        Reference to the value-dict
+        """
+        return self.w.value
+
     def _get_value(self) -> Any:
         """
         Overwrite this to return a custom value
@@ -115,13 +122,13 @@ class BaseCombinedElement(BaseElement):
         """
         return self._sg_widget.value
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: Hashable):
         if not self._has_sublayout:
             raise NotImplementedError(f"{self} has no sub-layout, so __getitem__ is not defined.")
         return self._sg_widget[item]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: Hashable, value: Any):
         if not self._has_sublayout:
-            raise NotImplementedError(f"{self} has no sub-layout, so __getitem__ is not defined.")
+            raise NotImplementedError(f"{self} has no sub-layout, so __setitem__ is not defined.")
         self._sg_widget[key].value = value
 

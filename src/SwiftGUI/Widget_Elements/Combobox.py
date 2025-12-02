@@ -1,5 +1,5 @@
 from tkinter import ttk, font
-from typing import Any, Iterable, Callable
+from typing import Any, Iterable, Callable, Hashable
 
 from SwiftGUI.Base import run_after_window_creation
 from SwiftGUI.Compat import Self
@@ -19,7 +19,7 @@ class Combobox(BaseWidgetTTK):
             self,
             choices: Iterable[Any] = tuple(),
             /,
-            key: Any = None,
+            key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
             default_event: bool = None,
 

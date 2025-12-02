@@ -23,13 +23,13 @@ class Notebook(BaseWidgetTTK):
             # Add here
             *tabs: Frame,
 
+            key: Hashable = None,
+            key_function: Callable | Iterable[Callable] = None,
+
             default_event: bool = None,
             event_on_backend_selection: bool = None,
 
             tab_texts: dict[Hashable, str] = None,
-
-            key: Hashable = None,
-            key_function: Callable | Iterable[Callable] = None,
 
             background_color: str | Color = None,
             background_color_tabs: str | Color = None,

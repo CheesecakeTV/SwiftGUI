@@ -33,7 +33,7 @@ class Canvas(BaseWidget):
             self,
             *canvas_elements: "sg.Canvas_Elements.BaseCanvasElement",   # Elements to add in the beginning
 
-            key: Any = None,
+            key: Hashable = None,
             default_event: bool = False,
             key_function: Callable | Iterable[Callable] = None,
 

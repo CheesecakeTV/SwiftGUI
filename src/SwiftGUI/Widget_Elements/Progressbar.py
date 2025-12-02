@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from typing import Any, Iterable, Callable
+from typing import Any, Iterable, Callable, Hashable
 
 from SwiftGUI.Compat import Self
 
@@ -26,7 +26,7 @@ class Progressbar(BaseWidgetTTK):
             self,
             default_value: float = None,
             /,
-            key: Any = None,
+            key: Hashable = None,
             number_max: float = None,
 
             cursor: Literals.cursor = None,

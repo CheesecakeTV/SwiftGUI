@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal, Any
+from typing import Literal, Any, Hashable
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 from SwiftGUI.Compat import Self
@@ -35,10 +35,11 @@ class Input(BaseWidget):
             # Add here
             text: str = None,
             /,
-            key: Any = None,
+            key: Hashable = None,
             key_function: Callable|Iterable[Callable] = None,
-            width: int = None,
             default_event: bool = False,
+
+            width: int = None,
             #
             cursor: Literals.cursor = None,
             takefocus: bool = None,

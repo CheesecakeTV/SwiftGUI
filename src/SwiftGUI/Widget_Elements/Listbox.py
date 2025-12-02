@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Any
+from typing import Any, Hashable
 from SwiftGUI.Compat import Self
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, BaseElement, Scrollbar, BaseScrollbar
@@ -29,7 +29,7 @@ class Listbox(BaseWidget, BaseScrollbar):
             self,
             default_list: Iterable[Any] = None,
             /,
-            key: Any = None,
+            key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
             default_event: bool = False,
 

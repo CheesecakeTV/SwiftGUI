@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal, Any
+from typing import Literal, Any, Hashable
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 
@@ -33,7 +33,7 @@ class Checkbox(BaseWidget):
             self,
             text: str = None,
             /,
-            key: Any = None,
+            key: Hashable = None,
             default_event: bool = False,
             key_function: Callable | Iterable[Callable] = None,
             default_value: bool = False,

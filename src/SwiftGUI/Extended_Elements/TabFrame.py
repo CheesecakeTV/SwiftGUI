@@ -1,6 +1,6 @@
 import tkinter as tk
 from collections.abc import Iterable
-from typing import Any, Callable
+from typing import Any, Callable, Hashable
 from SwiftGUI.Compat import Self
 
 from SwiftGUI import BaseElement, GlobalOptions, Literals, Color, Frame
@@ -15,12 +15,12 @@ class TabFrame(Frame):
             self,
             layout: Iterable[Iterable[BaseElement]],
             /,
-            text: str = None,
-            fake_key: str = None,
+            key: Hashable = None,
+            key_function: Callable | Iterable[Callable] = None,
             default_event: bool = False,
 
-            key: str = None,
-            key_function: Callable | Iterable[Callable] = None,
+            text: str = None,
+            fake_key: Hashable = None,
 
             # Normal sg.Frame-options
             alignment: Literals.alignment = None,
