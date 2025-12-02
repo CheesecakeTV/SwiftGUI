@@ -331,7 +331,7 @@ class Button(Common,Common_Textual,Common_Field_Background):
     justify: Literal["left", "right", "center"] = None
     overrelief: Literals.relief = None
 
-    relief: Literals.relief = None
+    relief: Literals.relief = "raised"
 
     repeatdelay: int = None
     repeatinterval: int = None
