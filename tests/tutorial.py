@@ -5,7 +5,9 @@ import SwiftGUI as sg
 from SwiftGUI import ValueDict
 from SwiftGUI.Compat import Self
 
-sg.Themes.FourColors.Jungle()
+sg.Themes.FourColors.TransgressionTown()
+sg.Examples.preview_all_elements()
+exit()
 
 class ToggleButton(sg.BaseCombinedElement):
     def __init__(

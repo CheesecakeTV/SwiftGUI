@@ -5,9 +5,7 @@ import tkinter.ttk as ttk
 from collections.abc import Iterable, Callable, Iterator
 from functools import partial
 from tkinter import font
-from typing import Any, Literal
-
-from apt_pkg import Hashes
+from typing import Any, Literal, Hashable
 
 from SwiftGUI.Compat import Self
 from itertools import islice
@@ -139,7 +137,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
             # Add here
             elements: Iterable[Iterable[Any]] = None,
             /,
-            key: Hashes = None,
+            key: Hashable = None,
             default_event: bool = False,
             key_function: Callable|Iterable[Callable] = None,
 

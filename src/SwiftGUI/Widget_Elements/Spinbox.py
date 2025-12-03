@@ -206,7 +206,6 @@ class Spinbox(BaseWidget):
         return self._value_type(self._last_viable_value)
 
     def _validate(self, val: Any) -> bool:
-        print("validate", val)
         try:
             self._value_type(val)
             return True
