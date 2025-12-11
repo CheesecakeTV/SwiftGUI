@@ -60,7 +60,7 @@ class Frame(BaseWidgetContainer):
     ):
         super().__init__(key=key, tk_kwargs=tk_kwargs, expand=expand, expand_y=expand_y)
 
-        self._contains = layout
+        self._contains = list(layout)
         self._linked_background_elements = list()
 
         if self.defaults.single("background_color", background_color) and not apply_parent_background_color:
@@ -149,12 +149,16 @@ class Frame(BaseWidgetContainer):
         if self._background_color_initial is not None:
             self._update_initial(background_color=self._background_color_initial)
 
-    def add_row(self, row: Iterable[BaseElement], **insert_kwargs) -> Self:
+    def add_row(self, row: Iterable[BaseElement], add_as_contained_row: bool = True, **insert_kwargs) -> Self:
         """
         Add a single row to the end of the frame
+        :param add_as_contained_row: Just leave it True.
+        :param row:
         """
         # line = tk.Frame(self._tk_widget,background="orange",relief="raised",borderwidth="3",border=3)
         # actual_line = tk.Frame(line,background="lightBlue",borderwidth=3,border=3,relief="raised")
+        if add_as_contained_row:
+            self._contains.append(row)
 
         line = tk.Frame(self._tk_widget,relief="flat",background=self._background_color)  # This is the row
         actual_line = tk.Frame(line,background=self._background_color)    # This is where the actual elements are put in
@@ -209,5 +213,13 @@ class Frame(BaseWidgetContainer):
         """
         ins_kwargs_rows = self._insert_kwargs_rows
 
+        for row in self._contains.copy():
+            self.add_row(row, add_as_contained_row=False, **ins_kwargs_rows)
+
+    def delete(self) -> Self:
         for row in self._contains:
-            self.add_row(row, **ins_kwargs_rows)
+            for elem in row:
+                if hasattr(elem, "delete"):
+                    elem.delete()
+
+        super().delete()

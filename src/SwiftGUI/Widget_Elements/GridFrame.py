@@ -22,11 +22,12 @@ class GridFrame(Frame):
         #ins_kwargs_rows = self._insert_kwargs_rows.copy()
 
         self._grid_rows = list()
+
         for n, row in enumerate(self._contains):
-            self.add_row(row)
+            self.add_row(row, add_as_contained_row= False)
 
     _grid_rows: list[list[BaseElement]]
-    def add_row(self, row: Iterable[BaseElement], **insert_kwargs) -> Self:
+    def add_row(self, row: Iterable[BaseElement], add_as_contained_row=True, **kwargs) -> Self:
         """
         Add a single row to the grid-frame.
         """
@@ -62,7 +63,7 @@ class GridFrame(Frame):
             elif expand_y or isinstance(elem, VerticalSeparator):   # I know this looks sketchy, but still probably the least painful way to implement...
                 sticky += "ns"
 
-            actual_box.grid(row= row_number, column= k, sticky= sticky)
+            actual_box.grid(row= row_number, column= k, sticky= sticky, **kwargs)
 
             if self._grab_anywhere_on_this:
                 #self.window.bind_grab_anywhere_to_element(box)

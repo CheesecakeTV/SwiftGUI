@@ -353,7 +353,7 @@ class BaseWidget(BaseElement):
     _insert_kwargs_rows:dict    # kwargs for the grid-rows
 
     #_is_container:bool = False   # True, if this widget contains other widgets
-    _contains:Iterable[Iterable["BaseElement"]] = []
+    _contains:list[Iterable["BaseElement"]] = []
 
     _transfer_keys: dict[str:str] = dict()   # Rename a key from the update-function. from -> to; from_user -> to_widget
 
@@ -655,6 +655,18 @@ class BaseWidget(BaseElement):
                 pass
 
         return default  # Well, gave it my best shot...
+
+    def delete(self) -> Self:
+        """
+        Delete this element removing it permanently from the layout
+
+        Keep in mind that rows still exist, even if they don't contain any elements (anymore).
+        So adding and removing 1000 elements is not a good idea.
+        """
+        self.tk_widget.destroy()
+        self.window.unregister_element(self)
+        self.remove_flags(ElementFlag.IS_CREATED)
+        return self
 
 class BaseScrollbar:
     """

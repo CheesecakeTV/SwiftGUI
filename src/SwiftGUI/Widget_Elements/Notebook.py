@@ -337,3 +337,10 @@ class Notebook(BaseWidgetTTK):
         :return:
         """
         return len(self._elements)
+
+    def delete(self) -> Self:
+        for elem in self._elements:
+            elem.delete()
+
+        super().delete()
+        return self
