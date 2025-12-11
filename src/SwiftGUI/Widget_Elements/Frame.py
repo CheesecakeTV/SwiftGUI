@@ -3,6 +3,8 @@ from collections.abc import Iterable
 from typing import Any, Hashable
 
 from SwiftGUI import BaseElement, ElementFlag, BaseWidgetContainer, GlobalOptions, Literals, Color, BaseWidget
+from SwiftGUI.Compat import Self
+
 
 class Frame(BaseWidgetContainer):
     """
@@ -147,3 +149,65 @@ class Frame(BaseWidgetContainer):
         if self._background_color_initial is not None:
             self._update_initial(background_color=self._background_color_initial)
 
+    def add_row(self, row: Iterable[BaseElement], **insert_kwargs) -> Self:
+        """
+        Add a single row to the end of the frame
+        """
+        # line = tk.Frame(self._tk_widget,background="orange",relief="raised",borderwidth="3",border=3)
+        # actual_line = tk.Frame(line,background="lightBlue",borderwidth=3,border=3,relief="raised")
+
+        line = tk.Frame(self._tk_widget,relief="flat",background=self._background_color)  # This is the row
+        actual_line = tk.Frame(line,background=self._background_color)    # This is where the actual elements are put in
+        self._containing_row_frame_widgets.extend((line,actual_line))
+
+        line_elem = BaseElement()
+        line_elem._fake_tk_element = actual_line
+
+        expand = False
+        expand_y = False
+
+        for k in row:
+            k._init(line_elem,self.window)
+
+            if not expand and k.has_flag(ElementFlag.EXPAND_ROW):
+                expand = True
+
+            if not expand_y and k.has_flag(ElementFlag.EXPAND_VERTICALLY):
+                expand_y = True
+
+        if expand and expand_y:
+            insert_kwargs["fill"] = "both"
+            insert_kwargs["expand"] = True
+        elif expand:
+            insert_kwargs["fill"] = "x"
+            insert_kwargs["expand"] = True
+        elif expand_y:
+            insert_kwargs["fill"] = "y"
+            insert_kwargs["expand"] = True
+        else:
+            insert_kwargs["fill"] = "none"
+            insert_kwargs["expand"] = False
+
+        if expand_y:
+            line.pack(fill="both", expand=True)
+        else:
+            line.pack(fill="x")
+        actual_line.pack(**insert_kwargs)
+
+        if self._grab_anywhere_on_this:
+            self.window.bind_grab_anywhere_to_element(line)
+            self.window.bind_grab_anywhere_to_element(actual_line)
+
+        return self
+
+    _containing_row_frame_widgets: list[tk.Frame]
+    _background_color: str | Color
+    def _init_containing(self):
+        """
+        Initialize all contained widgets.
+        :return:
+        """
+        ins_kwargs_rows = self._insert_kwargs_rows
+
+        for row in self._contains:
+            self.add_row(row, **ins_kwargs_rows)

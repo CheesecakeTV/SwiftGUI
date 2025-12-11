@@ -80,12 +80,12 @@ class BaseElement:
         """
         self._init_defaults()   # Default configuration
         self._flag_init()
-        self.add_flags(ElementFlag.IS_CREATED)
 
         self._normal_init(parent,window)
         self._personal_init()
 
         self._apply_update()
+        self.add_flags(ElementFlag.IS_CREATED)  # Todo: Check if this is okay. It was behind self._flag_init() before.
 
     def _flag_init(self):
         """
@@ -574,60 +574,14 @@ class BaseWidget(BaseElement):
         if self.has_flag(ElementFlag.IS_CONTAINER):
             self._init_containing()
 
-    _containing_row_frame_widgets: list[tk.Frame]
     _background_color: str | Color
     def _init_containing(self):
         """
-        Initialize all containing widgets
+        Initialize all contained widgets.
+        This is only for widgets that are a container.
         :return:
         """
-        ins_kwargs_rows = self._insert_kwargs_rows.copy()
-
-        for i in self._contains:
-            # line = tk.Frame(self._tk_widget,background="orange",relief="raised",borderwidth="3",border=3)
-            # actual_line = tk.Frame(line,background="lightBlue",borderwidth=3,border=3,relief="raised")
-
-            line = tk.Frame(self._tk_widget,relief="flat",background=self._background_color)  # This is the row
-            actual_line = tk.Frame(line,background=self._background_color)    # This is where the actual elements are put in
-            self._containing_row_frame_widgets.extend((line,actual_line))
-
-            line_elem = BaseElement()
-            line_elem._fake_tk_element = actual_line
-
-            expand = False
-            expand_y = False
-
-            for k in i:
-                k._init(line_elem,self.window)
-
-                if not expand and k.has_flag(ElementFlag.EXPAND_ROW):
-                    expand = True
-
-                if not expand_y and k.has_flag(ElementFlag.EXPAND_VERTICALLY):
-                    expand_y = True
-
-            if expand and expand_y:
-                ins_kwargs_rows["fill"] = "both"
-                ins_kwargs_rows["expand"] = True
-            elif expand:
-                ins_kwargs_rows["fill"] = "x"
-                ins_kwargs_rows["expand"] = True
-            elif expand_y:
-                ins_kwargs_rows["fill"] = "y"
-                ins_kwargs_rows["expand"] = True
-            else:
-                ins_kwargs_rows["fill"] = "none"
-                ins_kwargs_rows["expand"] = False
-
-            if expand_y:
-                line.pack(fill="both", expand=True)
-            else:
-                line.pack(fill="x")
-            actual_line.pack(**ins_kwargs_rows)
-
-            if self._grab_anywhere_on_this:
-                self.window.bind_grab_anywhere_to_element(line)
-                self.window.bind_grab_anywhere_to_element(actual_line)
+        raise NotImplementedError(f"{self} tried to init contained elements (ElementFlag.IS_CONTAINER is set), but that's not implemented.")
 
     def _get_value(self) -> Any:
         """
@@ -740,7 +694,7 @@ class BaseWidgetContainer(BaseWidget):
     """
     Base for Widgets that contain other widgets
     """
-    def __init__(self,key:Any=None,tk_kwargs:dict[str:Any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
+    def __init__(self,key:Any=None,tk_kwargs:dict[str, Any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
         super().__init__(key,tk_kwargs,expand,expand_y=expand_y,**kwargs)
 
         self._containing_row_frame_widgets = list()
