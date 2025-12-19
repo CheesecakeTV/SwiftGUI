@@ -12,7 +12,6 @@ class GridFrame(Frame):
     """
     defaults = GlobalOptions.GridFrame
 
-    _containing_row_frame_widgets: list[tk.Frame]
     _background_color: str | Color
     def _init_containing(self):
         """
@@ -26,8 +25,14 @@ class GridFrame(Frame):
         for n, row in enumerate(self._contains):
             self.add_row(row, add_as_contained_row= False)
 
+    def add_element_to_row(self, element: BaseElement, row_number: int = -1, add_as_contained_element = True) -> Self:
+        raise NotImplementedError("You can't add single elements to a grid-frame (yet)")
+
+    def delete_row(self, row_number: int = -1) -> Self:
+        raise NotImplementedError("You can't delete rows of a grid-frame (yet)")
+
     _grid_rows: list[list[BaseElement]]
-    def add_row(self, row: Iterable[BaseElement], add_as_contained_row=True, **kwargs) -> Self:
+    def add_row(self, row: Iterable[BaseElement] = tuple(), add_as_contained_row=True, **kwargs) -> Self:
         """
         Add a single row to the grid-frame.
         """
@@ -36,12 +41,15 @@ class GridFrame(Frame):
         row_number = len(self._grid_rows)
         self._grid_rows.append(row)
 
+        if add_as_contained_row:
+            self._contains.append(row)
+
         for k, elem in enumerate(row):
 
             #box = tk.Frame(self._tk_widget, relief="flat", background=self._background_color)  # This is the outer container
             actual_box = tk.Frame(self._tk_widget, background=self._background_color)  # This is where the actual elements are put in
 
-            self._containing_row_frame_widgets.append(actual_box)
+            self._containing_frames.append(actual_box)
 
             box_elem = BaseElement()
             box_elem._fake_tk_element = actual_box

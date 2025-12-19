@@ -38,7 +38,7 @@ class Image(BaseWidget):
         self._height = None
         self._width = None
 
-        if self.defaults.single("background_color", background_color) and not apply_parent_background_color:
+        if background_color and not apply_parent_background_color:
             apply_parent_background_color = False
 
         self._update_initial(image=image, image_height=image_height, image_width=image_width,

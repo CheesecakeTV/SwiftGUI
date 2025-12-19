@@ -58,12 +58,16 @@ class Frame(BaseWidgetContainer):
             # Add here
             tk_kwargs: dict[str:Any]=None,
     ):
+        self._containing_frames = list()
+        self._containing_row_frames = list()
+        self._containing_row_elements = list()
+
         super().__init__(key=key, tk_kwargs=tk_kwargs, expand=expand, expand_y=expand_y)
 
-        self._contains = list(layout)
+        self._contains: list[list[BaseElement]] = list(map(list, layout))
         self._linked_background_elements = list()
 
-        if self.defaults.single("background_color", background_color) and not apply_parent_background_color:
+        if background_color and not apply_parent_background_color:
             apply_parent_background_color = False
 
         if tk_kwargs is None:
@@ -82,6 +86,10 @@ class Frame(BaseWidgetContainer):
         self._insert_kwargs_rows.update({
             "side": self._side
         })
+
+    def __len__(self) -> int:
+        """How many rows are in the frame"""
+        return len(self._containing_row_elements)
 
     def window_entry_point(self,root:tk.Tk|tk.Widget,window:BaseElement):
         """
@@ -124,12 +132,22 @@ class Frame(BaseWidgetContainer):
             case "background_color":
                 if not self.has_flag(ElementFlag.IS_CREATED):
                     self._background_color_initial = new_val
+                    self._background_color = new_val
                     return True
 
+                #self._background_color = new_val
                 self.tk_widget.configure(background = new_val)
 
-                for row in self._containing_row_frame_widgets:
-                    row.configure(background=new_val)
+                faulty = list() # Faulty indexes that should be removed
+                for n,row in enumerate(self._containing_frames):
+                    try:
+                        row.configure(background=new_val)
+                    except tk.TclError:
+                        faulty.append(n)
+
+                # Remove faulty indexes
+                for i in faulty[::-1]:
+                    del self._containing_frames[i]
 
                 for elem in self._linked_background_elements:
                     elem._update_initial(background_color=new_val)
@@ -149,7 +167,27 @@ class Frame(BaseWidgetContainer):
         if self._background_color_initial is not None:
             self._update_initial(background_color=self._background_color_initial)
 
-    def add_row(self, row: Iterable[BaseElement], add_as_contained_row: bool = True, **insert_kwargs) -> Self:
+    def add_element_to_row(self, element: BaseElement, row_number: int = -1, add_as_contained_element = True) -> Self:
+        """
+        Append a single element to a row
+
+        :param element:
+        :param row_number:
+        :param add_as_contained_element: Leave this to True!
+        :return:
+        """
+        if add_as_contained_element:
+            self._contains[row_number].append(element)
+
+        # BCP
+        if self.has_flag(ElementFlag.IS_CREATED) and self._pass_down_background_color and element.has_flag(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR):
+            element._update_initial(background_color=self._background_color)
+
+        element._init(self._containing_row_elements[row_number], self.window)
+
+        return self
+
+    def add_row(self, row: Iterable[BaseElement] = tuple(), add_as_contained_row: bool = True, **insert_kwargs) -> Self:
         """
         Add a single row to the end of the frame
         :param add_as_contained_row: Just leave it True.
@@ -158,20 +196,24 @@ class Frame(BaseWidgetContainer):
         # line = tk.Frame(self._tk_widget,background="orange",relief="raised",borderwidth="3",border=3)
         # actual_line = tk.Frame(line,background="lightBlue",borderwidth=3,border=3,relief="raised")
         if add_as_contained_row:
+            row = list(row)
             self._contains.append(row)
 
         line = tk.Frame(self._tk_widget,relief="flat",background=self._background_color)  # This is the row
         actual_line = tk.Frame(line,background=self._background_color)    # This is where the actual elements are put in
-        self._containing_row_frame_widgets.extend((line,actual_line))
+        self._containing_frames.extend((line, actual_line)) # This might be redundant, but it is compatible with GridFrame, so...
+        self._containing_row_frames.append(line)    # Store this line/row so it can be deleted later
 
         line_elem = BaseElement()
         line_elem._fake_tk_element = actual_line
+        self._containing_row_elements.append(line_elem)
 
         expand = False
         expand_y = False
 
         for k in row:
-            k._init(line_elem,self.window)
+            self.add_element_to_row(k, row_number=-1, add_as_contained_element=False)
+            #k._init(line_elem,self.window)
 
             if not expand and k.has_flag(ElementFlag.EXPAND_ROW):
                 expand = True
@@ -202,9 +244,33 @@ class Frame(BaseWidgetContainer):
             self.window.bind_grab_anywhere_to_element(line)
             self.window.bind_grab_anywhere_to_element(actual_line)
 
+        # BCP
+        if self.has_flag(ElementFlag.IS_CREATED) and self._pass_down_background_color:
+            line.configure(bg=self._background_color_initial)
+            actual_line.configure(bg=self._background_color_initial)
+
         return self
 
-    _containing_row_frame_widgets: list[tk.Frame]
+    def delete_row(self, row_number: int = -1) -> Self:
+        """
+        Truely delete a full row from the frame
+        :param row_number: negative indexes are permitted
+        :return:
+        """
+
+        for elem in self._contains[row_number]:
+            if hasattr(elem, "delete"):
+                elem.delete()
+
+        self._containing_row_frames[row_number].destroy()
+        del self._containing_row_elements[row_number]
+        del self._contains[row_number]
+        del self._containing_row_frames[row_number]
+
+        return self
+
+    _containing_frames: list[tk.Frame]  # All frames, including the "outer" rows
+    _containing_row_elements: list[BaseElement]    # "Fake-elements" of the frame that contains the elements per row
     _background_color: str | Color
     def _init_containing(self):
         """
@@ -223,3 +289,5 @@ class Frame(BaseWidgetContainer):
                     elem.delete()
 
         super().delete()
+
+

@@ -709,7 +709,6 @@ class BaseWidgetContainer(BaseWidget):
     def __init__(self,key:Any=None,tk_kwargs:dict[str, Any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
         super().__init__(key,tk_kwargs,expand,expand_y=expand_y,**kwargs)
 
-        self._containing_row_frame_widgets = list()
         self._background_color: str | Color = self.defaults.single("background_color",None)
 
     def _flag_init(self):

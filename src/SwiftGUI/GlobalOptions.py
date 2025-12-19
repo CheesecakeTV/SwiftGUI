@@ -220,7 +220,8 @@ class Common_Background(DEFAULT_OPTIONS_CLASS):
     """
     Common background-color, mainly for pseudo-transparent elements
     """
-    background_color: str | Color = None
+    background_color: str | Color = "#F0F0F0"
+    #background_color: str | Color = None
     background_color_disabled: str | Color = None
 
 class Common_Field_Background(DEFAULT_OPTIONS_CLASS):
@@ -404,7 +405,6 @@ class Window(Common_Background):
     grab_anywhere: bool = False
     padx: int = 5
     pady: int = 5
-    background_color = "#F0F0F0"
 
 class SubWindow(Window):
     ...

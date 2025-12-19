@@ -148,10 +148,10 @@ class BaseKeyHandler(BaseElement):
         self._grab_anywhere: bool | None = None
         #self.ttk_style: ttk.Style | None = None
         self.root: tk.Tk | Widget | None = None
-        self._sg_widget: Frame | None = None
+        self.frame: Frame | None = None
 
         self.all_elements:list["AnyElement"] = list()   # Elements will be registered in here
-        self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
+        self.all_key_elements:dict[Hashable, "AnyElement"] = dict()    # Key:Element, if key is present
         self._grab_anywhere_window: Self | None = None  # This window will handle the callbacks of the grab-anywhere methods
 
         self._key_event_callback_function = event_loop_function
@@ -176,7 +176,7 @@ class BaseKeyHandler(BaseElement):
             grab_anywhere_window: Self = None,
     ):
         """Should be called by the window when/after it is being created"""
-        self._sg_widget: Frame = sg_element
+        self.frame: Frame = sg_element
 
         self.root = container
 
@@ -189,7 +189,7 @@ class BaseKeyHandler(BaseElement):
         if not hasattr(self, "_grab_anywhere"):
             self._grab_anywhere = False
 
-        self._sg_widget.window_entry_point(self.root, self)
+        self.frame.window_entry_point(self.root, self)
 
         #self._value_dict = ValueDict(self, set(self.all_key_elements.keys()))
 
@@ -200,7 +200,7 @@ class BaseKeyHandler(BaseElement):
         for elem in self.all_elements:
             elem.init_window_creation_done()
 
-        self._sg_widget.init_window_creation_done()
+        self.frame.init_window_creation_done()
 
     def __iter__(self) -> Self:
         return self
@@ -516,7 +516,7 @@ class SubLayout(BaseKeyHandler):
         Keep in mind that rows still exist, even if they don't contain any elements (anymore).
         So adding and removing 1000 elements is not a good idea.
         """
-        self._sg_widget.delete()
+        self.frame.delete()
         self.remove_flags(ElementFlag.IS_CREATED)
         return self
 
