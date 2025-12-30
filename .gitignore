@@ -3,3 +3,4 @@ poetry.lock
 dist/
 .idea/
 .venv/
+**/__pycache__/
