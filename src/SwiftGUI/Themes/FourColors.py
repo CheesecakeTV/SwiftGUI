@@ -41,6 +41,7 @@ class BaseFourColors(BaseTheme):
 
         temp = go.Common_Background
         temp.background_color = c1
+        #go.Window.background_color = c1
 
         temp = go.Common_Field_Background
         temp.background_color = c2

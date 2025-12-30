@@ -21,13 +21,25 @@ if TYPE_CHECKING:
     from SwiftGUI import AnyElement
 
 class ValueDict:
-    def __init__(self, window: "BaseKeyHandler", keys: set[Any]):
+    def __init__(self, window: "BaseKeyHandler", keys: set[Hashable] = None):
         super().__init__()
         self._values = dict()
         self._window: "BaseKeyHandler" = window
 
         self._updated_keys: set = set()
+
+        if keys is None:
+            keys = set()
+
         self._all_keys: set = keys
+
+    def register_key(self, key: Hashable):
+        """Add a key so its element is registered"""
+        self._all_keys.add(key)
+
+    def unregister_key(self, key: Hashable):
+        """Remove a key so its element is not registered anymore"""
+        self._all_keys.remove(key)
 
     def __getitem__(self, item: Any) -> Any:
         if item in self._updated_keys:
@@ -105,7 +117,7 @@ class ValueDict:
         self._values[key] = value
         return self
 
-    def update(self, vals: dict[Any:Any]) -> Self:
+    def update(self, vals: dict[Any, Any]) -> Self:
         """
         Apply all values from the provided dict
         :param vals:
@@ -132,14 +144,14 @@ class BaseKeyHandler(BaseElement):
         """
         super().__init__()
 
-        self._value_dict: ValueDict | None = None
+        self._value_dict: ValueDict = ValueDict(self)
         self._grab_anywhere: bool | None = None
         #self.ttk_style: ttk.Style | None = None
         self.root: tk.Tk | Widget | None = None
-        self._sg_widget: Frame | None = None
+        self.frame: Frame | None = None
 
         self.all_elements:list["AnyElement"] = list()   # Elements will be registered in here
-        self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
+        self.all_key_elements:dict[Hashable, "AnyElement"] = dict()    # Key:Element, if key is present
         self._grab_anywhere_window: Self | None = None  # This window will handle the callbacks of the grab-anywhere methods
 
         self._key_event_callback_function = event_loop_function
@@ -164,7 +176,7 @@ class BaseKeyHandler(BaseElement):
             grab_anywhere_window: Self = None,
     ):
         """Should be called by the window when/after it is being created"""
-        self._sg_widget: Frame = sg_element
+        self.frame: Frame = sg_element
 
         self.root = container
 
@@ -177,9 +189,9 @@ class BaseKeyHandler(BaseElement):
         if not hasattr(self, "_grab_anywhere"):
             self._grab_anywhere = False
 
-        self._sg_widget.window_entry_point(self.root, self)
+        self.frame.window_entry_point(self.root, self)
 
-        self._value_dict = ValueDict(self, set(self.all_key_elements.keys()))
+        #self._value_dict = ValueDict(self, set(self.all_key_elements.keys()))
 
         self.exists = True
 
@@ -188,7 +200,7 @@ class BaseKeyHandler(BaseElement):
         for elem in self.all_elements:
             elem.init_window_creation_done()
 
-        self._sg_widget.init_window_creation_done()
+        self.frame.init_window_creation_done()
 
     def __iter__(self) -> Self:
         return self
@@ -243,6 +255,7 @@ class BaseKeyHandler(BaseElement):
                 print(f"WARNING! Key {elem.key} is defined multiple times in its key-system! Disable this message by setting sg.Debug.enable_key_warnings = False before creating the layout.")
 
             self.all_key_elements[elem.key] = elem
+            self._value_dict.register_key(elem.key)
 
     def unregister_element(self, elem:BaseElement):
         """
@@ -257,7 +270,9 @@ class BaseKeyHandler(BaseElement):
             ...
 
         if hasattr(elem, "key") and elem.key in self.all_key_elements:
-            del self.all_key_elements[elem.key]
+            key= elem.key
+            del self.all_key_elements[key]
+            self._value_dict.unregister_key(key)
 
     def throw_event(self, key: Any = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
         """
@@ -287,18 +302,6 @@ class BaseKeyHandler(BaseElement):
             "callback_kwargs": function_kwargs,
         })
 
-    #@deprecated("WIP")
-    #
-    #     """
-    #     NOT THREAD-SAFE!!!
-    #
-    #     Generate an event instantly when window returns to loop
-    #     :param key:
-    #     :param value: If not None, it will be saved inside the value-_dict until changed
-    #     :return:
-    #     """
-    #     raise NotImplementedError("sg.Window.throw_event_on_next_loop is not ready to use yet")
-
     def _receive_event(self, key:Any = None, callback: Callable = None, callback_args: tuple = tuple(), callback_kwargs: dict = None):
         """
         Gets called when an event is evoked
@@ -321,7 +324,7 @@ class BaseKeyHandler(BaseElement):
     def get_event_function(self,me:BaseElement = None,key:Any=None,key_function:Callable|Iterable[Callable]=None,
                            )->Callable:
         """
-        Returns a function that sets the event-variable accorting to key
+        Returns a function that sets the event-variable according to key
         :param me: Calling element
         :param key_function: Will be called additionally to the event. YOU CAN PASS MULTIPLE FUNCTIONS as a list/tuple
         :param key: If passed, main loop will return this key
@@ -505,6 +508,17 @@ class SubLayout(BaseKeyHandler):
                 return True
 
         return super()._update_special_key(key, new_val)
+
+    def delete(self) -> Self:
+        """
+        Delete this element removing it permanently from the layout
+
+        Keep in mind that rows still exist, even if they don't contain any elements (anymore).
+        So adding and removing 1000 elements is not a good idea.
+        """
+        self.frame.delete()
+        self.remove_flags(ElementFlag.IS_CREATED)
+        return self
 
 all_windows: list["Window"] = list()
 def close_all_windows():

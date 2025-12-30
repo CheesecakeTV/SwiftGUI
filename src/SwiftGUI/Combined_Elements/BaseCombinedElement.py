@@ -2,6 +2,7 @@ from collections.abc import Iterable, Callable
 from typing import Any, Hashable
 
 from SwiftGUI import BaseElement, SubLayout, Frame
+from SwiftGUI.Compat import Self
 from SwiftGUI.ElementFlags import ElementFlag
 from SwiftGUI.Windows import ValueDict
 
@@ -132,3 +133,13 @@ class BaseCombinedElement(BaseElement):
             raise NotImplementedError(f"{self} has no sub-layout, so __setitem__ is not defined.")
         self._sg_widget[key].value = value
 
+    def delete(self) -> Self:
+        """
+        Remove this element permanently from the layout.
+
+        Keep in mind that its row still exists, even if it is empty.
+        This can cause performance issues.
+        """
+        self._sg_widget.delete()
+        self.remove_flags(ElementFlag.IS_CREATED)
+        return self
