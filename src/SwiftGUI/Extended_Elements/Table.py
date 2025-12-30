@@ -142,6 +142,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
             key_function: Callable|Iterable[Callable] = None,
 
             headings: Iterable[str] = ("Forgot to add headings?",),
+            hide_headings: bool = None,
             column_width: int | Iterable[int] = None,
 
             sort_col_by_click: bool = None,
@@ -216,7 +217,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
                              font_bold_headings=font_bold_headings, font_italic_headings=font_italic_headings,
                              font_underline_headings=font_underline_headings,
                              font_overstrike_headings=font_overstrike_headings, sort_col_by_click=sort_col_by_click,
-                             takefocus=takefocus, height=height, cursor=cursor, padding=padding, **tk_kwargs)
+                             takefocus=takefocus, height=height, cursor=cursor, padding=padding, hide_headings=hide_headings, **tk_kwargs)
 
         self._default_event = default_event
         self._key_function = key_function
@@ -445,6 +446,16 @@ class Table(BaseWidgetTTK, BaseScrollbar):
             case "font_overstrike_headings":
                 self._overstrike_headings = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
+
+            case "hide_headings":
+                if not self.has_flag(ElementFlag.IS_CREATED):
+                    self.update_after_window_creation(hide_headings= new_val)
+                    return True
+
+                if new_val:
+                    self.tk_widget["show"] = ""
+                else:
+                    self.tk_widget["show"] = "headings"   # Removes first column
 
             case "elements":
                 self.overwrite_table(new_val)
@@ -699,7 +710,6 @@ class Table(BaseWidgetTTK, BaseScrollbar):
             for n,h in enumerate(headings):
                 self.tk_widget.heading(n,text=h,command=partial(self._col_click_callback, n))   # Set callback to always pass the col-ID
 
-        self.tk_widget["show"] = "headings"   # Removes first column
 
         #self._map_ttk_style(background = [("selected", "blue")])
 

@@ -5,7 +5,7 @@ import SwiftGUI as sg
 # Todo: Turn this into a combined element
 class list_picker(sg.BasePopup, tuple):
     text_available = "Available"
-    text_picked = "Picked"
+    text_picked = "Used"
     text_filter = "Filter: "
     text_done = "Done"
     text_cancel = "Cancel"

@@ -471,6 +471,7 @@ class Table(Listbox):
     font_underline_headings: bool = None
     font_overstrike_headings: bool = None
 
+    hide_headings: bool = False
     background_color_headings: str | Color = None
     background_color_active_headings: str | Color = Color.light_blue
 
