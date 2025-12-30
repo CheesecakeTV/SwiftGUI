@@ -167,35 +167,47 @@ class Frame(BaseWidgetContainer):
         if self._background_color_initial is not None:
             self._update_initial(background_color=self._background_color_initial)
 
-    def add_element_to_row(self, element: BaseElement, row_number: int = -1, add_as_contained_element = True) -> Self:
+    def add_element_to_row(self, element: BaseElement, row_index: int = -1, _add_as_contained_element = True) -> Self:
         """
         Append a single element to a row
 
         :param element:
-        :param row_number:
-        :param add_as_contained_element: Leave this to True!
+        :param row_index:
+        :param _add_as_contained_element: Leave this to True!
         :return:
         """
-        if add_as_contained_element:
-            self._contains[row_number].append(element)
+        if _add_as_contained_element:
+            self._contains[row_index].append(element)
 
         # BCP
         if self.has_flag(ElementFlag.IS_CREATED) and self._pass_down_background_color and element.has_flag(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR):
             element._update_initial(background_color=self._background_color)
 
-        element._init(self._containing_row_elements[row_number], self.window)
+        element._init(self._containing_row_elements[row_index], self.window)
 
         return self
 
-    def add_row(self, row: Iterable[BaseElement] = tuple(), add_as_contained_row: bool = True, **insert_kwargs) -> Self:
+    def get_row_index(self, elem: BaseElement) -> int | None:
+        """
+        If the element is contained in this frame, return its row-index.
+        :param elem:
+        :return:
+        """
+        for n, row in enumerate(self._contains):
+            if elem in row:
+                return n
+
+        return None # Not contained
+
+    def add_row(self, row: Iterable[BaseElement] = tuple(), _add_as_contained_row: bool = True, **insert_kwargs) -> Self:
         """
         Add a single row to the end of the frame
-        :param add_as_contained_row: Just leave it True.
+        :param _add_as_contained_row: Just leave it True.
         :param row:
         """
         # line = tk.Frame(self._tk_widget,background="orange",relief="raised",borderwidth="3",border=3)
         # actual_line = tk.Frame(line,background="lightBlue",borderwidth=3,border=3,relief="raised")
-        if add_as_contained_row:
+        if _add_as_contained_row:
             row = list(row)
             self._contains.append(row)
 
@@ -212,7 +224,7 @@ class Frame(BaseWidgetContainer):
         expand_y = False
 
         for k in row:
-            self.add_element_to_row(k, row_number=-1, add_as_contained_element=False)
+            self.add_element_to_row(k, row_index=-1, _add_as_contained_element=False)
             #k._init(line_elem,self.window)
 
             if not expand and k.has_flag(ElementFlag.EXPAND_ROW):
@@ -251,21 +263,41 @@ class Frame(BaseWidgetContainer):
 
         return self
 
-    def delete_row(self, row_number: int = -1) -> Self:
+    def delete_row(self, row_index: int = -1) -> Self:
         """
         Truely delete a full row from the frame
-        :param row_number: negative indexes are permitted
+        :param row_index: negative indexes are permitted
         :return:
         """
 
-        for elem in self._contains[row_number]:
+        for elem in self._contains[row_index]:
             if hasattr(elem, "delete"):
                 elem.delete()
 
-        self._containing_row_frames[row_number].destroy()
-        del self._containing_row_elements[row_number]
-        del self._contains[row_number]
-        del self._containing_row_frames[row_number]
+        self._containing_row_frames[row_index].destroy()
+        del self._containing_row_elements[row_index]
+        del self._contains[row_index]
+        del self._containing_row_frames[row_index]
+
+        return self
+
+    def delete_row_of_element(self, elem: BaseElement, allow_not_available: bool = False) -> Self:
+        """
+        Delete the row the passed element is inside
+
+        :param elem:
+        :param allow_not_available: True, if no exception should occur when the element isn't inside the frame
+        :return:
+        """
+        index = self.get_row_index(elem)
+
+        if index is None:   # Element not inside frame
+            if allow_not_available:
+                return self
+
+            raise ValueError(f"{elem} is not inside {self} yet you tried to delete its row.")
+
+        self.delete_row(index)
 
         return self
 
@@ -280,7 +312,7 @@ class Frame(BaseWidgetContainer):
         ins_kwargs_rows = self._insert_kwargs_rows
 
         for row in self._contains.copy():
-            self.add_row(row, add_as_contained_row=False, **ins_kwargs_rows)
+            self.add_row(row, _add_as_contained_row=False, **ins_kwargs_rows)
 
     def delete(self) -> Self:
         for row in self._contains:
@@ -289,5 +321,5 @@ class Frame(BaseWidgetContainer):
                     elem.delete()
 
         super().delete()
-
+        return self
 

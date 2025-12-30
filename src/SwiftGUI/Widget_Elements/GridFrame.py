@@ -23,16 +23,16 @@ class GridFrame(Frame):
         self._grid_rows = list()
 
         for n, row in enumerate(self._contains):
-            self.add_row(row, add_as_contained_row= False)
+            self.add_row(row, _add_as_contained_row=False)
 
-    def add_element_to_row(self, element: BaseElement, row_number: int = -1, add_as_contained_element = True) -> Self:
+    def add_element_to_row(self, element: BaseElement, row_index: int = -1, _add_as_contained_element=True) -> Self:
         raise NotImplementedError("You can't add single elements to a grid-frame (yet)")
 
-    def delete_row(self, row_number: int = -1) -> Self:
+    def delete_row(self, row_index: int = -1) -> Self:
         raise NotImplementedError("You can't delete rows of a grid-frame (yet)")
 
     _grid_rows: list[list[BaseElement]]
-    def add_row(self, row: Iterable[BaseElement] = tuple(), add_as_contained_row=True, **kwargs) -> Self:
+    def add_row(self, row: Iterable[BaseElement] = tuple(), _add_as_contained_row=True, **insert_kwargs) -> Self:
         """
         Add a single row to the grid-frame.
         """
@@ -41,7 +41,7 @@ class GridFrame(Frame):
         row_number = len(self._grid_rows)
         self._grid_rows.append(row)
 
-        if add_as_contained_row:
+        if _add_as_contained_row:
             self._contains.append(row)
 
         for k, elem in enumerate(row):
