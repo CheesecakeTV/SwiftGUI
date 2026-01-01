@@ -1,16 +1,16 @@
 from os import PathLike
 from pathlib import Path
 
-_PROGRAM_DIRECTORY: Path | None = None
+_PROGRAM_DIRECTORY: Path = Path()
 
-def set_program_directory(
+def set_root(
         path: str | PathLike,
         *,
         parent: str | PathLike | None = Path.home(),
         ignore_parent: bool = False,
 ) -> Path:
     """
-    Define a program-directory that can be used to store configuration, save-files, etc.
+    Define a program-root-directory that can be used to store configuration, save-files, etc.
 
     First argument should be the name of the program.
 
@@ -28,9 +28,9 @@ def set_program_directory(
     _PROGRAM_DIRECTORY.mkdir(parents= True, exist_ok= True) # Create the folder if it doesn't exist already
     return _PROGRAM_DIRECTORY
 
-def program_path(relative_path: str | PathLike = None) -> Path:
+def root_path(relative_path: str | PathLike = None) -> Path:
     """
-    Return a file-path inside the program's directory.
+    Return a file-path inside the program's root-directory.
     Leave it empty to return the program directory
 
     :param relative_path:

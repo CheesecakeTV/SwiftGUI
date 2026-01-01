@@ -100,7 +100,7 @@ from .DecoratorKeys import attach_function_to_key
 
 from . import Canvas_Elements
 
-from .File_Manager import *
+from . import Files
 
 try:
     from SwiftGUI_Matplot import Matplot
