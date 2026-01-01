@@ -27,7 +27,7 @@ class ConfigSection:
 
         self.section: configparser.SectionProxy = file.config[name]
 
-    def apply_defaults(self, **defaults: str) -> Self:
+    def add_defaults(self, **defaults: str) -> Self:
         """
         If the given values are not inside the configuration file, they'll be set to the passed value
         :param defaults:
@@ -49,13 +49,13 @@ class ConfigSection:
 
         return self
 
-    def apply_json_defaults(self, **defaults: Any) -> Self:
+    def add_json_defaults(self, **defaults: Any) -> Self:
         """
         The json-variant of apply_defaults
         :param defaults:
         :return:
         """
-        self.apply_defaults(**self.json_dumps_many(defaults))
+        self.add_defaults(**self.json_dumps_many(defaults))
         return self
 
     def save(self, save_to: str | PathLike = None) -> Self:
@@ -90,7 +90,7 @@ class ConfigSection:
         :param value: New value
         :return:
         """
-        self.section[key] = value
+        self.section[key] = str(value)
 
         if self.file.auto_save:
             self.file.save()
@@ -104,6 +104,11 @@ class ConfigSection:
         :param values:
         :return:
         """
+        keys = values.keys()
+        values = map(str, values.values())  # Convert to string
+
+        values = dict(zip(keys,values))
+
         self.file.config.read_dict({
             self._name: values
         })
@@ -172,12 +177,28 @@ class ConfigSection:
         ret = self.section.get(key, None)
 
         if ret is None:
-            return default
+            return self.defaults.get(key, default)
 
         if to_type is None:
             return ret
 
-        return to_type(ret)
+        try:
+            return to_type(ret)
+        except ValueError:
+            return self.defaults.get(key, default)
+
+    def get_int(self, key: str, default: Any = None) -> Any:
+        return self.get(key, default, int)
+
+    def get_float(self, key: str, default: Any = None) -> Any:
+        return self.get(key, default, float)
+
+    def get_bool(self, key: str, default: bool = False) -> bool:
+        ret = self.get(key, None)
+        if ret is None:
+            return default
+
+        return ret.strip().lower() in {"1", "true", "y", "yes"}
 
     def get_json(self, key: str, default: Any = None) -> Any:
         """
@@ -192,7 +213,7 @@ class ConfigSection:
         ret = self.section.get(key, None)
 
         if ret is None:
-            return default
+            return self.defaults.get(key, default)
 
         try:
             ret = json.loads(ret)
@@ -206,6 +227,7 @@ class ConfigSection:
 
 class ConfigFile:
 
+    # Todo: Prevent the user from creating multiple objects for the same file
     def __init__(
             self,
             path: str | PathLike,
@@ -281,10 +303,10 @@ class ConfigFile:
         new_section = self[name]
 
         if defaults:
-            new_section.apply_defaults(**defaults)
+            new_section.add_defaults(**defaults)
 
         if json_defaults:
-            new_section.apply_json_defaults(**json_defaults)
+            new_section.add_json_defaults(**json_defaults)
 
         return new_section
 

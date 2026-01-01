@@ -28,19 +28,24 @@ def set_root(
     _PROGRAM_DIRECTORY.mkdir(parents= True, exist_ok= True) # Create the folder if it doesn't exist already
     return _PROGRAM_DIRECTORY
 
-def root_path(relative_path: str | PathLike = None) -> Path:
+def root_path(relative_path: str | PathLike = None, create_subfolders: bool = True) -> Path:
     """
     Return a file-path inside the program's root-directory.
-    Leave it empty to return the program directory
+    Leave it empty to return the program directory.
+    Will create all necessary directories.
 
+    :param create_subfolders: False to not create missing folders. Might cause errors.
     :param relative_path:
     :return:
     """
-    assert _PROGRAM_DIRECTORY is not None, "No program-directory isn't defined.\nUse .set_program_directory(...) to define it"
-
     if relative_path:
-        return _PROGRAM_DIRECTORY / Path(relative_path)
+        ret = _PROGRAM_DIRECTORY / Path(relative_path)
     else:
-        return _PROGRAM_DIRECTORY
+        ret = _PROGRAM_DIRECTORY
+
+    if create_subfolders:
+        ret.parent.mkdir(exist_ok= True, parents=True)
+
+    return ret
 
 
