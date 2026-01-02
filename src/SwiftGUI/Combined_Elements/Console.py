@@ -11,7 +11,7 @@ class Console(sg.BaseCombinedElement):
     _add_timestamp: bool    # True, if the current time should be printed in front of prints
     def __init__(
             self,
-            /,
+            *,
             key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
             default_event: bool = False,

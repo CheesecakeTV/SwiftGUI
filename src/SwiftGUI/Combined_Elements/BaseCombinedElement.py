@@ -15,7 +15,7 @@ class BaseCombinedElement(BaseElement):
     def __init__(
             self,
             layout: Frame | Iterable[Iterable[BaseElement]],
-            /,
+            *,
             key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
             apply_parent_background_color: bool = True,

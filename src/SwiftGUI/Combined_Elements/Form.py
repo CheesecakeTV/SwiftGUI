@@ -21,7 +21,7 @@ class Form(BaseCombinedElement):
     def __init__(
             self,
             texts:Iterable[str] | Iterable[tuple[str, str]],    # Text = keys, or (Text, key)-pairs
-            /,
+            *,
             default_values: Iterable[str] | dict[str, str] = None,
             key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,

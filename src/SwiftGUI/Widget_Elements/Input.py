@@ -34,7 +34,7 @@ class Input(BaseWidget):
             self,
             # Add here
             text: str = None,
-            /,
+            *,
             key: Hashable = None,
             key_function: Callable|Iterable[Callable] = None,
             default_event: bool = False,

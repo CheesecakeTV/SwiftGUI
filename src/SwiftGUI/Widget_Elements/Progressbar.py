@@ -25,7 +25,7 @@ class Progressbar(BaseWidgetTTK):
     def __init__(
             self,
             default_value: float = None,
-            /,
+            *,
             key: Hashable = None,
             number_max: float = None,
 

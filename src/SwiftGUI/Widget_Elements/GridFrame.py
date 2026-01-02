@@ -71,7 +71,7 @@ class GridFrame(Frame):
             elif expand_y or isinstance(elem, VerticalSeparator):   # I know this looks sketchy, but still probably the least painful way to implement...
                 sticky += "ns"
 
-            actual_box.grid(row= row_number, column= k, sticky= sticky, **kwargs)
+            actual_box.grid(row= row_number, column= k, sticky= sticky, **insert_kwargs)
 
             if self._grab_anywhere_on_this:
                 #self.window.bind_grab_anywhere_to_element(box)

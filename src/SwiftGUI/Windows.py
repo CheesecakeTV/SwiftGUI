@@ -614,7 +614,7 @@ class Window(BaseKeyHandler):
     def __init__(
             self,
             layout:Iterable[Iterable[BaseElement]],
-            /,
+            *,
             title:str = None,
             alignment: Literals.alignment = None,
             titlebar: bool = None,  # Titlebar visible
@@ -1090,7 +1090,7 @@ class SubWindow(Window):
     def __init__(
             self,
             layout:Iterable[Iterable[BaseElement]],
-            /,
+            *,
             key: Any = None,
             title:str = None,
             alignment: Literals.alignment = None,

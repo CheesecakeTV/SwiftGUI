@@ -16,6 +16,7 @@ class Separator(BaseWidget):
 
     def __init__(
             self,
+            *,
             key: Hashable = None,
             color: str | Color = None,
             weight: int = None,

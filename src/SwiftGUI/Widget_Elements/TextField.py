@@ -62,7 +62,7 @@ class TextField(BaseWidget, BaseScrollbar):
             self,
             # Add here
             text:str = "",
-            /,
+            *,
             key: Hashable = None,
             key_function: Callable|Iterable[Callable] = None,
             scrollbar: bool = None,

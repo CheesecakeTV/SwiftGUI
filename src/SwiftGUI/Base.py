@@ -1,6 +1,6 @@
 from collections.abc import Iterable, Callable
 from functools import wraps
-from typing import Literal, Union, Any
+from typing import Literal, Union, Any, Hashable
 from SwiftGUI.Compat import Self
 import tkinter as tk
 
@@ -323,7 +323,6 @@ class BaseElement:
     def __repr__(self) -> str:
         return f"<sg.{self.__class__.__name__} element at {id(self)}>"
 
-
 class BaseWidget(BaseElement):
     """
     Base for every Widget
@@ -359,7 +358,7 @@ class BaseWidget(BaseElement):
 
     _tk_scrollbar_y: tk.Scrollbar | None = None
 
-    def __init__(self,key:Any=None,tk_kwargs:dict[str:Any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
+    def __init__(self,key:Hashable=None,tk_kwargs:dict[str:Any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
         super().__init__()
 
         if tk_kwargs is None:
@@ -706,7 +705,7 @@ class BaseWidgetContainer(BaseWidget):
     """
     Base for Widgets that contain other widgets
     """
-    def __init__(self,key:Any=None,tk_kwargs:dict[str, Any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
+    def __init__(self,key:Hashable=None,tk_kwargs:dict[str, Any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
         super().__init__(key,tk_kwargs,expand,expand_y=expand_y,**kwargs)
 
         self._background_color: str | Color = self.defaults.single("background_color",None)

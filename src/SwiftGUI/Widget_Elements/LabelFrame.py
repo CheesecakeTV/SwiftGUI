@@ -28,7 +28,7 @@ class LabelFrame(Frame):
     def __init__(
             self,
             layout: Iterable[Iterable[BaseElement]],
-            /,
+            *,
             key: Hashable = None,
 
             text: str = None,

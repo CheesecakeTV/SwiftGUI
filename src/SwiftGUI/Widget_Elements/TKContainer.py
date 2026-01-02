@@ -16,7 +16,7 @@ class TKContainer(BaseWidget):
             self,
             # Add here
             widget_type: type[tk.Widget | ttk.Widget],
-            /,
+            *,
             key: Hashable = None,
             pack_kwargs: dict = None,
             expand: bool = False,

@@ -22,7 +22,7 @@ class Text(BaseWidget):
             self,
             # Add here
             text:str = None,
-            /,
+            *,
             key: Hashable = None,
             width: int = None,
 

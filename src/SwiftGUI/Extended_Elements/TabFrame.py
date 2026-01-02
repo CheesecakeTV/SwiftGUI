@@ -14,7 +14,7 @@ class TabFrame(Frame):
     def __init__(
             self,
             layout: Iterable[Iterable[BaseElement]],
-            /,
+            *,
             key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
             default_event: bool = False,

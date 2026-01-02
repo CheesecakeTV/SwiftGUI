@@ -19,7 +19,7 @@ class FileBrowseButton(Button):
             self,
             # Add here
             text:str = "",
-            /,
+            *,
             key: Hashable = None,
             key_function:Callable|Iterable[Callable] = None,
 

@@ -15,6 +15,7 @@ class MultistateButton(sg.BaseCombinedElement):
 
             button_texts: Iterable[str] = tuple(),
             button_keys: Iterable[Hashable] = tuple(),
+            *,
 
             key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,

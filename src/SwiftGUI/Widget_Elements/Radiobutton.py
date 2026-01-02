@@ -82,7 +82,7 @@ class Radiobutton(BaseWidget):
     def __init__(
             self,
             text: str = None,
-            /,
+            *,
             group: Hashable | RadioGroup = None,
 
             key: Hashable = None,

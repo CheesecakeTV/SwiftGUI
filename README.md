@@ -13,6 +13,23 @@ Has some minor optimizations when running in Python 3.12+.
 
 The documentation now has [its own repository](https://github.com/CheesecakeTV/SwiftGUI-Docs).
 
+# Completely vibe-coding free
+No AI was used in writing this code.
+
+The only way I used it was to research really specific topics with tkinter.
+
+I did not use it to write, check, correct, or refractor code.
+
+Even the documentation was written completely AI-free.
+Takes me around 2 hours per document, but that's a good price for keeping this library slop-free.
+
+# 32 different elements, 9 different canvas-elements
+(Version 0.10.0)
+
+`import SwiftGUI as sg`
+
+Call `sg.Examples.preview_all_elements()` for an overview of all the elements.
+
 # Does your GUI look bad?
 `import SwiftGUI as sg`
 
@@ -21,13 +38,6 @@ Just call `sg.Themes.FourColors.Emerald()` before creating the layout.
 This applies the `Emerald`-theme, my personal favorite.
 
 See which themes are available by calling `sg.Examples.preview_all_themes()`.
-
-# 32 different elements, 9 different canvas-elements
-(Version 0.10.0)
-
-`import SwiftGUI as sg`
-
-Call `sg.Examples.preview_all_elements()` for an overview of all the elements.
 
 #  Alpha-phase!
 I am already using SwiftGUI for smaller projects and personally, like it a lot so far.

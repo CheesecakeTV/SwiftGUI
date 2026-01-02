@@ -28,7 +28,7 @@ class Listbox(BaseWidget, BaseScrollbar):
     def __init__(
             self,
             default_list: Iterable[Any] = None,
-            /,
+            *,
             key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
             default_event: bool = False,

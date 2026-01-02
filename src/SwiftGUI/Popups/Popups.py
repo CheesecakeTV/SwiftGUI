@@ -28,7 +28,7 @@ def show_text(
 
 def yes_no(
         text:str,
-        /,
+        *,
         title: str = "",
 ) -> bool | None:
     """

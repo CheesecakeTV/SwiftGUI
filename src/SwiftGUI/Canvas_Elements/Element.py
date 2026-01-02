@@ -22,7 +22,7 @@ class Element(Canvas_Elements.BaseCanvasElement):
             self,
             position: tuple[float, float],
             element: sg.BaseElement,
-            /,
+            *,
             key: Hashable = None,
 
             anchor: sg.Literals.anchor = None,

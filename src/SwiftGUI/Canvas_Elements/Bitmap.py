@@ -27,7 +27,7 @@ class Bitmap(Canvas_Elements.BaseCanvasElement):
             self,
             position: tuple[float, float],
             bitmap: sg.Literals.bitmap = None,
-            /,
+            *,
             key: Hashable = None,
 
             bitmap_active: sg.Literals.bitmap = None,

@@ -31,7 +31,7 @@ class Frame(BaseWidgetContainer):
     def __init__(
             self,
             layout: Iterable[Iterable[BaseElement]],
-            /,
+            *,
             key: Hashable = None,
             alignment: Literals.alignment = None,
             expand: bool = False,

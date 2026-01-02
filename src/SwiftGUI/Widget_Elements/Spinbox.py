@@ -41,7 +41,7 @@ class Spinbox(BaseWidget):
             self,
             # Add here
             values: Iterable[Any] = None,
-            /,
+            *,
             key: Hashable=None,
             key_function:Callable|Iterable[Callable] = None,
             default_event:bool = False,

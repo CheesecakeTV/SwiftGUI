@@ -136,7 +136,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
             self,
             # Add here
             elements: Iterable[Iterable[Any]] = None,
-            /,
+            *,
             key: Hashable = None,
             default_event: bool = False,
             key_function: Callable|Iterable[Callable] = None,

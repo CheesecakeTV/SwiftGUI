@@ -21,6 +21,7 @@ class Spacer(BaseWidget):
             self,
             width: int = None,
             height: int = None,
+            *,
             key: Hashable = None,
             #expand: bool = None,
             expand_y: bool = None,

@@ -12,7 +12,7 @@ class BasePopupNonblocking:
     def __init__(
             self,
             layout: Iterable[Iterable[sg.BaseElement]],
-            /,
+            *,
             keep_on_top: bool = None,
             title: str = None,
             titlebar: bool = None,
@@ -69,7 +69,7 @@ class BasePopup(BasePopupNonblocking):
     def __init__(
             self,
             layout: Iterable[Iterable[sg.BaseElement]],
-            /,
+            *,
             default: Any = None,     # Returned instead of None
             keep_on_top: bool = True,
             title: str = None,

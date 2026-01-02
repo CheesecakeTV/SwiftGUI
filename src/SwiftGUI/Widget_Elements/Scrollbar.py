@@ -18,7 +18,7 @@ class Scrollbar(BaseWidgetTTK):
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Notebook.html
     def __init__(
             self,
-            /,
+            *,
             key: Hashable = None,
 
             cursor: Literals.cursor = None,

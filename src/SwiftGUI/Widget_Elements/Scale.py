@@ -31,7 +31,7 @@ class Scale(BaseWidget):
 
     def __init__(
             self,
-            /,
+            *,
             key: Hashable = None,
             default_event: bool = False,
             key_function: Callable | Iterable[Callable] = None,

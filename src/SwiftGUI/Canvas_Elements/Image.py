@@ -22,7 +22,7 @@ class Image(Canvas_Elements.BaseCanvasElement):
             self,
             position: tuple[float, float],
             image: PathLike | str | PIL_Image.Image | IO[bytes] = None,
-            /,
+            *,
             key: Hashable = None,
 
             image_width: int = None,

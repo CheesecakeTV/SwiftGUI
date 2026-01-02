@@ -19,7 +19,7 @@ class ImageButton(Button, Image):
     def __init__(
             self,
             image: str | PathLike | PIL_Image.Image | io.BytesIO = None,
-            /,
+            *,
             key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
 

@@ -18,7 +18,7 @@ class Combobox(BaseWidgetTTK):
     def __init__(
             self,
             choices: Iterable[Any] = tuple(),
-            /,
+            *,
             key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
             default_event: bool = None,

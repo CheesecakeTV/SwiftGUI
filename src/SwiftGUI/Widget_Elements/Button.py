@@ -32,7 +32,7 @@ class Button(BaseWidget):
             self,
             # Add here
             text:str = "",
-            /,
+            *,
             key: Hashable = None,
             key_function:Callable|Iterable[Callable] = None,
             default_event = True,

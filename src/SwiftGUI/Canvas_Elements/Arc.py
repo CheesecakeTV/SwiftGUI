@@ -44,7 +44,7 @@ class Arc(Canvas_Elements.BaseCanvasElement):
             self,
             upper_left: tuple[float, float],
             lower_right: tuple[float, float],
-            /,
+            *,
             key: Hashable = None,
 
             style: sg.Literals.canv_arc_style = None,

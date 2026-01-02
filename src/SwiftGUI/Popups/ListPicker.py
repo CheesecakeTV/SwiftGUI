@@ -13,7 +13,7 @@ class list_picker(sg.BasePopup, tuple):
     def __init__(
             self,
             possible_values: Iterable[Hashable] = tuple(),
-            /,
+            *,
             title: str = "",
             default_selection: Iterable[Hashable] = tuple(),
             enable_filter: bool = True,

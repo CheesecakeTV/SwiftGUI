@@ -23,7 +23,7 @@ class Image(BaseWidget):
     def __init__(
             self,
             image: str | PathLike | PIL_Image.Image | IO[bytes] = None,
-            /,
+            *,
             key: Hashable = None,
             image_height: int = None,
             image_width: int = None,
