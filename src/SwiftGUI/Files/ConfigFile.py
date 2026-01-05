@@ -20,7 +20,7 @@ class ConfigSection:
         self._name = name
         self.file = file
 
-        self.defaults = dict()
+        self._defaults = dict()
 
         if not file.config.has_section(name):
             file.config[name] = dict()
@@ -35,7 +35,7 @@ class ConfigSection:
         """
         before = self.to_dict()
 
-        self.defaults.update(defaults)
+        self._defaults.update(defaults)
 
         defaults.update(before)
         self.file.config.read_dict({
@@ -177,7 +177,7 @@ class ConfigSection:
         ret = self.section.get(key, None)
 
         if ret is None:
-            return self.defaults.get(key, default)
+            return self._defaults.get(key, default)
 
         if to_type is None:
             return ret
@@ -185,7 +185,7 @@ class ConfigSection:
         try:
             return to_type(ret)
         except ValueError:
-            return self.defaults.get(key, default)
+            return self._defaults.get(key, default)
 
     def get_int(self, key: str, default: Any = None) -> Any:
         return self.get(key, default, int)
@@ -213,7 +213,7 @@ class ConfigSection:
         ret = self.section.get(key, None)
 
         if ret is None:
-            return self.defaults.get(key, default)
+            return self._defaults.get(key, default)
 
         try:
             ret = json.loads(ret)
