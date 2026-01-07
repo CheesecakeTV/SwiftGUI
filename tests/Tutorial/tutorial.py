@@ -1,47 +1,34 @@
+import json
 import SwiftGUI as sg
 
-# Init the file
-main_config = sg.Files.ConfigFile("Config.ini")
+sg.Themes.FourColors.Teal()
 
-general_section = main_config.section("General", defaults={
-    "four_colors_theme": "Emerald",
-    "title": "SwiftGUI example",
-})
-
-layout_section = main_config.section("Layout", defaults={
-    "font_size": 12,    # Will be converted to string automatically
-    "submit_button": True,
-}, json_defaults={
-    "form_texts": [
-        "Name",
-        "Age",
-        "Occupation",
+def row(name):
+    return [
+        sg.T(name, width= 15, anchor= "center"),
+        sg.Input(key= name, default_event= True)
     ]
-})
-
-theme = getattr(sg.Themes.FourColors, general_section["four_colors_theme"])
-theme() # Apply the theme
-
-sg.GlobalOptions.Common_Textual.fontsize = layout_section.get_int("font_size")
-sg.GlobalOptions.Button.fontsize = None # Remove the overwritten value
 
 layout = [
+    *[row(i) for i in range(10)],
     [
-        sg.T("Please enter your information:"),
-    ], [
-        sg.Form(
-            layout_section.get_json("form_texts"),
-        )
+        sg.Button("Save", key= "save"),
+        sg.Button("Load", key= "load"),
     ]
 ]
 
-if layout_section.get_bool("submit_button"):
-    layout.append([
-        sg.Button("Submit")
-    ])
-
-w = sg.Window(layout, title= general_section["title"])
+w = sg.Window(layout)
+saved = dict()
 
 for e,v in w:
-    ...
+    print(e,v)
+
+    if e == "save":
+        saved = v.to_json()
+        print("saved")
+
+    if e == "load":
+        v.from_json(saved)
+        print("loaded")
+
 

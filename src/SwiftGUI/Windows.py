@@ -127,6 +127,49 @@ class ValueDict:
             self.__setitem__(key, val)
         return self
 
+    def to_dict(self) -> dict[Hashable, Any]:
+        """
+        Return all key-values as a dict.
+        The values are the same as if you'd use v[key]
+        """
+        self.refresh_all()
+        return self._values.copy()
+
+    @staticmethod
+    def _one_elem_to_json(key_elem) -> tuple[Hashable, Any]:
+        key, elem = key_elem
+
+        if hasattr(elem, "to_json"):
+            return key, elem.to_json()
+
+        return key, elem.value
+
+    def to_json(self):
+        """
+        Return all key-values as a dict that can be json-encoded.
+
+        WIP!!!
+        """
+        ret = dict(map(self._one_elem_to_json, self._window.all_key_elements.items()))
+        return ret
+
+    def from_json(self, saved_dict: dict) -> Self:
+        """
+        Restore the values previously acquired through .to_json
+        """
+        win_elems = self._window.all_key_elements
+
+        for key in win_elems.keys():
+            if key in saved_dict:
+                elem = win_elems[key]
+
+                if hasattr(elem, "from_json"):
+                    elem.from_json(saved_dict[key])
+                else:
+                    elem.value = saved_dict[key]
+
+        return self
+
 class BaseKeyHandler(BaseElement):
     """
     The base-class for anything window-ish.
@@ -205,7 +248,7 @@ class BaseKeyHandler(BaseElement):
     def __iter__(self) -> Self:
         return self
 
-    def __next__(self) -> tuple[any,dict[any:any]]:
+    def __next__(self) -> tuple[Hashable, ValueDict]:
         e,v = self.loop()
 
         if not self.exists:
