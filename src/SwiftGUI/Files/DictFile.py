@@ -1,7 +1,7 @@
 import pickle
 from abc import abstractmethod
 from pathlib import Path
-from typing import Hashable, Any
+from typing import Hashable, Any, Iterable
 import json
 
 from SwiftGUI.Compat import Self
@@ -205,6 +205,39 @@ class BaseDictFile:
 
     def __str__(self) -> str:
         return f"<{self.__class__.__name__} at {id(self)}: {self._values}>"
+
+    def delete_key(self, *keys: Hashable) -> Self:
+        """
+        Delete one or more keys/values from this file
+        """
+        for key in keys:
+            if key in self._values:
+                del self._values[key]
+
+        if self._add_defaults_to_values:
+            self.add_defaults_dict(self._defaults)
+
+        self._do_auto_save()
+
+        return self
+
+    def __delitem__(self, key: Hashable):
+        self.delete_key(key)
+
+    def __iter__(self):
+        return iter(self._values)
+
+    def keys(self) -> Iterable[Hashable]:
+        """Same as dict.keys()"""
+        return self._values.keys()
+
+    def values(self) -> Iterable[Any]:
+        """Same as dict.values()"""
+        return self._values.values()
+
+    def items(self) -> Iterable[tuple[Hashable, Any]]:
+        """Same as dict.items()"""
+        return self._values.items()
 
 class DictFileJSON(BaseDictFile):
     """
