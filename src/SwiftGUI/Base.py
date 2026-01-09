@@ -667,6 +667,25 @@ class BaseWidget(BaseElement):
         self.remove_flags(ElementFlag.IS_CREATED)
         return self
 
+    def to_json(self) -> Any:
+        """
+        Convert this element to json
+
+        Inherit this method to change its behavior
+        :return:
+        """
+        return self._get_value()
+
+    def from_json(self, val: Any) -> Self:
+        """
+        Restore the saved value from json
+
+        :param val:
+        :return:
+        """
+        self.set_value(val)
+        return self
+
 class BaseScrollbar:
     """
     Base for every widget that has a scrollbar.

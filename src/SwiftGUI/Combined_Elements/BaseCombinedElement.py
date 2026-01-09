@@ -133,6 +133,18 @@ class BaseCombinedElement(BaseElement):
             raise NotImplementedError(f"{self} has no sub-layout, so __setitem__ is not defined.")
         self._sg_widget[key].value = value
 
+    def set_value(self, val:Any) -> Self:
+        """
+        Overwrite multiple values at once.
+        Works like .update for dicts, so ignores non-passed keys
+        :param val:
+        :return:
+        """
+        if not self._has_sublayout:
+            raise NotImplementedError(f"{self} has no sub-layout, so set_value is not defined.")
+
+        self._sg_widget.set_value(val)
+
     def delete(self) -> Self:
         """
         Remove this element permanently from the layout.

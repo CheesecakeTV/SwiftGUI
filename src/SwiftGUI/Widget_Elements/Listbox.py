@@ -134,15 +134,15 @@ class Listbox(BaseWidget, BaseScrollbar):
     list_elements:tuple
 
     @property
-    def list_elements(self) -> tuple:
+    def all_elements(self) -> tuple:
         """
         Elements this listbox contains
         :return:
         """
         return tuple(self._list_elements)
 
-    @list_elements.setter
-    def list_elements(self, new_val: Iterable):
+    @all_elements.setter
+    def all_elements(self, new_val: Iterable):
         self._list_elements = list(new_val)
         super().set_value(new_val)
 
@@ -438,5 +438,48 @@ class Listbox(BaseWidget, BaseScrollbar):
 
     def __setitem__(self, key: int, value: Any):
         self.overwrite_element(key, value)
+
+    def to_json(self) -> dict:
+        """
+        Returns the current elements and selection(s) as a dict
+
+        Key | Attribute
+
+
+        :return:
+        """
+        return {
+            "index": self.index,
+            "rows": self.all_elements
+        }
+
+    def from_json(self, val: dict) -> Self:
+        """
+        Counterpart to to_json
+        :param val:
+        :return:
+        """
+        self.clear_list()
+        self.append(*val.get("rows", tuple()))
+
+        if val.get("index") is not None:
+            self.index = val.get("index")
+
+        return self
+
+    def clear_list(self) -> Self:
+        """
+        Delete all elements
+        :return:
+        """
+        self.tk_widget.delete(0, len(self))
+        self._list_elements.clear()
+
+        return self
+
+    def __len__(self):
+        return len(self._list_elements)
+
+
 
 

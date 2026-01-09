@@ -77,13 +77,20 @@ class ValueDict:
 
         return self
 
+    def refresh_all_invalidated(self) -> Self:
+        """
+        Refresh all keys that are not refreshed already
+        :return:
+        """
+        self.refresh_key(*self._not_updated_keys)
+        return self
+
     def refresh_all(self) -> Self:
         """
         Refreshes all keys with their current values
         :return:
         """
-        map(self.refresh_key, self._all_keys)
-
+        self.refresh_key(*self._all_keys)
         return self
 
     def invalidate_all_values(self) -> Self:
@@ -125,6 +132,7 @@ class ValueDict:
         """
         for key, val in vals.items():
             self.__setitem__(key, val)
+
         return self
 
     def to_dict(self) -> dict[Hashable, Any]:
@@ -140,9 +148,16 @@ class ValueDict:
         key, elem = key_elem
 
         if hasattr(elem, "to_json"):
-            return key, elem.to_json()
+            value = elem.to_json()
+        elif hasattr(elem, "value"):
+            value = elem.value
+        else:
+            return key, None
 
-        return key, elem.value
+        if hasattr(value, "to_json"):
+            value = value.to_json()
+
+        return key, value
 
     def to_json(self):
         """
@@ -169,6 +184,13 @@ class ValueDict:
                     elem.value = saved_dict[key]
 
         return self
+
+    def __contains__(self, item):
+        return item in self._all_keys
+
+    def __iter__(self):
+        self.refresh_all_invalidated()
+        return iter(self._values)
 
 class BaseKeyHandler(BaseElement):
     """
@@ -434,8 +456,18 @@ class BaseKeyHandler(BaseElement):
     def _get_value(self) -> Any:
         return self._value_dict
 
-    def set_value(self,val:Any) -> Self:
-        raise NotImplementedError("You can't change the value of this element like that.")
+    # def set_value(self,val:Any) -> Self:
+    #     raise NotImplementedError("You can't change the value of this element like that.")
+
+    def set_value(self, val: dict | ValueDict) -> Self:
+        """
+        A way to set keyed values at once
+        :param val:
+        :return:
+        """
+        self.value.from_json(val)
+
+        return self
 
     ### grap_anywhere methods.
     ### Mainly inspired by this post: https://stackoverflow.com/questions/4055267/tkinter-mouse-drag-a-window-without-borders-eg-overridedirect1

@@ -106,6 +106,13 @@ class LabelFrame(Frame):
         "font_overstrike",
     ]
 
+    def set_value(self, val: str) -> Self:
+        self._element.value = val
+        return self
+
+    def _get_value(self) -> Self:
+        return self._element.value
+
     def _update_initial(self, **kwargs) -> Self:
         pass_to_element = dict()
         kwargs_copy: dict = kwargs.copy()

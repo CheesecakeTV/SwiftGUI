@@ -102,6 +102,10 @@ class Canvas(BaseWidget):
             relief = relief,
         )
 
+    def from_json(self, val: Any) -> Self:
+        """Not implemented, so let's not cause a crash by trying to set the value"""
+        return self
+
     def set_value(self, val: None):
         raise AttributeError("A canvas-object does not have a 'value'.")
 
