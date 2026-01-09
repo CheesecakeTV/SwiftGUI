@@ -131,6 +131,8 @@ class Table(BaseWidgetTTK, BaseScrollbar):
 
     _headings: tuple    # Column headings
 
+    _export_rows_to_json: bool = None # When exporting to json, this determines if only the indexes or the whole table should be saved
+
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Treeview.html
     def __init__(
             self,
@@ -144,6 +146,8 @@ class Table(BaseWidgetTTK, BaseScrollbar):
             headings: Iterable[str] = ("Forgot to add headings?",),
             hide_headings: bool = None,
             column_width: int | Iterable[int] = None,
+
+            export_rows_to_json: bool = None,
 
             sort_col_by_click: bool = None,
             selectmode: Literals.selectmode_tree = None,
@@ -201,6 +205,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         self._headings = tuple(headings)
         self._headings_len = len(self._headings)
 
+
         if tk_kwargs is None:
             tk_kwargs = dict()
 
@@ -217,7 +222,8 @@ class Table(BaseWidgetTTK, BaseScrollbar):
                              font_bold_headings=font_bold_headings, font_italic_headings=font_italic_headings,
                              font_underline_headings=font_underline_headings,
                              font_overstrike_headings=font_overstrike_headings, sort_col_by_click=sort_col_by_click,
-                             takefocus=takefocus, height=height, cursor=cursor, padding=padding, hide_headings=hide_headings, **tk_kwargs)
+                             takefocus=takefocus, height=height, cursor=cursor, padding=padding, hide_headings=hide_headings,
+                             export_rows_to_json = export_rows_to_json, **tk_kwargs)
 
         self._default_event = default_event
         self._key_function = key_function
@@ -459,6 +465,10 @@ class Table(BaseWidgetTTK, BaseScrollbar):
 
             case "elements":
                 self.overwrite_table(new_val)
+
+            case "export_rows_to_json":
+                self._export_rows_to_json = new_val
+
             case _:
                 return super()._update_special_key(key, new_val)
 
@@ -571,6 +581,9 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         :param index:
         :return:
         """
+        if index is None:
+            return
+
         row = self._elements[index]
         del self._elements[index]
 
@@ -653,7 +666,6 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         :return:
         """
         new_vals = tuple(new_vals)
-        self._prev_selection = new_vals
 
         # if new_vals:  # No need, .value and .index don't work in extended mode anyways
         #     self.set_index(new_vals[0])
@@ -663,6 +675,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         if not new_vals:
             return
 
+        self._prev_selection = new_vals
         new_vals = map(self._elements.__getitem__, new_vals)
         new_vals = tuple(self._get_all_iids(new_vals))
         self.tk_widget.selection_add(new_vals)
@@ -1070,3 +1083,24 @@ class Table(BaseWidgetTTK, BaseScrollbar):
             del self._element_dict[iid]
 
         return self
+
+    def to_json(self) -> dict:
+        ret = dict()
+
+        if self._export_rows_to_json:
+            ret["rows"] = tuple(map(tuple, self.all_rows)),
+
+        return {
+            "indexes": self.all_indexes,
+            **ret
+        }
+
+    def from_json(self, val: dict) -> Self:
+        if "rows" in val:
+            table_now = tuple(map(tuple, self.all_rows))
+            if table_now != val["rows"]:
+                self.overwrite_table(val["rows"])
+
+        if "indexes" in val:
+            self.set_all_indexes(val["indexes"])
+

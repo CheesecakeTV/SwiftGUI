@@ -485,6 +485,7 @@ class Table(Listbox):
     selectmode: Literals.selectmode_tree = "browse"
     padding: int | tuple[int, ...] = None
 
+    export_rows_to_json: bool = True
 
 class Separator(Common_Background):
     color: str | Color = Color.light_grey

@@ -97,3 +97,6 @@ class Image(BaseWidget):
     def set_value(self,val: Any):
         raise TypeError("sg.Image doesn't allow changing of its 'value'. Use .update(image= ...) instead.")
 
+    def from_json(self, val: Any) -> Self:
+        """Not implemented (yet)"""
+        return self
