@@ -2,7 +2,7 @@ import tkinter as tk
 from os import PathLike
 from tkinter import filedialog as fd
 from collections.abc import Iterable, Callable
-from typing import Literal, Any
+from typing import Literal, Any, Hashable
 
 from SwiftGUI import GlobalOptions, Literals, Color
 from SwiftGUI.Widget_Elements.Button import Button
@@ -19,8 +19,8 @@ class FileBrowseButton(Button):
             self,
             # Add here
             text:str = "",
-            /,
-            key:Any = None,
+            *,
+            key: Hashable = None,
             key_function:Callable|Iterable[Callable] = None,
 
             file_browse_type:Literals.file_browse_types = None, #{"defaultextension","parent","title"}

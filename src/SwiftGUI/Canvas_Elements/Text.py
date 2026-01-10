@@ -28,7 +28,7 @@ class Text(Canvas_Elements.BaseCanvasElement):
             self,
             position: tuple[float, float],
             text: str = None,
-            /,
+            *,
             key: Hashable = None,
 
             width: float = None,

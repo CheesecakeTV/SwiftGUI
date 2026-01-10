@@ -1,5 +1,5 @@
 import tkinter as tk
-from typing import Any
+from typing import Any, Hashable
 from SwiftGUI import ElementFlag, BaseWidget, Color, GlobalOptions
 
 
@@ -16,7 +16,8 @@ class Separator(BaseWidget):
 
     def __init__(
             self,
-            key: Any = None,
+            *,
+            key: Hashable = None,
             color: str | Color = None,
             weight: int = None,
             padding: int = None,

@@ -1,6 +1,6 @@
 import tkinter as tk
 from os import PathLike
-from typing import Any, IO
+from typing import Any, IO, Hashable
 from SwiftGUI.Compat import Self
 from PIL import Image as PIL_Image
 from PIL import ImageTk
@@ -23,8 +23,8 @@ class Image(BaseWidget):
     def __init__(
             self,
             image: str | PathLike | PIL_Image.Image | IO[bytes] = None,
-            /,
-            key: Any = None,
+            *,
+            key: Hashable = None,
             image_height: int = None,
             image_width: int = None,
             background_color: str | Color = None,
@@ -97,3 +97,6 @@ class Image(BaseWidget):
     def set_value(self,val: Any):
         raise TypeError("sg.Image doesn't allow changing of its 'value'. Use .update(image= ...) instead.")
 
+    def from_json(self, val: Any) -> Self:
+        """Not implemented (yet)"""
+        return self

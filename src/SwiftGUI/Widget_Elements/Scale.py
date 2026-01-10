@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal, Any
+from typing import Literal, Any, Hashable
 from SwiftGUI.Compat import Self
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
@@ -15,7 +15,6 @@ class Scale(BaseWidget):
     _transfer_keys = {
         # "background_color_disabled": "disabledbackground",
         "background_color": "bg",
-        "text_color_disabled": "disabledforeground",
         "highlightbackground_color": "highlightbackground",
         # "selectbackground_color": "selectbackground",
         # "select_text_color": "selectforeground",
@@ -32,8 +31,8 @@ class Scale(BaseWidget):
 
     def __init__(
             self,
-            /,
-            key: Any = None,
+            *,
+            key: Hashable = None,
             default_event: bool = False,
             key_function: Callable | Iterable[Callable] = None,
             default_value: int | float = None,

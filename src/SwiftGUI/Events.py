@@ -24,10 +24,10 @@ class Event(enum.Enum):
 
     ### Special keys ###
     KeyEnter = "Return"
-    KeySpace = "Space"
-    KeyShift = "Shift"
-    KeyAlt = "Alt"
-    KeyControl = "Control"
+    KeySpace = "space"
+    KeyShift = "shift"
+    KeyAlt = "alt"
+    KeyControl = "control"
 
     ### Combinations ###
     Control_Enter = "Control-Return"

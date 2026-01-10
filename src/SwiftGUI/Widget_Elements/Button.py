@@ -1,9 +1,10 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal
+from typing import Literal, Hashable
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
+from SwiftGUI.Compat import Self
 
 
 class Button(BaseWidget):
@@ -22,7 +23,7 @@ class Button(BaseWidget):
         "background_color_active" : "activebackground",
         "text_color_active" : "activeforeground",
         "text_color":"fg",
-
+        "bitmap_position": "compound",
     }
 
     def __init__(
@@ -31,18 +32,23 @@ class Button(BaseWidget):
             self,
             # Add here
             text:str = "",
-            /,
-            key:any = None,
+            *,
+            key: Hashable = None,
             key_function:Callable|Iterable[Callable] = None,
+            default_event = True,
 
             borderwidth:int = None,
 
             bitmap:Literals.bitmap = None,
+            bitmap_position: Literals.compound = None,
             disabled:bool = None,
             text_color_disabled: str | Color = None,
             background_color_active: str | Color = None,
             text_color_active: str | Color = None,
-            highlightcolor: str | Color = None,
+
+            #highlightcolor: str | Color = None,
+            #highlightbackground_color: str | Color = None,
+            #highlightthickness: int = None,
 
             width: int = None,
             height: int = None,
@@ -56,10 +62,10 @@ class Button(BaseWidget):
             anchor: Literals.anchor = None,
             justify: Literal["left", "right", "center"] = None,
             background_color: str | Color = None,
-            overrelief: Literals.relief = None,
             text_color: str | Color = None,
 
             relief: Literals.relief = None,
+            overrelief: Literals.relief = None,
 
             repeatdelay:int = None,
             repeatinterval:int = None,
@@ -123,8 +129,10 @@ class Button(BaseWidget):
             justify = justify,
             background_color = background_color,
             #"highlightbackground_color":"cyan",
+            #highlightbackground_color = highlightbackground_color,
+            #highlightthickness = highlightthickness,
+            #highlightcolor = highlightcolor,
             highlightthickness = 0,
-            highlightcolor = highlightcolor,
             relief = relief,
             text_color = text_color,
             width = width,
@@ -148,8 +156,10 @@ class Button(BaseWidget):
             height = height,
             padx = padx,
             pady = pady,
+            bitmap_position = bitmap_position,
         )
 
+        self._default_event = default_event
         self._key_function = key_function
 
     _disabled_at_start = False
@@ -194,9 +204,10 @@ class Button(BaseWidget):
         super()._apply_update() # Actually apply the update
 
     def _personal_init(self):
-        self._tk_kwargs.update({
-            "command": self.window.get_event_function(self, self.key, self._key_function)
-        })
+        if self._default_event:
+            self._tk_kwargs.update({
+                "command": self.window.get_event_function(self, self.key, self._key_function)
+            })
 
         super()._personal_init()
 
@@ -216,25 +227,27 @@ class Button(BaseWidget):
         self._set_tk_target_variable(default_key="text")
 
 
-    def flash(self):
+    def flash(self) -> Self:
         """
         Flash the button visually
         :return:
         """
         if self._window_is_dead():
-            return
+            return self
 
         self.tk_widget.flash()
+        return self
 
-    def push_once(self):
+    def push_once(self) -> Self:
         """
         "Push" the button virtually
         :return:
         """
         if self._window_is_dead():
-            return
+            return self
 
         self.tk_widget.invoke()
+        return self
 
     def init_window_creation_done(self):
         super().init_window_creation_done()

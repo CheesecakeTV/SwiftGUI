@@ -5,7 +5,8 @@ import tkinter.ttk as ttk
 from collections.abc import Iterable, Callable, Iterator
 from functools import partial
 from tkinter import font
-from typing import Any, Literal
+from typing import Any, Literal, Hashable
+
 from SwiftGUI.Compat import Self
 from itertools import islice
 
@@ -130,18 +131,23 @@ class Table(BaseWidgetTTK, BaseScrollbar):
 
     _headings: tuple    # Column headings
 
+    _export_rows_to_json: bool = None # When exporting to json, this determines if only the indexes or the whole table should be saved
+
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Treeview.html
     def __init__(
             self,
             # Add here
             elements: Iterable[Iterable[Any]] = None,
-            /,
-            key: Any = None,
+            *,
+            key: Hashable = None,
             default_event: bool = False,
             key_function: Callable|Iterable[Callable] = None,
 
             headings: Iterable[str] = ("Forgot to add headings?",),
+            hide_headings: bool = None,
             column_width: int | Iterable[int] = None,
+
+            export_rows_to_json: bool = None,
 
             sort_col_by_click: bool = None,
             selectmode: Literals.selectmode_tree = None,
@@ -163,8 +169,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
             font_overstrike_headings: bool = None,
 
             background_color: str | Color = None,
-            background_color_rows: str | Color = None,
-            background_color_active_rows: str | Color = None,
+            background_color_active: str | Color = None,
             background_color_headings: str | Color = None,
             background_color_active_headings: str | Color = None,
 
@@ -200,12 +205,13 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         self._headings = tuple(headings)
         self._headings_len = len(self._headings)
 
+
         if tk_kwargs is None:
             tk_kwargs = dict()
 
         self._update_initial(columns=self._headings, column_width=column_width, selectmode=selectmode,
-                             background_color=background_color, background_color_rows=background_color_rows,
-                             background_color_active_rows=background_color_active_rows,
+                             background_color=background_color,
+                             background_color_active=background_color_active,
                              background_color_headings=background_color_headings,
                              background_color_active_headings=background_color_active_headings, text_color=text_color,
                              text_color_active=text_color_active, text_color_headings=text_color_headings,
@@ -216,7 +222,8 @@ class Table(BaseWidgetTTK, BaseScrollbar):
                              font_bold_headings=font_bold_headings, font_italic_headings=font_italic_headings,
                              font_underline_headings=font_underline_headings,
                              font_overstrike_headings=font_overstrike_headings, sort_col_by_click=sort_col_by_click,
-                             takefocus=takefocus, height=height, cursor=cursor, padding=padding, **tk_kwargs)
+                             takefocus=takefocus, height=height, cursor=cursor, padding=padding, hide_headings=hide_headings,
+                             export_rows_to_json = export_rows_to_json, **tk_kwargs)
 
         self._default_event = default_event
         self._key_function = key_function
@@ -330,12 +337,25 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         return map(str, map(hash, elements))
 
     @property
-    def table_elements(self):
+    def all_remaining_rows(self):
+        """All rows currently in the table, so AFTER filtering"""
         return tuple(self._elements)
 
-    @table_elements.setter
-    def table_elements(self, new_val):
-        raise AttributeError("You tried to set table_elements directly on an sg.Table. If you want to replace the whole table, use .overwrite_table instead.\n"
+    @all_remaining_rows.setter
+    def all_remaining_rows(self, new_val):
+        raise AttributeError("You tried to set all_remaining_rows directly on an sg.Table. If you want to replace the whole table, use .overwrite_table instead.\n"
+                             "I highly recommend not overwriting the whole table though, sg.Table offers a lot of methods to change it.")
+
+    @property
+    def all_rows(self):
+        """All rows that exist in the table, so BEFORE filtering"""
+        if self.filter_mode:
+            return tuple(self._elements_before_filter)
+        return tuple(self._elements)
+
+    @all_rows.setter
+    def all_rows(self, new_val):
+        raise AttributeError("You tried to set all_rows directly on an sg.Table. If you want to replace the whole table, use .overwrite_table instead.\n"
                              "I highly recommend not overwriting the whole table though, sg.Table offers a lot of methods to change it.")
 
     def _update_special_key(self,key:str,new_val:Any) -> bool|None:
@@ -376,11 +396,11 @@ class Table(BaseWidgetTTK, BaseScrollbar):
 
             case "background_color":
                 self._config_ttk_style(fieldbackground=new_val)
-            case "background_color_rows":
+            #case "background_color_rows":
                 self._map_ttk_style(background = [
                     ("!selected",new_val)]
                 )
-            case "background_color_active_rows":
+            case "background_color_active":
                 self._map_ttk_style(background = [
                     ("selected",new_val)]
                 )
@@ -433,8 +453,22 @@ class Table(BaseWidgetTTK, BaseScrollbar):
                 self._overstrike_headings = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
 
+            case "hide_headings":
+                if not self.has_flag(ElementFlag.IS_CREATED):
+                    self.update_after_window_creation(hide_headings= new_val)
+                    return True
+
+                if new_val:
+                    self.tk_widget["show"] = ""
+                else:
+                    self.tk_widget["show"] = "headings"   # Removes first column
+
             case "elements":
                 self.overwrite_table(new_val)
+
+            case "export_rows_to_json":
+                self._export_rows_to_json = new_val
+
             case _:
                 return super()._update_special_key(key, new_val)
 
@@ -547,6 +581,9 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         :param index:
         :return:
         """
+        if index is None:
+            return
+
         row = self._elements[index]
         del self._elements[index]
 
@@ -576,7 +613,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         :return:
         """
         if isinstance(item, TableRow):
-            return self._element_dict.get(str(hash(item)))
+            return self._elements.index(self._element_dict.get(str(hash(item))))
 
         as_tuple = tuple(map(tuple, self._elements))
         return as_tuple.index(tuple(item))
@@ -629,7 +666,6 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         :return:
         """
         new_vals = tuple(new_vals)
-        self._prev_selection = new_vals
 
         # if new_vals:  # No need, .value and .index don't work in extended mode anyways
         #     self.set_index(new_vals[0])
@@ -639,6 +675,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         if not new_vals:
             return
 
+        self._prev_selection = new_vals
         new_vals = map(self._elements.__getitem__, new_vals)
         new_vals = tuple(self._get_all_iids(new_vals))
         self.tk_widget.selection_add(new_vals)
@@ -686,7 +723,6 @@ class Table(BaseWidgetTTK, BaseScrollbar):
             for n,h in enumerate(headings):
                 self.tk_widget.heading(n,text=h,command=partial(self._col_click_callback, n))   # Set callback to always pass the col-ID
 
-        self.tk_widget["show"] = "headings"   # Removes first column
 
         #self._map_ttk_style(background = [("selected", "blue")])
 
@@ -1047,3 +1083,26 @@ class Table(BaseWidgetTTK, BaseScrollbar):
             del self._element_dict[iid]
 
         return self
+
+    def to_json(self) -> dict:
+        ret = dict()
+
+        if self._export_rows_to_json:
+            ret["rows"] = tuple(map(tuple, self.all_rows))
+
+        return {
+            "indexes": self.all_indexes,
+            **ret
+        }
+
+    def from_json(self, val: dict) -> Self:
+        if "rows" in val:
+            table_now = tuple(map(tuple, self.all_rows))
+            if table_now != val["rows"]:
+                self.overwrite_table(val["rows"])
+
+        if "indexes" in val:
+            self.set_all_indexes(val["indexes"])
+
+        return self
+

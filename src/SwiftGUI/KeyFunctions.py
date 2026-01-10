@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from typing import Any
+from typing import Hashable, Any
 
 
 ### HOW TO CREATE KEY-FUNCTION ###
@@ -18,7 +18,7 @@ from typing import Any
 ### Some useful key-functions to use in your layout.
 
 
-def copy_value_to(to_key: Any) -> Callable:
+def copy_value_to(to_key: Hashable) -> Callable:
     """
     Copies the value to the specified key
     :param to_key: Element-key to copy to
@@ -29,7 +29,7 @@ def copy_value_to(to_key: Any) -> Callable:
 
     return fkt
 
-def copy_value_from(from_key: Any) -> Callable:
+def copy_value_from(from_key: Hashable) -> Callable:
     """
     Copies the value from the specified key to the calling element
     :param from_key: Element-key to copy from
@@ -62,7 +62,7 @@ def set_value_to(new_value: Any = "", elem_key: str = None) -> Callable:
 
     return temp
 
-def cycle_values(key: Any, *values: Any) -> Callable:
+def cycle_values(key: Hashable, *values: Any) -> Callable:
     """
     Every time this gets called, the next value is written to key
     IT WILL START AT THE SECOND VALUE, so it's a good idea to set the initial element-value as the first value.
@@ -74,7 +74,7 @@ def cycle_values(key: Any, *values: Any) -> Callable:
     n = 0
     val_len = len(values)
 
-    assert val_len > 1, "You did not provide enough values for your cycle_values key-function"
+    assert val_len > 1, "You did not provide enough values for the cycle_values key-function"
 
     def temp(v):
         nonlocal n

@@ -1,4 +1,6 @@
 
+Adding elements in the middle of rows, by removing and adding all elements behind the new one once.
+
 Button-matrix or checkbutton-matrix elements
 
 Add space between rows
@@ -7,12 +9,7 @@ Copy elements/parts of the layout
 
 Simplified Elements/Widgets with less options for beginners
 
-Hide headings of sg.Table so it can be used as a listbox
 sg.Table could have widgets inserted into rows
-
-"Key-collection" with local instead of global keys
-
-Additional event-loops for combined elements
 
 Bug: LabelFrames without label still have a widget with its own background-color attached to them.
 

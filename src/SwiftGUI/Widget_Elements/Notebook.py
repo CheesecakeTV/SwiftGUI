@@ -4,7 +4,7 @@ from typing import Any, Hashable
 from SwiftGUI.Compat import Self
 
 from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement, Frame, Font
-from SwiftGUI.Widget_Elements.Spacer import Spacer
+from SwiftGUI.Extended_Elements.Spacer import Spacer
 
 
 class Notebook(BaseWidgetTTK):
@@ -23,13 +23,13 @@ class Notebook(BaseWidgetTTK):
             # Add here
             *tabs: Frame,
 
+            key: Hashable = None,
+            key_function: Callable | Iterable[Callable] = None,
+
             default_event: bool = None,
             event_on_backend_selection: bool = None,
 
             tab_texts: dict[Hashable, str] = None,
-
-            key: Hashable = None,
-            key_function: Callable | Iterable[Callable] = None,
 
             background_color: str | Color = None,
             background_color_tabs: str | Color = None,
@@ -337,3 +337,10 @@ class Notebook(BaseWidgetTTK):
         :return:
         """
         return len(self._elements)
+
+    def delete(self) -> Self:
+        for elem in self._elements:
+            elem.delete()
+
+        super().delete()
+        return self

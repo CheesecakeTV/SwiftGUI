@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Any
+from typing import Any, Hashable
 from SwiftGUI.Compat import Self
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, BaseElement, Scrollbar, BaseScrollbar
@@ -19,17 +19,17 @@ class Listbox(BaseWidget, BaseScrollbar):
         "text_color": "fg",
         "text_color_disabled": "disabledforeground",
         "highlightbackground_color": "highlightbackground",
-        "text_color_selected": "selectforeground",
-        "background_color_active": "activebackground",
-        "text_color_active": "activeforeground",
-        "background_color_selected": "selectbackground",
+        "text_color_active": "selectforeground",
+        #"background_color_active": "activebackground",
+        #"text_color_active": "activeforeground",
+        "background_color_active": "selectbackground",
     }
 
     def __init__(
             self,
             default_list: Iterable[Any] = None,
-            /,
-            key: Any = None,
+            *,
+            key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
             default_event: bool = False,
 
@@ -56,9 +56,9 @@ class Listbox(BaseWidget, BaseScrollbar):
             highlightthickness: int = None,
 
             background_color: str | Color = None,
-            background_color_selected: str | Color = None,
+            background_color_active: str | Color = None,
             text_color: str | Color = None,
-            text_color_selected: str | Color = None,
+            text_color_active: str | Color = None,
             text_color_disabled: str | Color = None,
             highlightbackground_color: str | Color = None,
             highlightcolor: str | Color = None,
@@ -111,8 +111,8 @@ class Listbox(BaseWidget, BaseScrollbar):
             text_color_disabled = text_color_disabled,
             width = width,
             height = height,
-            background_color_selected = background_color_selected,
-            text_color_selected = text_color_selected,
+            background_color_active = background_color_active,
+            text_color_active = text_color_active,
             selectmode = selectmode,
             no_selection_returns = no_selection_returns,
             **tk_kwargs,
@@ -134,15 +134,15 @@ class Listbox(BaseWidget, BaseScrollbar):
     list_elements:tuple
 
     @property
-    def list_elements(self) -> tuple:
+    def all_elements(self) -> tuple:
         """
         Elements this listbox contains
         :return:
         """
         return tuple(self._list_elements)
 
-    @list_elements.setter
-    def list_elements(self, new_val: Iterable):
+    @all_elements.setter
+    def all_elements(self, new_val: Iterable):
         self._list_elements = list(new_val)
         super().set_value(new_val)
 
@@ -372,24 +372,24 @@ class Listbox(BaseWidget, BaseScrollbar):
             row: int | str,
             background_color: Color | str = None,
             text_color: Color | str = None,
-            background_color_selected: Color | str = None,
-            text_color_selected: Color | str = None
+            background_color_active: Color | str = None,
+            text_color_active: Color | str = None
     ) -> Self:
         """
         Change colors on a single row
         :param row:
         :param background_color:
         :param text_color:
-        :param background_color_selected:
-        :param text_color_selected:
+        :param background_color_active:
+        :param text_color_active:
         :return: The instance itself, so it can be called inline
         """
         self.color_rows(
             (row,),
             background_color=background_color,
             text_color=text_color,
-            background_color_selected=background_color_selected,
-            text_color_selected=text_color_selected
+            background_color_active=background_color_active,
+            text_color_active=text_color_active
         )
 
         return self
@@ -400,16 +400,16 @@ class Listbox(BaseWidget, BaseScrollbar):
             rows:Iterable[int|str],
             background_color:Color | str = None,
             text_color:Color | str = None,
-            background_color_selected: Color|str = None,
-            text_color_selected: Color|str = None
+            background_color_active: Color|str = None,
+            text_color_active: Color|str = None
     ) -> Self:
         """
         Change colors on certain rows
         :param rows:
         :param background_color:
         :param text_color:
-        :param background_color_selected:
-        :param text_color_selected:
+        :param background_color_active:
+        :param text_color_active:
         :return: The instance itself, so it can be called inline
         """
         rows = set(rows)
@@ -425,8 +425,8 @@ class Listbox(BaseWidget, BaseScrollbar):
                 i,
                 background=background_color,
                 foreground=text_color,
-                selectbackground=background_color_selected,
-                selectforeground=text_color_selected
+                selectbackground=background_color_active,
+                selectforeground=text_color_active
             )
         # except AttributeError:
         #     raise SyntaxError(f"You cannot change row-colors before creating the window. You probably tried to on some Listbox-element.")
@@ -438,5 +438,48 @@ class Listbox(BaseWidget, BaseScrollbar):
 
     def __setitem__(self, key: int, value: Any):
         self.overwrite_element(key, value)
+
+    def to_json(self) -> dict:
+        """
+        Returns the current elements and selection(s) as a dict
+
+        Key | Attribute
+
+
+        :return:
+        """
+        return {
+            "index": self.index,
+            "rows": self.all_elements
+        }
+
+    def from_json(self, val: dict) -> Self:
+        """
+        Counterpart to to_json
+        :param val:
+        :return:
+        """
+        self.clear_list()
+        self.append(*val.get("rows", tuple()))
+
+        if val.get("index") is not None:
+            self.index = val.get("index")
+
+        return self
+
+    def clear_list(self) -> Self:
+        """
+        Delete all elements
+        :return:
+        """
+        self.tk_widget.delete(0, len(self))
+        self._list_elements.clear()
+
+        return self
+
+    def __len__(self):
+        return len(self._list_elements)
+
+
 
 

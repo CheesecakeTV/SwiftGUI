@@ -3,9 +3,9 @@ from collections.abc import Iterable, Hashable
 import SwiftGUI as sg
 
 # Todo: Turn this into a combined element
-class ListPicker(sg.BasePopup, tuple):
+class list_picker(sg.BasePopup, tuple):
     text_available = "Available"
-    text_picked = "Picked"
+    text_picked = "Used"
     text_filter = "Filter: "
     text_done = "Done"
     text_cancel = "Cancel"
@@ -13,7 +13,7 @@ class ListPicker(sg.BasePopup, tuple):
     def __init__(
             self,
             possible_values: Iterable[Hashable] = tuple(),
-            /,
+            *,
             title: str = "",
             default_selection: Iterable[Hashable] = tuple(),
             enable_filter: bool = True,
@@ -171,7 +171,7 @@ class ListPicker(sg.BasePopup, tuple):
             # Return everything from the chosen table
             self.chosen.reset_filter()
             self.done(
-                tuple(map(lambda a:a[0], self.chosen.table_elements))
+                tuple(map(lambda a:a[0], self.chosen.all_remaining_rows))
             )
 
         if e == "Cancel":
@@ -188,7 +188,7 @@ class ListPicker(sg.BasePopup, tuple):
 
     @staticmethod
     def _move_all(from_t: sg.Table, to_t: sg.Table):
-        to_t.extend(from_t.table_elements)
-        for i in range(len(from_t.table_elements)):
+        to_t.extend(from_t.all_remaining_rows)
+        for i in range(len(from_t.all_remaining_rows)):
             del from_t[0]
 

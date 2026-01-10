@@ -1,4 +1,4 @@
-from typing import Any, Callable, Iterable, Literal
+from typing import Any, Callable, Iterable, Literal, Hashable
 from SwiftGUI.Compat import Self
 from functools import partial
 
@@ -14,8 +14,13 @@ class MultistateButton(sg.BaseCombinedElement):
             self,
 
             button_texts: Iterable[str] = tuple(),
-            button_keys: Iterable[Any] = tuple(),
-            default_selection: Any = None,
+            button_keys: Iterable[Hashable] = tuple(),
+            *,
+
+            key: Hashable = None,
+            key_function: Callable | Iterable[Callable] = None,
+
+            default_selection: Hashable = None,
             default_select_first: bool = None,
 
             text_color: str | sg.Color = None,
@@ -31,9 +36,6 @@ class MultistateButton(sg.BaseCombinedElement):
             horizontal_orientation: bool = False,
 
             label_text: str = None,
-
-            key: Any = None,
-            key_function: Callable | Iterable[Callable] = None,
             apply_parent_background_color: bool = True
     ):
         frame_type: type(sg.Frame) = sg.Frame

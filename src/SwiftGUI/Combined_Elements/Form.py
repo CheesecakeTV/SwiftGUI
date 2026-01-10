@@ -1,13 +1,13 @@
 
 from collections.abc import Iterable, Callable
 from functools import partial
-from typing import Any
+from typing import Any, Hashable
 from SwiftGUI.Compat import Self
 import json
 
-from SwiftGUI import BaseElement, Frame, Text, Input, BaseCombinedElement, Button
+from SwiftGUI import BaseElement, Frame, Text, Input, BaseCombinedElement, Button, Event
 #from SwiftGUI.Widget_Elements.Separator import HorizontalSeparator
-from SwiftGUI.Widget_Elements.Spacer import Spacer
+from SwiftGUI.Extended_Elements.Spacer import Spacer
 
 
 # Advanced / Combined elements
@@ -15,22 +15,36 @@ class Form(BaseCombinedElement):
     """
     Grid-Layout-Form with text-Input-combinations
 
-    Still very WIP (of course), just a proof of concept
+    It is WIP, but I'm adding more functionality regularely
+    I'll probably throw this whole class out of the window and redo it, since it is so unfathomly bad atm.
     """
 
     def __init__(
             self,
             texts:Iterable[str] | Iterable[tuple[str, str]],    # Text = keys, or (Text, key)-pairs
-            /,
-            default_values: Iterable[str] | dict[str:str] = None,
-            key:Any = None,
+            *,
+            default_values: Iterable[str] | dict[str, str] = None,
+            key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
             default_event: bool = None,
             small_clear_buttons: bool = None,
             big_clear_button: bool = None,
             submit_button: bool = None,
-            submit_key: Any = None,
+            #submit_key: Any = None,
+            return_submits: bool = None,
     ):
+        """
+
+        :param texts:
+        :param default_values:
+        :param key:
+        :param key_function:
+        :param default_event:
+        :param small_clear_buttons:
+        :param big_clear_button:
+        :param submit_button: True, if there should be a submit-button that throws an event when clicked
+        :param return_submits: True, if pressing enter should be equal to pressing submit
+        """
         texts = list(texts)
         self._default_event = default_event
 
@@ -55,8 +69,9 @@ class Form(BaseCombinedElement):
             Input(
                 key_function= self._throw_default_event,
                 default_event= default_event,
+                key= t
             )
-            for _ in texts
+            for t in texts
         ]
 
         self._clear_buttons = [
@@ -81,8 +96,8 @@ class Form(BaseCombinedElement):
         if submit_button:
             self._submit_button_element = Button(
                 "Submit",
-                key= submit_key if submit_key is not None else None,
-                key_function=self.throw_event
+                #key= submit_key if submit_key is not None else None,
+                key_function=[self.throw_event, lambda v:self.done(v)]
                 #key_function= submit_key_function if submit_key_function else self.throw_event,
             )
             self.layout[-1].append(self._submit_button_element)
@@ -92,6 +107,14 @@ class Form(BaseCombinedElement):
                 "Clear",
                 key_function= (self.clear_all_values, self._throw_default_event)
             ))
+
+        if return_submits:
+            temp = self.throw_event
+            # if submit_button: # Looks cool, but slows down the code...
+            #     temp = (self.throw_event, self._submit_button_element.flash)
+
+            for elem in self._input_elements:
+                elem.bind_event(Event.KeyEnter, key_function=temp)
 
         super().__init__(Frame(self.layout), key=key, key_function=key_function)
 
@@ -148,7 +171,7 @@ class Form(BaseCombinedElement):
     @BaseElement._run_after_window_creation
     def update_submit_button(self, **kwargs) -> Self:
         """
-        Evoke .update on every text-element
+        Evoke .update on the submit-button
         :param kwargs:
         :return:
         """
@@ -156,15 +179,22 @@ class Form(BaseCombinedElement):
         return self
 
     @BaseElement._run_after_window_creation
-    def set_value(self,val:dict[str:str]) -> Self:
+    def set_value(self,val:Iterable[str] | dict[str:str]) -> Self:
         """
-        Update only passed keys with their value
+        Update only passed keys with their value.
+        Or pass a list to update the elements one after another.
         :param val:
         :return:
         """
-        for i,text in enumerate(self._input_keys):
-            if text in val.keys():
-                self._input_elements[i].value = val[text]
+
+        if isinstance(val, dict):
+            for i,text in enumerate(self._input_keys):
+                if text in val.keys():
+                    self._input_elements[i].value = val[text]
+            return self
+
+        for elem, new_val in zip(self._input_elements, val):
+            elem.value = new_val
 
         return self
 
@@ -176,23 +206,23 @@ class Form(BaseCombinedElement):
         for elem in self._input_elements:
             elem.value = ""
 
-    def export_json(self, indent:int = None, **kwargs) -> str:
-        """
-        Return the values as json
-        :return:
-        """
-        return json.dumps(self.value, indent= indent, **kwargs)
-
-    @BaseElement._run_after_window_creation
-    def import_json(self, json_str: str, **kwargs) -> Self:
-        """
-        Load values from a json-string
-        :param json_str:
-        :param kwargs:
-        :return:
-        """
-        self.value = json.loads(json_str, **kwargs)
-        return self
+    # def export_json(self, indent:int = None, **kwargs) -> str:
+    #     """
+    #     Return the values as json
+    #     :return:
+    #     """
+    #     return json.dumps(self.value, indent= indent, **kwargs)
+    #
+    # @BaseElement._run_after_window_creation
+    # def import_json(self, json_str: str, **kwargs) -> Self:
+    #     """
+    #     Load values from a json-string
+    #     :param json_str:
+    #     :param kwargs:
+    #     :return:
+    #     """
+    #     self.value = json.loads(json_str, **kwargs)
+    #     return self
 
 
 

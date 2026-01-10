@@ -1,9 +1,11 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal, Any
+from typing import Literal, Any, Hashable
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
+from SwiftGUI.Compat import Self
+
 
 class Spinbox(BaseWidget):
     _tk_widget_class: type = tk.Spinbox # Class of the connected widget
@@ -19,7 +21,7 @@ class Spinbox(BaseWidget):
         "text_color": "foreground",
         "text_color_disabled": "disabledforeground",
         "text_color_active": "activeforeground",
-        "cursor_color": "insertbackground",
+        "insertbackground_color": "insertbackground",
 
         "highlightbackground_color": "highlightbackground",
         "selectbackground_color": "selectbackground",
@@ -38,11 +40,14 @@ class Spinbox(BaseWidget):
     def __init__(
             self,
             # Add here
-            default_value:float = None,
-            /,
-            key:Any=None,
+            values: Iterable[Any] = None,
+            *,
+            key: Hashable=None,
             key_function:Callable|Iterable[Callable] = None,
             default_event:bool = False,
+
+            default_value: Any = None,
+            value_type: type = None,
 
             cursor: Literals.cursor = None,
             cursor_button: Literals.cursor = None,
@@ -61,14 +66,17 @@ class Spinbox(BaseWidget):
             highlightbackground_color: str|Color = None,
             selectbackground_color: str|Color = None,
             select_text_color: str|Color = None,
+
             borderwidth: int = None,
             selectborderwidth: int = None,
+
             highlightcolor: str|Color = None,
             highlightthickness: int = None,
+
             relief: Literals.relief = None,
             relief_button_down: Literals.relief = None,
             relief_button_up: Literals.relief = None,
-            cursor_color: str | Color = None,
+            insertbackground_color: str | Color = None,
 
             fonttype: str = None,
             fontsize: int = None,
@@ -77,7 +85,6 @@ class Spinbox(BaseWidget):
             font_underline: bool = None,
             font_overstrike: bool = None,
 
-            values: Iterable[float] = None,
             wrap: bool = None,
             number_format: str = None,
             number_min: float = None,
@@ -96,13 +103,18 @@ class Spinbox(BaseWidget):
             tk_kwargs: dict[str:Any]= None,
     ):
 
+
+
         if tk_kwargs is None:
             tk_kwargs = dict()
 
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand,expand_y=expand_y)
         self._key_function = key_function
 
-        self._update_initial(default_value=default_value, cursor=cursor, cursor_button=cursor_button,
+        self._default_val = default_value
+        self._value_type = self.defaults.single("value_type", default= float)
+
+        self._update_initial(cursor=cursor, cursor_button=cursor_button,
                              takefocus=takefocus, justify=justify, background_color=background_color,
                              background_color_active=background_color_active,
                              background_color_disabled=background_color_disabled,
@@ -118,7 +130,10 @@ class Spinbox(BaseWidget):
                              values=tuple(values) if values else None, wrap=wrap, number_format=number_format,
                              number_min=number_min, number_max=number_max, increment=increment, width=width,
                              repeatdelay=repeatdelay, repeatinterval=repeatinterval, state=state,
-                             cursor_color=cursor_color, **tk_kwargs)
+                             insertbackground_color=insertbackground_color,
+                             # validate = "key",  # This restricts the user to one type of value
+                             # validatecommand = (self.parent.register(self._validate), "%P"),  # This too
+                             **tk_kwargs)
 
         self._default_event = default_event
 
@@ -169,7 +184,7 @@ class Spinbox(BaseWidget):
         super()._apply_update() # Actually apply the update
 
     def _personal_init_inherit(self):
-        self._set_tk_target_variable(tk.DoubleVar, kwargs_key="textvariable", default_key="default_value")
+        self._set_tk_target_variable(kwargs_key="textvariable")
 
         if self._default_event:
             self._window_event_function = self.window.get_event_function(
@@ -178,21 +193,51 @@ class Spinbox(BaseWidget):
                 key_function= self._key_function,
             )
 
+            #self._last_event_value = self.value()
             self._tk_target_value.trace_add("write", self._value_change_callback)
 
-    _last_viable_value: float = None
+    _last_viable_value: Any = None
     def _get_value(self) -> Any:
         try:
             self._last_viable_value = self._tk_target_value.get()
         except tk.TclError:  # _tk_target_value isn't used
             pass
 
-        return self._last_viable_value
+        return self._value_type(self._last_viable_value)
+
+    def _validate(self, val: Any) -> bool:
+        try:
+            self._value_type(val)
+            return True
+        except (ValueError, TypeError):
+            return False
+
+    def set_value(self,val:Any) -> Self:
+        try:
+            self._last_event_value = self._value_type(val)
+        except (ValueError, TypeError) as ex:
+            raise ex.__class__(f"You tried to write a {val.__class__.__name__} to a spin-box that only allows {self._value_type.__name__}.")
+
+        return super().set_value(val)
 
     _window_event_function: Callable = None
-    _last_event_value: float = None
+    _last_event_value: Any = None
     def _value_change_callback(self, *_):   # Only throws an event on value-changes
+        if not self.window.exists:
+            return
+
         if self._last_event_value != self.value:
             self._last_event_value = self.value
             self._window_event_function()   # Call the actual event
 
+    def init_window_creation_done(self):
+        super().init_window_creation_done()
+
+        self._update_initial(
+            validate= "key",
+            validatecommand = (self.tk_widget.register(self._validate), "%P")
+        )
+
+        if self._default_val is not None:   # No idea why the usual way doesn't work in this case...
+            self._last_event_value = self._value_type(self._default_val)
+            self._tk_target_value.set(self._default_val)

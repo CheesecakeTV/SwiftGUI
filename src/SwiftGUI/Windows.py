@@ -5,6 +5,7 @@ import string
 import io
 import threading
 import tkinter as tk
+from functools import wraps
 from os import PathLike
 from tkinter import ttk, Widget
 from collections.abc import Iterable,Callable
@@ -20,13 +21,25 @@ if TYPE_CHECKING:
     from SwiftGUI import AnyElement
 
 class ValueDict:
-    def __init__(self, window: "BaseKeyHandler", keys: set[Any]):
+    def __init__(self, window: "BaseKeyHandler", keys: set[Hashable] = None):
         super().__init__()
         self._values = dict()
         self._window: "BaseKeyHandler" = window
 
         self._updated_keys: set = set()
+
+        if keys is None:
+            keys = set()
+
         self._all_keys: set = keys
+
+    def register_key(self, key: Hashable):
+        """Add a key so its element is registered"""
+        self._all_keys.add(key)
+
+    def unregister_key(self, key: Hashable):
+        """Remove a key so its element is not registered anymore"""
+        self._all_keys.remove(key)
 
     def __getitem__(self, item: Any) -> Any:
         if item in self._updated_keys:
@@ -64,13 +77,20 @@ class ValueDict:
 
         return self
 
+    def refresh_all_invalidated(self) -> Self:
+        """
+        Refresh all keys that are not refreshed already
+        :return:
+        """
+        self.refresh_key(*self._not_updated_keys)
+        return self
+
     def refresh_all(self) -> Self:
         """
         Refreshes all keys with their current values
         :return:
         """
-        map(self.refresh_key, self._all_keys)
-
+        self.refresh_key(*self._all_keys)
         return self
 
     def invalidate_all_values(self) -> Self:
@@ -104,7 +124,7 @@ class ValueDict:
         self._values[key] = value
         return self
 
-    def update(self, vals: dict[Any:Any]) -> Self:
+    def update(self, vals: dict[Any, Any]) -> Self:
         """
         Apply all values from the provided dict
         :param vals:
@@ -112,7 +132,63 @@ class ValueDict:
         """
         for key, val in vals.items():
             self.__setitem__(key, val)
+
         return self
+
+    def to_dict(self) -> dict[Hashable, Any]:
+        """
+        Return all key-values as a dict.
+        The values are the same as if you'd use v[key]
+        """
+        self.refresh_all()
+        return self._values.copy()
+
+    @staticmethod
+    def _one_elem_to_json(key_elem) -> tuple[Hashable, Any]:
+        key, elem = key_elem
+
+        if hasattr(elem, "to_json"):
+            value = elem.to_json()
+        elif hasattr(elem, "value"):
+            value = elem.value
+        else:
+            return key, None
+
+        if hasattr(value, "to_json"):
+            value = value.to_json()
+
+        return key, value
+
+    def to_json(self):
+        """
+        Return all key-values as a dict that can be json-encoded.
+        """
+        ret = dict(map(self._one_elem_to_json, self._window.all_key_elements.items()))
+        return ret
+
+    def from_json(self, saved_dict: dict) -> Self:
+        """
+        Restore the values previously acquired through .to_json
+        """
+        win_elems = self._window.all_key_elements
+
+        for key in win_elems.keys():
+            if key in saved_dict:
+                elem = win_elems[key]
+
+                if hasattr(elem, "from_json"):
+                    elem.from_json(saved_dict[key])
+                else:
+                    elem.value = saved_dict[key]
+
+        return self
+
+    def __contains__(self, item):
+        return item in self._all_keys
+
+    def __iter__(self):
+        self.refresh_all_invalidated()
+        return iter(self._values)
 
 class BaseKeyHandler(BaseElement):
     """
@@ -131,14 +207,14 @@ class BaseKeyHandler(BaseElement):
         """
         super().__init__()
 
-        self._value_dict: ValueDict | None = None
+        self._value_dict: ValueDict = ValueDict(self)
         self._grab_anywhere: bool | None = None
         #self.ttk_style: ttk.Style | None = None
         self.root: tk.Tk | Widget | None = None
-        self._sg_widget: Frame | None = None
+        self.frame: Frame | None = None
 
         self.all_elements:list["AnyElement"] = list()   # Elements will be registered in here
-        self.all_key_elements:dict[any,"AnyElement"] = dict()    # Key:Element, if key is present
+        self.all_key_elements:dict[Hashable, "AnyElement"] = dict()    # Key:Element, if key is present
         self._grab_anywhere_window: Self | None = None  # This window will handle the callbacks of the grab-anywhere methods
 
         self._key_event_callback_function = event_loop_function
@@ -163,7 +239,7 @@ class BaseKeyHandler(BaseElement):
             grab_anywhere_window: Self = None,
     ):
         """Should be called by the window when/after it is being created"""
-        self._sg_widget: Frame = sg_element
+        self.frame: Frame = sg_element
 
         self.root = container
 
@@ -176,9 +252,9 @@ class BaseKeyHandler(BaseElement):
         if not hasattr(self, "_grab_anywhere"):
             self._grab_anywhere = False
 
-        self._sg_widget.window_entry_point(self.root, self)
+        self.frame.window_entry_point(self.root, self)
 
-        self._value_dict = ValueDict(self, set(self.all_key_elements.keys()))
+        #self._value_dict = ValueDict(self, set(self.all_key_elements.keys()))
 
         self.exists = True
 
@@ -187,12 +263,12 @@ class BaseKeyHandler(BaseElement):
         for elem in self.all_elements:
             elem.init_window_creation_done()
 
-        self._sg_widget.init_window_creation_done()
+        self.frame.init_window_creation_done()
 
     def __iter__(self) -> Self:
         return self
 
-    def __next__(self) -> tuple[any,dict[any:any]]:
+    def __next__(self) -> tuple[Hashable, ValueDict]:
         e,v = self.loop()
 
         if not self.exists:
@@ -242,6 +318,7 @@ class BaseKeyHandler(BaseElement):
                 print(f"WARNING! Key {elem.key} is defined multiple times in its key-system! Disable this message by setting sg.Debug.enable_key_warnings = False before creating the layout.")
 
             self.all_key_elements[elem.key] = elem
+            self._value_dict.register_key(elem.key)
 
     def unregister_element(self, elem:BaseElement):
         """
@@ -256,7 +333,9 @@ class BaseKeyHandler(BaseElement):
             ...
 
         if hasattr(elem, "key") and elem.key in self.all_key_elements:
-            del self.all_key_elements[elem.key]
+            key= elem.key
+            del self.all_key_elements[key]
+            self._value_dict.unregister_key(key)
 
     def throw_event(self, key: Any = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
         """
@@ -286,18 +365,6 @@ class BaseKeyHandler(BaseElement):
             "callback_kwargs": function_kwargs,
         })
 
-    #@deprecated("WIP")
-    #
-    #     """
-    #     NOT THREAD-SAFE!!!
-    #
-    #     Generate an event instantly when window returns to loop
-    #     :param key:
-    #     :param value: If not None, it will be saved inside the value-_dict until changed
-    #     :return:
-    #     """
-    #     raise NotImplementedError("sg.Window.throw_event_on_next_loop is not ready to use yet")
-
     def _receive_event(self, key:Any = None, callback: Callable = None, callback_args: tuple = tuple(), callback_kwargs: dict = None):
         """
         Gets called when an event is evoked
@@ -320,7 +387,7 @@ class BaseKeyHandler(BaseElement):
     def get_event_function(self,me:BaseElement = None,key:Any=None,key_function:Callable|Iterable[Callable]=None,
                            )->Callable:
         """
-        Returns a function that sets the event-variable accorting to key
+        Returns a function that sets the event-variable according to key
         :param me: Calling element
         :param key_function: Will be called additionally to the event. YOU CAN PASS MULTIPLE FUNCTIONS as a list/tuple
         :param key: If passed, main loop will return this key
@@ -387,8 +454,18 @@ class BaseKeyHandler(BaseElement):
     def _get_value(self) -> Any:
         return self._value_dict
 
-    def set_value(self,val:Any) -> Self:
-        raise NotImplementedError("You can't change the value of this element like that.")
+    # def set_value(self,val:Any) -> Self:
+    #     raise NotImplementedError("You can't change the value of this element like that.")
+
+    def set_value(self, val: dict | ValueDict) -> Self:
+        """
+        A way to set keyed values at once
+        :param val:
+        :return:
+        """
+        self.value.from_json(val)
+
+        return self
 
     ### grap_anywhere methods.
     ### Mainly inspired by this post: https://stackoverflow.com/questions/4055267/tkinter-mouse-drag-a-window-without-borders-eg-overridedirect1
@@ -505,6 +582,17 @@ class SubLayout(BaseKeyHandler):
 
         return super()._update_special_key(key, new_val)
 
+    def delete(self) -> Self:
+        """
+        Delete this element removing it permanently from the layout
+
+        Keep in mind that rows still exist, even if they don't contain any elements (anymore).
+        So adding and removing 1000 elements is not a good idea.
+        """
+        self.frame.delete()
+        self.remove_flags(ElementFlag.IS_CREATED)
+        return self
+
 all_windows: list["Window"] = list()
 def close_all_windows():
     for w in all_windows:
@@ -516,6 +604,66 @@ _main_window: Union["Window", None] = None
 def main_window() -> Union["Window", None]:
     """Always returns the active sg.Window, or None"""
     return _main_window
+
+# Cyclically called functions.
+# Have to be called once when main window is created
+autostart_periodic_functions: list[Callable] = list()
+def call_periodically(
+        delay: float = 1,
+        counter_reset: int = None,
+        autostart: bool = True,
+) -> Callable:
+    """
+    Decorator.
+    Decorated functions are called periodically WHILE A WINDOW EXISTS.
+
+    Counter:
+    Set counter_reset to an integer to enable the counter.
+    If enabled, the counter-value is passed AS THE FIRST ARGUMENT to the function
+    The counter is restarted at that value.
+    If counter_reset == 0, the counter never resets.
+
+    :param delay: Delay between two calls in seconds
+    :param counter_reset: The first value NOT PASSED TO THE COUNTER because it resets
+    :param autostart: True, if this function should be called automatically when a window opens
+    :return:
+    """
+
+    delay = int(delay * 1000)
+    def dec(fct: Callable) -> Callable:
+
+        if counter_reset is not None:
+            counter = -1
+
+            @wraps(fct)
+            def _return(*args, **kwargs):
+                if _main_window is None:
+                    return
+
+                _main_window.root.after(delay, _return)
+
+                nonlocal counter
+                counter += 1
+                if counter_reset and counter >= counter_reset:
+                    counter = 0
+
+                return fct(counter, *args, **kwargs)
+
+        else:
+            @wraps(fct)
+            def _return(*args, **kwargs):
+                if _main_window is None:
+                    return
+                _main_window.root.after(delay, _return)
+
+                return fct(*args, **kwargs)
+
+        if autostart:
+            autostart_periodic_functions.append(_return)
+
+        return _return
+
+    return dec
 
 all_decorator_key_functions = dict() # All decorator-functions collected, key: function
 class Window(BaseKeyHandler):
@@ -539,7 +687,7 @@ class Window(BaseKeyHandler):
     def __init__(
             self,
             layout:Iterable[Iterable[BaseElement]],
-            /,
+            *,
             title:str = None,
             alignment: Literals.alignment = None,
             titlebar: bool = None,  # Titlebar visible
@@ -861,6 +1009,9 @@ class Window(BaseKeyHandler):
         # self.root.mainloop()
         super().init_window_creation_done()
 
+        for fct in autostart_periodic_functions:
+            fct()
+
     def _keyed_event_callback(self, key: Any, _):
         self._prev_event = key
         self.root.quit()
@@ -970,6 +1121,28 @@ class Window(BaseKeyHandler):
 
         return self
 
+    _destroy_event_function: Callable | None = None
+    def _destroy_callback(self, event: tk.Event):
+        """
+        Called when the (sub-)window is destroyed
+        :return:
+        """
+        # The event is also called if any of the children is destroyed...
+        if self.root == event.widget:
+            self._destroy_event_function(event)
+
+    @BaseElement._run_after_window_creation
+    def bind_destroy_event(self, key_function: Callable | Iterable[Callable]) -> Self:
+        """
+        This event will be called when the (sub-)window is destroyed for any reason.
+        :param key_function: Supports parameters w, v and args
+        :return:
+        """
+        self._destroy_event_function = self.get_event_function(self, key_function= key_function)
+        self.root.bind("<Destroy>", self._destroy_callback)
+
+        return self
+
 class SubWindow(Window):
     """
     Window-Object for additional windows
@@ -990,7 +1163,7 @@ class SubWindow(Window):
     def __init__(
             self,
             layout:Iterable[Iterable[BaseElement]],
-            /,
+            *,
             key: Any = None,
             title:str = None,
             alignment: Literals.alignment = None,

@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import colorchooser
 from collections.abc import Iterable, Callable
-from typing import Literal, Any
+from typing import Literal, Any, Hashable
 
 from SwiftGUI import GlobalOptions, Literals, Color
 from SwiftGUI.Widget_Elements.Button import Button
@@ -21,8 +21,8 @@ class ColorChooserButton(Button):
             self,
             # Add here
             text:str = "",
-            /,
-            key:Any = None,
+            *,
+            key: Hashable = None,
             key_function:Callable|Iterable[Callable] = None,
 
             initial_color: str | Color = None,

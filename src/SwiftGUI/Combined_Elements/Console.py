@@ -1,4 +1,4 @@
-from typing import Any, Callable, Iterable
+from typing import Any, Callable, Iterable, Hashable
 import SwiftGUI as sg
 from SwiftGUI.Compat import Self
 from datetime import datetime as dt
@@ -11,8 +11,8 @@ class Console(sg.BaseCombinedElement):
     _add_timestamp: bool    # True, if the current time should be printed in front of prints
     def __init__(
             self,
-            /,
-            key: Any = None,
+            *,
+            key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
             default_event: bool = False,
             input_prefix: str = None,

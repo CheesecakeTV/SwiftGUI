@@ -1,6 +1,6 @@
 from collections.abc import Iterable, Callable
 from functools import wraps
-from typing import Literal, Union, Any
+from typing import Literal, Union, Any, Hashable
 from SwiftGUI.Compat import Self
 import tkinter as tk
 
@@ -80,12 +80,12 @@ class BaseElement:
         """
         self._init_defaults()   # Default configuration
         self._flag_init()
-        self.add_flags(ElementFlag.IS_CREATED)
 
         self._normal_init(parent,window)
         self._personal_init()
 
         self._apply_update()
+        self.add_flags(ElementFlag.IS_CREATED)  # Todo: Check if this is okay. It was behind self._flag_init() before.
 
     def _flag_init(self):
         """
@@ -323,7 +323,6 @@ class BaseElement:
     def __repr__(self) -> str:
         return f"<sg.{self.__class__.__name__} element at {id(self)}>"
 
-
 class BaseWidget(BaseElement):
     """
     Base for every Widget
@@ -353,13 +352,13 @@ class BaseWidget(BaseElement):
     _insert_kwargs_rows:dict    # kwargs for the grid-rows
 
     #_is_container:bool = False   # True, if this widget contains other widgets
-    _contains:Iterable[Iterable["BaseElement"]] = []
+    _contains:list[Iterable["BaseElement"]] = []
 
     _transfer_keys: dict[str:str] = dict()   # Rename a key from the update-function. from -> to; from_user -> to_widget
 
     _tk_scrollbar_y: tk.Scrollbar | None = None
 
-    def __init__(self,key:Any=None,tk_kwargs:dict[str:Any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
+    def __init__(self,key:Hashable=None,tk_kwargs:dict[str:Any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
         super().__init__()
 
         if tk_kwargs is None:
@@ -574,60 +573,14 @@ class BaseWidget(BaseElement):
         if self.has_flag(ElementFlag.IS_CONTAINER):
             self._init_containing()
 
-    _containing_row_frame_widgets: list[tk.Frame]
     _background_color: str | Color
     def _init_containing(self):
         """
-        Initialize all containing widgets
+        Initialize all contained widgets.
+        This is only for widgets that are a container.
         :return:
         """
-        ins_kwargs_rows = self._insert_kwargs_rows.copy()
-
-        for i in self._contains:
-            # line = tk.Frame(self._tk_widget,background="orange",relief="raised",borderwidth="3",border=3)
-            # actual_line = tk.Frame(line,background="lightBlue",borderwidth=3,border=3,relief="raised")
-
-            line = tk.Frame(self._tk_widget,relief="flat",background=self._background_color)  # This is the row
-            actual_line = tk.Frame(line,background=self._background_color)    # This is where the actual elements are put in
-            self._containing_row_frame_widgets.extend((line,actual_line))
-
-            line_elem = BaseElement()
-            line_elem._fake_tk_element = actual_line
-
-            expand = False
-            expand_y = False
-
-            for k in i:
-                k._init(line_elem,self.window)
-
-                if not expand and k.has_flag(ElementFlag.EXPAND_ROW):
-                    expand = True
-
-                if not expand_y and k.has_flag(ElementFlag.EXPAND_VERTICALLY):
-                    expand_y = True
-
-            if expand and expand_y:
-                ins_kwargs_rows["fill"] = "both"
-                ins_kwargs_rows["expand"] = True
-            elif expand:
-                ins_kwargs_rows["fill"] = "x"
-                ins_kwargs_rows["expand"] = True
-            elif expand_y:
-                ins_kwargs_rows["fill"] = "y"
-                ins_kwargs_rows["expand"] = True
-            else:
-                ins_kwargs_rows["fill"] = "none"
-                ins_kwargs_rows["expand"] = False
-
-            if expand_y:
-                line.pack(fill="both", expand=True)
-            else:
-                line.pack(fill="x")
-            actual_line.pack(**ins_kwargs_rows)
-
-            if self._grab_anywhere_on_this:
-                self.window.bind_grab_anywhere_to_element(line)
-                self.window.bind_grab_anywhere_to_element(actual_line)
+        raise NotImplementedError(f"{self} tried to init contained elements (ElementFlag.IS_CONTAINER is set), but that's not implemented.")
 
     def _get_value(self) -> Any:
         """
@@ -702,6 +655,37 @@ class BaseWidget(BaseElement):
 
         return default  # Well, gave it my best shot...
 
+    def delete(self) -> Self:
+        """
+        Delete this element removing it permanently from the layout
+
+        Keep in mind that rows still exist, even if they don't contain any elements (anymore).
+        So adding and removing 1000 elements is not a good idea.
+        """
+        self.tk_widget.destroy()
+        self.window.unregister_element(self)
+        self.remove_flags(ElementFlag.IS_CREATED)
+        return self
+
+    def to_json(self) -> Any:
+        """
+        Convert this element to json
+
+        Inherit this method to change its behavior
+        :return:
+        """
+        return self._get_value()
+
+    def from_json(self, val: Any) -> Self:
+        """
+        Restore the saved value from json
+
+        :param val:
+        :return:
+        """
+        self.set_value(val)
+        return self
+
 class BaseScrollbar:
     """
     Base for every widget that has a scrollbar.
@@ -711,7 +695,7 @@ class BaseScrollbar:
     """
     scrollbar_y: BaseWidget # Actually type sg.Scrollbar, but yeah...
 
-    @run_after_window_creation
+    #@run_after_window_creation
     def update_scrollbar_y(
             self,
             cursor: Literals.cursor = None,
@@ -740,10 +724,9 @@ class BaseWidgetContainer(BaseWidget):
     """
     Base for Widgets that contain other widgets
     """
-    def __init__(self,key:Any=None,tk_kwargs:dict[str:Any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
+    def __init__(self,key:Hashable=None,tk_kwargs:dict[str, Any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
         super().__init__(key,tk_kwargs,expand,expand_y=expand_y,**kwargs)
 
-        self._containing_row_frame_widgets = list()
         self._background_color: str | Color = self.defaults.single("background_color",None)
 
     def _flag_init(self):
@@ -761,17 +744,19 @@ class BaseWidgetContainer(BaseWidget):
         # Todo: update_all_containing
 
 class BaseWidgetTTK(BaseWidget):
+    ttk_style: str = None  # Will contain the full, default style
     _styletype: str = None  # Style will be named n.styletype
-    _style: str = None  # Registered style of this widget
+    _stylecounter_str: str = None  # Registered style of this widget
     _stylecounter: int = 0   # This ensures every style has an unique number
 
-
     def __init__(self, *args, **kwargs):
-        self._style = str(BaseWidgetTTK._stylecounter)
+        self._stylecounter_str = str(BaseWidgetTTK._stylecounter)
         BaseWidgetTTK._stylecounter += 1
 
+        self.ttk_style = self._stylecounter_str + "." + self._styletype
+
         if not "style" in kwargs:
-            kwargs["style"] = self._style + "." + self._styletype
+            kwargs["style"] = self.ttk_style
 
         super().__init__(*args, **kwargs)
 
@@ -798,7 +783,7 @@ class BaseWidgetTTK(BaseWidget):
         if not styletype:
             styletype = self._styletype
 
-        self.window.ttk_style.configure(self._style + "." + styletype + style_ext, **kwargs)
+        self.window.ttk_style.configure(self._stylecounter_str + "." + styletype + style_ext, **kwargs)
 
     @run_after_window_creation
     def _map_ttk_style(self, style_ext: str = "", styletype: str = None, overwrite_all: bool = False, **kwargs):
@@ -819,7 +804,7 @@ class BaseWidgetTTK(BaseWidget):
         if not styletype:
             styletype = self._styletype
 
-        stylename = self._style + "." + styletype + style_ext
+        stylename = self._stylecounter_str + "." + styletype + style_ext
 
         kwargs: dict[str, tuple]
         if not overwrite_all:

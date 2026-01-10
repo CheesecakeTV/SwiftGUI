@@ -55,7 +55,7 @@ class Treeview(BaseWidget):
             self,
             # Add here
             #elements: dict|Iterable[Iterable[str]] = None,
-            /,
+            *,
             key: Any = None,
             key_function: Callable|Iterable[Callable] = None,
             default_event: bool = False,

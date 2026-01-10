@@ -3,7 +3,7 @@ from SwiftGUI import Color
 
 #sg.GlobalOptions.Button.fontsize = 12
 
-class _popup_virtual_keyboard:
+class _virtual_keyboard:
     """
     I know this looks like a mess, and it is, but it's just a proof of concept for now.
     I'll clean it up later, pinky promise!
@@ -202,16 +202,15 @@ class _popup_virtual_keyboard:
     def char(self, char: str):
         self.input.value = self.input.value + char
 
-def popup_virtual_keyboard(
+def virtual_keyboard(
         text: str = "",
         multiline: bool = False,
 ):
-    return _popup_virtual_keyboard(
+    return _virtual_keyboard(
         text= text,
         multiline= multiline,
     ).rreturn
 
-# print("Rückgabe:", popup_virtual_keyboard(multiline= False))
 
 
 

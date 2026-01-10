@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal, Any
+from typing import Literal, Any, Hashable
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
 from SwiftGUI.Compat import Self
@@ -19,27 +19,27 @@ class Input(BaseWidget):
     defaults = GlobalOptions.Input   # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
 
     _transfer_keys = {
-        "background_color_disabled":"disabledbackground",
         "background_color_readonly":"readonlybackground",
         "background_color":"background",
         "text_color":"foreground",
-        "text_color_disabled": "disabledforeground",
+        #"text_color_disabled": "disabledforeground",
         "highlightbackground_color": "highlightbackground",
         "selectbackground_color": "selectbackground",
         "select_text_color": "selectforeground",
         "pass_char":"show",
-        "cursor_color":"insertbackground",
+        "insertbackground_color":"insertbackground",
     }
 
     def __init__(
             self,
             # Add here
             text: str = None,
-            /,
-            key: Any = None,
+            *,
+            key: Hashable = None,
             key_function: Callable|Iterable[Callable] = None,
-            width: int = None,
             default_event: bool = False,
+
+            width: int = None,
             #
             cursor: Literals.cursor = None,
             takefocus: bool = None,
@@ -48,11 +48,11 @@ class Input(BaseWidget):
             background_color: str|Color = None,
             background_color_readonly: str|Color = None,
             text_color: str|Color = None,
-            text_color_disabled: str|Color = None,
+            #text_color_disabled: str|Color = None,
             highlightbackground_color: str|Color = None,
             selectbackground_color: str|Color = None,
             select_text_color: str|Color = None,
-            cursor_color: str | Color = None,
+            insertbackground_color: str | Color = None,
             selectborderwidth: int = None,
             highlightcolor: str|Color = None,
             highlightthickness: int = None,
@@ -63,7 +63,6 @@ class Input(BaseWidget):
             validate: Literals.validate = None,
             validatecommand: Callable = None,
             #
-            # Mixed options
             fonttype: str = None,
             fontsize: int = None,
             font_bold: bool = None,
@@ -122,11 +121,11 @@ class Input(BaseWidget):
             selectborderwidth = selectborderwidth,
             text = text,
             text_color = text_color,
-            text_color_disabled = text_color_disabled,
+            #text_color_disabled = text_color_disabled,
             validate = validate,
             validatecommand = validatecommand,
             width = width,
-            cursor_color = cursor_color,
+            insertbackground_color = insertbackground_color,
             **tk_kwargs,
         )
 

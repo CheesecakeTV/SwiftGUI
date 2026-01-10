@@ -1,12 +1,10 @@
 from tkinter import ttk, font
-from typing import Any, Iterable, Callable
+from typing import Any, Iterable, Callable, Hashable
 
-from SwiftGUI import BaseWidget
 from SwiftGUI.Base import run_after_window_creation
 from SwiftGUI.Compat import Self
 
-from SwiftGUI import GlobalOptions, BaseWidgetTTK, Literals, Color, ElementFlag, BaseElement
-
+from SwiftGUI import GlobalOptions, BaseWidgetTTK, Literals, Color, ElementFlag, Scrollbar
 
 class Combobox(BaseWidgetTTK):
     tk_widget:ttk.Combobox
@@ -19,9 +17,9 @@ class Combobox(BaseWidgetTTK):
     # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Notebook.html
     def __init__(
             self,
-            choices: Iterable[str] = tuple(),
-            /,
-            key: Any = None,
+            choices: Iterable[Any] = tuple(),
+            *,
+            key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
             default_event: bool = None,
 
@@ -84,6 +82,10 @@ class Combobox(BaseWidgetTTK):
 
         self._prev_value = default_value
 
+        # Not a real element, just using it for the ttk-theme!
+        # This is not the scrollbar shown in the combobox.
+        self.scrollbar: Scrollbar = Scrollbar()
+
         self._update_initial(
             default_value = default_value,
             choices = choices,
@@ -116,6 +118,29 @@ class Combobox(BaseWidgetTTK):
             insertbackground = insertbackground,
         )
 
+    @BaseWidgetTTK._run_after_window_creation
+    def update_scrollbar_y(
+            self,
+            cursor: Literals.cursor = None,
+
+            background_color: str | Color = None,
+            background_color_active: str | Color = None,
+
+            text_color: str | Color = None,
+            text_color_active: str | Color = None,
+
+            troughcolor: str | Color = None,
+    ) -> Self:
+        self.scrollbar.update(
+            cursor = cursor,
+            background_color = background_color,
+            background_color_active = background_color_active,
+            text_color = text_color,
+            text_color_active = text_color_active,
+            troughcolor = troughcolor,
+        )
+        return self
+
     def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         if not self.window and key in ["background_color", "text_color", "selectbackground_color", "select_text_color"]:    # These can only be handled once the element exists
             self.update_after_window_creation(**{key: new_val})
@@ -124,7 +149,7 @@ class Combobox(BaseWidgetTTK):
         match key:
             case "choices":
                 if new_val:
-                    self._tk_kwargs["values"] = tuple(new_val)
+                    self._tk_kwargs["values"] = tuple(map(str, new_val))
                 else:
                     self._tk_kwargs["values"] = tuple()
 
@@ -254,8 +279,17 @@ class Combobox(BaseWidgetTTK):
         self._set_tk_target_variable(default_key="default_value", kwargs_key= "textvariable")
         self._tk_target_value.trace_add("write", self._value_change_callback)
 
+        # Fake-initialize this widget
+        self.scrollbar.window = self.window
+
     def init_window_creation_done(self):
         super().init_window_creation_done()
+
+        self.scrollbar.init_window_creation_done()
+
+        # Apply the theme to the actual scrollbar-widget
+        frame_path = f"[ttk::combobox::PopdownWindow {self.tk_widget}].f"
+        self.tk_widget.tk.eval(f"{frame_path}.sb configure -style {self.scrollbar.ttk_style}")
 
         # So not everything gets selected when chosing something from the drop-down
         self.tk_widget.bind("<<ComboboxSelected>>", lambda *_:self.tk_widget.selection_clear())

@@ -33,7 +33,7 @@ class Canvas(BaseWidget):
             self,
             *canvas_elements: "sg.Canvas_Elements.BaseCanvasElement",   # Elements to add in the beginning
 
-            key: Any = None,
+            key: Hashable = None,
             default_event: bool = False,
             key_function: Callable | Iterable[Callable] = None,
 
@@ -73,7 +73,7 @@ class Canvas(BaseWidget):
 
         self._key_function = key_function
 
-        if background_color and not apply_parent_background_color:
+        if self.defaults.single("background_color", background_color) and not apply_parent_background_color:
             apply_parent_background_color = False
 
         self._default_event = default_event
@@ -101,6 +101,10 @@ class Canvas(BaseWidget):
             closeenough = closeenough,
             relief = relief,
         )
+
+    def from_json(self, val: Any) -> Self:
+        """Not implemented, so let's not cause a crash by trying to set the value"""
+        return self
 
     def set_value(self, val: None):
         raise AttributeError("A canvas-object does not have a 'value'.")

@@ -1,6 +1,6 @@
 import tkinter as tk
 from collections.abc import Iterable
-from typing import Any
+from typing import Any, Hashable
 from SwiftGUI.Compat import Self
 
 from SwiftGUI import BaseElement, GlobalOptions, Literals, Color, Frame, Text
@@ -28,7 +28,9 @@ class LabelFrame(Frame):
     def __init__(
             self,
             layout: Iterable[Iterable[BaseElement]],
-            /,
+            *,
+            key: Hashable = None,
+
             text: str = None,
             no_label: bool = None,
 
@@ -43,7 +45,6 @@ class LabelFrame(Frame):
             labelanchor: Literals.tabposition = None,
 
             # Normal Frame
-            key: str = None,
             alignment: Literals.alignment = None,
             expand: bool = False,
             expand_y: bool = False,
@@ -104,6 +105,13 @@ class LabelFrame(Frame):
         "font_underline",
         "font_overstrike",
     ]
+
+    def set_value(self, val: str) -> Self:
+        self._element.value = val
+        return self
+
+    def _get_value(self) -> Self:
+        return self._element.value
 
     def _update_initial(self, **kwargs) -> Self:
         pass_to_element = dict()

@@ -27,8 +27,6 @@ class BaseFourColors(BaseTheme):
 
         #temp = go.Table
         go.Table.background_color = c2
-        go.Table.background_color_rows = c2
-        go.Table.background_color_active_rows = c3
         go.Table.text_color_active = c1
         go.Table.background_color_headings = c4
         go.Table.background_color_active_headings = c3
@@ -39,9 +37,11 @@ class BaseFourColors(BaseTheme):
         temp.check_background_color = c1
         temp.background_color_active = c1
         temp.text_color_active = c4
+        temp.text_color_disabled = c3
 
         temp = go.Common_Background
         temp.background_color = c1
+        #go.Window.background_color = c1
 
         temp = go.Common_Field_Background
         temp.background_color = c2
@@ -57,16 +57,20 @@ class BaseFourColors(BaseTheme):
         temp = go.Button
         temp.background_color_active = c3
         temp.text_color_active = c1
+        temp.text_color_disabled = c3
 
         temp = go.Input
         temp.selectbackground_color = c3
         temp.select_text_color = c1
-        temp.cursor_color = c3
+        temp.insertbackground_color = c3
         temp.text_color_disabled = c3
         temp.background_color_readonly = c1
 
         temp = go.Spinbox
         temp.background_color_button = c2
+        temp.background_color_disabled = c1
+        temp.background_color_readonly = c1
+        temp.text_color_disabled = c3
 
         temp = go.Separator
         temp.color = c3
@@ -77,10 +81,11 @@ class BaseFourColors(BaseTheme):
         temp.text_color = c3
 
         temp = go.Listbox
-        temp.background_color_selected = c3
-        temp.text_color_selected = c1
+        temp.background_color_active = c3
+        temp.text_color_active = c1
         temp.text_color = c4
         temp.background_color = c2
+        temp.text_color_disabled = c3
 
         temp = go.Scale
         temp.highlightbackground_color = c1
@@ -93,6 +98,7 @@ class BaseFourColors(BaseTheme):
         temp.arrow_color_active = c1
         temp.button_background_color_active = c3
         temp.insertbackground = c3
+        temp.background_color_disabled = c1
 
         temp = go.Progressbar
         temp.bar_color = c3
@@ -259,7 +265,7 @@ class FairyPink(BaseFourColors):
     col2 = "B4AEE8"
     col1 = "FFE3FE"
 
-class DeepPurple(BaseFourColors):
+class UnderlyingPurple(BaseFourColors):
     col1 = "440A67"
     col2 = "93329E"
     col3 = "B4AEE8"
@@ -332,7 +338,7 @@ class Chocolate(BaseFourColors):
     col3 = "B85C38"
     col4 = "E0C097"
 
-class SinCity(BaseFourColors):
+class TransgressionTown(BaseFourColors):
     col1 = "171717"
     col2 = "444444"
     col3 = "DA0037"
