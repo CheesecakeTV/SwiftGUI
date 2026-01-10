@@ -237,6 +237,12 @@ def preview_all_elements(
                 width= 40,
                 height= 8
             )
+        ],[
+            sg.HSep()
+        ], [
+            sg.T("Elements not shown here:\n\n"
+                 "- sg.Files.ConfigSectionEditor\n"
+                 "- sg.Files.ConfigFileEditor")
         ]
     ], fake_key= "Combined elements")
 

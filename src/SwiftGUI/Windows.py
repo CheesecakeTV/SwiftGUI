@@ -162,8 +162,6 @@ class ValueDict:
     def to_json(self):
         """
         Return all key-values as a dict that can be json-encoded.
-
-        WIP!!!
         """
         ret = dict(map(self._one_elem_to_json, self._window.all_key_elements.items()))
         return ret

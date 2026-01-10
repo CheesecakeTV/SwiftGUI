@@ -23,8 +23,8 @@ I did not use it to write, check, correct, or refractor code.
 Even the documentation was written completely AI-free.
 Takes me around 2 hours per document, but that's a good price for keeping this library slop-free.
 
-# 32 different elements, 9 different canvas-elements
-(Version 0.10.0)
+# 35 different elements, 9 different canvas-elements
+(Version 0.11.0)
 
 `import SwiftGUI as sg`
 

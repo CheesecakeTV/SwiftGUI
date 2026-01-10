@@ -16,6 +16,7 @@ class Form(BaseCombinedElement):
     Grid-Layout-Form with text-Input-combinations
 
     It is WIP, but I'm adding more functionality regularely
+    I'll probably throw this whole class out of the window and redo it, since it is so unfathomly bad atm.
     """
 
     def __init__(

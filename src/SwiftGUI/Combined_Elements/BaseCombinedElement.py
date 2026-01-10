@@ -11,7 +11,7 @@ class BaseCombinedElement(BaseElement):
     """
     Derive from this class to create an element consisting of multiple inner elements.
     """
-    _sg_widget: Frame | SubLayout
+    sg_widget: Frame | SubLayout
 
     def __init__(
             self,
@@ -44,10 +44,10 @@ class BaseCombinedElement(BaseElement):
 
         if internal_key_system:
             self._has_sublayout = True
-            self._sg_widget = SubLayout(frame, self._event_loop)
+            self.sg_widget = SubLayout(frame, self._event_loop)
         else:
             self._has_sublayout = False
-            self._sg_widget = frame
+            self.sg_widget = frame
 
         self.key = key
         self._key_function = key_function
@@ -88,7 +88,7 @@ class BaseCombinedElement(BaseElement):
             self.throw_event()
 
     def _personal_init(self):
-        self._sg_widget._init(self, self.window)
+        self.sg_widget._init(self, self.window)
         self._throw_event = self.window.get_event_function(me= self, key= self.key, key_function= self._key_function)
 
     def _update_special_key(self,key:str,new_val:Any) -> bool|None:
@@ -109,7 +109,7 @@ class BaseCombinedElement(BaseElement):
         """
         match key:
             case "background_color":
-                self._sg_widget._update_initial(background_color=new_val)
+                self.sg_widget._update_initial(background_color=new_val)
             case "default_event":
                 self._default_event = new_val
             case _:
@@ -128,7 +128,7 @@ class BaseCombinedElement(BaseElement):
         if not self._has_sublayout:
             return self.window
 
-        return self._sg_widget
+        return self.sg_widget
 
     @property
     def v(self):
@@ -142,17 +142,17 @@ class BaseCombinedElement(BaseElement):
         Overwrite this to return a custom value
         :return:
         """
-        return self._sg_widget.value
+        return self.sg_widget.value
 
     def __getitem__(self, item: Hashable):
         if not self._has_sublayout:
             raise NotImplementedError(f"{self} has no sub-layout, so __getitem__ is not defined.")
-        return self._sg_widget[item]
+        return self.sg_widget[item]
 
     def __setitem__(self, key: Hashable, value: Any):
         if not self._has_sublayout:
             raise NotImplementedError(f"{self} has no sub-layout, so __setitem__ is not defined.")
-        self._sg_widget[key].value = value
+        self.sg_widget[key].value = value
 
     def set_value(self, val:Any) -> Self:
         """
@@ -164,7 +164,7 @@ class BaseCombinedElement(BaseElement):
         if not self._has_sublayout:
             raise NotImplementedError(f"{self} has no sub-layout, so set_value is not defined.")
 
-        self._sg_widget.set_value(val)
+        self.sg_widget.set_value(val)
 
     def delete(self) -> Self:
         """
@@ -173,21 +173,20 @@ class BaseCombinedElement(BaseElement):
         Keep in mind that its row still exists, even if it is empty.
         This can cause performance issues.
         """
-        self._sg_widget.delete()
+        self.sg_widget.delete()
         self.remove_flags(ElementFlag.IS_CREATED)
         return self
 
+    done_method: Callable = lambda *_:_   # Overwritten by the actual .done later
     def done(self, val: Any = None) -> None:
         """
-        DO NOT INHERIT!
-        This is a placeholder.
-
-        When opening this combined element as a popup, this method works the same as sg.Popup.done
+        If this element is opened as a popup, .done(...) will call the popups .done().
+        Otherwise, this does nothing.
 
         :param val: "Return"-value
         :return:
         """
-        pass
+        self.done_method(val)
 
     def popup(self, **window_kwargs) -> Any:
         """

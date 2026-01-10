@@ -17,6 +17,7 @@ class ConfigSection:
             name: str,
             file: "ConfigFile",
     ):
+        """Don't use this yourself! Create it thorugh a ConfigFile!"""
         self._name = name
         self.file = file
 
