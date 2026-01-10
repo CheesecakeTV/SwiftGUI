@@ -1,7 +1,7 @@
 import json
 import SwiftGUI as sg
 
-sg.Themes.FourColors.Teal()
+sg.Themes.FourColors.TransgressionTown()
 
 def row(name):
     return [

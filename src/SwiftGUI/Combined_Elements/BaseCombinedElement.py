@@ -5,6 +5,7 @@ from SwiftGUI import BaseElement, SubLayout, Frame
 from SwiftGUI.Compat import Self
 from SwiftGUI.ElementFlags import ElementFlag
 from SwiftGUI.Windows import ValueDict
+from SwiftGUI.Popups import ElementPopup, ElementPopupNonblocking
 
 class BaseCombinedElement(BaseElement):
     """
@@ -16,19 +17,25 @@ class BaseCombinedElement(BaseElement):
             self,
             layout: Frame | Iterable[Iterable[BaseElement]],
             *,
+            default_event: bool = False,
             key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
             apply_parent_background_color: bool = True,
             internal_key_system: bool = True,
+            popup_kwargs: dict[str, Any] = None,
     ):
         """
 
         :param layout: Pass a layout or a Frame containing all the elements you'd like to have inside this element
+        :param default_event: True, if throw_default_event should throw an event
         :param key: Pass a key to register it in main window
         :param apply_parent_background_color: True, if the background_color of the parent container should also apply to this frame
         :param internal_key_system: True, if keys should be passed up to the main event loop instead of ._event_loop
+        :param popup_kwargs: When passing a dict, these values are passed to .popup and .popup_nonblocking automatically
         """
         super().__init__()
+
+        self._default_event = default_event
 
         if isinstance(layout, Frame):
             frame = layout
@@ -50,6 +57,10 @@ class BaseCombinedElement(BaseElement):
         if apply_parent_background_color:
             self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
 
+        if popup_kwargs is None:
+            popup_kwargs = dict()
+        self._popup_kwargs = popup_kwargs
+
     def _event_loop(self, e: Any, v: ValueDict):
         """
         All key-events will call this method, if internal key-system is enabled.
@@ -63,10 +74,18 @@ class BaseCombinedElement(BaseElement):
 
     def throw_event(self):
         """
-        Throw the default event to the window
+        Throw an event of this element
         :return:
         """
         self._throw_event()
+
+    def throw_default_event(self):
+        """
+        Throw an event, but only if the default-event is enabled
+        :return:
+        """
+        if self._default_event:
+            self.throw_event()
 
     def _personal_init(self):
         self._sg_widget._init(self, self.window)
@@ -91,6 +110,8 @@ class BaseCombinedElement(BaseElement):
         match key:
             case "background_color":
                 self._sg_widget._update_initial(background_color=new_val)
+            case "default_event":
+                self._default_event = new_val
             case _:
                 # The key wasn't found in any other case
                 return super()._update_special_key(key, new_val)    # Look in the parent-class
@@ -155,3 +176,40 @@ class BaseCombinedElement(BaseElement):
         self._sg_widget.delete()
         self.remove_flags(ElementFlag.IS_CREATED)
         return self
+
+    def done(self, val: Any = None) -> None:
+        """
+        DO NOT INHERIT!
+        This is a placeholder.
+
+        When opening this combined element as a popup, this method works the same as sg.Popup.done
+
+        :param val: "Return"-value
+        :return:
+        """
+        pass
+
+    def popup(self, **window_kwargs) -> Any:
+        """
+        Open this NEW AND UNUSED element as a blocking popup
+        self.done(...) will return a value as usual
+
+        :param window_kwargs: Passed to the window. Use this to set a title, etc.
+        :return: Return of the popup
+        """
+        kwargs = self._popup_kwargs.copy()
+        kwargs.update(window_kwargs)
+        return ElementPopup(self, **kwargs)
+
+    def popup_nonblocking(self, **window_kwargs) -> Any:
+        """
+        Open this NEW AND UNUSED element as a non-blocking popup
+        self.done(...) will close the window, but return nothing
+
+        :param window_kwargs: Passed to the window. Use this to set a title, etc.
+        :return: Return of the popup
+        """
+        kwargs = self._popup_kwargs.copy()
+        kwargs.update(window_kwargs)
+        return ElementPopupNonblocking(self, **kwargs)
+

@@ -80,17 +80,17 @@ Combo = Combobox
 
 from .Windows import Window, BaseKeyHandler, ttk_style, main_window, SubLayout, all_decorator_key_functions, SubWindow, close_all_windows, ValueDict, call_periodically
 
-from .Combined_Elements.BaseCombinedElement import BaseCombinedElement
-from .Combined_Elements.Form import Form
-from .Combined_Elements.MultistateButton import MultistateButton
-from .Combined_Elements.Console import Console
-
 from . import KeyFunctions
 
 from . import Themes
 from .BasePopup import BasePopup, BasePopupNonblocking
 from . import Popups
 from . import Examples
+
+from .Combined_Elements.BaseCombinedElement import BaseCombinedElement
+from .Combined_Elements.Form import Form
+from .Combined_Elements.MultistateButton import MultistateButton
+from .Combined_Elements.Console import Console
 
 from .Utilities.Threads import clipboard_observer
 

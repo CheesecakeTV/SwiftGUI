@@ -68,8 +68,9 @@ class Form(BaseCombinedElement):
             Input(
                 key_function= self._throw_default_event,
                 default_event= default_event,
+                key= t
             )
-            for _ in texts
+            for t in texts
         ]
 
         self._clear_buttons = [
@@ -95,7 +96,7 @@ class Form(BaseCombinedElement):
             self._submit_button_element = Button(
                 "Submit",
                 #key= submit_key if submit_key is not None else None,
-                key_function=self.throw_event
+                key_function=[self.throw_event, lambda v:self.done(v)]
                 #key_function= submit_key_function if submit_key_function else self.throw_event,
             )
             self.layout[-1].append(self._submit_button_element)
@@ -169,7 +170,7 @@ class Form(BaseCombinedElement):
     @BaseElement._run_after_window_creation
     def update_submit_button(self, **kwargs) -> Self:
         """
-        Evoke .update on every text-element
+        Evoke .update on the submit-button
         :param kwargs:
         :return:
         """
@@ -204,23 +205,23 @@ class Form(BaseCombinedElement):
         for elem in self._input_elements:
             elem.value = ""
 
-    def export_json(self, indent:int = None, **kwargs) -> str:
-        """
-        Return the values as json
-        :return:
-        """
-        return json.dumps(self.value, indent= indent, **kwargs)
-
-    @BaseElement._run_after_window_creation
-    def import_json(self, json_str: str, **kwargs) -> Self:
-        """
-        Load values from a json-string
-        :param json_str:
-        :param kwargs:
-        :return:
-        """
-        self.value = json.loads(json_str, **kwargs)
-        return self
+    # def export_json(self, indent:int = None, **kwargs) -> str:
+    #     """
+    #     Return the values as json
+    #     :return:
+    #     """
+    #     return json.dumps(self.value, indent= indent, **kwargs)
+    #
+    # @BaseElement._run_after_window_creation
+    # def import_json(self, json_str: str, **kwargs) -> Self:
+    #     """
+    #     Load values from a json-string
+    #     :param json_str:
+    #     :param kwargs:
+    #     :return:
+    #     """
+    #     self.value = json.loads(json_str, **kwargs)
+    #     return self
 
 
 

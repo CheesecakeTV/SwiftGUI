@@ -1088,7 +1088,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         ret = dict()
 
         if self._export_rows_to_json:
-            ret["rows"] = tuple(map(tuple, self.all_rows)),
+            ret["rows"] = tuple(map(tuple, self.all_rows))
 
         return {
             "indexes": self.all_indexes,
@@ -1103,4 +1103,6 @@ class Table(BaseWidgetTTK, BaseScrollbar):
 
         if "indexes" in val:
             self.set_all_indexes(val["indexes"])
+
+        return self
 
