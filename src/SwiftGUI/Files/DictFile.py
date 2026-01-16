@@ -73,6 +73,7 @@ class BaseDictFile:
         """
         if save_to:
             save_to = Path(save_to)
+            save_to.parent.mkdir(parents=True, exist_ok=True)
         else:
             save_to = self._path
 
@@ -102,6 +103,11 @@ class BaseDictFile:
             load_from: str | Path = None,
             add_defaults_to_value: bool = None,
     ) -> Self:
+        """
+        (Re-)loads the file-content.
+        :param load_from: Pass this to load from a different file
+        :param add_defaults_to_value: Pass this to overwrite the add_defaults_to_value-behavior
+        """
         if load_from:
             load_from = Path(load_from)
         else:
@@ -147,7 +153,7 @@ class BaseDictFile:
         self._do_auto_save()
         return self
 
-    def set_many_dict(self, items: dict) -> Self:
+    def update(self, items: dict) -> Self:
         """
         Same as set_many, but allows for non-string keys
         """
@@ -161,7 +167,7 @@ class BaseDictFile:
         :param items:
         :return:
         """
-        self.set_many_dict(items)
+        self.update(items)
         return self
 
     def add_defaults_dict(self, defaults: dict, add_to_values: bool = None, add_to_these_values: dict = None) -> Self:
