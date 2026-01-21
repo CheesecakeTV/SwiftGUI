@@ -69,6 +69,43 @@ class Combobox(BaseWidgetTTK):
             expand_y: bool = None,
             tk_kwargs: dict[str:Any]=None
     ):
+        """
+        A lot of options are the same with sg.Input
+
+        :param choices: All possible values in the list
+        :param key:
+        :param key_function:
+        :param default_event:
+        :param default_value:
+        :param cursor:
+        :param insertbackground:
+        :param background_color:
+        :param background_color_disabled:
+        :param selectbackground_color:
+        :param text_color:
+        :param text_color_disabled:
+        :param select_text_color:
+        :param fonttype:
+        :param fontsize:
+        :param font_bold:
+        :param font_italic:
+        :param font_underline:
+        :param font_overstrike:
+        :param button_background_color:
+        :param button_background_color_active: Button-color when the button is pressed down
+        :param arrow_color:
+        :param arrow_color_active: Button-arror-color when the button is pressed down
+        :param disabled:
+        :param can_change_text: True, if the user can use the field like a normal input too
+        :param exportselection:
+        :param height:
+        :param width:
+        :param justify:
+        :param takefocus:
+        :param expand:
+        :param expand_y:
+        :param tk_kwargs:
+        """
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
 
         choices = tuple(choices)

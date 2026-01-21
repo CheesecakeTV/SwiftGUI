@@ -63,6 +63,37 @@ class Notebook(BaseWidgetTTK):
             expand_y: bool = None,
             tk_kwargs: dict[str:Any]=None
     ):
+        """
+
+        :param tabs: Contained tabs. I recommend using sg.TabFrame for that
+        :param key:
+        :param key_function:
+        :param default_event: True, if a tab-change should cause an event
+        :param event_on_backend_selection: True, if setting the tab by elem.value = ... should cause an event
+        :param tab_texts: Texts on the tabs. Don't need that if you only used TabFrames.
+        :param background_color:
+        :param background_color_tabs:
+        :param background_color_tabs_active: Background-color of the tabs while being selected
+        :param apply_parent_background_color:
+        :param text_color_tabs:
+        :param text_color_tabs_active:
+        :param fonttype_tabs:
+        :param fontsize_tabs:
+        :param font_bold_tabs:
+        :param font_italic_tabs:
+        :param font_underline_tabs:
+        :param font_overstrike_tabs:
+        :param padding:
+        :param takefocus:
+        :param borderwidth:
+        :param width:
+        :param height:
+        :param cursor:
+        :param tabposition: Changes where the tabs are relative to the rest
+        :param expand:
+        :param expand_y:
+        :param tk_kwargs:
+        """
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
         self._key_function = key_function
 

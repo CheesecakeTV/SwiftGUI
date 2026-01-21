@@ -200,6 +200,8 @@ class BaseKeyHandler(BaseElement):
 
     exists: bool = False # True, if this window exists at the moment
 
+    value: ValueDict
+
     def __init__(self, event_loop_function: Callable = None):
         """
 

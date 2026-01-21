@@ -102,8 +102,55 @@ class Spinbox(BaseWidget):
             expand_y: bool = None,
             tk_kwargs: dict[str:Any]= None,
     ):
+        """
 
-
+        :param values: Possible values to cycle through as the user. For a range of numbers, use number_min, number_max and increment
+        :param key:
+        :param key_function:
+        :param default_event: True, if value-changes should trigger an event
+        :param default_value: The initial value
+        :param value_type: Pass a type to only accept inputs that can be converted to that type
+        :param cursor:
+        :param cursor_button: Cursor-type while the cursor is over the up/down buttons
+        :param takefocus:
+        :param justify:
+        :param background_color:
+        :param background_color_active:
+        :param background_color_disabled:
+        :param background_color_readonly:
+        :param text_color:
+        :param text_color_disabled:
+        :param background_color_button:
+        :param highlightbackground_color:
+        :param selectbackground_color:
+        :param select_text_color:
+        :param borderwidth:
+        :param selectborderwidth:
+        :param highlightcolor:
+        :param highlightthickness:
+        :param relief: Relief of the input-field
+        :param relief_button_down: Relief of the buttons while being pressed
+        :param relief_button_up: Relief of the buttons while not being pressed
+        :param insertbackground_color:
+        :param fonttype:
+        :param fontsize:
+        :param font_bold:
+        :param font_italic:
+        :param font_underline:
+        :param font_overstrike:
+        :param wrap: True, if pressing "up" on the last value should recall the first value
+        :param number_format: Format of displayed float-value. Format should be like this: %<Digits before dot>.<Digits after dot>
+        :param number_min: When not passing an iterable of values, this is the first value
+        :param number_max: When not passing an iterable of values, this is the final value
+        :param increment: When not passing an iterable of values, this is how much each button-press increments/decrements the value
+        :param width:
+        :param repeatdelay: Repeat button-presses when holding down buttons. Check the documentation on sg.Button for further info
+        :param repeatinterval: Repeat button-presses when holding down buttons. Check the documentation on sg.Button for further info
+        :param state: "normal" - Button-presses and writing values is possible. "disabled" - No input possible. "readonly" - Only button-presses possible.
+        :param expand:
+        :param expand_y:
+        :param tk_kwargs:
+        """
 
         if tk_kwargs is None:
             tk_kwargs = dict()
@@ -112,7 +159,7 @@ class Spinbox(BaseWidget):
         self._key_function = key_function
 
         self._default_val = default_value
-        self._value_type = self.defaults.single("value_type", default= float)
+        self._value_type = self.defaults.single("value_type", value_type, default= float)
 
         self._update_initial(cursor=cursor, cursor_button=cursor_button,
                              takefocus=takefocus, justify=justify, background_color=background_color,

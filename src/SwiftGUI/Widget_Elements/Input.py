@@ -76,12 +76,39 @@ class Input(BaseWidget):
     ):
         """
 
-        :param text: Default text to be displayed
-        :param key: Element-Key. Can be used to change the text later
-        :param cursor: Cursor-Type. Changes how the cursor looks when hovering over this element
-        :param takefocus: True, if you want this element to be able to be focused when pressing tab. Most likely False for texts.
-        :param tk_kwargs: Additional kwargs to pass to the ttk-widget
-        :param background_color: Background-Color
+        :param text: Text initially shown in the input-field
+        :param key:
+        :param key_function:
+        :param default_event: True, if changing the text should cause an event
+        :param width: Width in number of letters. If you make the font bigger, the input will be bigger too.
+        :param cursor: How the cursor looks while over the element
+        :param takefocus: True, if this element can be selected by pressing tab
+        :param justify: Where the text is relative to the input
+        :param background_color:
+        :param background_color_readonly:
+        :param text_color:
+        :param highlightbackground_color: (Doesn't work on windows) Color of the border around the element while not in focus
+        :param selectbackground_color:
+        :param select_text_color:
+        :param insertbackground_color:
+        :param selectborderwidth:
+        :param highlightcolor: (Doesn't work on windows) Color of the border around the element while in focus
+        :param highlightthickness: (Doesn't work on windows) Thickness of the border around the element
+        :param pass_char: Pass a char to show every character as it. Set it to "*" to make it look like a passwort-input-field
+        :param readonly: True, if the user shouldn't be able to change text
+        :param relief: Relief-Style of the element. Just play around with this or check the documentation.
+        :param exportselection: Haven't found out what it does yet... Just ignore it for now...
+        :param validate: This is complicated. Check the documentation for details.
+        :param validatecommand: This is complicated. Check the documentation for details.
+        :param fonttype: Text-font
+        :param fontsize: Size of the text (font)
+        :param font_bold: Bold
+        :param font_italic: Italic
+        :param font_underline: Underline
+        :param font_overstrike: Overstrike
+        :param expand: Span the input-element over the whole row
+        :param expand_y:
+        :param tk_kwargs: Other arguments passed directly to the tkinter widget
         """
         # Not used:
         # :param underline: Which character to underline for alt+character selection of this element

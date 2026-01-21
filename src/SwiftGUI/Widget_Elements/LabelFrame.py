@@ -62,6 +62,38 @@ class LabelFrame(Frame):
             takefocus: bool = None,
             tk_kwargs: dict[str:Any] = None,
     ):
+        """
+        Most options are the same in sg.Text, or sg.Frame
+
+        :param layout:
+        :param key:
+        :param text:
+        :param no_label: True, if the text should be hidden
+        :param fonttype:
+        :param fontsize:
+        :param font_bold:
+        :param font_italic:
+        :param font_underline:
+        :param font_overstrike:
+        :param text_color:
+        :param labelanchor: Position of the text relative to the frame
+        :param alignment:
+        :param expand:
+        :param expand_y:
+        :param padx:
+        :param pady:
+        :param background_color:
+        :param apply_parent_background_color:
+        :param pass_down_background_color:
+        :param borderwidth:
+        :param cursor:
+        :param highlightbackground_color:
+        :param highlightcolor:
+        :param highlightthickness:
+        :param relief:
+        :param takefocus:
+        :param tk_kwargs:
+        """
         self._element = Text(relief="flat")    # Todo: Let the user pass an element
         self._element.defaults = self.defaults
 
