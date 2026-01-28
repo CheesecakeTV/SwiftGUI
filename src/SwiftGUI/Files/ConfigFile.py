@@ -233,6 +233,13 @@ class ConfigSection:
     def __getitem__(self, item) -> str:
         return self.section[item]
 
+    @property
+    def defaults(self) -> dict:
+        return self._defaults
+
+    def __str__(self):
+        return f"<{self.__class__.__name__} called '{self._name}' in file '{self.file}'>"
+
 class ConfigFile:
 
     # Todo: Prevent the user from creating multiple objects for the same file
@@ -318,4 +325,6 @@ class ConfigFile:
 
         return new_section
 
+    def __str__(self) -> str:
+        return f"<{self.__class__.__name__} at '{self.path}'>"
 

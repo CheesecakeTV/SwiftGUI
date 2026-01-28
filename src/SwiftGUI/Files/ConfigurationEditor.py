@@ -20,7 +20,9 @@ class ConfigSectionEditor(BaseCombinedElement):
             **form_kwargs,
     ):
         self._config_section = config_section
-        values = config_section.to_dict()
+        values = config_section.defaults
+
+        assert values, f"The configuration-section {config_section} does not have default values."
 
         layout = [
             [
@@ -95,7 +97,7 @@ class ConfigFileEditor(BaseCombinedElement):
             TabFrame(
                 [[ConfigSectionEditor(section, key_function=self.done, default_event=True)]],
                 fake_key= name,
-            ) for name, section in config_file.all_sections.items()
+            ) for name, section in config_file.all_sections.items() if section.defaults
         ]
 
         layout = [
