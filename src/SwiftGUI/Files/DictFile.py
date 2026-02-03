@@ -245,6 +245,23 @@ class BaseDictFile:
         """Same as dict.items()"""
         return self._values.items()
 
+    def increment(self, key: Hashable, amount: int | float | Any = 1, initial: int = 0) -> int | float | Any:
+        """
+        Add "amount" to a value.
+        Can be used like a counter.
+
+        New_value = ...[key] + amount
+        (Type-independent)
+
+        :param key: Key of the number
+        :param amount: What to add
+        :param initial: Value if the counter doesn't exist yet BEFORE INCREMENTING
+        :return: New counter-value
+        """
+        new_val = self.get(key, default=initial) + amount
+        self.set(key, new_val)
+        return new_val
+
 class DictFileJSON(BaseDictFile):
     """
     A pseudo-dictionary that's saved in a json-file.
@@ -261,12 +278,12 @@ class DictFileJSON(BaseDictFile):
 class DictFilePickle(BaseDictFile):
     """
     A pseudo-dictionary that's saved in a pickle-file.
-    Allows to save any kind of type, even selfmade ones.
+    Allows to save any kind of type, even self-made ones.
     It even keeps references between saved objects intact!
 
     On the other hand, it's not humanly-readable.
 
-    Keep in mind that pickle can cause issues with backward-compatability WHEN SAVING SELFMADE CLASSES and updating them after saving.
+    Keep in mind that pickle can cause issues with backward-compatibility WHEN SAVING SELF-MADE CLASSES and updating them after saving.
     """
 
     def _save_to_file(self, values: dict, path: Path):
