@@ -28,7 +28,6 @@ class ConfigSectionEditor(BaseCombinedElement):
             [
                 my_form := Form(
                     values.keys(),
-                    default_values= values.values(),
                     **form_kwargs,
                 ),
             ],[
@@ -75,6 +74,9 @@ class ConfigSectionEditor(BaseCombinedElement):
         self.save()
         return self
 
+    def init_window_creation_done(self):
+        self.form.value = self._config_section.to_dict()
+
 class ConfigFileEditor(BaseCombinedElement):
     """
     A layout-element that can be used to edit all configuration-sections of a configuration-file at once
@@ -89,13 +91,13 @@ class ConfigFileEditor(BaseCombinedElement):
             key: Hashable = None,
             # key_function: Callable | Iterable[Callable] = None,
             # default_event: bool = False,
-            **form_kwargs,
+            # **form_kwargs,
     ):
         self.config_file = config_file
 
         self.tab_frames = [
             TabFrame(
-                [[ConfigSectionEditor(section, key_function=self.done, default_event=True)]],
+                [[ConfigSectionEditor(section, key_function=self.throw_default_event, default_event=True)]],
                 fake_key= name,
             ) for name, section in config_file.all_sections.items() if section.defaults
         ]
@@ -120,13 +122,6 @@ class ConfigFileEditor(BaseCombinedElement):
 
     def set_value(self, val:Any) -> Self:
         return self
-
-
-
-
-
-
-
 
 
 

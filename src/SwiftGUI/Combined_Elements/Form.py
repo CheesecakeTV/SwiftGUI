@@ -178,26 +178,6 @@ class Form(BaseCombinedElement):
         self._submit_button_element._update_initial(**kwargs)
         return self
 
-    @BaseElement._run_after_window_creation
-    def set_value(self,val:Iterable[str] | dict[str:str]) -> Self:
-        """
-        Update only passed keys with their value.
-        Or pass a list to update the elements one after another.
-        :param val:
-        :return:
-        """
-
-        if isinstance(val, dict):
-            for i,text in enumerate(self._input_keys):
-                if text in val.keys():
-                    self._input_elements[i].value = val[text]
-            return self
-
-        for elem, new_val in zip(self._input_elements, val):
-            elem.value = new_val
-
-        return self
-
     def clear_all_values(self):
         """
         Does what it says
