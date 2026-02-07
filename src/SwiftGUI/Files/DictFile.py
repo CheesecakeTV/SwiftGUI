@@ -49,9 +49,24 @@ class BaseDictFile:
 
     @path.setter
     def path(self, val: str | Path):
-        self._path = Path(val)
+        self.set_path(new_path=val)
+
+    _path: Path = None
+    def set_path(self, new_path: str | Path, reload: bool = False) -> Path:
+        """
+        Change to which path this file belongs
+        :param reload: True, if the values should be loaded from the newly referenced file
+        :param new_path:
+        :return:
+        """
+        self._path = Path(new_path)
 
         self._path.parent.mkdir(parents=True, exist_ok=True)
+
+        if reload and self._path.exists():
+            self.load()
+
+        return self._path
 
     @abstractmethod
     def _save_to_file(
@@ -59,7 +74,11 @@ class BaseDictFile:
             values: dict,
             path: Path,
     ):
-        """Pure save-operation"""
+        """
+        Pure save-operation
+
+        Overwrite this in your own version of dict-file
+        """
         pass
 
     def save(
@@ -92,9 +111,10 @@ class BaseDictFile:
             path: Path
     ) -> dict:
         """
-        Pure load-operation
+        Pure load-operation.
+        Overwrite this in your own version of dict-file
 
-        return the values as a dictionary
+        return the loaded values as a dictionary
         """
         pass
 
@@ -124,6 +144,12 @@ class BaseDictFile:
         return self
 
     def get(self, key: Hashable, default: Any = None) -> Any:
+        """
+        Same as dict.get
+        :param key:
+        :param default: What to return if the value doesn't exist
+        :return:
+        """
         if not key in self:
             return self._defaults.get(key, default)
 
@@ -245,7 +271,7 @@ class BaseDictFile:
         """Same as dict.items()"""
         return self._values.items()
 
-    def increment(self, key: Hashable, amount: int | float | Any = 1, initial: int = 0) -> int | float | Any:
+    def increment(self, key: Hashable, amount: int | float | Any = 1, initial: int | float | Any = 0) -> int | float | Any:
         """
         Add "amount" to a value.
         Can be used like a counter.
