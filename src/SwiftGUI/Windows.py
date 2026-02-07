@@ -1245,7 +1245,8 @@ class SubWindow(Window):
         self.bind_grab_anywhere_to_element(self._sg_widget.tk_widget)
 
         if position == (None, None):
-            self.root.wait_visibility()
+            #self.root.wait_visibility()
+            self.root.update_idletasks()
             self.center()
 
         self.key = key
