@@ -7,6 +7,10 @@ from SwiftGUI.ElementFlags import ElementFlag
 from SwiftGUI.Windows import ValueDict
 from SwiftGUI.Popups import ElementPopup, ElementPopupNonblocking
 
+# Placeholder-function
+def _do_nothing(*_) -> None:
+    pass
+
 class BaseCombinedElement(BaseElement):
     """
     Derive from this class to create an element consisting of multiple inner elements.
@@ -52,7 +56,7 @@ class BaseCombinedElement(BaseElement):
         self.key = key
         self._key_function = key_function
 
-        self._throw_event: Callable = lambda :None
+        self._throw_event: Callable = _do_nothing
 
         if apply_parent_background_color:
             self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
@@ -165,6 +169,7 @@ class BaseCombinedElement(BaseElement):
             raise NotImplementedError(f"{self} has no sub-layout, so set_value is not defined.")
 
         self.sg_widget.set_value(val)
+        return self
 
     def delete(self) -> Self:
         """
@@ -177,7 +182,7 @@ class BaseCombinedElement(BaseElement):
         self.remove_flags(ElementFlag.IS_CREATED)
         return self
 
-    done_method: Callable = lambda *_:_   # Overwritten by the actual .done later
+    done_method: Callable = _do_nothing   # Overwritten by the actual .done later
     def done(self, val: Any = None) -> None:
         """
         If this element is opened as a popup, .done(...) will call the popups .done().
@@ -200,7 +205,7 @@ class BaseCombinedElement(BaseElement):
         kwargs.update(window_kwargs)
         return ElementPopup(self, **kwargs)
 
-    def popup_nonblocking(self, **window_kwargs) -> Any:
+    def popup_nonblocking(self, **window_kwargs) -> ElementPopupNonblocking:
         """
         Open this NEW AND UNUSED element as a non-blocking popup
         self.done(...) will close the window, but return nothing
