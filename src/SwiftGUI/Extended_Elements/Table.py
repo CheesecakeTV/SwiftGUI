@@ -360,7 +360,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
 
     def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         match key:
-            case "column_width":
+            case "column_width":    # Todo: For some reason, this doesn't work when called after window creation
                 if new_val is None:
                     return True
 
@@ -368,6 +368,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
                     new_val = (new_val, ) * self._headings_len
 
                 self._col_width_requested = new_val
+                print(new_val)
 
                 for n,val in enumerate(new_val):
                     self.resize_column(n, val)
@@ -462,6 +463,8 @@ class Table(BaseWidgetTTK, BaseScrollbar):
                     self.tk_widget["show"] = ""
                 else:
                     self.tk_widget["show"] = "headings"   # Removes first column
+
+                #self._update_initial(column_width = self._col_width_requested)
 
             case "elements":
                 self.overwrite_table(new_val)
@@ -710,6 +713,13 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         self.tk_widget.selection_set(temp)
         self.tk_widget.focus(temp)
 
+    def _refresh_col_widths(self):
+        if self._col_width_requested:
+            for n,size in enumerate(self._col_width_requested):
+                if size is None:
+                    continue
+                self.resize_column(n, size)
+
     def init_window_creation_done(self):
         """Don't touch!"""
         super().init_window_creation_done()
@@ -718,11 +728,13 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         self.tk_widget.bind("<<TreeviewSelect>>", self._event_callback)
 
         if self._headings:
+
             headings = iter(self._headings)
 
             for n,h in enumerate(headings):
                 self.tk_widget.heading(n,text=h,command=partial(self._col_click_callback, n))   # Set callback to always pass the col-ID
 
+        self._refresh_col_widths()
 
         #self._map_ttk_style(background = [("selected", "blue")])
 
