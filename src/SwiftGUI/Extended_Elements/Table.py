@@ -368,7 +368,6 @@ class Table(BaseWidgetTTK, BaseScrollbar):
                     new_val = (new_val, ) * self._headings_len
 
                 self._col_width_requested = new_val
-                print(new_val)
 
                 for n,val in enumerate(new_val):
                     self.resize_column(n, val)
