@@ -8,6 +8,8 @@ from SwiftGUI import Event, GlobalOptions, Color, remove_None_vals, Literals
 from SwiftGUI.ElementFlags import ElementFlag
 #from SwiftGUI.Widget_Elements.Frame import Frame
 
+import logging
+logger = logging.getLogger("SwiftGUI.Elements")
 
 def run_after_window_creation(w_fkt: Callable) -> Callable:
     """
@@ -86,6 +88,7 @@ class BaseElement:
 
         self._apply_update()
         self.add_flags(ElementFlag.IS_CREATED)  # Todo: Check if this is okay. It was behind self._flag_init() before.
+        logger.debug(f"Initialized {repr(self)} in {window}")
 
     def _flag_init(self):
         """
@@ -245,6 +248,7 @@ class BaseElement:
         """
 
         kwargs = self.defaults.apply(kwargs)
+        logger.debug(f"Update for {repr(self)} with {kwargs=}")
 
         self._update_options.update(kwargs)
 
@@ -264,6 +268,7 @@ class BaseElement:
         :return:
         """
         kwargs = remove_None_vals(kwargs)
+        logger.debug(f"Update-call for {repr(self)} with {kwargs=}")
 
         self._update_initial(**kwargs)
 
@@ -286,6 +291,7 @@ class BaseElement:
         :param options:
         :return:
         """
+        logger.debug(f"Update to default for {repr(self)} with {options=}")
         self._update_initial(**{key: None for key in options})
         return self
 
@@ -317,6 +323,7 @@ class BaseElement:
         Will be called once all elements exist
         :return:
         """
+        logger.debug(f"init_window_creation_done for {repr(self)}, now making {len(self._run_when_window_exists)} calls")
         for fkt in self._run_when_window_exists:    # Call all those buffered functions
             fkt()
 
@@ -389,6 +396,7 @@ class BaseWidget(BaseElement):
         Set focus on this element
         :return:
         """
+        logger.debug(f"Set focus on {self}")
         self.tk_widget.focus_set()
         return self
 
@@ -407,6 +415,7 @@ class BaseWidget(BaseElement):
 
     def _bind_event_to_widget(self, tk_event: str, event_function: Callable) -> Self:
         """Called in 'bind_event'. Inherit this is the event must be bound differently."""
+        logger.debug(f"Tkinter event-bind on {self}: {tk_event=}")
         self._tk_widget.bind(
             tk_event,
             event_function,
@@ -427,6 +436,7 @@ class BaseWidget(BaseElement):
         :return: Calling element for inline-calls
         """
         new_key = None
+        logger.debug(f"bind_event on {self}: {tk_event=}, {key_extention=}, {key=}, {key_function=}")
 
         if hasattr(tk_event,"value"):
             tk_event = tk_event.value
@@ -508,12 +518,14 @@ class BaseWidget(BaseElement):
         WIP!!! Should only be used if the element is "alone" inside the parent, because the order of elements might change.
         :return:
         """
+        logger.debug(f"{self} attempting to hide")
         try:
             temp: dict = self.tk_widget.pack_info()
             self._container = temp.pop("in")
             self._insert_kwargs = temp
             self.tk_widget.pack_forget()
         except tk.TclError: # Not packed/gridded
+            logger.debug(f"{self} wasn't placed yet")
             pass
         return self
 
@@ -524,6 +536,7 @@ class BaseWidget(BaseElement):
         WIP!!! Should only be used if the element is "alone" inside the parent, because the order of elements might change.
         :return:
         """
+        logger.debug(f"{self} un-hid (show)")
         self.tk_widget.pack(**self._insert_kwargs)
         return self
 
@@ -662,6 +675,7 @@ class BaseWidget(BaseElement):
         Keep in mind that rows still exist, even if they don't contain any elements (anymore).
         So adding and removing 1000 elements is not a good idea.
         """
+        logger.debug(f"{self} is being deleted")
         self.tk_widget.destroy()
         self.window.unregister_element(self)
         self.remove_flags(ElementFlag.IS_CREATED)
@@ -674,7 +688,9 @@ class BaseWidget(BaseElement):
         Inherit this method to change its behavior
         :return:
         """
-        return self._get_value()
+        val = self._get_value()
+        logger.debug(f"Value of {self} to json: {val=}")
+        return val
 
     def from_json(self, val: Any) -> Self:
         """
@@ -683,6 +699,7 @@ class BaseWidget(BaseElement):
         :param val:
         :return:
         """
+        logger.debug(f"Apply value from json to {self}: {val=}")
         self.set_value(val)
         return self
 
@@ -709,7 +726,10 @@ class BaseScrollbar:
 
             troughcolor: str | Color = None,
     ) -> Self:
-        assert hasattr(self, "scrollbar_y"), f"{self} has no scrollbar, so .update_scrollbar_y can't be called..."
+        if not hasattr(self, "scrollbar_y"):
+            logger.error(f"{self} has no scrollbar, so .update_scrollbar_y can't be called...")
+            raise AssertionError(f"{self} has no scrollbar, so .update_scrollbar_y can't be called...")
+
         self.scrollbar_y.update(
             cursor = cursor,
             background_color = background_color,
@@ -740,6 +760,7 @@ class BaseWidgetContainer(BaseWidget):
         :param kwargs:
         :return:
         """
+        logger.error("update_all_containing doesn't exist yet...")
         raise NotImplementedError("update_all_containing isn't implemented yet...")
         # Todo: update_all_containing
 
@@ -757,6 +778,8 @@ class BaseWidgetTTK(BaseWidget):
 
         if not "style" in kwargs:
             kwargs["style"] = self.ttk_style
+
+        logger.debug(f"{self} is a ttk-widget with the style {self.ttk_style}")
 
         super().__init__(*args, **kwargs)
 
