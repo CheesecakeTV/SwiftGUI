@@ -118,12 +118,7 @@ class Form(BaseCombinedElement):
         super().__init__(Frame(self.layout), key=key, key_function=key_function, default_event=default_event)
 
         if default_values:
-            if isinstance(default_values, dict):
-                self.set_value(default_values)
-            else:
-                self.set_value({
-                    k:v for k,v in zip(self._input_keys, default_values)
-                })
+            self.set_value(default_values)
 
     def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         match key:
@@ -131,6 +126,28 @@ class Form(BaseCombinedElement):
                 return super()._update_special_key(key, new_val)
 
         return True
+
+    @BaseCombinedElement._run_after_window_creation
+    def set_value(self, val: dict | Iterable) -> Self:
+        """
+        Either pass a dict to overwrite specific items or an iterable to overwrite one after another
+        :param val:
+        :return:
+        """
+        try:
+            val = list(val)
+        except TypeError:
+            super().set_value(val)
+        else:
+            for value, elem in zip(val, self._input_elements):
+                elem.value = value
+
+    def values(self) -> tuple:
+        """
+        Return a tuple with all form-values one after the other
+        :return:
+        """
+        return tuple(map(lambda a:a.value, self._input_elements))
 
     @BaseElement._run_after_window_creation
     def update_texts(self,**kwargs) -> Self:

@@ -190,6 +190,20 @@ class ValueDict:
         self.refresh_all_invalidated()
         return iter(self._values)
 
+    def items(self):
+        """Same as dict.items"""
+        self.refresh_all_invalidated()
+        return self._values.items()
+
+    def keys(self):
+        """Same as dict.keys"""
+        return self._all_keys
+
+    def values(self):
+        """Same as dict.values"""
+        self.refresh_all_invalidated()
+        return self._values.values()
+
 class BaseKeyHandler(BaseElement):
     """
     The base-class for anything window-ish.
@@ -339,7 +353,7 @@ class BaseKeyHandler(BaseElement):
             del self.all_key_elements[key]
             self._value_dict.unregister_key(key)
 
-    def throw_event(self, key: Any = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
+    def throw_event(self, key: Hashable = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
         """
         Thread-safe method to generate a custom event.
 
@@ -367,7 +381,7 @@ class BaseKeyHandler(BaseElement):
             "callback_kwargs": function_kwargs,
         })
 
-    def _receive_event(self, key:Any = None, callback: Callable = None, callback_args: tuple = tuple(), callback_kwargs: dict = None):
+    def _receive_event(self, key: Hashable = None, callback: Callable = None, callback_args: tuple = tuple(), callback_kwargs: dict = None):
         """
         Gets called when an event is evoked
         :param key:
@@ -386,7 +400,7 @@ class BaseKeyHandler(BaseElement):
             self._value_dict.invalidate_all_values()
             self._key_event_callback_function(key, self._value_dict)
 
-    def get_event_function(self,me:BaseElement = None,key:Any=None,key_function:Callable|Iterable[Callable]=None,
+    def get_event_function(self,me:BaseElement = None,key: Hashable=None,key_function:Callable|Iterable[Callable]=None,
                            )->Callable:
         """
         Returns a function that sets the event-variable according to key
