@@ -78,20 +78,28 @@ class BaseCombinedElement(BaseElement):
 
     def throw_event(self):
         """
-        Throw an event of this element
+        Throw an event of this element, no matter if default-event is enabled or not.
+        You may overwrite this to change the event behavior.
+        The actual event-function that causes the event is self._throw_event(), so don't forget to call it.
         :return:
         """
         self._throw_event()
 
     def throw_default_event(self):
         """
-        Throw an event, but only if the default-event is enabled
+        Throw an event, but only if the default-event is enabled.
+        You may overwrite this to change the event behavior.
         :return:
         """
         if self._default_event:
             self.throw_event()
 
     def _personal_init(self):
+        """
+        Do not overwrite.
+        This initializes the internal sub-layout/frame and requests an event-function from the key-handler
+        :return:
+        """
         self.sg_widget._init(self, self.window)
         self._throw_event = self.window.get_event_function(me= self, key= self.key, key_function= self._key_function)
 
@@ -137,13 +145,18 @@ class BaseCombinedElement(BaseElement):
     @property
     def v(self):
         """
-        Reference to the value-dict
+        Reference to the value-dict.
+        You may know this one from
+            e, v = w.read()
         """
         return self.w.value
 
     def _get_value(self) -> Any:
         """
-        Overwrite this to return a custom value
+        This is returned when
+            elem.value
+        is called on this element.
+        Overwrite it to specify the value this element generates
         :return:
         """
         return self.sg_widget.value
@@ -158,10 +171,14 @@ class BaseCombinedElement(BaseElement):
             raise NotImplementedError(f"{self} has no sub-layout, so __setitem__ is not defined.")
         self.sg_widget[key].value = value
 
-    def set_value(self, val:Any) -> Self:
+    @BaseElement._run_after_window_creation
+    def set_value(self, val: Any) -> Self:
         """
-        Overwrite multiple values at once.
-        Works like .update for dicts, so ignores non-passed keys
+        This is called when
+            elem.value = ...
+        is used.
+        Overwrite it to specify the behavior of .value
+
         :param val:
         :return:
         """
@@ -177,6 +194,7 @@ class BaseCombinedElement(BaseElement):
 
         Keep in mind that its row still exists, even if it is empty.
         This can cause performance issues.
+        You should not overwrite this.
         """
         self.sg_widget.delete()
         self.remove_flags(ElementFlag.IS_CREATED)
@@ -187,6 +205,7 @@ class BaseCombinedElement(BaseElement):
         """
         If this element is opened as a popup, .done(...) will call the popups .done().
         Otherwise, this does nothing.
+        You should not overwrite this.
 
         :param val: "Return"-value
         :return:
@@ -196,7 +215,9 @@ class BaseCombinedElement(BaseElement):
     def popup(self, **window_kwargs) -> Any:
         """
         Open this NEW AND UNUSED element as a blocking popup
-        self.done(...) will return a value as usual
+        self.done(...) will work like with normal popups.
+
+        You may overwrite this, but make sure to not forget to call super().popup(...)
 
         :param window_kwargs: Passed to the window. Use this to set a title, etc.
         :return: Return of the popup
@@ -209,6 +230,8 @@ class BaseCombinedElement(BaseElement):
         """
         Open this NEW AND UNUSED element as a non-blocking popup
         self.done(...) will close the window, but return nothing
+
+        You may overwrite this, but make sure to not forget to call super().popup_nonblocking(...)
 
         :param window_kwargs: Passed to the window. Use this to set a title, etc.
         :return: Return of the popup

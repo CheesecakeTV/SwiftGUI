@@ -23,7 +23,7 @@ class Form(BaseCombinedElement):
             self,
             texts:Iterable[str] | Iterable[tuple[str, str]],    # Text = keys, or (Text, key)-pairs
             *,
-            default_values: Iterable[str] | dict[str, str] = None,
+            default_values: Iterable[Any] | dict[str, Any] = None,
             key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
             default_event: bool = None,
@@ -46,7 +46,6 @@ class Form(BaseCombinedElement):
         :param return_submits: True, if pressing enter should be equal to pressing submit
         """
         texts = list(texts)
-        self._default_event = default_event
 
         if isinstance(texts[0], str):
             self._texts = texts
@@ -67,7 +66,7 @@ class Form(BaseCombinedElement):
 
         self._input_elements = [
             Input(
-                key_function= self._throw_default_event,
+                key_function= self.throw_default_event,
                 default_event= default_event,
                 key= t
             )
@@ -79,7 +78,7 @@ class Form(BaseCombinedElement):
                 "x",
                 key_function= (
                     partial(lambda index: self._input_elements[index].set_value(""), n),
-                    self._throw_default_event,
+                    self.throw_default_event,
                 ),
                 width=2,
             ) if small_clear_buttons else Text()
@@ -105,7 +104,7 @@ class Form(BaseCombinedElement):
         if big_clear_button:
             self.layout[-1].append(Button(
                 "Clear",
-                key_function= (self.clear_all_values, self._throw_default_event)
+                key_function= (self.clear_all_values, self.throw_default_event)
             ))
 
         if return_submits:
@@ -116,7 +115,7 @@ class Form(BaseCombinedElement):
             for elem in self._input_elements:
                 elem.bind_event(Event.KeyEnter, key_function=temp)
 
-        super().__init__(Frame(self.layout), key=key, key_function=key_function)
+        super().__init__(Frame(self.layout), key=key, key_function=key_function, default_event=default_event)
 
         if default_values:
             if isinstance(default_values, dict):
@@ -125,19 +124,6 @@ class Form(BaseCombinedElement):
                 self.set_value({
                     k:v for k,v in zip(self._input_keys, default_values)
                 })
-
-    def _throw_default_event(self):
-        """
-        Throw an event if default event is wanted
-        :return:
-        """
-        if self._default_event:
-            self.throw_event()
-
-    def _get_value(self) -> Any:
-        return {
-            line:elem.value for line,elem in zip(self._input_keys, self._input_elements)
-        }
 
     def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         match key:
@@ -185,25 +171,6 @@ class Form(BaseCombinedElement):
         """
         for elem in self._input_elements:
             elem.value = ""
-
-    # def export_json(self, indent:int = None, **kwargs) -> str:
-    #     """
-    #     Return the values as json
-    #     :return:
-    #     """
-    #     return json.dumps(self.value, indent= indent, **kwargs)
-    #
-    # @BaseElement._run_after_window_creation
-    # def import_json(self, json_str: str, **kwargs) -> Self:
-    #     """
-    #     Load values from a json-string
-    #     :param json_str:
-    #     :param kwargs:
-    #     :return:
-    #     """
-    #     self.value = json.loads(json_str, **kwargs)
-    #     return self
-
 
 
 
