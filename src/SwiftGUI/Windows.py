@@ -842,6 +842,8 @@ class Window(BaseKeyHandler):
 
     _resizeable_width = False
     _resizeable_height = False
+    _size_before_fullscreen = None  # How big the window is before fs
+    _position_before_fullscreen = None  # Where the window is before fs
     def _update_special_key(self, key:str, new_val:Any) -> bool|None:
         # if not self.window.has_flag(ElementFlag.IS_CREATED) and key in ["fullscreen"]:
         #     self.update_after_window_creation(**{key: new_val})
@@ -867,7 +869,19 @@ class Window(BaseKeyHandler):
             case "fullscreen":
                 if new_val is None:
                     return True
-                self.root.state("zoomed" if new_val else "normal")
+
+                #self.root.state("zoomed" if new_val else "normal")
+                if new_val and not self._size_before_fullscreen:
+                    self._size_before_fullscreen = self.root.winfo_width(), self.root.winfo_height()
+                    self._position_before_fullscreen = self.root.winfo_x(), self.root.winfo_y()
+                    wi = self.root.winfo_screenwidth()
+                    hi = self.root.winfo_screenheight()
+                    #self.root.geometry(f"{wi}x{hi}+0+0")  # Maximiert das Fenster
+                    self.update_after_window_creation(position=(0,0), size=(wi, hi))
+                elif not new_val:
+                    self.update(size=self._size_before_fullscreen)
+                    self.update(position=self._position_before_fullscreen)
+
             case "transparency":
                 if new_val is not None:
                     assert 0 <= new_val <= 1, "Window-Transparency must be between 0 and 1"
