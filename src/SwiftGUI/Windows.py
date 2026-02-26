@@ -457,7 +457,7 @@ class BaseKeyHandler(BaseElement):
                     did_refresh = False
 
                     actual_kwargs = {i:kwargs[i] for i in offers}
-                    key_function_logger.info(f"Calling {fkt} with {actual_kwargs}")
+                    key_function_logger.info(f"Calling {fkt} with {tuple(actual_kwargs.keys())}")
 
                     if fkt(**actual_kwargs) is not None:
                         if me is not None:
