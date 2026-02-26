@@ -881,6 +881,8 @@ class Window(BaseKeyHandler):
                 elif not new_val:
                     self.update(size=self._size_before_fullscreen)
                     self.update(position=self._position_before_fullscreen)
+                    self._size_before_fullscreen = None
+                    self._position_before_fullscreen = None
 
             case "transparency":
                 if new_val is not None:
