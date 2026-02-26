@@ -20,6 +20,7 @@ dependencies = [
     "pyperclip",
     "pillow",
     "datetime",
+    "SwiftGUI_Logging",
 ]
 [project.urls]
 Repository = "https://github.com/CheesecakeTV/SwiftGUI"

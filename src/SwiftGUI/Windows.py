@@ -14,11 +14,19 @@ from SwiftGUI.Compat import Self
 import inspect
 from PIL import Image, ImageTk
 import time
+import logging
 
 from SwiftGUI import BaseElement, Frame, ElementFlag, Literals, GlobalOptions, Color, Debug
 
 if TYPE_CHECKING:
     from SwiftGUI import AnyElement
+
+window_logger = logging.getLogger("SwiftGUI.Window")
+keys_logger = logging.getLogger("SwiftGUI.KeySystem")
+valuedict_logger = logging.getLogger("SwiftGUI.ValueDict")
+element_logger = logging.getLogger("SwiftGUI.Element")
+controls_logger = logging.getLogger("SwiftGUI.Control")
+key_function_logger = logging.getLogger("SwiftGUI.KeySystem.KeyFunction")
 
 class ValueDict:
     def __init__(self, window: "BaseKeyHandler", keys: set[Hashable] = None):
@@ -50,15 +58,17 @@ class ValueDict:
 
         return self._values[item]
 
-    def get(self, key: Any, default: Any = None) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
             return default
 
-    def __setitem__(self, key: Any, value: Any):
+    def __setitem__(self, key: Hashable, value: Any):
         try:
-            self._window[key].value = value
+            elem = self._window[key]
+            elem.value = value
+            valuedict_logger.debug(f"Changed the value of {key} to {value} through its value-dict")
         except KeyError:
             pass
 
@@ -108,23 +118,28 @@ class ValueDict:
 
     def __str__(self) -> str:
         self.refresh_key(*self._not_updated_keys)
-        return str(self._values)
+        ret = str(self._values)
+        logging.debug(f"My values were converted to string: {ret}")
+        return ret
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         self.refresh_key(*self._not_updated_keys)
-        return repr(self._values)
+        ret = repr(self._values)
+        logging.debug(f"My values were converted to repr: {ret}")
+        return ret
 
-    def set_extra_value(self, key: Any, value: Any) -> Self:
+    def set_extra_value(self, key: Hashable, value: Any) -> Self:
         """
         Set a value that is not included in the actual window (like from threads)
         :param key:
         :param value:
         :return:
         """
+        valuedict_logger.debug(f"Extra values set with {key=}, {value=}")
         self._values[key] = value
         return self
 
-    def update(self, vals: dict[Any, Any]) -> Self:
+    def update(self, vals: dict[Hashable, Any]) -> Self:
         """
         Apply all values from the provided dict
         :param vals:
@@ -164,12 +179,15 @@ class ValueDict:
         Return all key-values as a dict that can be json-encoded.
         """
         ret = dict(map(self._one_elem_to_json, self._window.all_key_elements.items()))
+        valuedict_logger.debug(f"I was converted to json with these keys: {tuple(ret.keys())}")
         return ret
 
     def from_json(self, saved_dict: dict) -> Self:
         """
         Restore the values previously acquired through .to_json
         """
+        valuedict_logger.debug(f"These keys were updated from json: {tuple(saved_dict.keys())}")
+
         win_elems = self._window.all_key_elements
 
         for key in win_elems.keys():
@@ -244,8 +262,8 @@ class BaseKeyHandler(BaseElement):
         :param key_event_callback_function:
         :return:
         """
-
         self._key_event_callback_function = key_event_callback_function
+        keys_logger.debug(f"Event-loop-function of {self} changed to {key_event_callback_function}")
         return self
 
     def init(
@@ -307,6 +325,7 @@ class BaseKeyHandler(BaseElement):
         Loop once, then close
         :return:
         """
+        window_logger.debug(f"{self} loops until the first key-event, then closes")
         e,v = self.loop()
         self.close()
         return e,v
@@ -343,10 +362,11 @@ class BaseKeyHandler(BaseElement):
         :return:
         """
         try:
+            keys_logger.debug(f"Unregistering {elem} from {self}")
             index = self.all_elements.index(elem)
             del self.all_elements[index]
         except ValueError:
-            ...
+            keys_logger.debug(f"{elem} wasn't registered in {self}")
 
         if hasattr(elem, "key") and elem.key in self.all_key_elements:
             key= elem.key
@@ -393,10 +413,12 @@ class BaseKeyHandler(BaseElement):
                 callback_kwargs = dict()
 
             self._value_dict.invalidate_all_values()
+            keys_logger.debug(f"{self} event-callback-function {callback} with {key=}, {callback_args=}, {callback_kwargs=}")
             callback(*callback_args, **callback_kwargs)
 
         # Break out of the loop if a key is given
         if key is not None:
+            keys_logger.info(f"Key-event with {key=} on {self}")
             self._value_dict.invalidate_all_values()
             self._key_event_callback_function(key, self._value_dict)
 
@@ -434,7 +456,10 @@ class BaseKeyHandler(BaseElement):
                     offers = kwargs.fromkeys(kwargs.keys() & wanted)
                     did_refresh = False
 
-                    if fkt(**{i:kwargs[i] for i in offers}) is not None:
+                    actual_kwargs = {i:kwargs[i] for i in offers}
+                    key_function_logger.info(f"Calling {fkt} with {actual_kwargs}")
+
+                    if fkt(**actual_kwargs) is not None:
                         if me is not None:
                             kwargs["val"] = me.value
                         self._value_dict.invalidate_all_values()
@@ -475,7 +500,7 @@ class BaseKeyHandler(BaseElement):
 
     def set_value(self, val: dict | ValueDict) -> Self:
         """
-        A way to set keyed values at once
+        A way to set multiple keyed values at once
         :param val:
         :return:
         """
@@ -537,6 +562,8 @@ class BaseKeyHandler(BaseElement):
                                                    "To change the timeout-time, modify .timeout_seconds accordingly.\n"
                                                    "To enable/disable the timeout, set .timeout_active to True/False.")
 
+        keys_logger.debug(f"Initialized timeout with {key=}, {key_function=}, {seconds=} for {self}")
+
         self.timeout_seconds = seconds
         self._timeout_fct = self.get_event_function(
             key= key,
@@ -564,6 +591,9 @@ class BaseKeyHandler(BaseElement):
 
             self._timeout_fct()
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} at {id(self)} with {len(self.all_key_elements)} keys>"
+
 class SubLayout(BaseKeyHandler):
     """
     Can be used as an sg-element.
@@ -574,7 +604,7 @@ class SubLayout(BaseKeyHandler):
             self,
             layout: Frame | Iterable[Iterable[BaseElement]],
             event_loop_function: Callable = None,
-            key: Any = None,
+            key: Hashable = None,
     ):
         super().__init__(event_loop_function)
         self.key = key
@@ -587,6 +617,7 @@ class SubLayout(BaseKeyHandler):
 
     def _init(self, parent:"BaseElement", window):
         super()._init(parent, window)
+        element_logger.debug(f"Initialized {repr(self)} in {window}")
 
         self.init(self._frame, self.parent_tk_widget, self.window)
 
@@ -605,12 +636,14 @@ class SubLayout(BaseKeyHandler):
         Keep in mind that rows still exist, even if they don't contain any elements (anymore).
         So adding and removing 1000 elements is not a good idea.
         """
+        element_logger.debug(f"Deleting element {self}")
         self.frame.delete()
         self.remove_flags(ElementFlag.IS_CREATED)
         return self
 
 all_windows: list["Window"] = list()
 def close_all_windows():
+    controls_logger.info(f"Closing all {len(all_windows)} windows")
     for w in all_windows:
         w.close()
     all_windows.clear()
@@ -647,6 +680,7 @@ def call_periodically(
 
     delay = int(delay * 1000)
     def dec(fct: Callable) -> Callable:
+        controls_logger.debug(f"Decorated periodic call-function {fct} with delay={delay//1000}, {counter_reset=}, {autostart=}")
 
         if counter_reset is not None:
             counter = -1
@@ -694,6 +728,7 @@ class Window(BaseKeyHandler):
     @staticmethod
     def _make_taskbar_icon_changeable(title: str = None):
         if os.name == "nt": # This only works in windows
+            window_logger.debug(f"Made windows-taskbar-icon changeable")
             myappid = "SwiftGUI." + "".join(random.choices(string.ascii_letters, k=8))
             if title:
                 myappid += "." + title
@@ -747,10 +782,14 @@ class Window(BaseKeyHandler):
 
         self._make_taskbar_icon_changeable(title)
 
+        window_logger.info(f"Created new main window with {title=}, {event_loop_function=}")
+        window_logger.debug(f"Layout of the new window: {layout}")
+
         if _main_window is None or not _main_window.exists: # Some users might use sg.Window for popups, don't overwrite the global in that case
             ttk_style = None
             _main_window = self
         else:
+            window_logger.critical(f"A main window was created even though one already existed")
             raise RuntimeError("\nYou tried to create an sg.Window while another sg.Window still exists.\n"
                                "Don't do that.\n"
                                "Use sg.SubWindow instead.")
@@ -794,9 +833,12 @@ class Window(BaseKeyHandler):
         if position == (None, None):
             self.center()
 
+        window_logger.debug(f"Fetching decorated key-functions...")
         self._decorated_key_functions = dict()
         for key, val in all_decorator_key_functions.items():
+            window_logger.debug(f"...Next: {key=}, {val=}")
             self._decorated_key_functions[key] = self.get_event_function(key= key, key_function= val)
+        window_logger.debug(f"...{len(self._decorated_key_functions)} functions decorated")
 
     _resizeable_width = False
     _resizeable_height = False
@@ -952,14 +994,18 @@ class Window(BaseKeyHandler):
         Kill the window
         :return:
         """
+        window_logger.debug(f"Attempting to close {self}")
         try:
             self.root.destroy()
+            window_logger.info(f"Closed {self}")
         except tk.TclError:
+            window_logger.info(f"{self} is already closed")
             pass
 
         global _main_window
         if _main_window is self: # Maybe close was called again?
             _main_window = None  # un-register this window as the main window
+            window_logger.debug("Main window was closed")
 
         self.exists = False
         self.remove_flags(ElementFlag.IS_CREATED)
@@ -972,6 +1018,7 @@ class Window(BaseKeyHandler):
 
         :return: Triggering event key; all values as _dict
         """
+        window_logger.debug("Main window waiting for next event")
         self.exists = True
 
         while True:
@@ -984,6 +1031,7 @@ class Window(BaseKeyHandler):
 
                 self.close()
 
+                window_logger.debug("Window seems to be closed, so exiting loop")
                 return None, self._value_dict
 
             self._value_dict.invalidate_all_values()
@@ -997,7 +1045,7 @@ class Window(BaseKeyHandler):
 
         return self._prev_event, self._value_dict
 
-    def throw_event(self, key: Any = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
+    def throw_event(self, key: Hashable = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
         """
         Thread-safe method to generate a custom event.
 
@@ -1008,7 +1056,10 @@ class Window(BaseKeyHandler):
         :param value: If not None, it will be saved inside the value-_dict until changed
         :return:
         """
+        keys_logger.debug(f"Caught manually thrown event on {self} with {key=}, {function=}")
+
         if not self.exists:
+            keys_logger.debug(f"{self} doesn't exist, so manual event ignored")
             return
 
         if key is not None:
@@ -1025,7 +1076,9 @@ class Window(BaseKeyHandler):
         # self.root.mainloop()
         super().init_window_creation_done()
 
+        window_logger.debug("Starting periodic functions...")
         for fct in autostart_periodic_functions:
+            window_logger.debug(f"...starting {fct}")
             fct()
 
     def _keyed_event_callback(self, key: Any, _):
@@ -1042,18 +1095,19 @@ class Window(BaseKeyHandler):
         :return:
         """
 
-
         if not isinstance(icon, Image.Image):
+            window_logger.debug(f"New icon for {self}: {icon}")
             self._icon = Image.open(icon)
         else:
+            window_logger.debug(f"New icon for {self}")
             self._icon = icon
 
         self._icon: Any | str = ImageTk.PhotoImage(self._icon)  # Typehint is just so the typechecker doesn't get annoying
         try:
             self.root.iconphoto(_main_window is self, self._icon)
         except tk.TclError: #
-            print("Warning: Changing the icon of this window wasn't possible.")
-            print("This is probably because it is not the main window.")
+            window_logger.error(f"Changing the icon of {self} wasn't possible.\n"
+                                  f"Probably because this isn't the main window.")
             pass
 
         return self
@@ -1085,6 +1139,7 @@ class Window(BaseKeyHandler):
         Centers the window on the current screen
         :return:
         """
+        window_logger.debug(f"Centering {self}")
         self.root.eval("tk::PlaceWindow . center")
         return self
 
@@ -1112,6 +1167,7 @@ class Window(BaseKeyHandler):
         Disable all (except self-made) events of all other windows
         :return:
         """
+        window_logger.debug(f"{self} is blocking all other windows")
         self.root.grab_set()
         return self
 
@@ -1120,6 +1176,7 @@ class Window(BaseKeyHandler):
         Resume execution of the other windows
         :return:
         """
+        window_logger.debug(f"{self} is unblocking all other windows")
         self.root.grab_release()
         return self
 
@@ -1131,6 +1188,7 @@ class Window(BaseKeyHandler):
         """
 
         self.block_others()
+        window_logger.debug(f"{self} is blocking others until closed")
         self.root.wait_window()
 
         self.close()
@@ -1145,6 +1203,7 @@ class Window(BaseKeyHandler):
         """
         # The event is also called if any of the children is destroyed...
         if self.root == event.widget:
+            window_logger.debug(f"{self} is making its destroy-event")
             self._destroy_event_function(event)
 
     @BaseElement._run_after_window_creation
@@ -1154,6 +1213,7 @@ class Window(BaseKeyHandler):
         :param key_function: Supports parameters w, v and args
         :return:
         """
+        key_function_logger.debug(f"Binding {key_function} to the destroy-event of {self}")
         self._destroy_event_function = self.get_event_function(self, key_function= key_function)
         self.root.bind("<Destroy>", self._destroy_callback)
 
@@ -1180,7 +1240,7 @@ class SubWindow(Window):
             self,
             layout:Iterable[Iterable[BaseElement]],
             *,
-            key: Any = None,
+            key: Hashable = None,
             title:str = None,
             alignment: Literals.alignment = None,
             titlebar: bool = None,  # Titlebar visible
@@ -1224,6 +1284,8 @@ class SubWindow(Window):
 
         if event_loop_function is None:
             event_loop_function = _main_window._key_event_callback_function
+
+        window_logger.info(f"Creating sub-window with {title=}, {event_loop_function=}")
 
         super(Window, self).__init__(event_loop_function=event_loop_function)
         self._grab_anywhere = self.defaults.single("grab_anywhere", grab_anywhere)
@@ -1316,6 +1378,7 @@ class SubWindow(Window):
         self.root.wait_window()
 
     def __iter__(self):
+        window_logger.error(f"Tried to iterate {self}, which doesn't work on sub-windows")
         raise NotImplementedError("SubWindows can't be looped. You need to define a loop-function instead.")
 
     def throw_event(self, key: Any = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
@@ -1329,7 +1392,9 @@ class SubWindow(Window):
         :param value: If not None, it will be saved inside the value-_dict until changed
         :return:
         """
+        keys_logger.debug(f"Caught manually thrown event on {self} with {key=}, {function=}")
         if not self.exists:
+            keys_logger.debug(f"{self} doesn't exist, so manual event ignored")
             return
 
         if key is not None:
@@ -1355,6 +1420,7 @@ class SubWindow(Window):
         Centers the window on the parent-window
         :return:
         """
+        window_logger.debug(f"Centering {self}")
         window = _main_window.root
         x = window.winfo_x() + window.winfo_width()//2 - self.root.winfo_width()//2
         y = window.winfo_y() + window.winfo_height()//2 - self.root.winfo_height()//2
@@ -1370,6 +1436,7 @@ class SubWindow(Window):
         Disable all (except self-made) events of all other windows
         :return:
         """
+        window_logger.debug(f"{self} is blocking all other windows")
         self.root.grab_set()
         return self
 
@@ -1378,6 +1445,7 @@ class SubWindow(Window):
         Resume execution of the other windows
         :return:
         """
+        window_logger.debug(f"{self} is unblocking all other windows")
         self.root.grab_release()
         return self
 
@@ -1387,7 +1455,7 @@ class SubWindow(Window):
         until the sub-window was closed
         :return:
         """
-
+        window_logger.debug(f"{self} is blocking others until closed")
         self.block_others()
         self.root.wait_window()
         self.unblock_others()
