@@ -214,8 +214,10 @@ class Input(BaseWidget):
         self._value_change_callback = self.window.get_event_function(self, key= self.key, key_function= self._key_function)
         self._tk_target_value.trace_add("write", self._event_callback)
 
-    def set_value(self, val:str) -> Self:
-        self._prev_value = val  # Avoid event trigger
+    def set_value(self, val:str, throw_event: bool = False) -> Self:
+        if not throw_event:
+            self._prev_value = val
+
         super().set_value(val)
         return self
 

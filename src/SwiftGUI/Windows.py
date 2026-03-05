@@ -182,10 +182,13 @@ class ValueDict:
         valuedict_logger.debug(f"I was converted to json with these keys: {tuple(ret.keys())}")
         return ret
 
-    def from_json(self, saved_dict: dict) -> Self:
+    def from_json(self, saved_dict: dict | None) -> Self:
         """
         Restore the values previously acquired through .to_json
         """
+        if saved_dict is None:
+            return self
+
         valuedict_logger.debug(f"These keys were updated from json: {tuple(saved_dict.keys())}")
 
         win_elems = self._window.all_key_elements
