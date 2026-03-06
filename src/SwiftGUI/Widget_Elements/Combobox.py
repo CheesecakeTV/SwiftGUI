@@ -108,7 +108,7 @@ class Combobox(BaseWidgetTTK):
         """
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
 
-        choices = tuple(choices)
+        #choices = tuple(choices)
         if default_value is None and choices:
             default_value = choices[0]
 
