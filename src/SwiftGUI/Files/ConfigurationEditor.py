@@ -27,7 +27,7 @@ class ConfigSectionEditor(BaseCombinedElement):
         layout = [
             [
                 my_form := Form(
-                    values.keys(),
+                    values,
                     **form_kwargs,
                 ),
             ],[
