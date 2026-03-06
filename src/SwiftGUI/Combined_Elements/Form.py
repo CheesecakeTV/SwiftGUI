@@ -52,7 +52,7 @@ class Form(BaseCombinedElement):
         else:
             values = list(texts)
 
-        _max_len = max(map(len, values))
+        _max_len = max(map(len, values)) + 2    # Todo: Make the additional space configurable
 
         self._input_elements: list[Input] = list()
         self._text_elements: list[Text] = list()

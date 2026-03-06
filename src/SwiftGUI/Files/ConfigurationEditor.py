@@ -27,7 +27,8 @@ class ConfigSectionEditor(BaseCombinedElement):
         layout = [
             [
                 my_form := Form(
-                    values,
+                    {key:key for key in values.keys()},
+                    default_values = self._config_section.to_dict(),
                     **form_kwargs,
                 ),
             ],[
