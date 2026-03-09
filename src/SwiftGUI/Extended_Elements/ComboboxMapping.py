@@ -9,7 +9,7 @@ from SwiftGUI.Widget_Elements.Button import Button
 
 import logging
 
-logger = logging.getLogger("SwiftGUI.ComboboxMapping")
+logger = logging.getLogger("SwiftGUI.Element.ComboboxMapping")
 
 class ComboboxMapping(Combobox):
     """

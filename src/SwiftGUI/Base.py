@@ -88,7 +88,7 @@ class BaseElement:
 
         self._apply_update()
         self.add_flags(ElementFlag.IS_CREATED)  # Todo: Check if this is okay. It was behind self._flag_init() before.
-        element_logger.debug(f"Initialized {repr(self)} in {window}")
+        #element_logger.debug(f"Initialized {repr(self)} in {window}")
 
     def _flag_init(self):
         """
@@ -248,7 +248,7 @@ class BaseElement:
         """
 
         kwargs = self.defaults.apply(kwargs)
-        element_logger.debug(f"Update for {repr(self)} with kwargs={remove_None_vals(kwargs)}")
+        #element_logger.debug(f"Update for {repr(self)} with kwargs={remove_None_vals(kwargs)}")
 
         self._update_options.update(kwargs)
 
@@ -323,7 +323,7 @@ class BaseElement:
         Will be called once all elements exist
         :return:
         """
-        element_logger.debug(f"init_window_creation_done for {repr(self)}, now making {len(self._run_when_window_exists)} calls")
+        #element_logger.debug(f"init_window_creation_done for {repr(self)}, now making {len(self._run_when_window_exists)} calls")
         for fkt in self._run_when_window_exists:    # Call all those buffered functions
             fkt()
 
@@ -396,7 +396,7 @@ class BaseWidget(BaseElement):
         Set focus on this element
         :return:
         """
-        element_logger.debug(f"Set focus on {self}")
+        element_logger.debug(f"Set focus to {self}")
         self.tk_widget.focus_set()
         return self
 
@@ -415,7 +415,7 @@ class BaseWidget(BaseElement):
 
     def _bind_event_to_widget(self, tk_event: str, event_function: Callable) -> Self:
         """Called in 'bind_event'. Inherit this is the event must be bound differently."""
-        element_logger.debug(f"Tkinter event-bind on {self}: {tk_event=}")
+        #element_logger.debug(f"Tkinter event-bind on {self}: {tk_event=}")
         self._tk_widget.bind(
             tk_event,
             event_function,
@@ -782,7 +782,7 @@ class BaseWidgetTTK(BaseWidget):
         if not "style" in kwargs:
             kwargs["style"] = self.ttk_style
 
-        element_logger.debug(f"{self} is a ttk-widget with the style {self.ttk_style}")
+        #element_logger.debug(f"{self} is a ttk-widget with the style {self.ttk_style}")
 
         super().__init__(*args, **kwargs)
 

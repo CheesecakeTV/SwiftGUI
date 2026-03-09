@@ -266,7 +266,7 @@ class BaseKeyHandler(BaseElement):
         :return:
         """
         self._key_event_callback_function = key_event_callback_function
-        keys_logger.debug(f"Event-loop-function of {self} changed to {key_event_callback_function}")
+        keys_logger.info(f"Event-loop-function of {self} changed to {key_event_callback_function}")
         return self
 
     def init(
@@ -369,7 +369,7 @@ class BaseKeyHandler(BaseElement):
             index = self.all_elements.index(elem)
             del self.all_elements[index]
         except ValueError:
-            keys_logger.debug(f"{elem} wasn't registered in {self}")
+            keys_logger.warning(f"{elem} wasn't registered in {self}")
 
         if hasattr(elem, "key") and elem.key in self.all_key_elements:
             key= elem.key
@@ -416,12 +416,12 @@ class BaseKeyHandler(BaseElement):
                 callback_kwargs = dict()
 
             self._value_dict.invalidate_all_values()
-            keys_logger.debug(f"{self} event-callback-function {callback} with {key=}, {callback_args=}, {callback_kwargs=}")
+            keys_logger.debug(f"Event-callback-function {callback} with {key=}, {callback_args=}, {callback_kwargs=}, on {self}")
             callback(*callback_args, **callback_kwargs)
 
         # Break out of the loop if a key is given
         if key is not None:
-            keys_logger.info(f"Key-event with {key=} on {self}")
+            keys_logger.info(f"Key-event, {key=} on {self}")
             self._value_dict.invalidate_all_values()
             self._key_event_callback_function(key, self._value_dict)
 
@@ -620,7 +620,7 @@ class SubLayout(BaseKeyHandler):
 
     def _init(self, parent:"BaseElement", window):
         super()._init(parent, window)
-        element_logger.debug(f"Initialized {repr(self)} in {window}")
+        #element_logger.debug(f"Initialized {repr(self)} in {window}")
 
         self.init(self._frame, self.parent_tk_widget, self.window)
 
@@ -731,7 +731,7 @@ class Window(BaseKeyHandler):
     @staticmethod
     def _make_taskbar_icon_changeable(title: str = None):
         if os.name == "nt": # This only works in windows
-            window_logger.debug(f"Made windows-taskbar-icon changeable")
+            #window_logger.debug(f"Made windows-taskbar-icon changeable")
             myappid = "SwiftGUI." + "".join(random.choices(string.ascii_letters, k=8))
             if title:
                 myappid += "." + title
@@ -786,7 +786,7 @@ class Window(BaseKeyHandler):
         self._make_taskbar_icon_changeable(title)
 
         window_logger.info(f"Created new main window with {title=}, {event_loop_function=}")
-        window_logger.debug(f"Layout of the new window: {layout}")
+        #window_logger.debug(f"Layout of the new window: {layout}")
 
         if _main_window is None or not _main_window.exists: # Some users might use sg.Window for popups, don't overwrite the global in that case
             ttk_style = None
@@ -836,12 +836,12 @@ class Window(BaseKeyHandler):
         if position == (None, None):
             self.center()
 
-        window_logger.debug(f"Fetching decorated key-functions...")
+        #window_logger.debug(f"Fetching decorated key-functions...")
         self._decorated_key_functions = dict()
         for key, val in all_decorator_key_functions.items():
-            window_logger.debug(f"...Next: {key=}, {val=}")
+            #window_logger.debug(f"...Next: {key=}, {val=}")
             self._decorated_key_functions[key] = self.get_event_function(key= key, key_function= val)
-        window_logger.debug(f"...{len(self._decorated_key_functions)} functions decorated")
+        window_logger.debug(f"Decorated functions: {len(self._decorated_key_functions)} functions were decorated")
 
     _resizeable_width = False
     _resizeable_height = False
@@ -1024,7 +1024,7 @@ class Window(BaseKeyHandler):
         global _main_window
         if _main_window is self: # Maybe close was called again?
             _main_window = None  # un-register this window as the main window
-            window_logger.debug("Main window was closed")
+            window_logger.info("Main window was closed")
 
         self.exists = False
         self.remove_flags(ElementFlag.IS_CREATED)
@@ -1037,7 +1037,7 @@ class Window(BaseKeyHandler):
 
         :return: Triggering event key; all values as _dict
         """
-        window_logger.debug("Main window waiting for next event")
+        #window_logger.debug("Main window waiting for next event")
         self.exists = True
 
         while True:
@@ -1095,9 +1095,9 @@ class Window(BaseKeyHandler):
         # self.root.mainloop()
         super().init_window_creation_done()
 
-        window_logger.debug("Starting periodic functions...")
+        window_logger.debug("Starting periodic functions")
         for fct in autostart_periodic_functions:
-            window_logger.debug(f"...starting {fct}")
+            #window_logger.debug(f"...starting {fct}")
             fct()
 
     def _keyed_event_callback(self, key: Any, _):
@@ -1222,7 +1222,7 @@ class Window(BaseKeyHandler):
         """
         # The event is also called if any of the children is destroyed...
         if self.root == event.widget:
-            window_logger.debug(f"{self} is making its destroy-event")
+            window_logger.debug(f"{self} is calling its destroy-event")
             self._destroy_event_function(event)
 
     @BaseElement._run_after_window_creation
@@ -1411,7 +1411,7 @@ class SubWindow(Window):
         :param value: If not None, it will be saved inside the value-_dict until changed
         :return:
         """
-        keys_logger.debug(f"Caught manually thrown event on {self} with {key=}, {function=}")
+        keys_logger.debug(f"Manually thrown event on {self} with {key=}, {function=}")
         if not self.exists:
             keys_logger.debug(f"{self} doesn't exist, so manual event ignored")
             return
