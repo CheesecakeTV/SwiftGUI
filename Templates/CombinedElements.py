@@ -1,4 +1,4 @@
-from typing import Any, Callable, Iterable, Self
+from typing import Any, Callable, Iterable, Hashable
 import SwiftGUI as sg
 
 
@@ -7,22 +7,28 @@ class Example(sg.BaseCombinedElement):
 
     def __init__(
             self,
-            key: Any = None,
+            key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
+            default_event: bool = None,
             apply_parent_background_color: bool = None,
     ):
         self._layout = [    # Put the containing layout here
 
         ]
 
-        super().__init__(frame=sg.Frame(self._layout), key=key, key_function=key_function,
-                         apply_parent_background_color=apply_parent_background_color)
+        super().__init__(
+            layout=sg.Frame(self._layout),
+            key=key,
+            key_function=key_function,
+            default_event=default_event,
+            apply_parent_background_color=apply_parent_background_color,
+        )
 
         self._update_initial(
             # Put all of your options in here
         )
 
-    def _event_loop(self, e: Any, v: dict):
+    def _event_loop(self, e: Hashable, v: dict):
         """An event-loop just for this element. Use self.w to refer to keys inside this element."""
         ...
 
@@ -30,16 +36,15 @@ class Example(sg.BaseCombinedElement):
         """Returns the value (self.value) of this element"""
         return super()._get_value()
 
-    def set_value(self,val: Any):
+    def set_value(self, val: Any):
         """Changes the value of this element (self.value = val)"""
         super().set_value(val)
 
-    def init_window_creation_done(self) -> Self:
+    def init_window_creation_done(self):
         """Runs once, after the window was created"""
         super().init_window_creation_done() # Don't forget this call, very important!
-        return self
 
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self, key: str, new_val: Any) -> bool | None:
         """
         When calling .update, this method gets called first.
         If it returns anything truethy (like True), execution of .update ends for this key.
@@ -54,7 +59,7 @@ class Example(sg.BaseCombinedElement):
 
         return True # Key was covered by match, so don't pass it to _update_default_keys
 
-    def _update_default_keys(self,kwargs):
+    def _update_default_keys(self, kwargs: dict):
         """
         Standard-Update method for all those keys that didn't get picked by the special method
         :param kwargs:

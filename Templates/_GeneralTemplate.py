@@ -14,7 +14,7 @@ w = sg.Window(layout)
 
 
 ### Main loop ###
-for e,v in w:
+for e, v in w:
     ...
 
 ### After window was closed ###

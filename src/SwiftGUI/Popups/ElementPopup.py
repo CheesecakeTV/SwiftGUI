@@ -1,6 +1,9 @@
 import SwiftGUI as sg
 
 class ElementPopup(sg.BasePopup):
+    """
+    Opens a single element in its own blocking window
+    """
     def __init__(self, element: sg.BaseElement, **kwargs):
         layout = [[element]]
 
@@ -10,6 +13,9 @@ class ElementPopup(sg.BasePopup):
         super().__init__(layout=layout, **kwargs)
 
 class ElementPopupNonblocking(sg.BasePopupNonblocking):
+    """
+    Opens a single element in its own window
+    """
     def __init__(self, element: sg.BaseElement, **kwargs):
         layout = [[element]]
 

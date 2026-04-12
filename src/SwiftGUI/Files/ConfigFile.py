@@ -119,6 +119,13 @@ class ConfigSection:
 
         return self
 
+    def update(self, values: dict) -> Self:
+        """
+        Same as .update on normal dicts
+        """
+        self.set_many(**values)
+        return self
+
     def set_json(self, key: str, value) -> Self:
         """
         Save a value as a json-string.
@@ -199,7 +206,7 @@ class ConfigSection:
         if ret is None:
             return default
 
-        return ret.strip().lower() in {"1", "true", "y", "yes"}
+        return ret.strip().lower() in {"1", "true", "y", "yes", ""}
 
     def get_json(self, key: str, default: Any = None) -> Any:
         """
@@ -225,6 +232,13 @@ class ConfigSection:
 
     def __getitem__(self, item) -> str:
         return self.section[item]
+
+    @property
+    def defaults(self) -> dict:
+        return self._defaults
+
+    def __str__(self):
+        return f"<{self.__class__.__name__} called '{self._name}' in file '{self.file}'>"
 
 class ConfigFile:
 
@@ -311,4 +325,6 @@ class ConfigFile:
 
         return new_section
 
+    def __str__(self) -> str:
+        return f"<{self.__class__.__name__} at '{self.path}'>"
 

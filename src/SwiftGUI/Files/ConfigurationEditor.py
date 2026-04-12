@@ -20,13 +20,15 @@ class ConfigSectionEditor(BaseCombinedElement):
             **form_kwargs,
     ):
         self._config_section = config_section
-        values = config_section.to_dict()
+        values = config_section.defaults
+
+        assert values, f"The configuration-section {config_section} does not have default values."
 
         layout = [
             [
                 my_form := Form(
-                    values.keys(),
-                    default_values= values.values(),
+                    {key:key for key in values.keys()},
+                    default_values = self._config_section.to_dict(),
                     **form_kwargs,
                 ),
             ],[
@@ -73,6 +75,9 @@ class ConfigSectionEditor(BaseCombinedElement):
         self.save()
         return self
 
+    def init_window_creation_done(self):
+        self.form.value = self._config_section.to_dict()
+
 class ConfigFileEditor(BaseCombinedElement):
     """
     A layout-element that can be used to edit all configuration-sections of a configuration-file at once
@@ -87,15 +92,15 @@ class ConfigFileEditor(BaseCombinedElement):
             key: Hashable = None,
             # key_function: Callable | Iterable[Callable] = None,
             # default_event: bool = False,
-            **form_kwargs,
+            # **form_kwargs,
     ):
         self.config_file = config_file
 
         self.tab_frames = [
             TabFrame(
-                [[ConfigSectionEditor(section, key_function=self.done, default_event=True)]],
+                [[ConfigSectionEditor(section, key_function=self.throw_default_event, default_event=True)]],
                 fake_key= name,
-            ) for name, section in config_file.all_sections.items()
+            ) for name, section in config_file.all_sections.items() if section.defaults
         ]
 
         layout = [
@@ -118,13 +123,6 @@ class ConfigFileEditor(BaseCombinedElement):
 
     def set_value(self, val:Any) -> Self:
         return self
-
-
-
-
-
-
-
 
 
 

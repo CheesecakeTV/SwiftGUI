@@ -49,9 +49,24 @@ class BaseDictFile:
 
     @path.setter
     def path(self, val: str | Path):
-        self._path = Path(val)
+        self.set_path(new_path=val)
+
+    _path: Path = None
+    def set_path(self, new_path: str | Path, reload: bool = False) -> Path:
+        """
+        Change to which path this file belongs
+        :param reload: True, if the values should be loaded from the newly referenced file
+        :param new_path:
+        :return:
+        """
+        self._path = Path(new_path)
 
         self._path.parent.mkdir(parents=True, exist_ok=True)
+
+        if reload and self._path.exists():
+            self.load()
+
+        return self._path
 
     @abstractmethod
     def _save_to_file(
@@ -59,7 +74,11 @@ class BaseDictFile:
             values: dict,
             path: Path,
     ):
-        """Pure save-operation"""
+        """
+        Pure save-operation
+
+        Overwrite this in your own version of dict-file
+        """
         pass
 
     def save(
@@ -73,6 +92,7 @@ class BaseDictFile:
         """
         if save_to:
             save_to = Path(save_to)
+            save_to.parent.mkdir(parents=True, exist_ok=True)
         else:
             save_to = self._path
 
@@ -91,9 +111,10 @@ class BaseDictFile:
             path: Path
     ) -> dict:
         """
-        Pure load-operation
+        Pure load-operation.
+        Overwrite this in your own version of dict-file
 
-        return the values as a dictionary
+        return the loaded values as a dictionary
         """
         pass
 
@@ -102,6 +123,11 @@ class BaseDictFile:
             load_from: str | Path = None,
             add_defaults_to_value: bool = None,
     ) -> Self:
+        """
+        (Re-)loads the file-content.
+        :param load_from: Pass this to load from a different file
+        :param add_defaults_to_value: Pass this to overwrite the add_defaults_to_value-behavior
+        """
         if load_from:
             load_from = Path(load_from)
         else:
@@ -118,6 +144,12 @@ class BaseDictFile:
         return self
 
     def get(self, key: Hashable, default: Any = None) -> Any:
+        """
+        Same as dict.get
+        :param key:
+        :param default: What to return if the value doesn't exist
+        :return:
+        """
         if not key in self:
             return self._defaults.get(key, default)
 
@@ -147,7 +179,7 @@ class BaseDictFile:
         self._do_auto_save()
         return self
 
-    def set_many_dict(self, items: dict) -> Self:
+    def update(self, items: dict) -> Self:
         """
         Same as set_many, but allows for non-string keys
         """
@@ -161,7 +193,7 @@ class BaseDictFile:
         :param items:
         :return:
         """
-        self.set_many_dict(items)
+        self.update(items)
         return self
 
     def add_defaults_dict(self, defaults: dict, add_to_values: bool = None, add_to_these_values: dict = None) -> Self:
@@ -239,6 +271,23 @@ class BaseDictFile:
         """Same as dict.items()"""
         return self._values.items()
 
+    def increment(self, key: Hashable, amount: int | float | Any = 1, initial: int | float | Any = 0) -> int | float | Any:
+        """
+        Add "amount" to a value.
+        Can be used like a counter.
+
+        New_value = ...[key] + amount
+        (Type-independent)
+
+        :param key: Key of the number
+        :param amount: What to add
+        :param initial: Value if the counter doesn't exist yet BEFORE INCREMENTING
+        :return: New counter-value
+        """
+        new_val = self.get(key, default=initial) + amount
+        self.set(key, new_val)
+        return new_val
+
 class DictFileJSON(BaseDictFile):
     """
     A pseudo-dictionary that's saved in a json-file.
@@ -255,12 +304,12 @@ class DictFileJSON(BaseDictFile):
 class DictFilePickle(BaseDictFile):
     """
     A pseudo-dictionary that's saved in a pickle-file.
-    Allows to save any kind of type, even selfmade ones.
+    Allows to save any kind of type, even self-made ones.
     It even keeps references between saved objects intact!
 
     On the other hand, it's not humanly-readable.
 
-    Keep in mind that pickle can cause issues with backward-compatability WHEN SAVING SELFMADE CLASSES and updating them after saving.
+    Keep in mind that pickle can cause issues with backward-compatibility WHEN SAVING SELF-MADE CLASSES and updating them after saving.
     """
 
     def _save_to_file(self, values: dict, path: Path):

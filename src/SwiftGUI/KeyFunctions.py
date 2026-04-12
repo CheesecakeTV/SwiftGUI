@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from typing import Hashable, Any
+from typing import Hashable, Any, Literal, Mapping
 
 
 ### HOW TO CREATE KEY-FUNCTION ###
@@ -62,7 +62,7 @@ def set_value_to(new_value: Any = "", elem_key: str = None) -> Callable:
 
     return temp
 
-def cycle_values(key: Hashable, *values: Any) -> Callable:
+def cycle_value_of(key: Hashable, *values: Any) -> Callable:
     """
     Every time this gets called, the next value is written to key
     IT WILL START AT THE SECOND VALUE, so it's a good idea to set the initial element-value as the first value.
@@ -74,15 +74,74 @@ def cycle_values(key: Hashable, *values: Any) -> Callable:
     n = 0
     val_len = len(values)
 
-    assert val_len > 1, "You did not provide enough values for the cycle_values key-function"
+    assert val_len > 1, "You did not provide enough values for the cycle_value_of key-function"
 
     def temp(v):
         nonlocal n
         n += 1
 
-        if n == val_len:
+        if n >= val_len:
             n = 0
 
         v[key] = values[n]
 
     return temp
+
+def cycle_option(option: str, *values: Literal["DEFAULT"] | Any) -> Callable:
+    """
+    Every time this gets called, the connected element is updated roughly like this:
+        elem.update(option= new_value)
+
+    Pass "DEFAULT" as a value to make it reset to the default value
+
+    IT WILL START AT THE SECOND VALUE, so it's a good idea to set the initial option-value as the first one.
+
+    :param option:
+    :param values: Option-values
+    :return:
+    """
+    n = 0
+    val_len = len(values)
+
+    assert val_len > 1, "You did not provide enough values for the cycle_option key-function"
+
+    def temp(elem):
+        nonlocal n
+        n += 1
+
+        if n >= val_len:
+            n = 0
+
+        if values[n] == "DEFAULT":
+            elem.update_to_default_value(option)
+            return
+
+        elem.update(**{option: values[n]})
+
+    return temp
+
+def set_option_at_value(option: str, values: Mapping[Hashable, Literal["DEFAULT"] | Any], default: Literal["DEFAULT"] | Any = None) -> Callable:
+    """
+    Change the option of this element depending on its value.
+
+    Consider this example:
+        set_option_at_value(option = "background_color", {True: "red", False: "DEFAULT"})
+    On a checkbox, this colors the checkbox red if checked and changes the color back to its default value if unchecked.
+
+    :param option: Which option to change
+    :param default: Value to apply if it isn't found in the values
+    :param values: dict with value:option-value-for-that-value
+    :return:
+    """
+    def temp(elem, val):
+        new_val = values.get(val, default)
+
+        if new_val == "DEFAULT":
+            elem.update_to_default_value(option)
+            return
+
+        elem.update(**{option: new_val})
+
+    return temp
+
+

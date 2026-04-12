@@ -1,4 +1,8 @@
 
+import logging
+logger = logging.getLogger("SwiftGUI")
+logger.debug("Beginning to load SwiftGUI")
+
 loaded_addons: set[str] = set() # Contains all included SwiftGUI-addons.
 # If you'd like your own addon officially included, create an issue on GitHub.
 
@@ -43,6 +47,7 @@ from .Widget_Elements.Canvas import Canvas
 from .Extended_Elements.FileBrowseButton import FileBrowseButton
 from .Extended_Elements.ColorChooserButton import ColorChooserButton
 from .Extended_Elements.TabFrame import TabFrame
+from .Extended_Elements.ComboboxMapping import ComboboxMapping
 
 from SwiftGUI.Extended_Elements.Image import Image
 from SwiftGUI.Extended_Elements.ImageButton import ImageButton
@@ -106,6 +111,8 @@ try:
     from SwiftGUI_Matplot import Matplot
     loaded_addons.add("Matplot")
 except ImportError:
+    logger.info("Failed to load SwiftGUI_Matplot")
     Matplot: "Matplot" = Compat.ErrorThrower("To use sg.Matplot, SwiftGUI_Matplot must be installed!")
 
+logger.info("Done loading SwiftGUI")
 

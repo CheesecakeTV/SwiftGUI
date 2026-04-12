@@ -42,6 +42,20 @@ class Progressbar(BaseWidgetTTK):
             expand_y: bool = None,
             tk_kwargs: dict[str:Any]=None
     ):
+        """
+
+        :param default_value: Initial value
+        :param key:
+        :param number_max: This number corresponds to 100%
+        :param cursor: Cursor-type while the cursor is over the element
+        :param bar_color: Color of the "foreground"
+        :param background_color: Color of the field behind the bar
+        :param takefocus: True, if this should be selectable through pressing tab
+        :param mode: "determinate" is the default. "indeterminate" turns it into some kind of "activity-bar"
+        :param expand:
+        :param expand_y:
+        :param tk_kwargs:
+        """
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
 
         self._update_initial(

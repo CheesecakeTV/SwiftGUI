@@ -94,10 +94,10 @@ layout = [
         )
     ],[
         sg.Form(
-            (
-                ("Force Height", "Height"),
-                ("Force Width", "Width"),
-            ),
+            {
+                "Force Height": "Height",
+                "Force Width": "Width",
+            },
             key = "ForceSize",
         )
     ],[
