@@ -597,6 +597,13 @@ class BaseKeyHandler(BaseElement):
     def __repr__(self):
         return f"<{self.__class__.__name__} at {id(self)} with {len(self.all_key_elements)} keys>"
 
+    def to_json(self) -> Any:
+        return self.value.to_json()
+
+    def from_json(self, data: Any) -> Self:
+        self.value.from_json(data)
+        return self
+
 class SubLayout(BaseKeyHandler):
     """
     Can be used as an sg-element.
