@@ -241,13 +241,17 @@ class BaseCombinedElement(BaseElement):
         return ElementPopupNonblocking(self, **kwargs)
 
     def to_json(self) -> Any:
-        if self._has_sublayout:
-            return self.sg_widget.to_json()
+        value = self.value
 
-        return None
+        if hasattr(value, "to_json"):
+            return self.value.to_json()
+
+        return value
 
     def from_json(self, val: Any) -> Self:
-        if self._has_sublayout:
-            self.sg_widget.from_json(val)
+        if hasattr(self.value, "from_json"):
+            self.value.from_json(val)
+        else:
+            self.set_value(val)
 
         return self
