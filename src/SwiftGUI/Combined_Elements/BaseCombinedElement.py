@@ -240,3 +240,14 @@ class BaseCombinedElement(BaseElement):
         kwargs.update(window_kwargs)
         return ElementPopupNonblocking(self, **kwargs)
 
+    def to_json(self) -> Any:
+        if self._has_sublayout:
+            return self.sg_widget.to_json()
+
+        return None
+
+    def from_json(self, val: Any) -> Self:
+        if self._has_sublayout:
+            self.sg_widget.from_json(val)
+
+        return self
