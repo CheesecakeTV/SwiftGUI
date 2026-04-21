@@ -19,15 +19,6 @@ def run_after_window_creation(w_fkt: Callable) -> Callable:
     If you call it before, the call will be buffered and ran later.
     :return: If the decorated function doesn't execute, Self is returned for inline calls.
     """
-    buffer: list[tuple[tuple, dict]] = list()
-
-    def run_after():    # Actually run the functions
-        nonlocal buffer
-        for args,kwargs in buffer:
-            w_fkt(*args, **kwargs)
-
-        buffer = list() # Not needed anymore
-
     @wraps(w_fkt)
     def fkt(*args, **kwargs):
         self = args[0]
@@ -35,10 +26,11 @@ def run_after_window_creation(w_fkt: Callable) -> Callable:
         if self.has_flag(ElementFlag.IS_CREATED):    # Window is already created
             return w_fkt(*args, **kwargs)
 
-        if not buffer:  # If this is the first buffered call
-            self._run_when_window_exists.append(run_after)  # Tell the element to call run_after, after window is created
+        def run_after():
+            w_fkt(*args, **kwargs)
 
-        buffer.append((args, kwargs))
+        self._run_when_window_exists.append(run_after)  # Tell the element to call run_after, after window is created
+
         return self
 
     return fkt
@@ -324,6 +316,7 @@ class BaseElement:
         :return:
         """
         #element_logger.debug(f"init_window_creation_done for {repr(self)}, now making {len(self._run_when_window_exists)} calls")
+        #print("1", self, self.window, self._run_when_window_exists)
         for fkt in self._run_when_window_exists:    # Call all those buffered functions
             fkt()
 
