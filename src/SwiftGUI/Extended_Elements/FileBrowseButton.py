@@ -22,6 +22,7 @@ class FileBrowseButton(Button):
             *,
             key: Hashable = None,
             key_function:Callable|Iterable[Callable] = None,
+            default_event: bool = True,
 
             file_browse_type:Literals.file_browse_types = None, #{"defaultextension","parent","title"}
             file_browse_initial_dir: PathLike|str = None, # initialdir
@@ -116,15 +117,10 @@ class FileBrowseButton(Button):
         :param font_overstrike: True, if the text should be overstruck
         :param tk_kwargs: (Only if you know tkinter) Pass more kwargs directly to the tk-widget
         """
-        if callable(key_function):
-            key_function = (self._button_callback,key_function)
-        elif key_function:
-            key_function = (self._button_callback,*tuple(key_function))
-        else:
-            key_function = self._button_callback
 
         super().__init__(
             text,
+            default_event=default_event,
             key=key,
             key_function=key_function,
             borderwidth=borderwidth,
@@ -170,7 +166,7 @@ class FileBrowseButton(Button):
     _prev_val:str|tuple[str] = None
     _file_function_wanted = None
     _dont_change_on_abort = None    # If the value should be unchanged if the user just closes the window
-    def _button_callback(self):
+    def _event_callback(self):
         if self._file_function is None:
             return
 
@@ -186,7 +182,8 @@ class FileBrowseButton(Button):
             return
 
         self._prev_val = temp
-        return True # Refresh values for coming key_functions
+
+        super()._event_callback()
 
     def _get_value(self) -> Any:
         return self._prev_val

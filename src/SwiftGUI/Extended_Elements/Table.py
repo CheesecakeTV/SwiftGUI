@@ -10,7 +10,8 @@ from typing import Any, Literal, Hashable
 from SwiftGUI.Compat import Self
 from itertools import islice
 
-from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement, Scrollbar, MixinScrollbar
+from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement, Scrollbar, MixinScrollbar, \
+    MixinElementWithDefaultEvent
 
 
 class TableRow(list):
@@ -115,7 +116,7 @@ class TableRow(list):
 
         return tuple(self) == tuple(other)
 
-class Table(BaseWidgetTTK, MixinScrollbar):
+class Table(MixinElementWithDefaultEvent, BaseWidgetTTK, MixinScrollbar):
     tk_widget:ttk.Treeview
     _tk_widget:ttk.Treeview
     _tk_widget_class:type = ttk.Treeview # Class of the connected widget
@@ -126,8 +127,6 @@ class Table(BaseWidgetTTK, MixinScrollbar):
     _elements: list[TableRow[Any]]  # Elements the Table contains atm
     table_elements: tuple[TableRow[Any]]   # Prevent users from tampering with _elements...
     _element_dict: dict[int:TableRow[Any]] # Hash:Element ~ Elements as a dict to find them quicker
-
-    _tk_event_callback: Callable
 
     _headings: tuple    # Column headings
 
@@ -187,7 +186,7 @@ class Table(BaseWidgetTTK, MixinScrollbar):
             expand_y: bool = None,
             tk_kwargs: dict[str:Any]=None
     ):
-        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
+        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y, default_event=default_event)
 
         self._thread_lock = threading.Lock()
 
@@ -225,20 +224,16 @@ class Table(BaseWidgetTTK, MixinScrollbar):
                              takefocus=takefocus, height=height, cursor=cursor, padding=padding, hide_headings=hide_headings,
                              export_rows_to_json = export_rows_to_json, **tk_kwargs)
 
-        self._default_event = default_event
         self._key_function = key_function
 
     _prev_selection = None
     def _event_callback(self, *args):
-        if not self._default_event:
-            return
-
         all_indexes = self.all_indexes
         if self._prev_selection == all_indexes:
             return
-        self._prev_selection = all_indexes
 
-        self._tk_event_callback(*args)
+        self._prev_selection = all_indexes
+        self.throw_default_event()
 
     _last_sort_direction: bool = None  # True, if sorted non-reversed, False if sorted reversed
     _last_sort_col: int = -1    # Col that got sorted last time
@@ -723,7 +718,6 @@ class Table(BaseWidgetTTK, MixinScrollbar):
         """Don't touch!"""
         super().init_window_creation_done()
 
-        self._tk_event_callback = self.window.get_event_function(self, key=self.key, key_function=self._key_function)
         self.tk_widget.bind("<<TreeviewSelect>>", self._event_callback)
 
         if self._headings:
