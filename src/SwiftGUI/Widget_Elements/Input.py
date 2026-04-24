@@ -3,11 +3,11 @@ import tkinter.font as font
 from collections.abc import Iterable, Callable
 from typing import Literal, Any, Hashable
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, MixinElementWithTextValue
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, MixinElementWithValue
 from SwiftGUI.Compat import Self
 
 
-class Input(MixinElementWithTextValue, BaseWidget):
+class Input(MixinElementWithValue, BaseWidget):
     """
     Copy this class ot create your own Widget
 
@@ -210,7 +210,7 @@ class Input(MixinElementWithTextValue, BaseWidget):
 
     def init_window_creation_done(self):
         super().init_window_creation_done()
-        self._tk_target_value.trace_add("write", self._value_change_callback)
+        self._tk_target_value.trace_add("write", self._event_callback)
 
     def set_value(self, val:str, throw_event: bool = False) -> Self:
         self._apply_value(val, throw_event)

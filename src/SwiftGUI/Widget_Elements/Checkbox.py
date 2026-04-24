@@ -3,10 +3,10 @@ import tkinter.font as font
 from collections.abc import Iterable, Callable
 from typing import Literal, Any, Hashable
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, MixinElementWithDefaultEvent
 
 
-class Checkbox(BaseWidget):
+class Checkbox(MixinElementWithDefaultEvent, BaseWidget):
     _tk_widget_class: type = tk.Checkbutton  # Class of the connected widget
     tk_widget: tk.Checkbutton
     defaults = GlobalOptions.Checkbox  # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
@@ -136,9 +136,7 @@ class Checkbox(BaseWidget):
     def _personal_init_inherit(self):
         self._set_tk_target_variable(tk.IntVar, kwargs_key="variable", default_key="default_value")
 
-        if self._default_event:
-            self._tk_kwargs["command"] = self.window.get_event_function(self, key=self.key,
-                                                                        key_function=self._key_function, )
+        self._tk_kwargs["command"] = self._event_callback
 
     def _get_value(self) -> bool:
         return bool(super()._get_value())

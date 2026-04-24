@@ -5,7 +5,7 @@ from typing import Literal, Any, Hashable
 from SwiftGUI.Compat import Self
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, Scrollbar, MixinScrollbar, \
-    MixinElementWithTextValue
+    MixinElementWithValue
 
 
 def _forced_value_change(fct):
@@ -35,7 +35,7 @@ def _forced_value_change(fct):
 
 
 # Todo: tk.Text has a ton of features, so this element should too.
-class TextField(MixinElementWithTextValue, BaseWidget, MixinScrollbar):
+class TextField(MixinElementWithValue, BaseWidget, MixinScrollbar):
     tk_widget:tk.Text
     _tk_widget:tk.Text
     _tk_widget_class:type = tk.Text # Class of the connected widget
@@ -282,7 +282,7 @@ class TextField(MixinElementWithTextValue, BaseWidget, MixinScrollbar):
         self.value = self._initial_text
         del self._initial_text
 
-        self.tk_widget.bind("<KeyRelease>", self._value_change_callback)
+        self.tk_widget.bind("<KeyRelease>", self._event_callback)
 
     # @BaseWidget._run_after_window_creation
     # def see(self, index: int) -> Self:

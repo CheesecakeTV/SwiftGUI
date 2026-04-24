@@ -117,11 +117,11 @@ class MultistateButton(sg.BaseCombinedElement):
         if key == self._current_val:
             if self._can_deselect:
                 self.value = None
-                self._throw_event()
+                self._event_function()
             return
 
         self.value = key
-        self._throw_event()
+        self._event_function()
 
     _current_val = None
     def _get_value(self) -> Any:

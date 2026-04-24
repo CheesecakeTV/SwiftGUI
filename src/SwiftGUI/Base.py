@@ -855,10 +855,71 @@ class BaseWidgetTTK(BaseWidget):
 
         self.window.ttk_style.map(stylename, **new_kwargs)
 
-class MixinElementWithTextValue(_BaseSharedAttributes):
+class MixinElementWithDefaultEvent(_BaseSharedAttributes):
     """
-    An element that has a text value.
-    Implements the value-change callback.
+    An element that has some kind of default event.
+    Implements the callback.
+
+    Needs to inherit BEFORE the Widget-class
+
+    You still need to do the following
+    - Link _event_function to the tkinter-event
+    """
+
+    _event_function = lambda *_: None  # Replaced with the actual event-function in init_window_creation_done
+    _default_event: bool = None  # True, if event is enabled
+
+    def __init__(self, *args, default_event: bool = None, **kwargs):
+        """
+
+        :param args:
+        :param default_event:
+        :param default_value: Pass a value to apply it before creating the element
+        :param kwargs:
+        """
+        self._default_event = default_event
+
+        super().__init__(*args, **kwargs)
+
+    def throw_event(self) -> Self:
+        """
+        Throw an event of this element, no matter if default-event is enabled or not.
+        You may overwrite this to change the event behavior.
+        The actual event-function that causes the event is self._throw_event(), so don't forget to call it.
+        :return:
+        """
+        self._event_function()
+
+        return self
+
+    def throw_default_event(self) -> Self:
+        """
+        Throw an event, but only if the default-event is enabled.
+        You may overwrite this to let the element handle events internally.
+        :return:
+        """
+        if self._default_event:
+            self.throw_event()
+
+        return self
+
+    def _event_callback(self, *_):
+        """
+        Called when an event occurs.
+        You may inherit this to change internal event-handling, but I recommend only using throw_event and throw_default_event.
+
+        :param _:
+        :return:
+        """
+        self.throw_default_event()
+
+    def init_window_creation_done(self):
+        self._event_function = self.window.get_event_function(self, key=self.key, key_function=self._key_function)
+        super().init_window_creation_done()
+
+class MixinElementWithValue(MixinElementWithDefaultEvent):
+    """
+    An element that might trigger events even though its value hasn't changed.
 
     Needs to inherit BEFORE the Widget-class
 
@@ -867,9 +928,7 @@ class MixinElementWithTextValue(_BaseSharedAttributes):
     - Call _apply_value in set_value
     """
 
-    _event_function = lambda *_: None  # Replaced with the actual event-function in init_window_creation_done
-    _prev_value: str = None   # Value of last value-callback
-    _default_event: bool = None  # True, if event is enabled
+    _prev_value: Any = None   # Value of last value-callback
 
     def __init__(self, *args, default_event: bool = None, default_value: Any = None, **kwargs):
         """
@@ -879,34 +938,30 @@ class MixinElementWithTextValue(_BaseSharedAttributes):
         :param default_value: Pass a value to apply it before creating the element
         :param kwargs:
         """
-        self._default_event = default_event
         self._prev_value = default_value
 
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, default_event=default_event, **kwargs)
 
-    def init_window_creation_done(self):
-        self._event_function = self.window.get_event_function(self, key= self.key, key_function= self._key_function)
-        super().init_window_creation_done()
-
-    def _value_change_callback(self, *_):   # Must be specified in the tkinter-event!!!
+    def _event_callback(self, *_):   # Must be specified in the tkinter-event!!!
         """
-        Called when the value changes.
-        You may inherit this to implement an internal event-handling for the default event.
+        Called when the value-event occurs.
+        You may inherit this to change internal event-handling, but I recommend only using throw_event and throw_default_event.
         :param _:
         :return:
         """
-
         if self.value == self._prev_value:
             return
 
         self._prev_value = self.value
 
-        if self._default_event:
-            self._event_function()
+        self.throw_default_event()
 
     def _apply_value(self, val: Any, throw_event: bool = False):
         """
-        Call this to avoid an event being thrown when that value is used as the current value
+        Call this to avoid an event being thrown when that value is used as the current value.
+
+        throw_event ONLY WORKS IF THE ELEMENT GENERATES AN EVENT BY ITSELF WHEN THE VALUE CHANGES ON THE BACKEND
+
         :param val:
         :param throw_event:
         :return:

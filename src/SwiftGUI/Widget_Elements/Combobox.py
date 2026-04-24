@@ -4,10 +4,10 @@ from typing import Any, Iterable, Callable, Hashable
 from SwiftGUI.Base import run_after_window_creation
 from SwiftGUI.Compat import Self
 
-from SwiftGUI import GlobalOptions, BaseWidgetTTK, Literals, Color, ElementFlag, Scrollbar, MixinElementWithTextValue
+from SwiftGUI import GlobalOptions, BaseWidgetTTK, Literals, Color, ElementFlag, Scrollbar, MixinElementWithValue
 
 
-class Combobox(MixinElementWithTextValue, BaseWidgetTTK):
+class Combobox(MixinElementWithValue, BaseWidgetTTK):
     tk_widget:ttk.Combobox
     _tk_widget:ttk.Combobox
     _tk_widget_class:type = ttk.Combobox # Class of the connected widget
@@ -301,7 +301,7 @@ class Combobox(MixinElementWithTextValue, BaseWidgetTTK):
 
     def _personal_init_inherit(self):
         self._set_tk_target_variable(default_key="default_value", kwargs_key= "textvariable")
-        self._tk_target_value.trace_add("write", self._value_change_callback)
+        self._tk_target_value.trace_add("write", self._event_callback)
 
         # Fake-initialize this widget
         self.scrollbar.window = self.window

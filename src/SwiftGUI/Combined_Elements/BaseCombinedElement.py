@@ -1,7 +1,7 @@
 from collections.abc import Iterable, Callable
 from typing import Any, Hashable
 
-from SwiftGUI import BaseElement, SubLayout, Frame
+from SwiftGUI import BaseElement, SubLayout, Frame, MixinElementWithDefaultEvent
 from SwiftGUI.Compat import Self
 from SwiftGUI.ElementFlags import ElementFlag
 from SwiftGUI.Windows import ValueDict
@@ -11,7 +11,7 @@ from SwiftGUI.Popups import ElementPopup, ElementPopupNonblocking
 def _do_nothing(*_) -> None:
     pass
 
-class BaseCombinedElement(BaseElement):
+class BaseCombinedElement(MixinElementWithDefaultEvent, BaseElement):
     """
     Derive from this class to create an element consisting of multiple inner elements.
     """
@@ -37,9 +37,7 @@ class BaseCombinedElement(BaseElement):
         :param internal_key_system: True, if keys should be passed up to the main event loop instead of ._event_loop
         :param popup_kwargs: When passing a dict, these values are passed to .popup and .popup_nonblocking automatically
         """
-        super().__init__()
-
-        self._default_event = default_event
+        super().__init__(default_event=default_event)
 
         if isinstance(layout, Frame):
             frame = layout
@@ -56,8 +54,6 @@ class BaseCombinedElement(BaseElement):
         self.key = key
         self._key_function = key_function
 
-        self._throw_event: Callable = _do_nothing
-
         if apply_parent_background_color:
             self.add_flags(ElementFlag.APPLY_PARENT_BACKGROUND_COLOR)
 
@@ -65,7 +61,7 @@ class BaseCombinedElement(BaseElement):
             popup_kwargs = dict()
         self._popup_kwargs = popup_kwargs
 
-    def _event_loop(self, e: Any, v: ValueDict):
+    def _event_loop(self, e: Hashable, v: ValueDict):
         """
         All key-events will call this method, if internal key-system is enabled.
         You can use it exactly like your normal event-loop.
@@ -76,24 +72,6 @@ class BaseCombinedElement(BaseElement):
         """
         ...
 
-    def throw_event(self):
-        """
-        Throw an event of this element, no matter if default-event is enabled or not.
-        You may overwrite this to change the event behavior.
-        The actual event-function that causes the event is self._throw_event(), so don't forget to call it.
-        :return:
-        """
-        self._throw_event()
-
-    def throw_default_event(self):
-        """
-        Throw an event, but only if the default-event is enabled.
-        You may overwrite this to change the event behavior.
-        :return:
-        """
-        if self._default_event:
-            self.throw_event()
-
     def _personal_init(self):
         """
         Do not overwrite.
@@ -101,7 +79,7 @@ class BaseCombinedElement(BaseElement):
         :return:
         """
         self.sg_widget._init(self, self.window)
-        self._throw_event = self.window.get_event_function(me= self, key= self.key, key_function= self._key_function)
+        #self._event_function = self.window.get_event_function(me= self, key= self.key, key_function= self._key_function)
 
     def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         """

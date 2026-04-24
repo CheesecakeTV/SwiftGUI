@@ -3,11 +3,11 @@ import tkinter.font as font
 from collections.abc import Iterable, Callable
 from typing import Literal, Any, Hashable
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, MixinElementWithTextValue
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, MixinElementWithValue
 from SwiftGUI.Compat import Self
 
 
-class Spinbox(MixinElementWithTextValue, BaseWidget):
+class Spinbox(MixinElementWithValue, BaseWidget):
     _tk_widget_class: type = tk.Spinbox # Class of the connected widget
     tk_widget: tk.Spinbox
     defaults = GlobalOptions.Spinbox   # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
@@ -233,7 +233,7 @@ class Spinbox(MixinElementWithTextValue, BaseWidget):
     def _personal_init_inherit(self):
         self._set_tk_target_variable(kwargs_key="textvariable")
 
-        self._tk_target_value.trace_add("write", self._value_change_callback)
+        self._tk_target_value.trace_add("write", self._event_callback)
 
     _last_viable_value: Any = None
     def _get_value(self) -> Any:

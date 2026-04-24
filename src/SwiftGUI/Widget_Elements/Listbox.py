@@ -4,11 +4,13 @@ from collections.abc import Iterable, Callable
 from typing import Any, Hashable
 from SwiftGUI.Compat import Self
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, BaseElement, Scrollbar, MixinScrollbar
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, BaseElement, Scrollbar, MixinScrollbar, \
+    MixinElementWithValue
+
 
 # Todo: ListboxMultiselect
 
-class Listbox(BaseWidget, MixinScrollbar):
+class Listbox(MixinElementWithValue, BaseWidget, MixinScrollbar):
     _tk_widget_class: type = tk.Listbox  # Class of the connected widget
     tk_widget: tk.Listbox
     defaults = GlobalOptions.Listbox  # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
@@ -72,7 +74,7 @@ class Listbox(BaseWidget, MixinScrollbar):
             expand_y: bool = None,
             tk_kwargs: dict = None,
     ):
-        super().__init__(key, tk_kwargs=tk_kwargs, expand=expand, expand_y = expand_y)
+        super().__init__(key, tk_kwargs=tk_kwargs, expand=expand, expand_y = expand_y, default_event=default_event)
 
         self._no_selection_returns = no_selection_returns
 
@@ -118,18 +120,20 @@ class Listbox(BaseWidget, MixinScrollbar):
             **tk_kwargs,
         )
 
-        if default_event:
-            self.bind_event("<<ListboxSelect>>",key=key,key_function=key_function)
 
     def _personal_init_inherit(self):
         self._set_tk_target_variable(tk.StringVar, kwargs_key="listvariable", default_key="default_list")
 
-    def _personal_init(self):
-        super()._personal_init()
+    def init_window_creation_done(self):
+        super().init_window_creation_done()
+        self.tk_widget.bind("<<ListboxSelect>>", self._event_callback)
 
-        # if self._default_event:
-        #     self._tk_kwargs["command"] = self.window.get_event_function(self, key=self.key,
-        #                                                                 key_function=self._key_function, )
+    def _event_callback(self, *_):
+        if self._prev_value == self.index:
+            return
+
+        self._prev_value = self.index
+        self.throw_default_event()
 
     list_elements:tuple
 
@@ -175,6 +179,7 @@ class Listbox(BaseWidget, MixinScrollbar):
         """
         self.tk_widget.selection_clear(0, "end")
         self.tk_widget.selection_set(new_val)
+        self._apply_value(new_val)
         return self
 
     def get_index(self, default:int = -1) -> int:
@@ -287,6 +292,11 @@ class Listbox(BaseWidget, MixinScrollbar):
         return self
 
     def _transform_index(self, i:int) -> int:
+        """
+        Enable using negative indexes to select last elements
+        :param i:
+        :return:
+        """
         if i >= 0:
             return i
 
@@ -358,7 +368,7 @@ class Listbox(BaseWidget, MixinScrollbar):
 
         return default
 
-    def get_all_indexes_of(self,*value:str) -> tuple[int, ...]:
+    def get_all_indexes_of(self, *value:str) -> tuple[int, ...]:
         """
         Returns all indexes of the passed value(s)
         :param value: Content of the searched row

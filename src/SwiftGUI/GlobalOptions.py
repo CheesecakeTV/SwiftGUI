@@ -258,6 +258,7 @@ class Text(Common, Common_Textual, Common_Background):
 
 class Scale(Common_Background, Common_Textual):
     default_value: int | float = None
+    default_event_on_value_change: bool = False  # Generate an event on EVERY value-change. Normally only on button-release
     number_min: float = None
     number_max: float = None
     resolution: float = None
