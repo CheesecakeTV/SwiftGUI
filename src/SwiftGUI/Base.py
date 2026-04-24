@@ -1,6 +1,6 @@
 from collections.abc import Iterable, Callable
 from functools import wraps
-from typing import Literal, Union, Any, Hashable
+from typing import Literal, Union, Any, Hashable, Protocol
 from SwiftGUI.Compat import Self
 import tkinter as tk
 
@@ -36,7 +36,20 @@ def run_after_window_creation(w_fkt: Callable) -> Callable:
     return fkt
 
 
-class BaseElement:
+class _BaseSharedAttributes:
+    """
+    Attributes every class is supposed to have so the IDE doesn't show warnings
+    """
+    init_window_creation_done: Callable
+    set_value: Callable
+
+    value: Any
+    window = None # Reference to the container "window" (Can be subwindow, sublayout or simmilar too)
+
+    key: Hashable = None  # If given, this will be written to the event-value. Elements without a key can not throw key-events
+    _key_function: Callable | Iterable[Callable] = None  # Saves the key-function(s), if given
+
+class BaseElement(_BaseSharedAttributes):
     """
     Base for every element and widget.
 
@@ -46,10 +59,6 @@ class BaseElement:
     parent:Self = None  # next higher Element
     _fake_tk_element:tk.Widget = None   # This gets returned when parent is None
     _element_flags:set[ElementFlag] # Properties the element has
-    window = None # Main Window
-
-    key:Any = None  # If given, this will be written to the event-value. Elements without a key can not throw key-events
-    _key_function: Callable | Iterable[Callable] = None  # Called as an event
 
     defaults:type[GlobalOptions.DEFAULT_OPTIONS_CLASS] = GlobalOptions.EMPTY  # Change this to apply a different default configuration
 
@@ -699,7 +708,7 @@ class BaseWidget(BaseElement):
     def __repr__(self) -> str:
         return f"<sg.{self.__class__.__name__} element with key={self.key} at {id(self)}>"
 
-class BaseScrollbar:
+class MixinScrollbar:
     """
     Base for every widget that has a scrollbar.
 
@@ -845,3 +854,64 @@ class BaseWidgetTTK(BaseWidget):
 
 
         self.window.ttk_style.map(stylename, **new_kwargs)
+
+class MixinElementWithTextValue(_BaseSharedAttributes):
+    """
+    An element that has a text value.
+    Implements the value-change callback.
+
+    Needs to inherit BEFORE the Widget-class
+
+    You still need to do the following
+    - Link _event_function to the tkinter-event
+    - Call _apply_value in set_value
+    """
+
+    _event_function = lambda *_: None  # Replaced with the actual event-function in init_window_creation_done
+    _prev_value: str = None   # Value of last value-callback
+    _default_event: bool = None  # True, if event is enabled
+
+    def __init__(self, *args, default_event: bool = None, default_value: Any = None, **kwargs):
+        """
+
+        :param args:
+        :param default_event:
+        :param default_value: Pass a value to apply it before creating the element
+        :param kwargs:
+        """
+        self._default_event = default_event
+        self._prev_value = default_value
+
+        super().__init__(*args, **kwargs)
+
+    def init_window_creation_done(self):
+        self._event_function = self.window.get_event_function(self, key= self.key, key_function= self._key_function)
+        super().init_window_creation_done()
+
+    def _value_change_callback(self, *_):   # Must be specified in the tkinter-event!!!
+        """
+        Called when the value changes.
+        You may inherit this to implement an internal event-handling for the default event.
+        :param _:
+        :return:
+        """
+
+        if self.value == self._prev_value:
+            return
+
+        self._prev_value = self.value
+
+        if self._default_event:
+            self._event_function()
+
+    def _apply_value(self, val: Any, throw_event: bool = False):
+        """
+        Call this to avoid an event being thrown when that value is used as the current value
+        :param val:
+        :param throw_event:
+        :return:
+        """
+        if not throw_event:
+            self._prev_value = val
+
+

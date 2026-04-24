@@ -4,9 +4,10 @@ from typing import Any, Iterable, Callable, Hashable
 from SwiftGUI.Base import run_after_window_creation
 from SwiftGUI.Compat import Self
 
-from SwiftGUI import GlobalOptions, BaseWidgetTTK, Literals, Color, ElementFlag, Scrollbar
+from SwiftGUI import GlobalOptions, BaseWidgetTTK, Literals, Color, ElementFlag, Scrollbar, MixinElementWithTextValue
 
-class Combobox(BaseWidgetTTK):
+
+class Combobox(MixinElementWithTextValue, BaseWidgetTTK):
     tk_widget:ttk.Combobox
     _tk_widget:ttk.Combobox
     _tk_widget_class:type = ttk.Combobox # Class of the connected widget
@@ -106,7 +107,7 @@ class Combobox(BaseWidgetTTK):
         :param expand_y:
         :param tk_kwargs:
         """
-        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
+        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y, default_event=default_event)
 
         #choices = tuple(choices)
         if default_value is None and choices:
@@ -114,10 +115,7 @@ class Combobox(BaseWidgetTTK):
 
         self._key_function = key_function
 
-        self._default_event = default_event
-        self._event_function = lambda *_:None   # Placeholder
-
-        self._prev_value = default_value
+        self._apply_value(default_value)
 
         # Not a real element, just using it for the ttk-theme!
         # This is not the scrollbar shown in the combobox.
@@ -297,22 +295,11 @@ class Combobox(BaseWidgetTTK):
 
         super()._apply_update() # Actually apply the update
 
-    _prev_value: str    # Value of last callback
-    def _value_change_callback(self, *_):
-        if self.value == self._prev_value:
-            return
-
-        self._prev_value = self.value
-
-        if self._default_event:
-            self._event_function()
-
-    def set_value(self,val:Any):
-        self._prev_value = val  # So no event gets called
+    def set_value(self,val:Any, throw_event: bool = False):
+        self._apply_value(val, throw_event)
         super().set_value(val)
 
     def _personal_init_inherit(self):
-        self._event_function = self.window.get_event_function(self, self.key, self._key_function)
         self._set_tk_target_variable(default_key="default_value", kwargs_key= "textvariable")
         self._tk_target_value.trace_add("write", self._value_change_callback)
 

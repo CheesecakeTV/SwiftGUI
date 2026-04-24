@@ -3,11 +3,11 @@ import tkinter.font as font
 from collections.abc import Iterable, Callable
 from typing import Literal, Any, Hashable
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, MixinElementWithTextValue
 from SwiftGUI.Compat import Self
 
 
-class Spinbox(BaseWidget):
+class Spinbox(MixinElementWithTextValue, BaseWidget):
     _tk_widget_class: type = tk.Spinbox # Class of the connected widget
     tk_widget: tk.Spinbox
     defaults = GlobalOptions.Spinbox   # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
@@ -155,7 +155,7 @@ class Spinbox(BaseWidget):
         if tk_kwargs is None:
             tk_kwargs = dict()
 
-        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand,expand_y=expand_y)
+        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand,expand_y=expand_y, default_event=default_event, default_value=default_value)
         self._key_function = key_function
 
         self._default_val = default_value
@@ -233,15 +233,7 @@ class Spinbox(BaseWidget):
     def _personal_init_inherit(self):
         self._set_tk_target_variable(kwargs_key="textvariable")
 
-        if self._default_event:
-            self._window_event_function = self.window.get_event_function(
-                me = self,
-                key = self.key,
-                key_function= self._key_function,
-            )
-
-            #self._last_event_value = self.value()
-            self._tk_target_value.trace_add("write", self._value_change_callback)
+        self._tk_target_value.trace_add("write", self._value_change_callback)
 
     _last_viable_value: Any = None
     def _get_value(self) -> Any:
@@ -261,21 +253,12 @@ class Spinbox(BaseWidget):
 
     def set_value(self,val:Any) -> Self:
         try:
-            self._last_event_value = self._value_type(val)
+            # Try to convert and manually apply the new value
+            self._prev_value = self._value_type(val)
         except (ValueError, TypeError) as ex:
             raise ex.__class__(f"You tried to write a {val.__class__.__name__} to a spin-box that only allows {self._value_type.__name__}.")
 
         return super().set_value(val)
-
-    _window_event_function: Callable = None
-    _last_event_value: Any = None
-    def _value_change_callback(self, *_):   # Only throws an event on value-changes
-        if not self.window.exists:
-            return
-
-        if self._last_event_value != self.value:
-            self._last_event_value = self.value
-            self._window_event_function()   # Call the actual event
 
     def init_window_creation_done(self):
         super().init_window_creation_done()
@@ -285,6 +268,5 @@ class Spinbox(BaseWidget):
             validatecommand = (self.tk_widget.register(self._validate), "%P")
         )
 
-        if self._default_val is not None:   # No idea why the usual way doesn't work in this case...
-            self._last_event_value = self._value_type(self._default_val)
+        if self._default_val is not None:
             self._tk_target_value.set(self._default_val)

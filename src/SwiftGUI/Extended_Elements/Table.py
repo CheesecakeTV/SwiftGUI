@@ -10,7 +10,7 @@ from typing import Any, Literal, Hashable
 from SwiftGUI.Compat import Self
 from itertools import islice
 
-from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement, Scrollbar, BaseScrollbar
+from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement, Scrollbar, MixinScrollbar
 
 
 class TableRow(list):
@@ -115,7 +115,7 @@ class TableRow(list):
 
         return tuple(self) == tuple(other)
 
-class Table(BaseWidgetTTK, BaseScrollbar):
+class Table(BaseWidgetTTK, MixinScrollbar):
     tk_widget:ttk.Treeview
     _tk_widget:ttk.Treeview
     _tk_widget_class:type = ttk.Treeview # Class of the connected widget

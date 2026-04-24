@@ -4,11 +4,11 @@ from collections.abc import Iterable, Callable
 from typing import Any, Hashable
 from SwiftGUI.Compat import Self
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, BaseElement, Scrollbar, BaseScrollbar
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, BaseElement, Scrollbar, MixinScrollbar
 
 # Todo: ListboxMultiselect
 
-class Listbox(BaseWidget, BaseScrollbar):
+class Listbox(BaseWidget, MixinScrollbar):
     _tk_widget_class: type = tk.Listbox  # Class of the connected widget
     tk_widget: tk.Listbox
     defaults = GlobalOptions.Listbox  # Default values (Will be applied to kw_args-dict and passed onto the tk_widget

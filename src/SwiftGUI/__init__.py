@@ -18,7 +18,7 @@ from . import GlobalOptions, Literals, Tools, Debug
 from .ElementFlags import ElementFlag
 
 from .Events import Event
-from .Base import BaseElement,BaseWidget,BaseWidgetContainer,ElementFlag,BaseWidgetTTK, BaseScrollbar
+from .Base import BaseElement,BaseWidget,BaseWidgetContainer,ElementFlag,BaseWidgetTTK, MixinScrollbar, MixinElementWithTextValue
 #from .KeyManager import Key,SEPARATOR,duplicate_warnings   # Todo: Make some decent key-manager
 
 from .Widget_Elements.Scrollbar import Scrollbar, ScrollbarHorizontal
