@@ -1,13 +1,21 @@
 from collections.abc import Iterable
+from typing import Mapping
 import SwiftGUI as sg
 
-
-# Note to myself:
-# New popups need to be "registered" at the end of the file!
+def _apply_defaults(kwargs: Mapping, **defaults) -> dict:
+    """
+    Quick and dirty way to add default values to a dict
+    :param kwargs:
+    :param defaults:
+    :return:
+    """
+    defaults.update(kwargs)
+    return defaults
 
 def show_text(
         text: str,
         block: bool = True,
+        **window_kwargs,
 ):
     """
     Simple text-popup
@@ -21,15 +29,19 @@ def show_text(
         ]
     ]
 
-    w = sg.SubWindow(layout, padx= 30, pady= 30, keep_on_top=True)
+    w = sg.SubWindow(layout, **_apply_defaults(
+        window_kwargs,
+        padx=30,
+        pady=30,
+        keep_on_top=True,
+    ))
 
     if block:
         w.block_others_until_close()
 
 def yes_no(
         text:str,
-        *,
-        title: str = "",
+        **window_kwargs,
 ) -> bool | None:
     """
     Simple yes-or-no-question.
@@ -38,7 +50,6 @@ def yes_no(
     If the user selects nothing, None is returned.
     Otherwise, False.
 
-    :param title: Name of the window
     :param text:
     :return:
     """
@@ -59,10 +70,12 @@ def yes_no(
 
     w = sg.SubWindow(
         layout,
-        keep_on_top= True,
-        padx= 50 if len(text) < 50 else 0,
-        pady= 5,
-        title= title,
+        **_apply_defaults(
+            window_kwargs,
+            keep_on_top= True,
+            padx= 50 if len(text) < 50 else 0,
+            pady= 5,
+        )
     )
 
     w.block_others_until_close()
@@ -71,6 +84,7 @@ def yes_no(
 def button_menu(
         elements:Iterable[str],
         text:str="",
+        **window_kwargs,
 ) -> str:
     """
     Asks the user to select one element from a list of elements.
@@ -89,15 +103,21 @@ def button_menu(
         ]
     ]
 
-    e,v = sg.SubWindow(layout).loop_close()
+    e,v = sg.SubWindow(
+        layout,
+        **_apply_defaults(
+            window_kwargs,
+        )
+    ).loop_close()
     return e
 
 def get_form() -> dict:
-    ...
+    raise NotImplementedError("Nothing to see here right now...")
 
 def get_text(
         text:str = "",
         default:str = None,
+        **window_kwargs,
 ) -> str:
     """
     Ask the user to input some text.
@@ -117,7 +137,13 @@ def get_text(
         ]
     ]
 
-    w = sg.SubWindow(layout, keep_on_top=True)
+    w = sg.SubWindow(
+        layout,
+        **_apply_defaults(
+            window_kwargs,
+            keep_on_top=True,
+        )
+    )
     in_elem.set_focus()
     e,v = w.loop_close()
 
