@@ -258,6 +258,19 @@ class BaseKeyHandler(BaseElement):
         if event_loop_function is None:
             self._key_event_callback_function = lambda *_:None
 
+    actual_window: Union["Window", "SubWindow"]
+    _actual_window = None
+    @property
+    def actual_window(self) -> Union["Window", "SubWindow"]:
+        """
+        Returns the ACTUAL window, since .window is pretty corrupted by now...
+        :return:
+        """
+        if self._actual_window is None:
+            self._actual_window = self.window.actual_window
+
+        return self._actual_window
+
     @BaseElement._run_after_window_creation
     def set_custom_event_loop(self, key_event_callback_function: Callable) -> Self:
         """
@@ -850,6 +863,14 @@ class Window(BaseKeyHandler):
             self._decorated_key_functions[key] = self.get_event_function(key= key, key_function= val)
         window_logger.debug(f"Decorated functions: {len(self._decorated_key_functions)} functions were decorated")
 
+    @property
+    def actual_window(self):
+        """
+        Returns the ACTUAL window, since .window is pretty corrupted by now...
+        :return:
+        """
+        return self
+
     _resizeable_width = False
     _resizeable_height = False
     _size_before_fullscreen = None  # How big the window is before fs
@@ -1244,6 +1265,26 @@ class Window(BaseKeyHandler):
         self.root.bind("<Destroy>", self._destroy_callback)
 
         return self
+
+    @property
+    def mouse_position_global(self) -> tuple[int, int]:
+        """
+        Returns the x and y coordinate of the mouse cursor relative to the window
+        :return:
+        """
+        return self.root.winfo_pointerxy()
+
+    @property
+    def mouse_position_window(self) -> tuple[int, int]:
+        """
+        Returns x and y coordinate of the mouse-cursor on the window
+        :return:
+        """
+        x, y = self.mouse_position_global
+        x = x - self.root.winfo_rootx()
+        y = y - self.root.winfo_rooty()
+
+        return x, y
 
 class SubWindow(Window):
     """

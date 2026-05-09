@@ -5,9 +5,10 @@ from typing import Any, Hashable
 import SwiftGUI as sg
 from SwiftGUI.Compat import Self
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, MixinElementWithDefaultEvent
 
-class Canvas(BaseWidget):
+
+class Canvas(MixinElementWithDefaultEvent, BaseWidget):
     _tk_widget_class: type = tk.Canvas  # Class of the connected widget
     tk_widget: tk.Canvas
     defaults = GlobalOptions.Canvas  # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
@@ -67,7 +68,7 @@ class Canvas(BaseWidget):
             expand_y: bool = None,
             tk_kwargs: dict = None,
     ):
-        super().__init__(key, tk_kwargs=tk_kwargs, expand=expand,expand_y=expand_y)
+        super().__init__(key, tk_kwargs=tk_kwargs, expand=expand,expand_y=expand_y, default_event=default_event)
 
         self._key_elements = dict()
 
@@ -75,8 +76,6 @@ class Canvas(BaseWidget):
 
         if self.defaults.single("background_color", background_color) and not apply_parent_background_color:
             apply_parent_background_color = False
-
-        self._default_event = default_event
 
         self._contains: list[sg.Canvas_Elements.BaseCanvasElement] = list() # All elements inside this element
 
@@ -116,8 +115,8 @@ class Canvas(BaseWidget):
         super()._personal_init_inherit()
 
     def init_window_creation_done(self):
-        if self._default_event:
-            self.bind_event("<Button-1>", key=self.key, key_function=self._key_function)
+        super().init_window_creation_done()
+        self.tk_widget.bind("<Button-1>", self._event_function)
 
         for elem in self._contains:
             elem.init_window_creation_done()
@@ -161,5 +160,21 @@ class Canvas(BaseWidget):
         elem = self._key_elements[key]
         elem.delete()
         del self._key_elements[key]
+
+    @property
+    def mouse_position(self) -> tuple[float, float]:
+        """
+        Returns the mouse position on the canvas
+        :return:
+        """
+        x, y = self.tk_widget.winfo_toplevel().winfo_pointerxy()
+
+        x = x - self.tk_widget.winfo_rootx()
+        y = y - self.tk_widget.winfo_rooty()
+
+        x = self.tk_widget.canvasx(x)
+        y = self.tk_widget.canvasy(y)
+
+        return x, y
 
 
