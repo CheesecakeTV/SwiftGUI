@@ -24,7 +24,8 @@ def run_after_window_creation(w_fkt: Callable) -> Callable:
         self = args[0]
 
         if self.has_flag(ElementFlag.IS_CREATED):    # Window is already created
-            return w_fkt(*args, **kwargs)
+            w_fkt(*args, **kwargs)
+            return self
 
         def run_after():
             w_fkt(*args, **kwargs)
