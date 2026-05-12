@@ -389,7 +389,7 @@ class BaseKeyHandler(BaseElement):
             del self.all_key_elements[key]
             self._value_dict.unregister_key(key)
 
-    def throw_event(self, key: Hashable = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
+    def throw_event(self, key: Hashable = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None, reset_timeout: bool = True):
         """
         Thread-safe method to generate a custom event.
 
@@ -398,6 +398,7 @@ class BaseKeyHandler(BaseElement):
         :param function: This function will be called on the main thread
         :param key:
         :param value: If not None, it will be saved inside the value-_dict until changed
+        :param reset_timeout: True, if the timeout-timer should be reset
         :return:
         """
         if not self.exists:
@@ -415,14 +416,18 @@ class BaseKeyHandler(BaseElement):
             "callback": function,
             "callback_args": function_args,
             "callback_kwargs": function_kwargs,
-        })
+            "reset_timeout": reset_timeout,
+        }, reset_timeout=False)
 
-    def _receive_event(self, key: Hashable = None, callback: Callable = None, callback_args: tuple = tuple(), callback_kwargs: dict = None):
+    def _receive_event(self, key: Hashable = None, callback: Callable = None, callback_args: tuple = tuple(), callback_kwargs: dict = None, reset_timeout: bool = True):
         """
         Gets called when an event is evoked
         :param key:
         :return:
         """
+        if reset_timeout:
+            self._timeout_last_event = time.time()
+
         # Call the function if given
         if callback is not None:
             if callback_kwargs is None:
@@ -451,7 +456,7 @@ class BaseKeyHandler(BaseElement):
             key_function = (key_function,)
 
         def single_event(*args):
-            self._timeout_last_event = time.time()
+            #self._timeout_last_event = time.time()
 
             did_refresh = False
 
@@ -601,6 +606,9 @@ class BaseKeyHandler(BaseElement):
                 # Some event was called while sleeping
                 time.sleep(- time_since_timeout)
                 time_since_timeout = time.time() - self._timeout_last_event - self.timeout_seconds
+
+            if not self.exists: # Todo: This doesn't work yet
+                return
 
             if not self.timeout_active:
                 continue
@@ -1092,7 +1100,7 @@ class Window(BaseKeyHandler):
 
         return self._prev_event, self._value_dict
 
-    def throw_event(self, key: Hashable = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
+    def throw_event(self, key: Hashable = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None, reset_timeout: bool = True):
         """
         Thread-safe method to generate a custom event.
 
@@ -1115,7 +1123,7 @@ class Window(BaseKeyHandler):
         if function_kwargs is None and function is not None:
             function_kwargs = dict()
 
-        self.root.after(0, self._receive_event, key, function, function_args, function_kwargs)
+        self.root.after(0, self._receive_event, key, function, function_args, function_kwargs, reset_timeout)
 
     def init_window_creation_done(self):
         """Called BEFORE the elements get their call in this case"""
@@ -1448,34 +1456,15 @@ class SubWindow(Window):
         window_logger.error(f"Tried to iterate {self}, which doesn't work on sub-windows")
         raise NotImplementedError("SubWindows can't be looped. You need to define a loop-function instead.")
 
-    def throw_event(self, key: Any = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
-        """
-        Thread-safe method to generate a custom event.
-
-        :param function_kwargs: Will be passed to function
-        :param function_args: Will be passed to function
-        :param function: This function will be called on the main thread
-        :param key:
-        :param value: If not None, it will be saved inside the value-_dict until changed
-        :return:
-        """
-        keys_logger.debug(f"Manually thrown event on {self} with {key=}, {function=}")
-        if not self.exists:
-            keys_logger.debug(f"{self} doesn't exist, so manual event ignored")
-            return
-
-        if key is not None:
-            self._value_dict.set_extra_value(key, value)
-
-        if function_kwargs is None and function is not None:
-            function_kwargs = dict()
-
-        _main_window.throw_event(function= self._receive_event, function_kwargs={
-            "key": key,
-            "callback": function,
-            "callback_args": function_args,
-            "callback_kwargs": function_kwargs,
-        })
+    def throw_event(self, key: Any = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None, reset_timeout: bool = True):
+        return super(Window, self).throw_event(
+            key = key,
+            value = value,
+            function= function,
+            function_args= function_args,
+            function_kwargs= function_kwargs,
+            reset_timeout= reset_timeout,
+        )
 
     def init_window_creation_done(self):
         """Called BEFORE the elements get their call in this case"""
