@@ -96,6 +96,7 @@ from .Combined_Elements.BaseCombinedElement import BaseCombinedElement
 from .Combined_Elements.Form import Form
 from .Combined_Elements.MultistateButton import MultistateButton
 from .Combined_Elements.Console import Console
+from .Combined_Elements.Calendar import Calendar
 
 from .Utilities.Threads import clipboard_observer
 
