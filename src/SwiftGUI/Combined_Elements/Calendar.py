@@ -2,6 +2,7 @@ from typing import Callable, Iterable, Hashable, Any
 import SwiftGUI as sg
 from SwiftGUI.Compat import Self
 from datetime import datetime as dt
+from datetime import date as dt_date
 import calendar
 
 
@@ -10,12 +11,12 @@ class Calendar(sg.BaseCombinedElement):
 
     def __init__(
             self,
+            default_value: dt_date = None,
             *,
             key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
             default_event: bool = False,
 
-            default_value: dt = None,
             default_month: int = None,
             default_year: int = None,
 
@@ -30,7 +31,7 @@ class Calendar(sg.BaseCombinedElement):
             background_color_active: sg.Color | str = None,
             text_color_active: sg.Color | str = None,
     ):
-        today = dt.now()
+        today = dt_date.today()
 
         self._weekButtons: list[list[sg.Button]] = list()
         self._weekTexts: list[sg.Text] = list()
@@ -121,8 +122,8 @@ class Calendar(sg.BaseCombinedElement):
             text_color_active = text_color_active,
         )
 
-        self._selected_month: dt = today
-        self._selected_day: dt | None = None
+        self._selected_month: dt_date = today
+        self._selected_day: dt_date | None = None
 
         self.set_value(default_value)
 
@@ -246,7 +247,7 @@ class Calendar(sg.BaseCombinedElement):
         :param year:
         :return:
         """
-        date = dt(year, month, day)
+        date = dt_date(year, month, day)
 
         if self._start_on_sunday:
             num = int(date.strftime("%U")) + 1   # If you have a problem with this line, feel free to consult your diary about it. If your week starts on Sunday, you deserve performance disadvantages
@@ -266,7 +267,7 @@ class Calendar(sg.BaseCombinedElement):
         return self._selected_month.year
 
     @sg.BaseCombinedElement._run_after_window_creation
-    def see_day(self, day: dt) -> Self:
+    def see_day(self, day: dt_date) -> Self:
         """
         See the month containing this day
         :param day:
@@ -303,9 +304,9 @@ class Calendar(sg.BaseCombinedElement):
         self._month_selection_combobox.value = self._monthnames[month - 1]
         self._year_selection_spinbox.value = year
 
-        self._selected_month = dt(year, month, 1)
+        self._selected_month = dt_date(year, month, 1)
 
-        today = dt.now()
+        today = dt_date.today()
         today_in_month = today.month == month and today.year == year
 
         selection_in_month = self._selected_day is not None and self._selected_day.month == month and self._selected_day.year == year
@@ -396,13 +397,13 @@ class Calendar(sg.BaseCombinedElement):
         View the current month
         :return:
         """
-        self.see_day(dt.now())
+        self.see_day(dt_date.today())
         return self
 
-    def _get_value(self) -> dt | None:
+    def _get_value(self) -> dt_date | None:
         return self._selected_day
 
-    def set_value(self, val: dt | None) -> Self:
+    def set_value(self, val: dt_date | None) -> Self:
 
         update_necessary = self._selected_day and self._selected_month.month == self._selected_day.month
 
@@ -427,7 +428,7 @@ class Calendar(sg.BaseCombinedElement):
 
     def from_json(self, val: str | None) -> Self:
         if val:
-            self.set_value(dt.strptime(val, self._json_string_format))
+            self.set_value(dt.strptime(val, self._json_string_format).date())
         else:
             self.set_value(None)
 
