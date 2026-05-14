@@ -31,6 +31,24 @@ class Calendar(sg.BaseCombinedElement):
             background_color_active: sg.Color | str = None,
             text_color_active: sg.Color | str = None,
     ):
+        """
+        Lets the user select a certain day on a graphical calendar
+
+        :param default_value: The date selected from the start
+        :param key:
+        :param key_function:
+        :param default_event: Causes an event when the selected date CHANGES. Clicking the selected date again does nothing.
+        :param default_month: Month to be visible from the start
+        :param default_year: Year to be visible from the start
+        :param disabled: True to ignore all day-selections
+        :param allow_month_selection: False, to disable all elements the user could use to change the month
+        :param monthnames: A list of all month-names. Has to include all 12 month.
+        :param daynames: The names of weekdays written above the day-buttons. FIRST DAY MUST BE MONDAY.
+        :param week_starts_on_sunday: True, if the week should start at sunday instead of monday
+        :param today_background_color: Background-color of the day-button corresponding to the current day
+        :param background_color_active: Background-color of the selected day-button
+        :param text_color_active: Text-color of the selected day-button
+        """
         today = dt_date.today()
 
         self._weekButtons: list[list[sg.Button]] = list()
@@ -256,15 +274,26 @@ class Calendar(sg.BaseCombinedElement):
 
         return num
 
+    visible_month: int
     @property
     def visible_month(self) -> int:
         """Which month is currently visible"""
         return self._selected_month.month
 
+    @visible_month.setter
+    def visible_month(self, new_val: int):
+        self.see_month(new_val)
+
+    visible_year: int
     @property
     def visible_year(self) -> int:
-        """Which month is currently visible"""
+        """Which year is currently visible"""
         return self._selected_month.year
+
+    @visible_year.setter
+    def visible_year(self, new_val: int):
+        """Which year is currently visible"""
+        self.see_month(year= new_val)
 
     @sg.BaseCombinedElement._run_after_window_creation
     def see_day(self, day: dt_date) -> Self:
@@ -400,6 +429,16 @@ class Calendar(sg.BaseCombinedElement):
         self.see_day(dt_date.today())
         return self
 
+    def see_selected_day(self) -> Self:
+        """
+        View the selected month
+        :return:
+        """
+        if self._selected_day is not None:
+            self.see_day(self._selected_day)
+        return self
+
+    value: dt_date | None
     def _get_value(self) -> dt_date | None:
         return self._selected_day
 
@@ -453,3 +492,7 @@ class Calendar(sg.BaseCombinedElement):
             self.throw_default_event()
 
         self.done(self.value)
+
+    def popup(self, **window_kwargs) -> dt_date | None:
+        return super().popup(**window_kwargs)
+
