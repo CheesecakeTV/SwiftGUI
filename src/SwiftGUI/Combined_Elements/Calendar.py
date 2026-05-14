@@ -1,4 +1,4 @@
-from typing import Callable, Iterable, Hashable
+from typing import Callable, Iterable, Hashable, Any
 import SwiftGUI as sg
 from SwiftGUI.Compat import Self
 from datetime import datetime as dt
@@ -6,6 +6,7 @@ import calendar
 
 
 class Calendar(sg.BaseCombinedElement):
+    defaults = sg.GlobalOptions.Calendar
 
     def __init__(
             self,
@@ -14,39 +15,146 @@ class Calendar(sg.BaseCombinedElement):
             key_function: Callable | Iterable[Callable] = None,
             default_event: bool = False,
 
-            week_starts_on_sunday: bool = False,
-            today_button_color: sg.Color | str = "darkblue",
-            active_button_color: sg.Color | str = "darkred",
+            default_value: dt = None,
+            default_month: int = None,
+            default_year: int = None,
+
+            disabled: bool = None,
+            allow_month_selection: bool = None,
+
+            monthnames: Iterable[str] = None,
+            daynames: Iterable[str] = None,
+            week_starts_on_sunday: bool = None,
+
+            today_background_color: sg.Color | str = None,
+            background_color_active: sg.Color | str = None,
+            text_color_active: sg.Color | str = None,
     ):
+        today = dt.now()
+
         self._weekButtons: list[list[sg.Button]] = list()
         self._weekTexts: list[sg.Text] = list()
 
-        self._today_button_color = today_button_color
-        self._active_button_color = active_button_color
+        monthnames = list(self.defaults.single("monthnames", monthnames))
+        self._monthnames = monthnames
 
+        self._today_button_color = None
+        self._active_button_color = None
+        self._active_text_color = None
+
+        week_starts_on_sunday = self.defaults.single("week_starts_on_sunday", week_starts_on_sunday)
         self._start_on_sunday = week_starts_on_sunday
-
-        self._selected_day: dt | None = None
-        self._selected_month: dt = dt.now()
 
         calendar.setfirstweekday(6 if week_starts_on_sunday else 0)  # 6 Sunday, 0 Monday
 
         layout = [
             [
-                sg.T(),
-                *self._getDayHeaders(week_starts_on_sunday),
-            ],
-            *[self._getButtonRow() for _ in range(6)],
+                month_combo := sg.ComboboxMapping(
+                    dict(zip(monthnames, range(1, 13))),
+                    key_function= lambda val: self.see_month(val),
+                    default_event=True,
+                    expand=True,
+                    justify= "center",
+                ),
+            ],[
+                year_spinbox := sg.Spinbox(
+                    default_value= 0,
+                    increment=1,
+                    value_type= int,
+                    number_min=0,
+                    number_max=10000,
+                    default_event=True,
+                    key_function= lambda val: self.see_month(year=val),
+                    expand=True,
+                    justify= "center",
+                )
+            ], today_list := [
+                sg.Button(
+                    "◄",
+                    key_function= self.see_prior_month,
+                    width=2,
+                ),
+                sg.Button(
+                    "Today",
+                    key_function= self.see_today,
+                    expand=True,
+                ),
+                sg.Button(
+                    "►",
+                    key_function=self.see_next_month,
+                    width=2,
+                ),
+            ], [
+                sg.Spacer(height=5),
+            ], [
+                sg.GridFrame([
+                    [
+                            sg.T(),
+                            *self._getDayHeaders(week_starts_on_sunday, texts=tuple(self.defaults.single("daynames", daynames))),
+                        ],
+                        *[self._getButtonRow() for _ in range(6)],
+                    ]
+                )
+            ]
         ]
 
+        # All elements that should be disabled when allow_month_selection = false
+        self._month_selection_buttons = today_list
+
+        self._month_selection_combobox = month_combo
+        self._year_selection_spinbox = year_spinbox
+
+        self._disabled = None   # If the selection of days is allowed
+
         super().__init__(
-            sg.GridFrame(layout),
+            layout,
             default_event=default_event,
             key=key,
             key_function=key_function,
         )
 
-        self.see_month(self._selected_month.month)
+        self._update_initial(
+            allow_month_selection = allow_month_selection,
+            disabled = disabled,
+            today_background_color = today_background_color,
+            background_color_active = background_color_active,
+            text_color_active = text_color_active,
+        )
+
+        self._selected_month: dt = today
+        self._selected_day: dt | None = None
+
+        self.set_value(default_value)
+
+        if default_month:
+            self.see_month(default_month, default_year)
+        elif default_year:
+            self.see_month(year=default_year)
+        else:
+            self.see_month(self._selected_month.month)
+
+    def _update_special_key(self,key:str,new_val:Any) -> bool|None:
+        match key:
+            case "allow_month_selection":
+                for elem in self._month_selection_buttons:
+                    elem.update_after_window_creation(disabled = not new_val)
+                self._month_selection_combobox.update_after_window_creation(disabled = not new_val)
+                self._year_selection_spinbox.update_after_window_creation(state = "normal" if new_val else "disabled")
+
+            case "disabled":
+                self._disabled = new_val
+
+            case "today_background_color":
+                self._today_button_color = new_val
+            case "background_color_active":
+                self._active_button_color = new_val
+            case "text_color_active":
+                self._active_text_color = new_val
+
+            case _:
+                return super()._update_special_key(key, new_val)
+
+        return True
 
     def _getButtonRow(self) -> list[sg.BaseElement]:
         """
@@ -71,7 +179,7 @@ class Calendar(sg.BaseCombinedElement):
     @staticmethod
     def _getDayHeaders(
             startAtSunday: bool = False,
-            texts: tuple[str] = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"),
+            texts: tuple[str, ...] = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"),
     ) -> list[sg.Text]:
         """
         Return the texts on top of the calendar.
@@ -86,7 +194,8 @@ class Calendar(sg.BaseCombinedElement):
             sg.T(text) for text in texts
         ]
 
-    def _apply_day_to_button(self, day: int, button: sg.Button, mark_background: sg.Color = None, out_of_month: bool = False):
+    @staticmethod
+    def _apply_day_to_button(day: int, button: sg.Button, mark_background: sg.Color = None, mark_text: sg.Color = None, out_of_month: bool = False):
         """
         Write a day-number onto a button.
 
@@ -94,6 +203,7 @@ class Calendar(sg.BaseCombinedElement):
         :param button:
         :param out_of_month: True, if the button is not in the current month
         :param mark_background: Pass this to change the background-color of the button (if part of the month). Otherwise, it is reset
+        :param mark_text: Pass this to change the text-color. Otherwise, it's reset
         :return:
         """
         if not day:
@@ -103,9 +213,13 @@ class Calendar(sg.BaseCombinedElement):
 
         if mark_background is None:
             button.update_to_default_value("background_color")
+        elif not out_of_month:
+            button.update(background_color = mark_background)
+
+        if mark_text is None:
+            button.update_to_default_value("text_color")
         else:
-            if not out_of_month:
-                button.update(background_color = mark_background)
+            button.update(text_color = mark_text)
 
         button.update(disabled= out_of_month)
 
@@ -174,8 +288,20 @@ class Calendar(sg.BaseCombinedElement):
         # That's because working with dates is horrible.
         # Critique it all you want but it works quite reliable.
 
-        if year is None:
+        if not month:
+            month = self._selected_month.month
+
+        if year is None or year > 10000:
             year = self._selected_month.year
+
+        if year == 0:
+            return self
+
+        # if month == self._selected_month.month and year == self._selected_month.year:
+        #     return self
+
+        self._month_selection_combobox.value = self._monthnames[month - 1]
+        self._year_selection_spinbox.value = year
 
         self._selected_month = dt(year, month, 1)
 
@@ -211,15 +337,17 @@ class Calendar(sg.BaseCombinedElement):
 
             for day, button in zip(days, row):
                 if day:
-                    color = None
+                    bg_color = None
+                    text_color = None
 
                     if today_in_month and day == today.day: # Test if the button is today
-                        color = self._today_button_color
+                        bg_color = self._today_button_color
 
                     if selection_in_month and day == self._selected_day.day: # Test if the button is selected
-                        color = self._active_button_color
+                        bg_color = self._active_button_color
+                        text_color = self._active_text_color
 
-                    self._apply_day_to_button(day, button, mark_background=color)
+                    self._apply_day_to_button(day, button, mark_background=bg_color, mark_text=text_color)
                     reached_start_of_month = True
 
                     if not refreshed_weeknumber:
@@ -235,7 +363,7 @@ class Calendar(sg.BaseCombinedElement):
 
         return self
 
-    def see_next_month(self):
+    def see_next_month(self) -> Self:
         """
         Quick way to view (see) the next month instead of manually incrementing it by 1.
         :return:
@@ -247,7 +375,9 @@ class Calendar(sg.BaseCombinedElement):
         else:
             self.see_month(1, self.visible_year + 1)
 
-    def see_prior_month(self):
+        return self
+
+    def see_prior_month(self) -> Self:
         """
         Quick way to view (see) the previous month instead of manually decrementing it by 1.
         :return:
@@ -258,6 +388,16 @@ class Calendar(sg.BaseCombinedElement):
             self.see_month(prior_month)
         else:
             self.see_month(12, self.visible_year - 1)
+
+        return self
+
+    def see_today(self) -> Self:
+        """
+        View the current month
+        :return:
+        """
+        self.see_day(dt.now())
+        return self
 
     def _get_value(self) -> dt | None:
         return self._selected_day
@@ -300,6 +440,9 @@ class Calendar(sg.BaseCombinedElement):
         :param val:
         :return:
         """
+        if self._disabled:
+            return
+
         val = int(val)
 
         new_dt = self._selected_month.replace(day=val)
@@ -307,3 +450,5 @@ class Calendar(sg.BaseCombinedElement):
         if new_dt != self.value:
             self.value = new_dt
             self.throw_default_event()
+
+        self.done(self.value)

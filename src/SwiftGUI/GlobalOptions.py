@@ -1,5 +1,6 @@
 #import tkinter as tk    # Not needed, but helpful to figure out default vals
 #from tkinter import ttk
+import calendar
 from collections.abc import Iterable
 from os import PathLike
 from typing import Literal, Union, Any, Callable
@@ -576,6 +577,13 @@ class Console(TextField):
     print_prefix: str = " "
     add_timestamp: bool = True
     scrollbar: bool = True
+
+class Calendar(Button):
+    allow_month_selection: bool = True
+    monthnames: Iterable[str] = calendar.month_name[1:]
+    daynames: Iterable[str] = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+    week_starts_on_sunday: bool = False
+    today_background_color: sg.Color | str = "darkblue"
 
 class Canvas(Common, Common_Field_Background):
     width: int = None
