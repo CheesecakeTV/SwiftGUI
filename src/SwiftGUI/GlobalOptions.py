@@ -407,6 +407,9 @@ class Window(Common_Background):
     grab_anywhere: bool = False
     padx: int = 5
     pady: int = 5
+    hidden: bool = False
+    minimized: bool = False
+
 
 class SubWindow(Window):
     ...

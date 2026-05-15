@@ -21,6 +21,7 @@ dependencies = [
     "pillow",
     "datetime",
     "SwiftGUI_Logging",
+    "typing-extensions",
 ]
 [project.urls]
 Repository = "https://github.com/CheesecakeTV/SwiftGUI"

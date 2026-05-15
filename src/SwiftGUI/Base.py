@@ -11,8 +11,10 @@ from SwiftGUI.ElementFlags import ElementFlag
 import logging
 element_logger = logging.getLogger("SwiftGUI.Element")
 
-def run_after_window_creation(w_fkt: Callable) -> Callable:
+def run_after_window_creation(w_fkt: Callable):
     """
+    Decorator.
+
     Decorated methods will run if the window exists.
     Only use on methods, not functions!
 
@@ -426,7 +428,7 @@ class BaseWidget(BaseElement):
         return self
 
     @run_after_window_creation
-    def bind_event(self,tk_event:str|Event,key_extention:Union[str,Any]=None,key:Any=None,key_function:Callable|Iterable[Callable]=None)->Self:
+    def bind_event(self,tk_event:str|Event,key_extention:Union[str,Any]=None,key:Any=None,key_function:Callable|Iterable[Callable]=None) -> Self:
         """
         Bind a tk-event onto the underlying tk-widget
 

@@ -787,6 +787,8 @@ class Window(BaseKeyHandler):
             event_loop_function: Callable = None,
             padx: int = None,
             pady: int = None,
+            hidden: bool = None,
+            minimized: bool = None,
             ttk_theme: str = None,
     ):
         """
@@ -805,6 +807,8 @@ class Window(BaseKeyHandler):
         :param icon: Icon of the window. Has to be .ico
         :param keep_on_top: True, if the window should always be on top of any other window
         :param grab_anywhere: True, if the window can be "held and dragged" anywhere (exclusing certain elements)
+        :param hidden: True to hide this window as if it wasn't even open
+        :param minimized: True to minimize the window to the taskbar
         """
         global ttk_style
         global _main_window
@@ -855,6 +859,8 @@ class Window(BaseKeyHandler):
             ttk_theme=ttk_theme,
             padx=padx,
             pady=pady,
+            hidden=hidden,
+            minimized=minimized,
         )
 
         self.init(self._sg_widget, self.root, grab_anywhere_window= self)
@@ -883,6 +889,7 @@ class Window(BaseKeyHandler):
     _resizeable_height = False
     _size_before_fullscreen = None  # How big the window is before fs
     _position_before_fullscreen = None  # Where the window is before fs
+    _state_before_hiding = None
     def _update_special_key(self, key:str, new_val:Any) -> bool|None:
         # if not self.window.has_flag(ElementFlag.IS_CREATED) and key in ["fullscreen"]:
         #     self.update_after_window_creation(**{key: new_val})
@@ -910,18 +917,27 @@ class Window(BaseKeyHandler):
                     return True
 
                 #self.root.state("zoomed" if new_val else "normal")
-                if new_val and not self._size_before_fullscreen:
+
+                if new_val:
                     self._size_before_fullscreen = self.root.winfo_width(), self.root.winfo_height()
                     self._position_before_fullscreen = self.root.winfo_x(), self.root.winfo_y()
-                    wi = self.root.winfo_screenwidth()
-                    hi = self.root.winfo_screenheight()
-                    #self.root.geometry(f"{wi}x{hi}+0+0")  # Maximiert das Fenster
-                    self.update_after_window_creation(position=(0,0), size=(wi, hi))
-                elif not new_val:
-                    self.update(size=self._size_before_fullscreen)
-                    self.update(position=self._position_before_fullscreen)
-                    self._size_before_fullscreen = None
-                    self._position_before_fullscreen = None
+                    self.root.state("zoomed")
+                else:
+                    self.root.state("normal")
+                    self.update(size=self._size_before_fullscreen, position=self._position_before_fullscreen)
+
+                # This looks better, but always places the window on the first screen:
+                # if new_val and not self._size_before_fullscreen:
+                #     self._size_before_fullscreen = self.root.winfo_width(), self.root.winfo_height()
+                #     self._position_before_fullscreen = self.root.winfo_x(), self.root.winfo_y()
+                #     wi = self.root.winfo_screenwidth()
+                #     hi = self.root.winfo_screenheight()
+                #     #self.root.geometry(f"{wi}x{hi}+0+0")  # Maximize the window
+                #     self.update_after_window_creation(position=(0,0), size=(wi, hi))
+                # elif not new_val:
+                #     self.update(size=self._size_before_fullscreen, position=self._position_before_fullscreen)
+                #     self._size_before_fullscreen = None
+                #     self._position_before_fullscreen = None
 
             case "transparency":
                 if new_val is not None:
@@ -987,6 +1003,38 @@ class Window(BaseKeyHandler):
                 self._sg_widget.update(padx=new_val)
             case "pady":
                 self._sg_widget.update(pady=new_val)
+
+            case "hidden":
+                if new_val is None:
+                    return True
+
+                if not self.has_flag(ElementFlag.IS_CREATED):
+                    self.update_after_window_creation(hidden=new_val)
+                    return True
+
+                if new_val:
+                    if self._state_before_hiding is None:
+                        self._state_before_hiding = self.root.state()
+
+                    self.root.withdraw()
+                elif self._state_before_hiding is not None:
+                    self.root.state(self._state_before_hiding)
+                    self._state_before_hiding = None
+
+            case "minimized":
+                if new_val is None:
+                    return True
+
+                if not self.has_flag(ElementFlag.IS_CREATED):
+                    self.update_after_window_creation(minimized=new_val)
+                    return True
+
+                if new_val and self.root.state() == "normal":
+                    self.root.iconify()
+
+                if not new_val and self.root.state() == "iconic":
+                    self.root.deiconify()
+
             case _:
                 return super()._update_special_key(key, new_val)
 
@@ -1009,6 +1057,8 @@ class Window(BaseKeyHandler):
             background_color: Color | str = None,
             padx: int = None,
             pady: int = None,
+            hidden: bool = None,
+            minimized: bool = None,
             ttk_theme: str = None,
     ):
         super().update(
@@ -1028,6 +1078,8 @@ class Window(BaseKeyHandler):
             padx = padx,
             pady = pady,
             ttk_theme = ttk_theme,
+            hidden = hidden,
+            minimized = minimized,
         )
 
         return self
@@ -1198,6 +1250,33 @@ class Window(BaseKeyHandler):
         self.root.eval("tk::PlaceWindow . center")
         return self
 
+    def move_to_screen_centered(self) -> Self:  # Compatability, same as .center
+        """
+        Centers the window on the current screen
+        :return:
+        """
+        self.center()
+        return self
+
+    @BaseElement._run_after_window_creation
+    def move_to_mouse_centered(self) -> Self:
+        """
+        Move the window in a way that its center is where the mousecursor is
+        :return:
+        """
+        size_x, size_y = self.root.winfo_width() // 2, self.root.winfo_height() // 2
+        mouse_x, mouse_y = self.mouse_position_global
+
+        to_x, to_y = max(mouse_x - size_x, 0), max(mouse_y - size_y, 0)
+
+        self._update_initial(position = (to_x, to_y))
+        return self
+
+    @BaseElement._run_after_window_creation
+    def move_to_mouse(self) -> Self:
+        self._update_initial(position = self.mouse_position_global)
+        return self
+
     @BaseElement._run_after_window_creation
     def bind_grab_anywhere_to_element(self, widget: tk.Widget):
         """
@@ -1216,6 +1295,21 @@ class Window(BaseKeyHandler):
             widget.bind('<ButtonPress-1>', self._SaveLastClickPos)
             widget.bind('<ButtonRelease-1>', self._DelLastClickPos)
             widget.bind('<B1-Motion>', self._Dragging)
+
+    @BaseElement._run_after_window_creation
+    def fullscreen(self, fullscreen: bool = True, change_titlebar: bool = True) -> Self:
+        """
+        Enter, or exit the fullscreen-mode
+        :param fullscreen: True to enter fullscreen, False to exit it
+        :param change_titlebar: True to remove/re-add the titlebar
+        :return:
+        """
+        titlebar = None
+        if change_titlebar:
+            titlebar = not fullscreen
+
+        self.update(fullscreen=fullscreen, titlebar=titlebar)
+        return self
 
     def block_others(self) -> Self:
         """
@@ -1293,6 +1387,18 @@ class Window(BaseKeyHandler):
         y = y - self.root.winfo_rooty()
 
         return x, y
+
+class HiddenMainWindow(Window):
+    def __init__(self):
+        """
+        Create an invisible window that acts as the main window.
+        This way, you can use subwindows/popups/etc. without them turning into the main window.
+
+        IMPORTANT: Make sure to close this window when the program closes!
+        Otherwise it will run in the background until the PC is shutdown.
+        """
+        super().__init__([])
+        self.update(hidden=True)
 
 class SubWindow(Window):
     """
