@@ -463,7 +463,7 @@ class BaseKeyHandler(BaseElement):
             if key_function: # Call key-functions
                 self.refresh_values()
 
-                kwargs = {  # Possible parameters for function
+                kwargs = {  # Possible parameters for function  # Todo: Make the parameter-names changeable, if it isn't too late for that already
                     "w": self,  # Reference to this "window"    # Todo: Decide if this should be a window instead
                     "e": key,   # Event-key, if there is one
                     "v": self._value_dict,   # All values

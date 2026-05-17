@@ -3,10 +3,10 @@ import tkinter.font as font
 from collections.abc import Iterable, Callable
 from typing import Literal, Any, Hashable
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, MixinElementWithDefaultEvent
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, MixinElementWithValue
 
 
-class Checkbox(MixinElementWithDefaultEvent, BaseWidget):
+class Checkbox(MixinElementWithValue, BaseWidget):
     _tk_widget_class: type = tk.Checkbutton  # Class of the connected widget
     tk_widget: tk.Checkbutton
     defaults = GlobalOptions.Checkbox  # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
@@ -78,7 +78,7 @@ class Checkbox(MixinElementWithDefaultEvent, BaseWidget):
             expand_y: bool = None,
             tk_kwargs: dict = None,
     ):
-        super().__init__(key, tk_kwargs=tk_kwargs, expand=expand,expand_y=expand_y)
+        super().__init__(key, tk_kwargs=tk_kwargs, expand=expand,expand_y=expand_y, default_value=default_value)
 
         self._key_function = key_function
 
@@ -135,13 +135,17 @@ class Checkbox(MixinElementWithDefaultEvent, BaseWidget):
 
     def _personal_init_inherit(self):
         self._set_tk_target_variable(tk.IntVar, kwargs_key="variable", default_key="default_value")
+        #self._tk_kwargs["command"] = self._event_callback
 
-        self._tk_kwargs["command"] = self._event_callback
+    def init_window_creation_done(self):
+        super().init_window_creation_done()
+        self._tk_target_value.trace_add("write", self._event_callback)
 
     def _get_value(self) -> bool:
         return bool(super()._get_value())
 
     def set_value(self, val: bool):
+        self._apply_value(val)
         super().set_value(int(val))
 
     def _update_font(self):
@@ -204,7 +208,7 @@ class Checkbox(MixinElementWithDefaultEvent, BaseWidget):
         Toggle the button WITHOUT throwing an event.
         :return:
         """
-        self.tk_widget.toggle()
+        self.value = not self.value
 
     def flash(self):
         """
