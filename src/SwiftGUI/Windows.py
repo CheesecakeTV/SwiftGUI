@@ -233,7 +233,7 @@ class BaseKeyHandler(BaseElement):
     all_key_elements: dict[Any, "AnyElement"]   # Key:Element, if key is present
     all_elements: list["AnyElement"] = list()   # Every single element
 
-    exists: bool = False # True, if this window exists at the moment
+    _exists: bool = False # True, if this window exists at the moment
 
     value: ValueDict
 
@@ -306,7 +306,7 @@ class BaseKeyHandler(BaseElement):
 
         #self._value_dict = ValueDict(self, set(self.all_key_elements.keys()))
 
-        self.exists = True
+        self._exists = True
 
         self.init_window_creation_done()    # This is before the rest on purpose...
 
@@ -325,6 +325,20 @@ class BaseKeyHandler(BaseElement):
             raise StopIteration
 
         return e,v
+
+    @property
+    def exists(self) -> bool:
+        """
+        Check if the window exists.
+        :return:
+        """
+        if not self._exists:
+            return False
+
+        try:
+            return self.root.winfo_exists()
+        except tk.TclError:
+            return False
 
     def __contains__(self, item):
         return item in self.all_key_elements.keys()
@@ -602,12 +616,12 @@ class BaseKeyHandler(BaseElement):
             time.sleep(self.timeout_seconds)
 
             time_since_timeout = time.time() - self._timeout_last_event - self.timeout_seconds
-            while time_since_timeout < 0:
+            while time_since_timeout <= 0:
                 # Some event was called while sleeping
                 time.sleep(- time_since_timeout)
                 time_since_timeout = time.time() - self._timeout_last_event - self.timeout_seconds
 
-            if not self.exists: # Todo: This doesn't work yet
+            if not self.exists:
                 return
 
             if not self.timeout_active:
@@ -671,6 +685,16 @@ class SubLayout(BaseKeyHandler):
         self.frame.delete()
         self.remove_flags(ElementFlag.IS_CREATED)
         return self
+
+    @property
+    def exists(self) -> bool:
+        if not hasattr(self, "window"):
+            return False
+
+        if not self._exists:
+            return False
+
+        return self.window.exists()
 
 all_windows: list["Window"] = list()
 def close_all_windows():
@@ -1114,7 +1138,7 @@ class Window(BaseKeyHandler):
             _main_window = None  # un-register this window as the main window
             window_logger.info("Main window was closed")
 
-        self.exists = False
+        self._exists = False
         self.remove_flags(ElementFlag.IS_CREATED)
 
     def loop(self) -> tuple[Any, ValueDict]:
@@ -1126,7 +1150,7 @@ class Window(BaseKeyHandler):
         :return: Triggering event key; all values as _dict
         """
         #window_logger.debug("Main window waiting for next event")
-        self.exists = True
+        self._exists = True
 
         while True:
             self.root.mainloop()
@@ -1134,7 +1158,7 @@ class Window(BaseKeyHandler):
             try:
                 assert self.root.winfo_exists()
             except (AssertionError,tk.TclError):
-                self.exists = False # This looks redundant, but it's easier to use self.exists from outside. So leave it!
+                self._exists = False # This looks redundant, but it's easier to use self.exists from outside. So leave it!
 
                 self.close()
 
