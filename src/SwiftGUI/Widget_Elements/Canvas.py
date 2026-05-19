@@ -161,8 +161,7 @@ class Canvas(MixinElementWithDefaultEvent, BaseWidget):
         elem.delete()
         del self._key_elements[key]
 
-    @property
-    def mouse_position(self) -> tuple[float, float]:
+    def get_mouse_position(self) -> tuple[float, float]:
         """
         Returns the mouse position on the canvas
         :return:

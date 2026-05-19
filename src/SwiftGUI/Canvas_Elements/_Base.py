@@ -97,6 +97,32 @@ class BaseCanvasElement(sg.BaseWidget): # Inheritance mainly for the update-rout
         self.canvas.tk_widget.moveto(self.canvas_id, x, y)
         return self
 
+    def move_to_center(self, x: float, y: float) -> Self:
+        """
+        Move this element to the specified coordinates
+        The element's center will be at the specified coordinates
+
+        :param x:
+        :param y:
+        :return:
+        """
+        size_x, size_y = self.get_size()
+
+        self.move_to(x - size_x / 2, y - size_y / 2)
+
+        return self
+
+    def get_size(self) -> tuple[float, float]:
+        """
+        Return the size of the boundary-box of this object
+        :return:
+        """
+        ((b1x, b1y), (b2x, b2y)) = self.get_boundary()
+        size_x = b2x - b1x
+        size_y = b2y - b1y
+
+        return size_x, size_y
+
     #@sg.BaseWidget._run_after_window_creation
     def move(self, x: float, y: float) -> Self:
         """

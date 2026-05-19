@@ -1289,7 +1289,7 @@ class Window(BaseKeyHandler):
         :return:
         """
         size_x, size_y = self.root.winfo_width() // 2, self.root.winfo_height() // 2
-        mouse_x, mouse_y = self.mouse_position_global
+        mouse_x, mouse_y = self.get_mouse_position_global()
 
         to_x, to_y = max(mouse_x - size_x, 0), max(mouse_y - size_y, 0)
 
@@ -1298,7 +1298,7 @@ class Window(BaseKeyHandler):
 
     @BaseElement._run_after_window_creation
     def move_to_mouse(self) -> Self:
-        self._update_initial(position = self.mouse_position_global)
+        self._update_initial(position = self.get_mouse_position_global())
         return self
 
     @BaseElement._run_after_window_creation
@@ -1392,21 +1392,19 @@ class Window(BaseKeyHandler):
 
         return self
 
-    @property
-    def mouse_position_global(self) -> tuple[int, int]:
+    def get_mouse_position_global(self) -> tuple[int, int]:
         """
         Returns the x and y coordinate of the mouse cursor relative to the window
         :return:
         """
         return self.root.winfo_pointerxy()
 
-    @property
-    def mouse_position_window(self) -> tuple[int, int]:
+    def get_mouse_position_window(self) -> tuple[int, int]:
         """
         Returns x and y coordinate of the mouse-cursor on the window
         :return:
         """
-        x, y = self.mouse_position_global
+        x, y = self.get_mouse_position_global()
         x = x - self.root.winfo_rootx()
         y = y - self.root.winfo_rooty()
 
