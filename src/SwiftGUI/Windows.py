@@ -9,7 +9,7 @@ from functools import wraps
 from os import PathLike
 from tkinter import ttk, Widget
 from collections.abc import Iterable,Callable
-from typing import TYPE_CHECKING, Any, Union, Hashable
+from typing import TYPE_CHECKING, Any, Union, Hashable, Literal
 from SwiftGUI.Compat import Self
 import inspect
 from PIL import Image, ImageTk
@@ -350,7 +350,7 @@ class BaseKeyHandler(BaseElement):
         """
         ...
 
-    def loop_close(self) -> tuple[Any,dict[Any:Any]]:
+    def loop_close(self) -> tuple[Any,dict[Any, Any]]:
         """
         Loop once, then close
         :return:
@@ -801,7 +801,7 @@ class Window(BaseKeyHandler):
             resizeable_height: bool = None,
             transparency: Literals.transparency = None,  # 0-1, 1 meaning invisible
             size: int | tuple[int, int] = (None, None),
-            position: tuple[int, int] = (None, None),  # Position on monitor
+            position: Literal["center", "cursor"] | tuple[int, int] = None,
             min_size: int | tuple[int, int] = (None, None),
             max_size: int | tuple[int, int] = (None, None),
             icon: str | PathLike | Image.Image | io.BytesIO = None,  # .ico file
@@ -890,9 +890,6 @@ class Window(BaseKeyHandler):
         self.init(self._sg_widget, self.root, grab_anywhere_window= self)
 
         self.bind_grab_anywhere_to_element(self._sg_widget.tk_widget)
-
-        if position == (None, None):
-            self.center()
 
         #window_logger.debug(f"Fetching decorated key-functions...")
         self._decorated_key_functions = dict()
@@ -986,6 +983,13 @@ class Window(BaseKeyHandler):
                     self.root.geometry(geometry)
             case "position":
                 if new_val is None:
+                    return True
+
+                if new_val == "center":
+                    self.move_to_screen_centered()
+                    return True
+                elif new_val == "cursor":
+                    self.move_to_mouse()
                     return True
 
                 geometry = ""
@@ -1451,7 +1455,7 @@ class SubWindow(Window):
             resizeable_height: bool = None,
             transparency: Literals.transparency = None,  # 0-1, 1 meaning invisible
             size: int | tuple[int, int] = (None, None),
-            position: tuple[int, int] = (None, None),  # Position on monitor
+            position: Literal["center", "cursor"] | tuple[int, int] = None,
             min_size: int | tuple[int, int] = (None, None),
             max_size: int | tuple[int, int] = (None, None),
             icon: str | PathLike | Image.Image | io.BytesIO = None,  # .ico file
@@ -1522,11 +1526,6 @@ class SubWindow(Window):
         self.init(self._sg_widget, self.root, grab_anywhere_window= self)
 
         self.bind_grab_anywhere_to_element(self._sg_widget.tk_widget)
-
-        if position == (None, None):
-            #self.root.wait_visibility()
-            self.root.update_idletasks()
-            self.center()
 
         self.key = key
         if key is not None:

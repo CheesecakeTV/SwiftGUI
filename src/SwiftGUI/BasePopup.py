@@ -1,7 +1,7 @@
 import io
 from collections.abc import Iterable
 from os import PathLike
-from typing import Hashable, Any
+from typing import Hashable, Any, Literal
 from PIL import Image
 
 import SwiftGUI as sg
@@ -16,6 +16,7 @@ class BasePopupNonblocking:
             keep_on_top: bool = None,
             title: str = None,
             titlebar: bool = None,
+            position: Literal["center", "cursor"] | tuple[int, int] = None,
             size: int | tuple[int, int] = (None, None),
             icon: str | PathLike | Image.Image | io.BytesIO = None,  # .ico file
             background_color: Color | str = None,
@@ -33,6 +34,7 @@ class BasePopupNonblocking:
             icon = icon,
             background_color = background_color,
             grab_anywhere = grab_anywhere,
+            position = position,
             **kwargs,
         )
 
@@ -75,6 +77,7 @@ class BasePopup(BasePopupNonblocking):
             title: str = None,
             titlebar: bool = None,
             size: int | tuple[int, int] = (None, None),
+            position: Literal["center", "cursor"] | tuple[int, int] = None,
             icon: str | PathLike | Image.Image | io.BytesIO = None,  # .ico file
             background_color: Color | str = None,
             grab_anywhere: bool = None,
@@ -93,6 +96,7 @@ class BasePopup(BasePopupNonblocking):
             icon = icon,
             background_color = background_color,
             grab_anywhere = grab_anywhere,
+            position = position,
             **kwargs,
         )
 

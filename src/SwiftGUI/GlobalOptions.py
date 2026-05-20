@@ -398,7 +398,7 @@ class Window(Common_Background):
     fullscreen: bool = False
     transparency: Literals.transparency = 0  # 0-1, 1 meaning invisible
     size: int | tuple[int, int] = (None, None)
-    position: tuple[int, int] = (None, None)  # Position on monitor # Todo: Center
+    position: Literal["center", "cursor"] | tuple[int, int] = "center"
     min_size: int | tuple[int, int] = (None, None)
     max_size: int | tuple[int, int] = (None, None)
     icon: str = file_from_b64(Extras.SwiftGUI.icon)
