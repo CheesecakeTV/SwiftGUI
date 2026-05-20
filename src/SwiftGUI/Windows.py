@@ -1216,6 +1216,15 @@ class Window(BaseKeyHandler):
             #window_logger.debug(f"...starting {fct}")
             fct()
 
+    def _bind_event_to_widget(self, tk_event: str, event_function: Callable) -> Self:
+        """Called in 'bind_event'. Inherit this is the event must be bound differently."""
+        self.root.bind(
+            tk_event,
+            event_function,
+            "+",
+        )
+        return self
+
     def _keyed_event_callback(self, key: Any, _):
         self._prev_event = key
         self.root.quit()

@@ -335,6 +335,49 @@ class BaseElement(_BaseSharedAttributes):
     def __repr__(self) -> str:
         return f"<sg.{self.__class__.__name__} element at {id(self)}>"
 
+    def _bind_event_to_widget(self, tk_event: str, event_function: Callable) -> Self:
+        """Called in 'bind_event'. Inherit this is the event must be bound differently."""
+        raise NotImplementedError(f"{self} doesn't allow binding an event to it.")
+
+    @run_after_window_creation
+    def bind_event(self,tk_event:str|Event,key_extention:Union[str,Any]=None,key:Any=None,key_function:Callable|Iterable[Callable]=None) -> Self:
+        """
+        Bind a tk-event onto the underlying tk-widget
+
+        To just throw the element-key, set key_extention = ""
+
+        :param tk_event: tkinter event-string. You don't need to add brackets, if your event-text is longer than 1 char
+        :param key_extention: Added to the event-key
+        :param key: event-key. If None and key_extention is not None, it will be appended onto the element-key
+        :param key_function: Called when this event is thrown
+        :return: Calling element for inline-calls
+        """
+        new_key = None
+        element_logger.debug(f"bind_event on {self}: {tk_event=}, {key_extention=}, {key=}, {key_function=}")
+
+        if hasattr(tk_event,"value"):
+            tk_event = tk_event.value
+
+        if len(tk_event) > 1 and not tk_event.startswith("<"):
+            tk_event = f"<{tk_event}>"
+
+        match (key_extention is not None, key is not None):
+            case (True,True):
+                new_key = key + key_extention
+            case (False,True):
+                new_key = key
+            case (True,False):
+                new_key = self.key + key_extention
+            case (False,False):
+                new_key = self.key
+                assert new_key or key_function, f"You forgot to add either a key or key_function to this element... {self}"
+
+        event_function = self.window.get_event_function(self, new_key, key_function=key_function)
+
+        self._bind_event_to_widget(tk_event, event_function)
+
+        return self
+
 class BaseWidget(BaseElement):
     """
     Base for every Widget
@@ -420,50 +463,11 @@ class BaseWidget(BaseElement):
 
     def _bind_event_to_widget(self, tk_event: str, event_function: Callable) -> Self:
         """Called in 'bind_event'. Inherit this is the event must be bound differently."""
-        #element_logger.debug(f"Tkinter event-bind on {self}: {tk_event=}")
         self._tk_widget.bind(
             tk_event,
             event_function,
+            "+",
         )
-        return self
-
-    @run_after_window_creation
-    def bind_event(self,tk_event:str|Event,key_extention:Union[str,Any]=None,key:Any=None,key_function:Callable|Iterable[Callable]=None) -> Self:
-        """
-        Bind a tk-event onto the underlying tk-widget
-
-        To just throw the element-key, set key_extention = ""
-
-        :param tk_event: tkinter event-string. You don't need to add brackets, if your event-text is longer than 1 char
-        :param key_extention: Added to the event-key
-        :param key: event-key. If None and key_extention is not None, it will be appended onto the element-key
-        :param key_function: Called when this event is thrown
-        :return: Calling element for inline-calls
-        """
-        new_key = None
-        element_logger.debug(f"bind_event on {self}: {tk_event=}, {key_extention=}, {key=}, {key_function=}")
-
-        if hasattr(tk_event,"value"):
-            tk_event = tk_event.value
-
-        if len(tk_event) > 1 and not tk_event.startswith("<"):
-            tk_event = f"<{tk_event}>"
-
-        match (key_extention is not None, key is not None):
-            case (True,True):
-                new_key = key + key_extention
-            case (False,True):
-                new_key = key
-            case (True,False):
-                new_key = self.key + key_extention
-            case (False,False):
-                new_key = self.key
-                assert new_key or key_function, f"You forgot to add either a key or key_function to this element... {self}"
-
-        event_function = self.window.get_event_function(self, new_key, key_function=key_function)
-
-        self._bind_event_to_widget(tk_event, event_function)
-
         return self
 
     def _init_defaults(self):
