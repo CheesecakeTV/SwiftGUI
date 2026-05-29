@@ -229,10 +229,15 @@ class Table(MixinElementWithDefaultEvent, BaseWidgetTTK, MixinScrollbar):
     _prev_selection = None
     def _event_callback(self, *args):
         all_indexes = self.all_indexes
+
         if self._prev_selection == all_indexes:
             return
 
         self._prev_selection = all_indexes
+
+        if not all_indexes: # It's impossible for the user to cause a real event without anything selected in the table
+            return
+
         self.throw_default_event()
 
     _last_sort_direction: bool = None  # True, if sorted non-reversed, False if sorted reversed
@@ -546,9 +551,18 @@ class Table(MixinElementWithDefaultEvent, BaseWidgetTTK, MixinScrollbar):
 
         return self._element_dict[str(hash(self._elements[temp]))]
 
-    def set_value(self,val:Any):
-        print("Warning!","It is not possible to set Values of sg.Table (yet)!")
-        print("     use .index to set the selected item")
+    def set_value(self, val: Iterable[Any]) -> Self:
+        """
+        All selected rows will be updated to the given value (new row)
+        :param val:
+        :return:
+        """
+        index = self.all_indexes
+
+        for i in index:
+            self.__setitem__(i, val)
+
+        return self
 
     def __getitem__(self, item: int) -> TableRow:
         """
@@ -578,8 +592,16 @@ class Table(MixinElementWithDefaultEvent, BaseWidgetTTK, MixinScrollbar):
         :param index:
         :return:
         """
+        self.delete_row(index)
+
+    def delete_row(self, index: int) -> Self:
+        """
+        Remove an entire row from the list
+        :param index:
+        :return:
+        """
         if index is None:
-            return
+            return self
 
         row = self._elements[index]
         del self._elements[index]
@@ -588,6 +610,7 @@ class Table(MixinElementWithDefaultEvent, BaseWidgetTTK, MixinScrollbar):
         del self._element_dict[iid]
 
         self.tk_widget.delete(iid)
+        return self
 
     def __matmul__(self, other: TableRow):
         """
@@ -944,7 +967,7 @@ class Table(MixinElementWithDefaultEvent, BaseWidgetTTK, MixinScrollbar):
         :return:
         """
         if index1 == index2:
-            return
+            return self
 
         if index1 < 0:
             index1 = len(self._elements) + index1
