@@ -202,7 +202,7 @@ class Calendar(sg.BaseCombinedElement):
     ) -> list[sg.Text]:
         """
         Return the texts on top of the calendar.
-        :param startAtSunday: True, if the last element of
+        :param startAtSunday: True, if the last element of the passed texts should actually be the first one
         :return:
         """
 
@@ -317,6 +317,9 @@ class Calendar(sg.BaseCombinedElement):
         # I know this function looks HORRIBLE.
         # That's because working with dates is horrible.
         # Critique it all you want but it works quite reliable.
+        # But yeah, I am going to improve it eventually.
+
+        # Todo: Clean this mess up
 
         if not month:
             month = self._selected_month.month

@@ -97,3 +97,18 @@ class Event:
     Double_ = _event_modifier("Double") # Same event twice in a row (like double-click)
     Triple_ = _event_modifier("Triple") # Same event 3 times in a row
 
+    @classmethod
+    def chain(cls, *events: str) -> str:
+        """
+        Triggers when these events are caused one after another
+        :param events:
+        :return:
+        """
+        events = map(lambda e: f"<{e}>", events)
+        return "".join(events)
+
+    @classmethod
+    def string(cls, events: str) -> str:
+        events = map(lambda e: f"<{e}>", events)
+        return "".join(events)
+

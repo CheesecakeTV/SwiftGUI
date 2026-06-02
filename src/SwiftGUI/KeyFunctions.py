@@ -144,4 +144,11 @@ def set_option_at_value(option: str, values: Mapping[Hashable, Literal["DEFAULT"
 
     return temp
 
+def close_window(w):
+    """
+    Close the window of the element that caused this event
+    :param w:
+    :return:
+    """
+    w.actual_window.close()
 
