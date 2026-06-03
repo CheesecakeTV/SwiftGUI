@@ -97,6 +97,7 @@ class BaseCanvasElement(sg.BaseWidget): # Inheritance mainly for the update-rout
         self.canvas.tk_widget.moveto(self.canvas_id, x, y)
         return self
 
+    @sg.BaseWidget._run_after_window_creation
     def move_to_center(self, x: float, y: float) -> Self:
         """
         Move this element to the specified coordinates
