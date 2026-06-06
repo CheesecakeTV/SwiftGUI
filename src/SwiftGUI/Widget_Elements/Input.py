@@ -72,7 +72,7 @@ class Input(MixinElementWithValue, BaseWidget):
             #
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:Any]=None
+            tk_kwargs: dict[str, Any]=None,
     ):
         """
 

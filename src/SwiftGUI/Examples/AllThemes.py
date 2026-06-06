@@ -43,7 +43,6 @@ def preview_all_themes(max_rows: int = 4, max_cols: int = 5, take_a_closer_look:
     if take_a_closer_look is None:
         take_a_closer_look = sg.Examples.preview_all_elements
 
-    layout = list()
     grouped = dict()
 
     # Group all themes by their suffix

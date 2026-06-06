@@ -26,7 +26,7 @@ class _DefaultOptionsMeta(type):
         _all_defaults = dict(filter(lambda a: a[1] is not None and not a[0].startswith("_") and not a[0] in _ignore_keys, namespace.items()))
         namespace["_all_defaults"] = _all_defaults
 
-        cls:"DEFAULT_OPTIONS_CLASS"|type = super().__new__(mcs, name, bases, namespace)
+        cls:type = super().__new__(mcs, name, bases, namespace)
         #cls._all_defaults = _all_defaults
 
         all_option_classes.append(cls)
@@ -89,7 +89,7 @@ class _DefaultOptionsMeta(type):
         cls._up_to_date.update(not_up_to_date)  # These values are now up to date
 
     _provides: set[str] = set()      # What values this class had defined. Don't overwrite these from superclasses!
-    _values: dict[str: Any] = dict() # The actual, saved values
+    _values: dict[str, Any] = dict() # The actual, saved values
     _up_to_date: set[str] = set()    # What values are refreshed and can be used
     _unavailable: set[str] = set()   # All keys that weren't found before
     def reset_to_default(self):
@@ -307,7 +307,7 @@ class Input(Common,Common_Textual,Common_Field_Background):
     relief: Literals.relief = None
     exportselection: bool = None
     validate: Literals.validate = None
-    validatecommand: callable = None
+    validatecommand: Callable = None
     insertbackground_color: str | Color = None
     #
     # Mixed options

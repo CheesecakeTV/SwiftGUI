@@ -113,7 +113,7 @@ class TextField(MixinElementWithValue, BaseWidget, MixinScrollbar):
 
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:Any]=None
+            tk_kwargs: dict[str, Any]=None
     ):
         """
         An Input-Element with multiple rows
@@ -158,7 +158,8 @@ class TextField(MixinElementWithValue, BaseWidget, MixinScrollbar):
         :param expand: True, if this widget should span over the whole row.
         :param tk_kwargs: Additional kwargs for the tk_widget. Don't use it if you don't know tkinter.
         """
-        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y, default_event=default_event, default_value=text)
+        super().__init__(key=key, tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y, default_event=default_event, default_value=text)
+        self._key_function = key_function
 
         if self.defaults.single("scrollbar", scrollbar):
             self.add_flags(ElementFlag.HAS_SCROLLBAR_Y)

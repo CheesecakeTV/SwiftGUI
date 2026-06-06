@@ -24,7 +24,7 @@ def image_to_tk_image(
         height: int = None,
 ) -> ImageTk.PhotoImage | None:
     if image is None:
-        return
+        return None
 
     # if isinstance(image, str) or isinstance(image, PathLike) or isinstance(image, IO) or isinstance(image, bytes):
 

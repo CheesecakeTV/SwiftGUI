@@ -282,6 +282,7 @@ class BaseKeyHandler(BaseElement):
         keys_logger.info(f"Event-loop-function of {self} changed to {key_event_callback_function}")
         return self
 
+    ttk_style: ttk.Style
     def init(
             self,
             sg_element: Frame,
@@ -743,7 +744,7 @@ def call_periodically(
             @wraps(fct)
             def _return(*args, **kwargs):
                 if _main_window is None:
-                    return
+                    return None
 
                 _main_window.root.after(delay, _return)
 
@@ -758,7 +759,7 @@ def call_periodically(
             @wraps(fct)
             def _return(*args, **kwargs):
                 if _main_window is None:
-                    return
+                    return None
                 _main_window.root.after(delay, _return)
 
                 return fct(*args, **kwargs)
@@ -1189,6 +1190,7 @@ class Window(BaseKeyHandler):
         :param function: This function will be called on the main thread
         :param key:
         :param value: If not None, it will be saved inside the value-_dict until changed
+        :param reset_timeout: True, if this should reset the timeout-timer. False, if the timeout should occure even though this event triggered
         :return:
         """
         keys_logger.debug(f"Caught manually thrown event on {self} with {key=}, {function=}")
@@ -1541,7 +1543,7 @@ class SubWindow(Window):
             _main_window.register_element(self)
             _main_window._value_dict.set_extra_value(key, self.value)
 
-    def loop_close(self, block_others: bool = True) -> tuple[Any,dict[Any:Any]]:
+    def loop_close(self, block_others: bool = True) -> tuple[Any,dict[Hashable, Any]]:
         """
         Loop until the first keyed event.
         Then close the window and return e,v like with a normal window.

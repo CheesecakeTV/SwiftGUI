@@ -34,7 +34,7 @@ class Scrollbar(BaseWidgetTTK):
             # Add here
             expand: bool = False,
             expand_y: bool = True,
-            tk_kwargs: dict[str:Any]=None,
+            tk_kwargs: dict[str, Any]=None,
     ):
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
 
@@ -112,7 +112,7 @@ class ScrollbarHorizontal(Scrollbar):
 
             expand: bool = True,
             expand_y: bool = False,
-            tk_kwargs: dict[str:Any]=None
+            tk_kwargs: dict[str, Any]=None
     ):
         super().__init__(
             key = key,

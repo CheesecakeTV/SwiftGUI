@@ -33,6 +33,8 @@ class Combobox(MixinElementWithValue, BaseWidgetTTK):
             background_color_disabled: str | Color = None,
             selectbackground_color: str | Color = None,
 
+            highlightcolor: str | Color = None,
+
             text_color: str | Color = None,
             text_color_disabled: str | Color = None,
             select_text_color: str | Color = None,
@@ -68,7 +70,7 @@ class Combobox(MixinElementWithValue, BaseWidgetTTK):
             # Add here
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:Any]=None
+            tk_kwargs: dict[str,Any]=None
     ):
         """
         A lot of options are the same with sg.Input
@@ -86,6 +88,7 @@ class Combobox(MixinElementWithValue, BaseWidgetTTK):
         :param text_color:
         :param text_color_disabled:
         :param select_text_color:
+        :param highlightcolor: Color of the border around the box while it has focus
         :param fonttype:
         :param fontsize:
         :param font_bold:
@@ -142,6 +145,7 @@ class Combobox(MixinElementWithValue, BaseWidgetTTK):
             button_background_color_active= button_background_color_active,
             arrow_color = arrow_color,
             arrow_color_active= arrow_color_active,
+            highlightcolor=highlightcolor,
 
             fonttype=fonttype,
             fontsize=fontsize,
@@ -191,6 +195,9 @@ class Combobox(MixinElementWithValue, BaseWidgetTTK):
             case "insertbackground":
                 self._config_ttk_style(insertcolor=new_val)
 
+            case "highlightcolor":
+                self._map_ttk_style(focuscolor=[("focus", new_val)])
+
             case "arrow_color":
                 self._map_ttk_style(arrowcolor=(("!pressed", new_val), ))
             case "arrow_color_active":
@@ -203,7 +210,7 @@ class Combobox(MixinElementWithValue, BaseWidgetTTK):
 
             case "background_color":
                 if new_val is None:
-                    return
+                    return None
                 self._map_ttk_style(fieldbackground=(("!disabled", new_val), ))
                 self.tk_widget.tk.eval(
                     f"[ttk::combobox::PopdownWindow {self.tk_widget}].f.l configure -background {new_val}")
@@ -213,7 +220,7 @@ class Combobox(MixinElementWithValue, BaseWidgetTTK):
 
             case "text_color":
                 if new_val is None:
-                    return
+                    return None
                 self._map_ttk_style(foreground=(("!disabled", new_val),))
                 self.tk_widget.tk.eval(
                     f"[ttk::combobox::PopdownWindow {self.tk_widget}].f.l configure -foreground {new_val}")
@@ -222,13 +229,13 @@ class Combobox(MixinElementWithValue, BaseWidgetTTK):
 
             case "selectbackground_color":
                 if new_val is None:
-                    return
+                    return None
                 self._config_ttk_style(selectbackground= new_val)
                 self.tk_widget.tk.eval(
                     f"[ttk::combobox::PopdownWindow {self.tk_widget}].f.l configure -selectbackground {new_val}")
             case "select_text_color":
                 if new_val is None:
-                    return
+                    return None
                 self._config_ttk_style(selectforeground= new_val)
                 self.tk_widget.tk.eval(
                     f"[ttk::combobox::PopdownWindow {self.tk_widget}].f.l configure -selectforeground {new_val}")

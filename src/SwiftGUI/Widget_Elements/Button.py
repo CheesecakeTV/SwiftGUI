@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal, Hashable
+from typing import Literal, Hashable, Any
 
 from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, MixinElementWithDefaultEvent
 from SwiftGUI.Compat import Self
@@ -79,7 +79,7 @@ class Button(MixinElementWithDefaultEvent, BaseWidget):
 
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:any] = None
+            tk_kwargs: dict[str, Any] = None,
     ):
         """
         A button that throws an event every time it is pushed
@@ -162,7 +162,7 @@ class Button(MixinElementWithDefaultEvent, BaseWidget):
         self._key_function = key_function
 
     _disabled_at_start = False
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self, key:str, new_val: Any) -> bool|None:
         match key:
 
             case "disabled":

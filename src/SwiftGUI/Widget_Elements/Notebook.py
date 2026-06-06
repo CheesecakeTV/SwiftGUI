@@ -62,7 +62,7 @@ class Notebook(MixinElementWithValue, BaseWidgetTTK):
 
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:Any]=None
+            tk_kwargs: dict[str, Any]=None
     ):
         """
 
@@ -139,7 +139,8 @@ class Notebook(MixinElementWithValue, BaseWidgetTTK):
 
         # Todo: These could be parameters too
         self._config_ttk_style(tabmargins = 0)
-        #self._config_ttk_style(borderwidth = 1)
+        #self._map_ttk_style("Tab", expand=[("selected", [0,0,0,0])])
+        #self._config_ttk_style("Tab", expand=)
 
 
     def _update_font(self):

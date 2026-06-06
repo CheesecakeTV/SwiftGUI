@@ -68,7 +68,7 @@ class ColorChooserButton(MixinElementWithValue, Button):
 
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:Any] = None
+            tk_kwargs: dict[str, Any] = None
     ):
         """
         A button that throws an event every time it is pushed

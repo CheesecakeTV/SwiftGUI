@@ -384,7 +384,7 @@ class BaseWidget(BaseElement):
     """
     _tk_widget:tk.Widget
     tk_widget:tk.Widget    # My own tk_widget. Wraps _tk_widget
-    _tk_widget_class:type = None # Class of the connected widget
+    _tk_widget_class:type # Class of the connected widget
     _tk_kwargs:dict = dict()
 
     _grab_anywhere_on_this: bool = False    # If True, you can grab windows by grabbing this element
@@ -409,11 +409,11 @@ class BaseWidget(BaseElement):
     #_is_container:bool = False   # True, if this widget contains other widgets
     _contains:list[Iterable["BaseElement"]] = []
 
-    _transfer_keys: dict[str:str] = dict()   # Rename a key from the update-function. from -> to; from_user -> to_widget
+    _transfer_keys: dict[str, str] = dict()   # Rename a key from the update-function. from -> to; from_user -> to_widget
 
     _tk_scrollbar_y: tk.Scrollbar | None = None
 
-    def __init__(self,key:Hashable=None,tk_kwargs:dict[str:Any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
+    def __init__(self,key:Hashable=None,tk_kwargs:dict[str, Any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
         super().__init__()
 
         if tk_kwargs is None:

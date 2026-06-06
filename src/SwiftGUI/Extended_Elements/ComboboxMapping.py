@@ -63,7 +63,7 @@ class ComboboxMapping(Combobox):
             # Add here
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:Any]=None
+            tk_kwargs: dict[str, Any]=None
     ):
         """
         A lot of options are the same with sg.Input

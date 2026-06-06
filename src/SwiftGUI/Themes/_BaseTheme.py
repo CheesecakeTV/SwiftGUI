@@ -1,11 +1,9 @@
-from abc import abstractmethod
-
-all_themes: dict[str: type] = dict()
+all_themes: dict[str, type] = dict()
 
 class _BaseTheme_meta(type):
 
     def __new__(mcs, name, bases, namespace):
-        returning: type | "BaseTheme" = super().__new__(mcs, name, bases, namespace)
+        returning: type = super().__new__(mcs, name, bases, namespace)
 
         if not (name.startswith("Base") or name.startswith("_")):
             suffix = ""

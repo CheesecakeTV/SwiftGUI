@@ -67,7 +67,7 @@ class Console(sg.BaseCombinedElement):
                                   "Use [sg.Console].input.value to change the value of the input-field.\n"
                                   "Use [sg.Console].make_input(...) to simulate a user-input")
 
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self,key:str,new_val: Any) -> bool|None:
         # Divert to text-field
         if key in ["height"]:
             self.textField.update(**{key:new_val})
@@ -81,11 +81,11 @@ class Console(sg.BaseCombinedElement):
         match key:
             case "input_prefix":
                 if new_val is None:
-                    return
+                    return None
                 self._input_prefix = new_val
             case "print_prefix":
                 if new_val is None:
-                    return
+                    return None
                 self._print_prefix = new_val
             case "add_timestamp":
                 self._add_timestamp = new_val

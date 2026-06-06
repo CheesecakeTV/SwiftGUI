@@ -71,7 +71,7 @@ class FileBrowseButton(Button):
 
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:Any] = None
+            tk_kwargs: dict[str, Any] = None
     ):
         """
         A button that opens a filebrowser when pushed.

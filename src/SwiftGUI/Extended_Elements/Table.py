@@ -124,9 +124,9 @@ class Table(MixinElementWithDefaultEvent, BaseWidgetTTK, MixinScrollbar):
 
     _styletype:str = "Treeview"
 
-    _elements: list[TableRow[Any]]  # Elements the Table contains atm
-    table_elements: tuple[TableRow[Any]]   # Prevent users from tampering with _elements...
-    _element_dict: dict[int:TableRow[Any]] # Hash:Element ~ Elements as a dict to find them quicker
+    _elements: list[TableRow]  # Elements the Table contains atm
+    table_elements: tuple[TableRow]   # Prevent users from tampering with _elements...
+    _element_dict: dict[int, TableRow] # Hash:Element ~ Elements as a dict to find them quicker
 
     _headings: tuple    # Column headings
 
@@ -184,7 +184,7 @@ class Table(MixinElementWithDefaultEvent, BaseWidgetTTK, MixinScrollbar):
             takefocus: bool = None,
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:Any]=None
+            tk_kwargs: dict[str, Any]=None
     ):
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y, default_event=default_event)
 
@@ -543,7 +543,7 @@ class Table(MixinElementWithDefaultEvent, BaseWidgetTTK, MixinScrollbar):
 
         self._config_ttk_style("Heading",font=font_options)
 
-    def _get_value(self) -> TableRow[str,...] | None:
+    def _get_value(self) -> TableRow | None:
         temp = self.index
 
         if temp is None:

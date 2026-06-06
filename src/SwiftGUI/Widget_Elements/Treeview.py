@@ -48,7 +48,7 @@ class Treeview(BaseWidget):
         # "text_color":"fg",
     }
 
-    _element_tree: dict[str:[dict|Iterable[str]]]
+    _element_tree: dict[str, [dict|Iterable[str]]]
     _headings: tuple
 
     def __init__(
@@ -64,7 +64,7 @@ class Treeview(BaseWidget):
 
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:Any]=None
+            tk_kwargs: dict[str, Any]=None
     ):
         raise NotImplementedError("sg.Treeview is not ready to use yet.")
         super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand)
