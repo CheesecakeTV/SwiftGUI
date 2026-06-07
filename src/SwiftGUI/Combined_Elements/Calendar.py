@@ -98,7 +98,7 @@ class Calendar(sg.BaseCombinedElement):
                 ),
                 sg.Button(
                     "Today",
-                    key_function= self.select_today if today_selects else self.see_today,
+                    key_function= (lambda: self.select_today(throw_event=True)) if today_selects else self.see_today,
                     expand=True,
                 ),
                 sg.Button(
@@ -427,12 +427,24 @@ class Calendar(sg.BaseCombinedElement):
 
         return self
 
-    def select_today(self, see_today: bool = True) -> Self:
+    def select_today(self, see_today: bool = True, throw_event: bool = False) -> Self:
+        """
+        Select the current day.
+        :param see_today: Also see the current month
+        :param throw_event: If the day wasn't selected yet, also throw an event
+        :return:
+        """
         today = dt_date.today()
+
+        throw = throw_event and today != self.value
+
         self.set_value(today)
 
         if see_today:
             self.see_today()
+
+        if throw:
+            self.throw_default_event()
 
         self.done(today)
         return self
