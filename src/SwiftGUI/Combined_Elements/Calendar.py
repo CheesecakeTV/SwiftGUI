@@ -22,6 +22,7 @@ class Calendar(sg.BaseCombinedElement):
 
             disabled: bool = None,
             allow_month_selection: bool = None,
+            today_selects: bool = None,
 
             monthnames: Iterable[str] = None,
             daynames: Iterable[str] = None,
@@ -48,6 +49,7 @@ class Calendar(sg.BaseCombinedElement):
         :param today_background_color: Background-color of the day-button corresponding to the current day
         :param background_color_active: Background-color of the selected day-button
         :param text_color_active: Text-color of the selected day-button
+        :param today_selects: True, if the "today"-button should also select "today"
         """
         today = dt_date.today()
 
@@ -63,6 +65,7 @@ class Calendar(sg.BaseCombinedElement):
 
         week_starts_on_sunday = self.defaults.single("week_starts_on_sunday", week_starts_on_sunday)
         self._start_on_sunday = week_starts_on_sunday
+        today_selects = self.defaults.single("today_selects", today_selects)
 
         calendar.setfirstweekday(6 if week_starts_on_sunday else 0)  # 6 Sunday, 0 Monday
 
@@ -95,7 +98,7 @@ class Calendar(sg.BaseCombinedElement):
                 ),
                 sg.Button(
                     "Today",
-                    key_function= self.see_today,
+                    key_function= self.select_today if today_selects else self.see_today,
                     expand=True,
                 ),
                 sg.Button(
@@ -422,6 +425,16 @@ class Calendar(sg.BaseCombinedElement):
         else:
             self.see_month(12, self.visible_year - 1)
 
+        return self
+
+    def select_today(self, see_today: bool = True) -> Self:
+        today = dt_date.today()
+        self.set_value(today)
+
+        if see_today:
+            self.see_today()
+
+        self.done(today)
         return self
 
     def see_today(self) -> Self:

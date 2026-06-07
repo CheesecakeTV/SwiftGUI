@@ -587,6 +587,7 @@ class Calendar(Button):
     daynames: Iterable[str] = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
     week_starts_on_sunday: bool = False
     today_background_color: sg.Color | str = "darkblue"
+    today_selects: bool = False
 
 class Canvas(Common, Common_Field_Background):
     width: int = None

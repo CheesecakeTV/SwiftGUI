@@ -397,7 +397,7 @@ class BaseKeyHandler(BaseElement):
             index = self.all_elements.index(elem)
             del self.all_elements[index]
         except ValueError:
-            keys_logger.warning(f"{elem} wasn't registered in {self}")
+            keys_logger.info(f"Tried to unregister, but {elem} wasn't registered in {self}")
 
         if hasattr(elem, "key") and elem.key in self.all_key_elements:
             key= elem.key
