@@ -131,7 +131,7 @@ def get_text(
         [
             sg.T(text,anchor="center") if text else sg.HSep()
         ],[
-            in_elem := sg.In(width=50,key="In").bind_event(sg.Event.KeyEnter)
+            in_elem := sg.In(width=50, key="In").bind_event(sg.Event.KeyEnter)
         ],[
             sg.Button("Confirm",key="Confirm",justify="center")
         ]

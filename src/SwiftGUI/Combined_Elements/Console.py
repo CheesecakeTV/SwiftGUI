@@ -33,15 +33,12 @@ class Console(sg.BaseCombinedElement):
                 ),
             ],[
                 _input := sg.Input(
-                    expand= True,
-                ).bind_event(
-                    sg.Event.KeyEnter,
-                    key_function= [
-                        lambda val: self.make_input(val),   # Submit to console
-                        lambda elem: elem.set_value(""),    # Clear input
-                        self.throw_default_event,   # Throw event
-                    ]
-                ),
+                    expand=True,
+                ).bind_event(sg.Event.KeyEnter, key_function=[
+                    lambda val: self.make_input(val),  # Submit to console
+                    lambda elem: elem.set_value(""),  # Clear input
+                    self.throw_default_event,  # Throw event
+                ]),
             ]
         ]
 

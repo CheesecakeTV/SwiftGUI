@@ -131,16 +131,16 @@ class TabFrame(Frame):
         return self._myNotebook.value == self.fake_key
 
     @BaseElement._run_after_window_creation
-    def _bind_event_to_tab(self, key_extention:str | Any=None, key:Any=None, key_function:Callable|Iterable[Callable]=None) -> Self:
+    def _bind_event_to_tab(self, key_extension:str | Any=None, key:Any=None, key_function:Callable|Iterable[Callable]=None) -> Self:
         """
         When this tab gets opened, the specified event will be called.
 
-        :param key_extention:
+        :param key_extension:
         :param key:
         :param key_function:
         :return:
         """
-        self._myNotebook.bind_event_to_tab(self.fake_key, key_function= key_function, key_extention= key_extention, key = key)
+        self._myNotebook.bind_event_to_tab(self.fake_key, key_function= key_function, key_extension= key_extension, key = key)
         return self
 
     def __matmul__(self, other: Notebook):

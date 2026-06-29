@@ -340,20 +340,20 @@ class BaseElement(_BaseSharedAttributes):
         raise NotImplementedError(f"{self} doesn't allow binding an event to it.")
 
     @run_after_window_creation
-    def bind_event(self,tk_event:str|Event,key_extention:Union[str,Any]=None,key:Any=None,key_function:Callable|Iterable[Callable]=None) -> Self:
+    def bind_event(self,tk_event:str|Event,key_extension:Union[str,Any]=None,key:Any=None,key_function:Callable|Iterable[Callable]=None) -> Self:
         """
         Bind a tk-event onto the underlying tk-widget
 
-        To just throw the element-key, set key_extention = ""
+        To just throw the element-key, set key_extension = ""
 
         :param tk_event: tkinter event-string. You don't need to add brackets, if your event-text is longer than 1 char
-        :param key_extention: Added to the event-key
-        :param key: event-key. If None and key_extention is not None, it will be appended onto the element-key
+        :param key_extension: Added to the event-key
+        :param key: event-key. If None and key_extension is not None, it will be appended onto the element-key
         :param key_function: Called when this event is thrown
         :return: Calling element for inline-calls
         """
         new_key = None
-        element_logger.debug(f"bind_event on {self}: {tk_event=}, {key_extention=}, {key=}, {key_function=}")
+        element_logger.debug(f"bind_event on {self}: {tk_event=}, {key_extension=}, {key=}, {key_function=}")
 
         if hasattr(tk_event,"value"):
             tk_event = tk_event.value
@@ -361,13 +361,13 @@ class BaseElement(_BaseSharedAttributes):
         if len(tk_event) > 1 and not tk_event.startswith("<"):
             tk_event = f"<{tk_event}>"
 
-        match (key_extention is not None, key is not None):
+        match (key_extension is not None, key is not None):
             case (True,True):
-                new_key = key + key_extention
+                new_key = key + key_extension
             case (False,True):
                 new_key = key
             case (True,False):
-                new_key = self.key + key_extention
+                new_key = self.key + key_extension
             case (False,False):
                 new_key = self.key
                 assert new_key or key_function, f"You forgot to add either a key or key_function to this element... {self}"

@@ -66,22 +66,16 @@ class list_picker(sg.BasePopup, tuple):
         main_layout = sg.Frame([
             [
                 available := sg.Table(
-                    map(lambda a:[a], possible_values),
-                    headings= (self.text_available, ),
-                    selectmode= "extended",
-                ).bind_event(
-                    sg.Event.ClickDoubleLeft,
-                    key= "Pick",
-                ),
+                    map(lambda a: [a], possible_values),
+                    headings=(self.text_available,),
+                    selectmode="extended",
+                ).bind_event(sg.Event.ClickDoubleLeft, key="Pick"),
                 middle,
                 chosen := sg.Table(
                     map(lambda a: [a], default_selection),
-                    headings=(self.text_picked, ),
-                    selectmode = "extended",
-                ).bind_event(
-                    sg.Event.ClickDoubleLeft,
-                    key= "Unpick",
-                ),
+                    headings=(self.text_picked,),
+                    selectmode="extended",
+                ).bind_event(sg.Event.ClickDoubleLeft, key="Unpick"),
             ]
         ])
         self.available = available
@@ -94,13 +88,10 @@ class list_picker(sg.BasePopup, tuple):
                     expand=True,
                     key_function=self._apply_filter,
                     default_event=True,
-                ).bind_event(
-                    sg.Event.KeyEnter,
-                    key_function= [
-                        lambda val: self._move_all(self.available, self.chosen), # Move all over
-                        lambda : filter_clear_button.push_once(),   # Clear input and filter by "pressing" the x-button
-                    ]
-                ),
+                ).bind_event(sg.Event.KeyEnter, key_function=[
+                    lambda val: self._move_all(self.available, self.chosen),  # Move all over
+                    lambda: filter_clear_button.push_once(),  # Clear input and filter by "pressing" the x-button
+                ]),
                 filter_clear_button := sg.Button(
                     "x",
                     width=2,
