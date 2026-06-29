@@ -4,7 +4,9 @@ from collections.abc import Iterable, Callable
 from typing import Literal, Any, Hashable
 from SwiftGUI.Compat import Self
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, Scrollbar, BaseScrollbar
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, Scrollbar, MixinScrollbar, \
+    MixinElementWithValue
+
 
 def _forced_value_change(fct):
     """
@@ -33,7 +35,7 @@ def _forced_value_change(fct):
 
 
 # Todo: tk.Text has a ton of features, so this element should too.
-class TextField(BaseWidget, BaseScrollbar):
+class TextField(MixinElementWithValue, BaseWidget, MixinScrollbar):
     tk_widget:tk.Text
     _tk_widget:tk.Text
     _tk_widget_class:type = tk.Text # Class of the connected widget
@@ -111,7 +113,7 @@ class TextField(BaseWidget, BaseScrollbar):
 
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:Any]=None
+            tk_kwargs: dict[str, Any]=None
     ):
         """
         An Input-Element with multiple rows
@@ -156,7 +158,8 @@ class TextField(BaseWidget, BaseScrollbar):
         :param expand: True, if this widget should span over the whole row.
         :param tk_kwargs: Additional kwargs for the tk_widget. Don't use it if you don't know tkinter.
         """
-        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
+        super().__init__(key=key, tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y, default_event=default_event, default_value=text)
+        self._key_function = key_function
 
         if self.defaults.single("scrollbar", scrollbar):
             self.add_flags(ElementFlag.HAS_SCROLLBAR_Y)
@@ -202,13 +205,7 @@ class TextField(BaseWidget, BaseScrollbar):
             **tk_kwargs,
         )
 
-        self._key_function = key_function
         self._initial_text = text
-
-        # self._tabsize = self.defaults.single("tabs",tabs,4)
-
-        if default_event:
-            self.bind_event("<KeyRelease>",key=key,key_function=key_function)
 
     _readonly = False
     _can_reset_value_changes = False
@@ -276,7 +273,8 @@ class TextField(BaseWidget, BaseScrollbar):
         return self.tk_widget.get("1.0","end")[:-1]
 
     @_forced_value_change
-    def set_value(self,val:Any):
+    def set_value(self, val:Any):
+        self._apply_value(val)
         self.tk_widget.delete("1.0","end")
         self.tk_widget.insert("1.0",val)
 
@@ -284,6 +282,8 @@ class TextField(BaseWidget, BaseScrollbar):
         super().init_window_creation_done()
         self.value = self._initial_text
         del self._initial_text
+
+        self.tk_widget.bind("<KeyRelease>", self._event_callback)
 
     # @BaseWidget._run_after_window_creation
     # def see(self, index: int) -> Self:
@@ -328,4 +328,5 @@ class TextField(BaseWidget, BaseScrollbar):
             text = "\n" + text
 
         self.tk_widget.insert("end", text)
+        self._apply_value(self._get_value())
         return self

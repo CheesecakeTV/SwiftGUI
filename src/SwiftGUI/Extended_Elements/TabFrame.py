@@ -46,7 +46,7 @@ class TabFrame(Frame):
             expand_y: bool = False,
 
             # Add here
-            tk_kwargs: dict[str:Any]=None,
+            tk_kwargs: dict[str, Any]=None,
     ):
         """
 

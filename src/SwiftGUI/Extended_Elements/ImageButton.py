@@ -51,7 +51,7 @@ class ImageButton(Button, Image):
 
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:Any] = None
+            tk_kwargs: dict[str, Any] = None
     ):
         super().__init__(
             text,

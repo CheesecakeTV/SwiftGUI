@@ -3,11 +3,12 @@ from tkinter import colorchooser
 from collections.abc import Iterable, Callable
 from typing import Literal, Any, Hashable
 
-from SwiftGUI import GlobalOptions, Literals, Color
+from SwiftGUI import GlobalOptions, Literals, Color, MixinElementWithValue
+from SwiftGUI.Compat import Self
 from SwiftGUI.Widget_Elements.Button import Button
 
 
-class ColorChooserButton(Button):
+class ColorChooserButton(MixinElementWithValue, Button):
     """
     Small Element to create a button that lets you chose a color
     """
@@ -24,6 +25,7 @@ class ColorChooserButton(Button):
             *,
             key: Hashable = None,
             key_function:Callable|Iterable[Callable] = None,
+            default_event: bool = None,
 
             initial_color: str | Color = None,
             color_chooser_title: str = None,
@@ -66,7 +68,7 @@ class ColorChooserButton(Button):
 
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:Any] = None
+            tk_kwargs: dict[str, Any] = None
     ):
         """
         A button that throws an event every time it is pushed
@@ -106,17 +108,12 @@ class ColorChooserButton(Button):
         :param font_overstrike: True, if the text should be overstruck
         :param tk_kwargs: (Only if you know tkinter) Pass more kwargs directly to the tk-widget
         """
-        if callable(key_function):
-            key_function = (self._button_callback,key_function)
-        elif key_function:
-            key_function = (self._button_callback,*tuple(key_function))
-        else:
-            key_function = self._button_callback
 
         super().__init__(
             text,
             key=key,
             key_function=key_function,
+            default_event=default_event,
             borderwidth=borderwidth,
             bitmap=bitmap,
             disabled=disabled,
@@ -153,24 +150,27 @@ class ColorChooserButton(Button):
 
         self._update_initial(initial_color=initial_color, color_chooser_title=color_chooser_title)
 
-    _prev_val:str = None
-    def _button_callback(self):
+    _value = "#000000"
+    def _event_callback(self):
         # Call the file-dialogue
-        _,temp = colorchooser.askcolor(initialcolor=self._prev_val,title=self._title)
+        _,temp = colorchooser.askcolor(initialcolor=self.value,title=self._title)
 
         if temp is None:
             return
 
-        self.value = str(temp)
+        if temp != self._prev_value:
+            self.throw_default_event()
 
-        return True # Refresh values for coming key_functions
+        self.set_value(str(temp))
 
     def _get_value(self) -> Any:
-        return self._prev_val
+        return self._value
 
-    def set_value(self,val:Any):
-        self._prev_val = val
-        self._update_initial(background_color=val)
+    def set_value(self,val:Any) -> Self:
+        self._value = val
+        self._apply_value(val)
+        self.update(background_color=val)
+        return self
 
     _title:str = None
     def _update_special_key(self,key:str,new_val:Any) -> bool|None:

@@ -9,7 +9,7 @@ from functools import wraps
 from os import PathLike
 from tkinter import ttk, Widget
 from collections.abc import Iterable,Callable
-from typing import TYPE_CHECKING, Any, Union, Hashable
+from typing import TYPE_CHECKING, Any, Union, Hashable, Literal
 from SwiftGUI.Compat import Self
 import inspect
 from PIL import Image, ImageTk
@@ -233,7 +233,7 @@ class BaseKeyHandler(BaseElement):
     all_key_elements: dict[Any, "AnyElement"]   # Key:Element, if key is present
     all_elements: list["AnyElement"] = list()   # Every single element
 
-    exists: bool = False # True, if this window exists at the moment
+    _exists: bool = False # True, if this window exists at the moment
 
     value: ValueDict
 
@@ -258,6 +258,19 @@ class BaseKeyHandler(BaseElement):
         if event_loop_function is None:
             self._key_event_callback_function = lambda *_:None
 
+    actual_window: Union["Window", "SubWindow"]
+    _actual_window = None
+    @property
+    def actual_window(self) -> Union["Window", "SubWindow"]:
+        """
+        Returns the ACTUAL window, since .window is pretty corrupted by now...
+        :return:
+        """
+        if self._actual_window is None:
+            self._actual_window = self.window.actual_window
+
+        return self._actual_window
+
     @BaseElement._run_after_window_creation
     def set_custom_event_loop(self, key_event_callback_function: Callable) -> Self:
         """
@@ -269,6 +282,7 @@ class BaseKeyHandler(BaseElement):
         keys_logger.info(f"Event-loop-function of {self} changed to {key_event_callback_function}")
         return self
 
+    ttk_style: ttk.Style
     def init(
             self,
             sg_element: Frame,
@@ -293,7 +307,7 @@ class BaseKeyHandler(BaseElement):
 
         #self._value_dict = ValueDict(self, set(self.all_key_elements.keys()))
 
-        self.exists = True
+        self._exists = True
 
         self.init_window_creation_done()    # This is before the rest on purpose...
 
@@ -313,6 +327,20 @@ class BaseKeyHandler(BaseElement):
 
         return e,v
 
+    @property
+    def exists(self) -> bool:
+        """
+        Check if the window exists.
+        :return:
+        """
+        if not self._exists:
+            return False
+
+        try:
+            return self.root.winfo_exists()
+        except tk.TclError:
+            return False
+
     def __contains__(self, item):
         return item in self.all_key_elements.keys()
 
@@ -323,7 +351,7 @@ class BaseKeyHandler(BaseElement):
         """
         ...
 
-    def loop_close(self) -> tuple[Any,dict[Any:Any]]:
+    def loop_close(self) -> tuple[Any,dict[Any, Any]]:
         """
         Loop once, then close
         :return:
@@ -369,14 +397,14 @@ class BaseKeyHandler(BaseElement):
             index = self.all_elements.index(elem)
             del self.all_elements[index]
         except ValueError:
-            keys_logger.warning(f"{elem} wasn't registered in {self}")
+            keys_logger.info(f"Tried to unregister, but {elem} wasn't registered in {self}")
 
         if hasattr(elem, "key") and elem.key in self.all_key_elements:
             key= elem.key
             del self.all_key_elements[key]
             self._value_dict.unregister_key(key)
 
-    def throw_event(self, key: Hashable = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
+    def throw_event(self, key: Hashable = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None, reset_timeout: bool = True):
         """
         Thread-safe method to generate a custom event.
 
@@ -385,6 +413,7 @@ class BaseKeyHandler(BaseElement):
         :param function: This function will be called on the main thread
         :param key:
         :param value: If not None, it will be saved inside the value-_dict until changed
+        :param reset_timeout: True, if the timeout-timer should be reset
         :return:
         """
         if not self.exists:
@@ -402,14 +431,18 @@ class BaseKeyHandler(BaseElement):
             "callback": function,
             "callback_args": function_args,
             "callback_kwargs": function_kwargs,
-        })
+            "reset_timeout": reset_timeout,
+        }, reset_timeout=False)
 
-    def _receive_event(self, key: Hashable = None, callback: Callable = None, callback_args: tuple = tuple(), callback_kwargs: dict = None):
+    def _receive_event(self, key: Hashable = None, callback: Callable = None, callback_args: tuple = tuple(), callback_kwargs: dict = None, reset_timeout: bool = True):
         """
         Gets called when an event is evoked
         :param key:
         :return:
         """
+        if reset_timeout:
+            self._timeout_last_event = time.time()
+
         # Call the function if given
         if callback is not None:
             if callback_kwargs is None:
@@ -438,14 +471,14 @@ class BaseKeyHandler(BaseElement):
             key_function = (key_function,)
 
         def single_event(*args):
-            self._timeout_last_event = time.time()
+            #self._timeout_last_event = time.time()
 
             did_refresh = False
 
             if key_function: # Call key-functions
                 self.refresh_values()
 
-                kwargs = {  # Possible parameters for function
+                kwargs = {  # Possible parameters for function  # Todo: Make the parameter-names changeable, if it isn't too late for that already
                     "w": self,  # Reference to this "window"    # Todo: Decide if this should be a window instead
                     "e": key,   # Event-key, if there is one
                     "v": self._value_dict,   # All values
@@ -584,10 +617,13 @@ class BaseKeyHandler(BaseElement):
             time.sleep(self.timeout_seconds)
 
             time_since_timeout = time.time() - self._timeout_last_event - self.timeout_seconds
-            while time_since_timeout < 0:
+            while time_since_timeout <= 0:
                 # Some event was called while sleeping
                 time.sleep(- time_since_timeout)
                 time_since_timeout = time.time() - self._timeout_last_event - self.timeout_seconds
+
+            if not self.exists:
+                return
 
             if not self.timeout_active:
                 continue
@@ -596,6 +632,13 @@ class BaseKeyHandler(BaseElement):
 
     def __repr__(self):
         return f"<{self.__class__.__name__} at {id(self)} with {len(self.all_key_elements)} keys>"
+
+    def to_json(self) -> Any:
+        return self.value.to_json()
+
+    def from_json(self, data: Any) -> Self:
+        self.value.from_json(data)
+        return self
 
 class SubLayout(BaseKeyHandler):
     """
@@ -644,6 +687,16 @@ class SubLayout(BaseKeyHandler):
         self.remove_flags(ElementFlag.IS_CREATED)
         return self
 
+    @property
+    def exists(self) -> bool:
+        if not hasattr(self, "window"):
+            return False
+
+        if not self._exists:
+            return False
+
+        return self.window.exists()
+
 all_windows: list["Window"] = list()
 def close_all_windows():
     controls_logger.info(f"Closing all {len(all_windows)} windows")
@@ -691,7 +744,7 @@ def call_periodically(
             @wraps(fct)
             def _return(*args, **kwargs):
                 if _main_window is None:
-                    return
+                    return None
 
                 _main_window.root.after(delay, _return)
 
@@ -706,7 +759,7 @@ def call_periodically(
             @wraps(fct)
             def _return(*args, **kwargs):
                 if _main_window is None:
-                    return
+                    return None
                 _main_window.root.after(delay, _return)
 
                 return fct(*args, **kwargs)
@@ -749,7 +802,7 @@ class Window(BaseKeyHandler):
             resizeable_height: bool = None,
             transparency: Literals.transparency = None,  # 0-1, 1 meaning invisible
             size: int | tuple[int, int] = (None, None),
-            position: tuple[int, int] = (None, None),  # Position on monitor
+            position: Literal["center", "cursor"] | tuple[int, int] = None,
             min_size: int | tuple[int, int] = (None, None),
             max_size: int | tuple[int, int] = (None, None),
             icon: str | PathLike | Image.Image | io.BytesIO = None,  # .ico file
@@ -759,6 +812,8 @@ class Window(BaseKeyHandler):
             event_loop_function: Callable = None,
             padx: int = None,
             pady: int = None,
+            hidden: bool = None,
+            minimized: bool = None,
             ttk_theme: str = None,
     ):
         """
@@ -777,6 +832,8 @@ class Window(BaseKeyHandler):
         :param icon: Icon of the window. Has to be .ico
         :param keep_on_top: True, if the window should always be on top of any other window
         :param grab_anywhere: True, if the window can be "held and dragged" anywhere (exclusing certain elements)
+        :param hidden: True to hide this window as if it wasn't even open
+        :param minimized: True to minimize the window to the taskbar
         """
         global ttk_style
         global _main_window
@@ -827,14 +884,13 @@ class Window(BaseKeyHandler):
             ttk_theme=ttk_theme,
             padx=padx,
             pady=pady,
+            hidden=hidden,
+            minimized=minimized,
         )
 
         self.init(self._sg_widget, self.root, grab_anywhere_window= self)
 
         self.bind_grab_anywhere_to_element(self._sg_widget.tk_widget)
-
-        if position == (None, None):
-            self.center()
 
         #window_logger.debug(f"Fetching decorated key-functions...")
         self._decorated_key_functions = dict()
@@ -843,10 +899,19 @@ class Window(BaseKeyHandler):
             self._decorated_key_functions[key] = self.get_event_function(key= key, key_function= val)
         window_logger.debug(f"Decorated functions: {len(self._decorated_key_functions)} functions were decorated")
 
+    @property
+    def actual_window(self):
+        """
+        Returns the ACTUAL window, since .window is pretty corrupted by now...
+        :return:
+        """
+        return self
+
     _resizeable_width = False
     _resizeable_height = False
     _size_before_fullscreen = None  # How big the window is before fs
     _position_before_fullscreen = None  # Where the window is before fs
+    _state_before_hiding = None
     def _update_special_key(self, key:str, new_val:Any) -> bool|None:
         # if not self.window.has_flag(ElementFlag.IS_CREATED) and key in ["fullscreen"]:
         #     self.update_after_window_creation(**{key: new_val})
@@ -874,18 +939,27 @@ class Window(BaseKeyHandler):
                     return True
 
                 #self.root.state("zoomed" if new_val else "normal")
-                if new_val and not self._size_before_fullscreen:
+
+                if new_val:
                     self._size_before_fullscreen = self.root.winfo_width(), self.root.winfo_height()
                     self._position_before_fullscreen = self.root.winfo_x(), self.root.winfo_y()
-                    wi = self.root.winfo_screenwidth()
-                    hi = self.root.winfo_screenheight()
-                    #self.root.geometry(f"{wi}x{hi}+0+0")  # Maximiert das Fenster
-                    self.update_after_window_creation(position=(0,0), size=(wi, hi))
-                elif not new_val:
-                    self.update(size=self._size_before_fullscreen)
-                    self.update(position=self._position_before_fullscreen)
-                    self._size_before_fullscreen = None
-                    self._position_before_fullscreen = None
+                    self.root.state("zoomed")
+                else:
+                    self.root.state("normal")
+                    self.update(size=self._size_before_fullscreen, position=self._position_before_fullscreen)
+
+                # This looks better, but always places the window on the first screen:
+                # if new_val and not self._size_before_fullscreen:
+                #     self._size_before_fullscreen = self.root.winfo_width(), self.root.winfo_height()
+                #     self._position_before_fullscreen = self.root.winfo_x(), self.root.winfo_y()
+                #     wi = self.root.winfo_screenwidth()
+                #     hi = self.root.winfo_screenheight()
+                #     #self.root.geometry(f"{wi}x{hi}+0+0")  # Maximize the window
+                #     self.update_after_window_creation(position=(0,0), size=(wi, hi))
+                # elif not new_val:
+                #     self.update(size=self._size_before_fullscreen, position=self._position_before_fullscreen)
+                #     self._size_before_fullscreen = None
+                #     self._position_before_fullscreen = None
 
             case "transparency":
                 if new_val is not None:
@@ -910,6 +984,13 @@ class Window(BaseKeyHandler):
                     self.root.geometry(geometry)
             case "position":
                 if new_val is None:
+                    return True
+
+                if new_val == "center":
+                    self.move_to_screen_centered()
+                    return True
+                elif new_val == "cursor":
+                    self.move_to_mouse()
                     return True
 
                 geometry = ""
@@ -951,6 +1032,38 @@ class Window(BaseKeyHandler):
                 self._sg_widget.update(padx=new_val)
             case "pady":
                 self._sg_widget.update(pady=new_val)
+
+            case "hidden":
+                if new_val is None:
+                    return True
+
+                if not self.has_flag(ElementFlag.IS_CREATED):
+                    self.update_after_window_creation(hidden=new_val)
+                    return True
+
+                if new_val:
+                    if self._state_before_hiding is None:
+                        self._state_before_hiding = self.root.state()
+
+                    self.root.withdraw()
+                elif self._state_before_hiding is not None:
+                    self.root.state(self._state_before_hiding)
+                    self._state_before_hiding = None
+
+            case "minimized":
+                if new_val is None:
+                    return True
+
+                if not self.has_flag(ElementFlag.IS_CREATED):
+                    self.update_after_window_creation(minimized=new_val)
+                    return True
+
+                if new_val and self.root.state() == "normal":
+                    self.root.iconify()
+
+                if not new_val and self.root.state() == "iconic":
+                    self.root.deiconify()
+
             case _:
                 return super()._update_special_key(key, new_val)
 
@@ -973,6 +1086,8 @@ class Window(BaseKeyHandler):
             background_color: Color | str = None,
             padx: int = None,
             pady: int = None,
+            hidden: bool = None,
+            minimized: bool = None,
             ttk_theme: str = None,
     ):
         super().update(
@@ -992,6 +1107,8 @@ class Window(BaseKeyHandler):
             padx = padx,
             pady = pady,
             ttk_theme = ttk_theme,
+            hidden = hidden,
+            minimized = minimized,
         )
 
         return self
@@ -1026,7 +1143,7 @@ class Window(BaseKeyHandler):
             _main_window = None  # un-register this window as the main window
             window_logger.info("Main window was closed")
 
-        self.exists = False
+        self._exists = False
         self.remove_flags(ElementFlag.IS_CREATED)
 
     def loop(self) -> tuple[Any, ValueDict]:
@@ -1038,7 +1155,7 @@ class Window(BaseKeyHandler):
         :return: Triggering event key; all values as _dict
         """
         #window_logger.debug("Main window waiting for next event")
-        self.exists = True
+        self._exists = True
 
         while True:
             self.root.mainloop()
@@ -1046,7 +1163,7 @@ class Window(BaseKeyHandler):
             try:
                 assert self.root.winfo_exists()
             except (AssertionError,tk.TclError):
-                self.exists = False # This looks redundant, but it's easier to use self.exists from outside. So leave it!
+                self._exists = False # This looks redundant, but it's easier to use self.exists from outside. So leave it!
 
                 self.close()
 
@@ -1064,7 +1181,7 @@ class Window(BaseKeyHandler):
 
         return self._prev_event, self._value_dict
 
-    def throw_event(self, key: Hashable = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
+    def throw_event(self, key: Hashable = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None, reset_timeout: bool = True):
         """
         Thread-safe method to generate a custom event.
 
@@ -1073,6 +1190,7 @@ class Window(BaseKeyHandler):
         :param function: This function will be called on the main thread
         :param key:
         :param value: If not None, it will be saved inside the value-_dict until changed
+        :param reset_timeout: True, if this should reset the timeout-timer. False, if the timeout should occure even though this event triggered
         :return:
         """
         keys_logger.debug(f"Caught manually thrown event on {self} with {key=}, {function=}")
@@ -1087,7 +1205,7 @@ class Window(BaseKeyHandler):
         if function_kwargs is None and function is not None:
             function_kwargs = dict()
 
-        self.root.after(0, self._receive_event, key, function, function_args, function_kwargs)
+        self.root.after(0, self._receive_event, key, function, function_args, function_kwargs, reset_timeout)
 
     def init_window_creation_done(self):
         """Called BEFORE the elements get their call in this case"""
@@ -1099,6 +1217,15 @@ class Window(BaseKeyHandler):
         for fct in autostart_periodic_functions:
             #window_logger.debug(f"...starting {fct}")
             fct()
+
+    def _bind_event_to_widget(self, tk_event: str, event_function: Callable) -> Self:
+        """Called in 'bind_event'. Inherit this is the event must be bound differently."""
+        self.root.bind(
+            tk_event,
+            event_function,
+            "+",
+        )
+        return self
 
     def _keyed_event_callback(self, key: Any, _):
         self._prev_event = key
@@ -1162,6 +1289,33 @@ class Window(BaseKeyHandler):
         self.root.eval("tk::PlaceWindow . center")
         return self
 
+    def move_to_screen_centered(self) -> Self:  # Compatability, same as .center
+        """
+        Centers the window on the current screen
+        :return:
+        """
+        self.center()
+        return self
+
+    @BaseElement._run_after_window_creation
+    def move_to_mouse_centered(self) -> Self:
+        """
+        Move the window in a way that its center is where the mousecursor is
+        :return:
+        """
+        size_x, size_y = self.root.winfo_width() // 2, self.root.winfo_height() // 2
+        mouse_x, mouse_y = self.get_mouse_position_global()
+
+        to_x, to_y = max(mouse_x - size_x, 0), max(mouse_y - size_y, 0)
+
+        self._update_initial(position = (to_x, to_y))
+        return self
+
+    @BaseElement._run_after_window_creation
+    def move_to_mouse(self) -> Self:
+        self._update_initial(position = self.get_mouse_position_global())
+        return self
+
     @BaseElement._run_after_window_creation
     def bind_grab_anywhere_to_element(self, widget: tk.Widget):
         """
@@ -1180,6 +1334,21 @@ class Window(BaseKeyHandler):
             widget.bind('<ButtonPress-1>', self._SaveLastClickPos)
             widget.bind('<ButtonRelease-1>', self._DelLastClickPos)
             widget.bind('<B1-Motion>', self._Dragging)
+
+    @BaseElement._run_after_window_creation
+    def fullscreen(self, fullscreen: bool = True, change_titlebar: bool = True) -> Self:
+        """
+        Enter, or exit the fullscreen-mode
+        :param fullscreen: True to enter fullscreen, False to exit it
+        :param change_titlebar: True to remove/re-add the titlebar
+        :return:
+        """
+        titlebar = None
+        if change_titlebar:
+            titlebar = not fullscreen
+
+        self.update(fullscreen=fullscreen, titlebar=titlebar)
+        return self
 
     def block_others(self) -> Self:
         """
@@ -1238,6 +1407,36 @@ class Window(BaseKeyHandler):
 
         return self
 
+    def get_mouse_position_global(self) -> tuple[int, int]:
+        """
+        Returns the x and y coordinate of the mouse cursor relative to the window
+        :return:
+        """
+        return self.root.winfo_pointerxy()
+
+    def get_mouse_position_window(self) -> tuple[int, int]:
+        """
+        Returns x and y coordinate of the mouse-cursor on the window
+        :return:
+        """
+        x, y = self.get_mouse_position_global()
+        x = x - self.root.winfo_rootx()
+        y = y - self.root.winfo_rooty()
+
+        return x, y
+
+class HiddenMainWindow(Window):
+    def __init__(self):
+        """
+        Create an invisible window that acts as the main window.
+        This way, you can use subwindows/popups/etc. without them turning into the main window.
+
+        IMPORTANT: Make sure to close this window when the program closes!
+        Otherwise it will run in the background until the PC is shutdown.
+        """
+        super().__init__([])
+        self.update(hidden=True)
+
 class SubWindow(Window):
     """
     Window-Object for additional windows
@@ -1267,7 +1466,7 @@ class SubWindow(Window):
             resizeable_height: bool = None,
             transparency: Literals.transparency = None,  # 0-1, 1 meaning invisible
             size: int | tuple[int, int] = (None, None),
-            position: tuple[int, int] = (None, None),  # Position on monitor
+            position: Literal["center", "cursor"] | tuple[int, int] = None,
             min_size: int | tuple[int, int] = (None, None),
             max_size: int | tuple[int, int] = (None, None),
             icon: str | PathLike | Image.Image | io.BytesIO = None,  # .ico file
@@ -1339,17 +1538,12 @@ class SubWindow(Window):
 
         self.bind_grab_anywhere_to_element(self._sg_widget.tk_widget)
 
-        if position == (None, None):
-            #self.root.wait_visibility()
-            self.root.update_idletasks()
-            self.center()
-
         self.key = key
         if key is not None:
             _main_window.register_element(self)
             _main_window._value_dict.set_extra_value(key, self.value)
 
-    def loop_close(self, block_others: bool = True) -> tuple[Any,dict[Any:Any]]:
+    def loop_close(self, block_others: bool = True) -> tuple[Any,dict[Hashable, Any]]:
         """
         Loop until the first keyed event.
         Then close the window and return e,v like with a normal window.
@@ -1400,34 +1594,15 @@ class SubWindow(Window):
         window_logger.error(f"Tried to iterate {self}, which doesn't work on sub-windows")
         raise NotImplementedError("SubWindows can't be looped. You need to define a loop-function instead.")
 
-    def throw_event(self, key: Any = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None):
-        """
-        Thread-safe method to generate a custom event.
-
-        :param function_kwargs: Will be passed to function
-        :param function_args: Will be passed to function
-        :param function: This function will be called on the main thread
-        :param key:
-        :param value: If not None, it will be saved inside the value-_dict until changed
-        :return:
-        """
-        keys_logger.debug(f"Manually thrown event on {self} with {key=}, {function=}")
-        if not self.exists:
-            keys_logger.debug(f"{self} doesn't exist, so manual event ignored")
-            return
-
-        if key is not None:
-            self._value_dict.set_extra_value(key, value)
-
-        if function_kwargs is None and function is not None:
-            function_kwargs = dict()
-
-        _main_window.throw_event(function= self._receive_event, function_kwargs={
-            "key": key,
-            "callback": function,
-            "callback_args": function_args,
-            "callback_kwargs": function_kwargs,
-        })
+    def throw_event(self, key: Any = None, value: Any= None, function: Callable= None, function_args: tuple = tuple(), function_kwargs: dict = None, reset_timeout: bool = True):
+        return super(Window, self).throw_event(
+            key = key,
+            value = value,
+            function= function,
+            function_args= function_args,
+            function_kwargs= function_kwargs,
+            reset_timeout= reset_timeout,
+        )
 
     def init_window_creation_done(self):
         """Called BEFORE the elements get their call in this case"""

@@ -4,7 +4,7 @@ from collections.abc import Iterable, Callable
 from typing import Literal, Any, Hashable
 from SwiftGUI.Compat import Self
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, MixinElementWithDefaultEvent
 
 _radio_id:int = 1
 _named_radio_groups: dict[Hashable, "RadioGroup"] = dict()  # All groups with an actual name instead of ids
@@ -60,7 +60,7 @@ class RadioGroup:
     def __eq__(self, other):
         return hash(self) == hash(other)
 
-class Radiobutton(BaseWidget):
+class Radiobutton(MixinElementWithDefaultEvent, BaseWidget):
     _tk_widget_class: type = tk.Radiobutton  # Class of the connected widget
     tk_widget: tk.Radiobutton
     defaults = GlobalOptions.Radiobutton  # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
@@ -136,7 +136,7 @@ class Radiobutton(BaseWidget):
             expand_y: bool = None,
             tk_kwargs: dict = None,
     ):
-        super().__init__(key, tk_kwargs=tk_kwargs, expand=expand,expand_y=expand_y)
+        super().__init__(key, tk_kwargs=tk_kwargs, expand=expand,expand_y=expand_y, default_event=default_event)
 
         self._key_function = key_function
 
@@ -176,8 +176,7 @@ class Radiobutton(BaseWidget):
 
         self._assign_tk_target_variable(self._group.tk_variable, kwargs_key="variable")
 
-        if self._default_event:
-            self._tk_kwargs["command"] = self.window.get_event_function(self, key=self.key, key_function=self._key_function)
+        self._tk_kwargs["command"] = self._event_callback
 
     def _get_value(self) -> bool:
         return self._group.tk_variable.get() == self._my_value  # Don't like it, but I need to ignore this warning...

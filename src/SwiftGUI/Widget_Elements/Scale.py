@@ -4,9 +4,11 @@ from collections.abc import Iterable, Callable
 from typing import Literal, Any, Hashable
 from SwiftGUI.Compat import Self
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, \
+    MixinElementWithValue
 
-class Scale(BaseWidget):
+
+class Scale(MixinElementWithValue, BaseWidget):
     _tk_widget_class: type = tk.Scale  # Class of the connected widget
     tk_widget: tk.Scale
     defaults = GlobalOptions.Scale  # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
@@ -33,8 +35,10 @@ class Scale(BaseWidget):
             self,
             *,
             key: Hashable = None,
-            default_event: bool = False,
             key_function: Callable | Iterable[Callable] = None,
+            default_event: bool = False,
+            default_event_on_value_change: bool = None,    # Generate an event on EVERY value-change. Normally only on button-release
+
             default_value: int | float = None,
             number_min: float = None,
             number_max: float = None,
@@ -85,14 +89,13 @@ class Scale(BaseWidget):
             expand_y: bool = None,
             tk_kwargs: dict = None,
     ):
-        super().__init__(key, tk_kwargs=tk_kwargs, expand=expand,expand_y=expand_y)
+        super().__init__(key, tk_kwargs=tk_kwargs, expand=expand,expand_y=expand_y, default_event=default_event, default_value=default_value)
 
         self._key_function = key_function
+        self._default_event_on_value_change = self.defaults.single("default_event_on_value_change", default_event_on_value_change)
 
         if background_color and not apply_parent_background_color:
             apply_parent_background_color = False
-
-        self._default_event = default_event
 
         self._update_initial(
             default_value = default_value,
@@ -132,8 +135,10 @@ class Scale(BaseWidget):
             background_color_active = background_color_active,
         )
 
-    def set_value(self,val: float):
+    def set_value(self,val: float) -> Self:
+        self._apply_value(val)
         super().set_value(val)
+        return self
 
     def _get_value(self) -> float:
         return float(super()._get_value())
@@ -141,8 +146,14 @@ class Scale(BaseWidget):
     def _personal_init_inherit(self):
         self._set_tk_target_variable(tk.StringVar, kwargs_key="variable", default_key= "default_value")
 
-        if self._default_event:
-            self._tk_kwargs["command"] = self.window.get_event_function(self, key=self.key, key_function=self._key_function)
+    def init_window_creation_done(self):
+        super().init_window_creation_done()
+        self._apply_value(self.value)
+
+        if self._default_event_on_value_change:
+            self.tk_widget.configure(command = self._event_callback)
+        else:
+            self.tk_widget.bind("<ButtonRelease>", self._event_callback)
 
     def _update_font(self):
         # self._tk_kwargs will be passed to tk_widget later

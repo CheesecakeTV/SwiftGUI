@@ -10,7 +10,8 @@ from typing import Any, Literal, Hashable
 from SwiftGUI.Compat import Self
 from itertools import islice
 
-from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement, Scrollbar, BaseScrollbar
+from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement, Scrollbar, MixinScrollbar, \
+    MixinElementWithDefaultEvent
 
 
 class TableRow(list):
@@ -115,7 +116,7 @@ class TableRow(list):
 
         return tuple(self) == tuple(other)
 
-class Table(BaseWidgetTTK, BaseScrollbar):
+class Table(MixinElementWithDefaultEvent, BaseWidgetTTK, MixinScrollbar):
     tk_widget:ttk.Treeview
     _tk_widget:ttk.Treeview
     _tk_widget_class:type = ttk.Treeview # Class of the connected widget
@@ -123,11 +124,9 @@ class Table(BaseWidgetTTK, BaseScrollbar):
 
     _styletype:str = "Treeview"
 
-    _elements: list[TableRow[Any]]  # Elements the Table contains atm
-    table_elements: tuple[TableRow[Any]]   # Prevent users from tampering with _elements...
-    _element_dict: dict[int:TableRow[Any]] # Hash:Element ~ Elements as a dict to find them quicker
-
-    _tk_event_callback: Callable
+    _elements: list[TableRow]  # Elements the Table contains atm
+    table_elements: tuple[TableRow]   # Prevent users from tampering with _elements...
+    _element_dict: dict[int, TableRow] # Hash:Element ~ Elements as a dict to find them quicker
 
     _headings: tuple    # Column headings
 
@@ -185,9 +184,9 @@ class Table(BaseWidgetTTK, BaseScrollbar):
             takefocus: bool = None,
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:Any]=None
+            tk_kwargs: dict[str, Any]=None
     ):
-        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
+        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y, default_event=default_event)
 
         self._thread_lock = threading.Lock()
 
@@ -225,20 +224,21 @@ class Table(BaseWidgetTTK, BaseScrollbar):
                              takefocus=takefocus, height=height, cursor=cursor, padding=padding, hide_headings=hide_headings,
                              export_rows_to_json = export_rows_to_json, **tk_kwargs)
 
-        self._default_event = default_event
         self._key_function = key_function
 
     _prev_selection = None
     def _event_callback(self, *args):
-        if not self._default_event:
-            return
-
         all_indexes = self.all_indexes
+
         if self._prev_selection == all_indexes:
             return
+
         self._prev_selection = all_indexes
 
-        self._tk_event_callback(*args)
+        if not all_indexes: # It's impossible for the user to cause a real event without anything selected in the table
+            return
+
+        self.throw_default_event()
 
     _last_sort_direction: bool = None  # True, if sorted non-reversed, False if sorted reversed
     _last_sort_col: int = -1    # Col that got sorted last time
@@ -543,7 +543,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
 
         self._config_ttk_style("Heading",font=font_options)
 
-    def _get_value(self) -> TableRow[str,...] | None:
+    def _get_value(self) -> TableRow | None:
         temp = self.index
 
         if temp is None:
@@ -551,9 +551,18 @@ class Table(BaseWidgetTTK, BaseScrollbar):
 
         return self._element_dict[str(hash(self._elements[temp]))]
 
-    def set_value(self,val:Any):
-        print("Warning!","It is not possible to set Values of sg.Table (yet)!")
-        print("     use .index to set the selected item")
+    def set_value(self, val: Iterable[Any]) -> Self:
+        """
+        All selected rows will be updated to the given value (new row)
+        :param val:
+        :return:
+        """
+        index = self.all_indexes
+
+        for i in index:
+            self.__setitem__(i, val)
+
+        return self
 
     def __getitem__(self, item: int) -> TableRow:
         """
@@ -583,8 +592,16 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         :param index:
         :return:
         """
+        self.delete_row(index)
+
+    def delete_row(self, index: int) -> Self:
+        """
+        Remove an entire row from the list
+        :param index:
+        :return:
+        """
         if index is None:
-            return
+            return self
 
         row = self._elements[index]
         del self._elements[index]
@@ -593,6 +610,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         del self._element_dict[iid]
 
         self.tk_widget.delete(iid)
+        return self
 
     def __matmul__(self, other: TableRow):
         """
@@ -723,7 +741,6 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         """Don't touch!"""
         super().init_window_creation_done()
 
-        self._tk_event_callback = self.window.get_event_function(self, key=self.key, key_function=self._key_function)
         self.tk_widget.bind("<<TreeviewSelect>>", self._event_callback)
 
         if self._headings:
@@ -950,7 +967,7 @@ class Table(BaseWidgetTTK, BaseScrollbar):
         :return:
         """
         if index1 == index2:
-            return
+            return self
 
         if index1 < 0:
             index1 = len(self._elements) + index1

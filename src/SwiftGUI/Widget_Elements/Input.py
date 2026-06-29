@@ -3,11 +3,11 @@ import tkinter.font as font
 from collections.abc import Iterable, Callable
 from typing import Literal, Any, Hashable
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, MixinElementWithValue
 from SwiftGUI.Compat import Self
 
 
-class Input(BaseWidget):
+class Input(MixinElementWithValue, BaseWidget):
     """
     Copy this class ot create your own Widget
 
@@ -72,7 +72,7 @@ class Input(BaseWidget):
             #
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:Any]=None
+            tk_kwargs: dict[str, Any]=None,
     ):
         """
 
@@ -120,7 +120,6 @@ class Input(BaseWidget):
             tk_kwargs = dict()
 
         self._default_event = default_event
-        self._value_change_callback: Callable | None = None
         # if default_event:
         #     self.bind_event("<KeyRelease>",key=self.key,key_function=self._key_function)
 
@@ -211,23 +210,10 @@ class Input(BaseWidget):
 
     def init_window_creation_done(self):
         super().init_window_creation_done()
-        self._value_change_callback = self.window.get_event_function(self, key= self.key, key_function= self._key_function)
         self._tk_target_value.trace_add("write", self._event_callback)
 
     def set_value(self, val:str, throw_event: bool = False) -> Self:
-        if not throw_event:
-            self._prev_value = val
-
+        self._apply_value(val, throw_event)
         super().set_value(val)
         return self
-
-    _prev_value: str = None
-    def _event_callback(self, *_):
-        value = self.value
-        if self._prev_value == value:
-            return
-
-        self._prev_value = value
-        if self._default_event:
-            self._value_change_callback()
 

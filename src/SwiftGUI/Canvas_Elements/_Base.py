@@ -97,6 +97,33 @@ class BaseCanvasElement(sg.BaseWidget): # Inheritance mainly for the update-rout
         self.canvas.tk_widget.moveto(self.canvas_id, x, y)
         return self
 
+    @sg.BaseWidget._run_after_window_creation
+    def move_to_center(self, x: float, y: float) -> Self:
+        """
+        Move this element to the specified coordinates
+        The element's center will be at the specified coordinates
+
+        :param x:
+        :param y:
+        :return:
+        """
+        size_x, size_y = self.get_size()
+
+        self.move_to(x - size_x / 2, y - size_y / 2)
+
+        return self
+
+    def get_size(self) -> tuple[float, float]:
+        """
+        Return the size of the boundary-box of this object
+        :return:
+        """
+        ((b1x, b1y), (b2x, b2y)) = self.get_boundary()
+        size_x = b2x - b1x
+        size_y = b2y - b1y
+
+        return size_x, size_y
+
     #@sg.BaseWidget._run_after_window_creation
     def move(self, x: float, y: float) -> Self:
         """
@@ -119,7 +146,7 @@ class BaseCanvasElement(sg.BaseWidget): # Inheritance mainly for the update-rout
         return [x for xs in tuplelist for x in xs]
 
     @staticmethod
-    def _unflatten(flatlist: Iterable[Any]) -> tuple[tuple[Any], ...]:
+    def _unflatten(flatlist: Iterable[Any]) -> tuple[tuple[Any, Any], ...]:
         """
         Opposite of flatten
         :param flatlist:
@@ -138,7 +165,7 @@ class BaseCanvasElement(sg.BaseWidget): # Inheritance mainly for the update-rout
         self.canvas.tk_widget.coords(self.canvas_id, self._flatten(new_coords))
         return self
 
-    def get_coords(self) -> tuple[tuple[float], ...]:
+    def get_coords(self) -> tuple[tuple[float, float], ...]:
         """
         Return the coordinates of this element.
         What the exact coordinates represent is dependent on the actual type of element.
@@ -146,7 +173,26 @@ class BaseCanvasElement(sg.BaseWidget): # Inheritance mainly for the update-rout
         """
         return self._unflatten(self.canvas.tk_widget.coords(self.canvas_id))
 
-    def get_boundary(self) -> tuple[tuple[int], ...] | tuple[tuple[int], tuple[int]]:
+    def get_position(self) -> tuple[int, int]:
+        """
+        Get the current position (top left) of this element
+        :return:
+        """
+        return self.get_boundary()[0]
+
+    def get_position_center(self) -> tuple[int, int]:
+        """
+        Return the center-position of this object.
+        Center means center of the boundary, not the center of gravity.
+
+        :return:
+        """
+        size_x, size_y = self.get_size()
+        x, y = self.get_position()
+
+        return int(x + size_x / 2), int(y + size_y / 2)
+
+    def get_boundary(self) -> tuple[tuple[int, int], ...] | tuple[tuple[int, int], tuple[int, int]]:
         """
         Return the coordinates of a rectangle that just fits around this element
         :return:

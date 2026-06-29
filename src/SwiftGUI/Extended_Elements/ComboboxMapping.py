@@ -17,7 +17,7 @@ class ComboboxMapping(Combobox):
     """
     def __init__(
             self,
-            choices: Mapping[Hashable, Any] = None,
+            choices: Mapping[str, Any] = None,
             *,
             key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
@@ -63,7 +63,7 @@ class ComboboxMapping(Combobox):
             # Add here
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:Any]=None
+            tk_kwargs: dict[str, Any]=None
     ):
         """
         A lot of options are the same with sg.Input
@@ -174,14 +174,14 @@ class ComboboxMapping(Combobox):
         val = super()._get_value()
         return self._choices.get(val)
 
-    def set_value(self, val: Hashable) -> Self:
+    def set_value(self,val: Hashable, throw_event: bool = False):
         if not val in self._choices:
             logger.error(f"You tried to set a ComboboxMapping with a key that isn't part of the choices.\n"
                          f"I am {self} and my choices are {self._choices}.\n"
                          f"You tried to set the value to {val}.")
             return self
 
-        super().set_value(val)
+        super().set_value(val, throw_event)
         return self
 
     def to_json(self) -> Any:

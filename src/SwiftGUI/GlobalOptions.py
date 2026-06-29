@@ -1,5 +1,6 @@
 #import tkinter as tk    # Not needed, but helpful to figure out default vals
 #from tkinter import ttk
+import calendar
 from collections.abc import Iterable
 from os import PathLike
 from typing import Literal, Union, Any, Callable
@@ -25,7 +26,7 @@ class _DefaultOptionsMeta(type):
         _all_defaults = dict(filter(lambda a: a[1] is not None and not a[0].startswith("_") and not a[0] in _ignore_keys, namespace.items()))
         namespace["_all_defaults"] = _all_defaults
 
-        cls:"DEFAULT_OPTIONS_CLASS"|type = super().__new__(mcs, name, bases, namespace)
+        cls:type = super().__new__(mcs, name, bases, namespace)
         #cls._all_defaults = _all_defaults
 
         all_option_classes.append(cls)
@@ -88,7 +89,7 @@ class _DefaultOptionsMeta(type):
         cls._up_to_date.update(not_up_to_date)  # These values are now up to date
 
     _provides: set[str] = set()      # What values this class had defined. Don't overwrite these from superclasses!
-    _values: dict[str: Any] = dict() # The actual, saved values
+    _values: dict[str, Any] = dict() # The actual, saved values
     _up_to_date: set[str] = set()    # What values are refreshed and can be used
     _unavailable: set[str] = set()   # All keys that weren't found before
     def reset_to_default(self):
@@ -258,6 +259,7 @@ class Text(Common, Common_Textual, Common_Background):
 
 class Scale(Common_Background, Common_Textual):
     default_value: int | float = None
+    default_event_on_value_change: bool = False  # Generate an event on EVERY value-change. Normally only on button-release
     number_min: float = None
     number_max: float = None
     resolution: float = None
@@ -305,7 +307,7 @@ class Input(Common,Common_Textual,Common_Field_Background):
     relief: Literals.relief = None
     exportselection: bool = None
     validate: Literals.validate = None
-    validatecommand: callable = None
+    validatecommand: Callable = None
     insertbackground_color: str | Color = None
     #
     # Mixed options
@@ -396,7 +398,7 @@ class Window(Common_Background):
     fullscreen: bool = False
     transparency: Literals.transparency = 0  # 0-1, 1 meaning invisible
     size: int | tuple[int, int] = (None, None)
-    position: tuple[int, int] = (None, None)  # Position on monitor # Todo: Center
+    position: Literal["center", "cursor"] | tuple[int, int] = "center"
     min_size: int | tuple[int, int] = (None, None)
     max_size: int | tuple[int, int] = (None, None)
     icon: str = file_from_b64(Extras.SwiftGUI.icon)
@@ -405,6 +407,9 @@ class Window(Common_Background):
     grab_anywhere: bool = False
     padx: int = 5
     pady: int = 5
+    hidden: bool = False
+    minimized: bool = False
+
 
 class SubWindow(Window):
     ...
@@ -575,6 +580,14 @@ class Console(TextField):
     print_prefix: str = " "
     add_timestamp: bool = True
     scrollbar: bool = True
+
+class Calendar(Button):
+    allow_month_selection: bool = True
+    monthnames: Iterable[str] = calendar.month_name[1:]
+    daynames: Iterable[str] = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+    week_starts_on_sunday: bool = False
+    today_background_color: sg.Color | str = "darkblue"
+    today_selects: bool = False
 
 class Canvas(Common, Common_Field_Background):
     width: int = None

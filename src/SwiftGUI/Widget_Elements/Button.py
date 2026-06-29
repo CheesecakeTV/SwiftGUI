@@ -1,13 +1,13 @@
 import tkinter as tk
 import tkinter.font as font
 from collections.abc import Iterable, Callable
-from typing import Literal, Hashable
+from typing import Literal, Hashable, Any
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, MixinElementWithDefaultEvent
 from SwiftGUI.Compat import Self
 
 
-class Button(BaseWidget):
+class Button(MixinElementWithDefaultEvent, BaseWidget):
     tk_widget:tk.Button
     _tk_widget_class:type = tk.Button # Class of the connected widget
     defaults = GlobalOptions.Button
@@ -79,7 +79,7 @@ class Button(BaseWidget):
 
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:any] = None
+            tk_kwargs: dict[str, Any] = None,
     ):
         """
         A button that throws an event every time it is pushed
@@ -116,7 +116,7 @@ class Button(BaseWidget):
         :param font_overstrike: True, if the text should be overstruck
         :param tk_kwargs: (Only if you know tkinter) Pass more kwargs directly to the tk-widget
         """
-        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand,expand_y=expand_y)
+        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand,expand_y=expand_y, default_event=default_event)
 
         if tk_kwargs is None:
             tk_kwargs = dict()
@@ -159,11 +159,10 @@ class Button(BaseWidget):
             bitmap_position = bitmap_position,
         )
 
-        self._default_event = default_event
         self._key_function = key_function
 
     _disabled_at_start = False
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self, key:str, new_val: Any) -> bool|None:
         match key:
 
             case "disabled":
@@ -204,10 +203,9 @@ class Button(BaseWidget):
         super()._apply_update() # Actually apply the update
 
     def _personal_init(self):
-        if self._default_event:
-            self._tk_kwargs.update({
-                "command": self.window.get_event_function(self, self.key, self._key_function)
-            })
+        self._tk_kwargs.update({
+            "command": self._event_callback,
+        })
 
         super()._personal_init()
 

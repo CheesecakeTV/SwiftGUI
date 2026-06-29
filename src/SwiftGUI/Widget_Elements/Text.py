@@ -50,7 +50,7 @@ class Text(BaseWidget):
 
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs:dict[str:Any]=None
+            tk_kwargs:dict[str, Any]=None
     ):
         """
         This element has a dedicated element-tutorial in the documentation with detailed descriptions of each parameter.

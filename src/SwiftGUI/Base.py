@@ -1,6 +1,6 @@
 from collections.abc import Iterable, Callable
 from functools import wraps
-from typing import Literal, Union, Any, Hashable
+from typing import Literal, Union, Any, Hashable, Protocol
 from SwiftGUI.Compat import Self
 import tkinter as tk
 
@@ -11,40 +11,48 @@ from SwiftGUI.ElementFlags import ElementFlag
 import logging
 element_logger = logging.getLogger("SwiftGUI.Element")
 
-def run_after_window_creation(w_fkt: Callable) -> Callable:
+def run_after_window_creation(w_fkt: Callable):
     """
+    Decorator.
+
     Decorated methods will run if the window exists.
     Only use on methods, not functions!
 
     If you call it before, the call will be buffered and ran later.
     :return: If the decorated function doesn't execute, Self is returned for inline calls.
     """
-    buffer: list[tuple[tuple, dict]] = list()
-
-    def run_after():    # Actually run the functions
-        nonlocal buffer
-        for args,kwargs in buffer:
-            w_fkt(*args, **kwargs)
-
-        buffer = list() # Not needed anymore
-
     @wraps(w_fkt)
     def fkt(*args, **kwargs):
         self = args[0]
 
         if self.has_flag(ElementFlag.IS_CREATED):    # Window is already created
-            return w_fkt(*args, **kwargs)
+            w_fkt(*args, **kwargs)
+            return self
 
-        if not buffer:  # If this is the first buffered call
-            self._run_when_window_exists.append(run_after)  # Tell the element to call run_after, after window is created
+        def run_after():
+            w_fkt(*args, **kwargs)
 
-        buffer.append((args, kwargs))
+        self._run_when_window_exists.append(run_after)  # Tell the element to call run_after, after window is created
+
         return self
 
     return fkt
 
 
-class BaseElement:
+class _BaseSharedAttributes:
+    """
+    Attributes every class is supposed to have so the IDE doesn't show warnings
+    """
+    init_window_creation_done: Callable
+    set_value: Callable
+
+    value: Any
+    window = None # Reference to the container "window" (Can be subwindow, sublayout or simmilar too)
+
+    key: Hashable = None  # If given, this will be written to the event-value. Elements without a key can not throw key-events
+    _key_function: Callable | Iterable[Callable] = None  # Saves the key-function(s), if given
+
+class BaseElement(_BaseSharedAttributes):
     """
     Base for every element and widget.
 
@@ -54,10 +62,6 @@ class BaseElement:
     parent:Self = None  # next higher Element
     _fake_tk_element:tk.Widget = None   # This gets returned when parent is None
     _element_flags:set[ElementFlag] # Properties the element has
-    window = None # Main Window
-
-    key:Any = None  # If given, this will be written to the event-value. Elements without a key can not throw key-events
-    _key_function: Callable | Iterable[Callable] = None  # Called as an event
 
     defaults:type[GlobalOptions.DEFAULT_OPTIONS_CLASS] = GlobalOptions.EMPTY  # Change this to apply a different default configuration
 
@@ -324,11 +328,55 @@ class BaseElement:
         :return:
         """
         #element_logger.debug(f"init_window_creation_done for {repr(self)}, now making {len(self._run_when_window_exists)} calls")
+        #print("1", self, self.window, self._run_when_window_exists)
         for fkt in self._run_when_window_exists:    # Call all those buffered functions
             fkt()
 
     def __repr__(self) -> str:
         return f"<sg.{self.__class__.__name__} element at {id(self)}>"
+
+    def _bind_event_to_widget(self, tk_event: str, event_function: Callable) -> Self:
+        """Called in 'bind_event'. Inherit this is the event must be bound differently."""
+        raise NotImplementedError(f"{self} doesn't allow binding an event to it.")
+
+    @run_after_window_creation
+    def bind_event(self,tk_event:str|Event,key_extention:Union[str,Any]=None,key:Any=None,key_function:Callable|Iterable[Callable]=None) -> Self:
+        """
+        Bind a tk-event onto the underlying tk-widget
+
+        To just throw the element-key, set key_extention = ""
+
+        :param tk_event: tkinter event-string. You don't need to add brackets, if your event-text is longer than 1 char
+        :param key_extention: Added to the event-key
+        :param key: event-key. If None and key_extention is not None, it will be appended onto the element-key
+        :param key_function: Called when this event is thrown
+        :return: Calling element for inline-calls
+        """
+        new_key = None
+        element_logger.debug(f"bind_event on {self}: {tk_event=}, {key_extention=}, {key=}, {key_function=}")
+
+        if hasattr(tk_event,"value"):
+            tk_event = tk_event.value
+
+        if len(tk_event) > 1 and not tk_event.startswith("<"):
+            tk_event = f"<{tk_event}>"
+
+        match (key_extention is not None, key is not None):
+            case (True,True):
+                new_key = key + key_extention
+            case (False,True):
+                new_key = key
+            case (True,False):
+                new_key = self.key + key_extention
+            case (False,False):
+                new_key = self.key
+                assert new_key or key_function, f"You forgot to add either a key or key_function to this element... {self}"
+
+        event_function = self.window.get_event_function(self, new_key, key_function=key_function)
+
+        self._bind_event_to_widget(tk_event, event_function)
+
+        return self
 
 class BaseWidget(BaseElement):
     """
@@ -336,7 +384,7 @@ class BaseWidget(BaseElement):
     """
     _tk_widget:tk.Widget
     tk_widget:tk.Widget    # My own tk_widget. Wraps _tk_widget
-    _tk_widget_class:type = None # Class of the connected widget
+    _tk_widget_class:type # Class of the connected widget
     _tk_kwargs:dict = dict()
 
     _grab_anywhere_on_this: bool = False    # If True, you can grab windows by grabbing this element
@@ -361,11 +409,11 @@ class BaseWidget(BaseElement):
     #_is_container:bool = False   # True, if this widget contains other widgets
     _contains:list[Iterable["BaseElement"]] = []
 
-    _transfer_keys: dict[str:str] = dict()   # Rename a key from the update-function. from -> to; from_user -> to_widget
+    _transfer_keys: dict[str, str] = dict()   # Rename a key from the update-function. from -> to; from_user -> to_widget
 
     _tk_scrollbar_y: tk.Scrollbar | None = None
 
-    def __init__(self,key:Hashable=None,tk_kwargs:dict[str:Any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
+    def __init__(self,key:Hashable=None,tk_kwargs:dict[str, Any]=None,expand:bool = False,expand_y:bool = False,**kwargs):
         super().__init__()
 
         if tk_kwargs is None:
@@ -415,50 +463,11 @@ class BaseWidget(BaseElement):
 
     def _bind_event_to_widget(self, tk_event: str, event_function: Callable) -> Self:
         """Called in 'bind_event'. Inherit this is the event must be bound differently."""
-        #element_logger.debug(f"Tkinter event-bind on {self}: {tk_event=}")
         self._tk_widget.bind(
             tk_event,
             event_function,
+            "+",
         )
-        return self
-
-    @run_after_window_creation
-    def bind_event(self,tk_event:str|Event,key_extention:Union[str,Any]=None,key:Any=None,key_function:Callable|Iterable[Callable]=None)->Self:
-        """
-        Bind a tk-event onto the underlying tk-widget
-
-        To just throw the element-key, set key_extention = ""
-
-        :param tk_event: tkinter event-string. You don't need to add brackets, if your event-text is longer than 1 char
-        :param key_extention: Added to the event-key
-        :param key: event-key. If None and key_extention is not None, it will be appended onto the element-key
-        :param key_function: Called when this event is thrown
-        :return: Calling element for inline-calls
-        """
-        new_key = None
-        element_logger.debug(f"bind_event on {self}: {tk_event=}, {key_extention=}, {key=}, {key_function=}")
-
-        if hasattr(tk_event,"value"):
-            tk_event = tk_event.value
-
-        if len(tk_event) > 1 and not tk_event.startswith("<"):
-            tk_event = f"<{tk_event}>"
-
-        match (key_extention is not None, key is not None):
-            case (True,True):
-                new_key = key + key_extention
-            case (False,True):
-                new_key = key
-            case (True,False):
-                new_key = self.key + key_extention
-            case (False,False):
-                new_key = self.key
-                assert new_key or key_function, f"You forgot to add either a key or key_function to this element... {self}"
-
-        event_function = self.window.get_event_function(self, new_key, key_function=key_function)
-
-        self._bind_event_to_widget(tk_event, event_function)
-
         return self
 
     def _init_defaults(self):
@@ -706,7 +715,7 @@ class BaseWidget(BaseElement):
     def __repr__(self) -> str:
         return f"<sg.{self.__class__.__name__} element with key={self.key} at {id(self)}>"
 
-class BaseScrollbar:
+class MixinScrollbar:
     """
     Base for every widget that has a scrollbar.
 
@@ -852,3 +861,119 @@ class BaseWidgetTTK(BaseWidget):
 
 
         self.window.ttk_style.map(stylename, **new_kwargs)
+
+class MixinElementWithDefaultEvent(_BaseSharedAttributes):
+    """
+    An element that has some kind of default event.
+    Implements the callback.
+
+    Needs to inherit BEFORE the Widget-class
+
+    You still need to do the following
+    - Link _event_function to the tkinter-event
+    """
+
+    _event_function = lambda *_: None  # Replaced with the actual event-function in init_window_creation_done
+    _default_event: bool = None  # True, if event is enabled
+
+    def __init__(self, *args, default_event: bool = None, **kwargs):
+        """
+
+        :param args:
+        :param default_event:
+        :param default_value: Pass a value to apply it before creating the element
+        :param kwargs:
+        """
+        self._default_event = default_event
+
+        super().__init__(*args, **kwargs)
+
+    def throw_event(self) -> Self:
+        """
+        Throw an event of this element, no matter if default-event is enabled or not.
+        You may overwrite this to change the event behavior.
+        The actual event-function that causes the event is self._throw_event(), so don't forget to call it.
+        :return:
+        """
+        self._event_function()
+
+        return self
+
+    def throw_default_event(self) -> Self:
+        """
+        Throw an event, but only if the default-event is enabled.
+        You may overwrite this to let the element handle events internally.
+        :return:
+        """
+        if self._default_event:
+            self.throw_event()
+
+        return self
+
+    def _event_callback(self, *_):
+        """
+        Called when an event occurs.
+        You may inherit this to change internal event-handling, but I recommend only using throw_event and throw_default_event.
+
+        :param _:
+        :return:
+        """
+        self.throw_default_event()
+
+    def init_window_creation_done(self):
+        self._event_function = self.window.get_event_function(self, key=self.key, key_function=self._key_function)
+        super().init_window_creation_done()
+
+class MixinElementWithValue(MixinElementWithDefaultEvent):
+    """
+    An element that might trigger events even though its value hasn't changed.
+
+    Needs to inherit BEFORE the Widget-class
+
+    You still need to do the following
+    - Link _event_function to the tkinter-event
+    - Call _apply_value in set_value
+    """
+
+    _prev_value: Any = None   # Value of last value-callback
+
+    def __init__(self, *args, default_event: bool = None, default_value: Any = None, **kwargs):
+        """
+
+        :param args:
+        :param default_event:
+        :param default_value: Pass a value to apply it before creating the element
+        :param kwargs:
+        """
+        self._prev_value = default_value
+
+        super().__init__(*args, default_event=default_event, **kwargs)
+
+    def _event_callback(self, *_):   # Must be specified in the tkinter-event!!!
+        """
+        Called when the value-event occurs.
+        You may inherit this to change internal event-handling, but I recommend only using throw_event and throw_default_event.
+        :param _:
+        :return:
+        """
+        if self.value == self._prev_value:
+            return
+
+        self._prev_value = self.value
+
+        self.throw_default_event()
+
+    def _apply_value(self, val: Any, throw_event: bool = False):
+        """
+        Call this to avoid an event being thrown when that value is used as the current value.
+
+        throw_event ONLY WORKS IF THE ELEMENT GENERATES AN EVENT BY ITSELF WHEN THE VALUE CHANGES ON THE BACKEND
+
+        :param val:
+        :param throw_event:
+        :return:
+        """
+        if not throw_event:
+            self._prev_value = val
+
+

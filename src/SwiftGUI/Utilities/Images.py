@@ -8,8 +8,9 @@ from PIL import ImageTk
 
 
 def file_to_b64(file: PathLike | str) -> bytes:
-    file = open(file, "rb")
-    file = base64.b64encode(file.read())
+    with open(file, "rb") as f:
+        file = base64.b64encode(f.read())
+
     return file
 
 def file_from_b64(b64_data: str | bytes) -> io.BytesIO:
@@ -23,7 +24,7 @@ def image_to_tk_image(
         height: int = None,
 ) -> ImageTk.PhotoImage | None:
     if image is None:
-        return
+        return None
 
     # if isinstance(image, str) or isinstance(image, PathLike) or isinstance(image, IO) or isinstance(image, bytes):
 

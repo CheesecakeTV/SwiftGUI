@@ -4,9 +4,10 @@ from typing import Any, Iterable, Callable, Hashable
 from SwiftGUI.Base import run_after_window_creation
 from SwiftGUI.Compat import Self
 
-from SwiftGUI import GlobalOptions, BaseWidgetTTK, Literals, Color, ElementFlag, Scrollbar
+from SwiftGUI import GlobalOptions, BaseWidgetTTK, Literals, Color, ElementFlag, Scrollbar, MixinElementWithValue
 
-class Combobox(BaseWidgetTTK):
+
+class Combobox(MixinElementWithValue, BaseWidgetTTK):
     tk_widget:ttk.Combobox
     _tk_widget:ttk.Combobox
     _tk_widget_class:type = ttk.Combobox # Class of the connected widget
@@ -31,6 +32,8 @@ class Combobox(BaseWidgetTTK):
             background_color: str | Color = None,
             background_color_disabled: str | Color = None,
             selectbackground_color: str | Color = None,
+
+            highlightcolor: str | Color = None,
 
             text_color: str | Color = None,
             text_color_disabled: str | Color = None,
@@ -67,7 +70,7 @@ class Combobox(BaseWidgetTTK):
             # Add here
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:Any]=None
+            tk_kwargs: dict[str,Any]=None
     ):
         """
         A lot of options are the same with sg.Input
@@ -85,6 +88,7 @@ class Combobox(BaseWidgetTTK):
         :param text_color:
         :param text_color_disabled:
         :param select_text_color:
+        :param highlightcolor: Color of the border around the box while it has focus
         :param fonttype:
         :param fontsize:
         :param font_bold:
@@ -106,7 +110,7 @@ class Combobox(BaseWidgetTTK):
         :param expand_y:
         :param tk_kwargs:
         """
-        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
+        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y, default_event=default_event)
 
         #choices = tuple(choices)
         if default_value is None and choices:
@@ -114,10 +118,7 @@ class Combobox(BaseWidgetTTK):
 
         self._key_function = key_function
 
-        self._default_event = default_event
-        self._event_function = lambda *_:None   # Placeholder
-
-        self._prev_value = default_value
+        self._apply_value(default_value)
 
         # Not a real element, just using it for the ttk-theme!
         # This is not the scrollbar shown in the combobox.
@@ -144,6 +145,7 @@ class Combobox(BaseWidgetTTK):
             button_background_color_active= button_background_color_active,
             arrow_color = arrow_color,
             arrow_color_active= arrow_color_active,
+            highlightcolor=highlightcolor,
 
             fonttype=fonttype,
             fontsize=fontsize,
@@ -193,6 +195,9 @@ class Combobox(BaseWidgetTTK):
             case "insertbackground":
                 self._config_ttk_style(insertcolor=new_val)
 
+            case "highlightcolor":
+                self._map_ttk_style(focuscolor=[("focus", new_val)])
+
             case "arrow_color":
                 self._map_ttk_style(arrowcolor=(("!pressed", new_val), ))
             case "arrow_color_active":
@@ -205,7 +210,7 @@ class Combobox(BaseWidgetTTK):
 
             case "background_color":
                 if new_val is None:
-                    return
+                    return None
                 self._map_ttk_style(fieldbackground=(("!disabled", new_val), ))
                 self.tk_widget.tk.eval(
                     f"[ttk::combobox::PopdownWindow {self.tk_widget}].f.l configure -background {new_val}")
@@ -215,7 +220,7 @@ class Combobox(BaseWidgetTTK):
 
             case "text_color":
                 if new_val is None:
-                    return
+                    return None
                 self._map_ttk_style(foreground=(("!disabled", new_val),))
                 self.tk_widget.tk.eval(
                     f"[ttk::combobox::PopdownWindow {self.tk_widget}].f.l configure -foreground {new_val}")
@@ -224,13 +229,13 @@ class Combobox(BaseWidgetTTK):
 
             case "selectbackground_color":
                 if new_val is None:
-                    return
+                    return None
                 self._config_ttk_style(selectbackground= new_val)
                 self.tk_widget.tk.eval(
                     f"[ttk::combobox::PopdownWindow {self.tk_widget}].f.l configure -selectbackground {new_val}")
             case "select_text_color":
                 if new_val is None:
-                    return
+                    return None
                 self._config_ttk_style(selectforeground= new_val)
                 self.tk_widget.tk.eval(
                     f"[ttk::combobox::PopdownWindow {self.tk_widget}].f.l configure -selectforeground {new_val}")
@@ -297,24 +302,13 @@ class Combobox(BaseWidgetTTK):
 
         super()._apply_update() # Actually apply the update
 
-    _prev_value: str    # Value of last callback
-    def _value_change_callback(self, *_):
-        if self.value == self._prev_value:
-            return
-
-        self._prev_value = self.value
-
-        if self._default_event:
-            self._event_function()
-
-    def set_value(self,val:Any):
-        self._prev_value = val  # So no event gets called
+    def set_value(self,val:Any, throw_event: bool = False):
+        self._apply_value(val, throw_event)
         super().set_value(val)
 
     def _personal_init_inherit(self):
-        self._event_function = self.window.get_event_function(self, self.key, self._key_function)
         self._set_tk_target_variable(default_key="default_value", kwargs_key= "textvariable")
-        self._tk_target_value.trace_add("write", self._value_change_callback)
+        self._tk_target_value.trace_add("write", self._event_callback)
 
         # Fake-initialize this widget
         self.scrollbar.window = self.window

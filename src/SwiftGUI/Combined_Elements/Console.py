@@ -24,7 +24,6 @@ class Console(sg.BaseCombinedElement):
             apply_parent_background_color: bool = None,
     ):
         self._prev_value: str = ""  # Last thing input and submitted
-        self._default_event: bool = default_event   # If default event should be active
 
         self._layout = [    # Put the containing layout here
             [
@@ -38,8 +37,9 @@ class Console(sg.BaseCombinedElement):
                 ).bind_event(
                     sg.Event.KeyEnter,
                     key_function= [
-                        lambda val: self.make_input(val, trigger_event= default_event),   # Submit to console
+                        lambda val: self.make_input(val),   # Submit to console
                         lambda elem: elem.set_value(""),    # Clear input
+                        self.throw_default_event,   # Throw event
                     ]
                 ),
             ]
@@ -48,7 +48,7 @@ class Console(sg.BaseCombinedElement):
         self.input: sg.Input = _input
         self.textField: sg.TextField = _textField
 
-        super().__init__(sg.Frame(self._layout), key=key, key_function=key_function,
+        super().__init__(sg.Frame(self._layout), key=key, key_function=key_function, default_event=default_event,
                          apply_parent_background_color=apply_parent_background_color, internal_key_system=False)
 
         self._update_initial(
@@ -67,7 +67,7 @@ class Console(sg.BaseCombinedElement):
                                   "Use [sg.Console].input.value to change the value of the input-field.\n"
                                   "Use [sg.Console].make_input(...) to simulate a user-input")
 
-    def _update_special_key(self,key:str,new_val:any) -> bool|None:
+    def _update_special_key(self,key:str,new_val: Any) -> bool|None:
         # Divert to text-field
         if key in ["height"]:
             self.textField.update(**{key:new_val})
@@ -81,11 +81,11 @@ class Console(sg.BaseCombinedElement):
         match key:
             case "input_prefix":
                 if new_val is None:
-                    return
+                    return None
                 self._input_prefix = new_val
             case "print_prefix":
                 if new_val is None:
-                    return
+                    return None
                 self._print_prefix = new_val
             case "add_timestamp":
                 self._add_timestamp = new_val
@@ -120,7 +120,7 @@ class Console(sg.BaseCombinedElement):
         :param text:
         :param sep:
         :param end:
-        :return:
+        :return: Returns the object itself to enable call-stacking
         """
         text = map(str, text)
 
@@ -133,10 +133,9 @@ class Console(sg.BaseCombinedElement):
         return self
 
     @sg.BaseCombinedElement._run_after_window_creation
-    def make_input(self, text: str, trigger_event: bool = False) -> Self:
+    def make_input(self, text: str) -> Self:
         """
         Simulate an user-input.
-        :param trigger_event: True, if this should trigger the default event. It will trigger no matter if specified enabled or not when creating the element.
         :param text:
         :return:
         """
@@ -148,9 +147,6 @@ class Console(sg.BaseCombinedElement):
             text = self.get_time() + text
 
         self.append(text + "\n", add_newline= False)
-
-        if trigger_event:
-            self.throw_event()
 
         return self
 

@@ -240,6 +240,16 @@ def preview_all_elements(
         ],[
             sg.HSep()
         ], [
+            sg.T("sg.Calendar:"),
+        ], [
+            sg.T("Lets you select a day"),
+        ], [
+            sg.T(expand=True),
+            sg.Calendar(),
+            sg.T(expand=True),
+        ], [
+            sg.HSep()
+        ], [
             sg.T("Elements not shown here:\n\n"
                  "- sg.Files.ConfigSectionEditor\n"
                  "- sg.Files.ConfigFileEditor")
@@ -380,6 +390,8 @@ def preview_all_elements(
 
     w = sg.SubWindow(layout, title="Preview of all currently available elements")
     w["List"].index = 2
+    console.print("Hi, I am sg.Console!")
+    console.print("I have a print-function that works just like the normal print(...)")
 
     #w.block_others_until_close()
     w.loop()

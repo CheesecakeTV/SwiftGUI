@@ -13,9 +13,7 @@ from collections.abc import Iterator
 if sys.version_info >= (3, 11):
     from typing import Self
 else:
-    from typing import TypeVar, Generator
-
-    Self = TypeVar("Self", bound= "Any")
+    from typing_extensions import Self  # I literally just learned you can use Self in Python 3.10 like this. Don't hate me.
 
 if sys.version_info >= (3, 12):
     from itertools import batched

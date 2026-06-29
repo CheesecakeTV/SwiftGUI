@@ -18,7 +18,7 @@ from . import GlobalOptions, Literals, Tools, Debug
 from .ElementFlags import ElementFlag
 
 from .Events import Event
-from .Base import BaseElement,BaseWidget,BaseWidgetContainer,ElementFlag,BaseWidgetTTK, BaseScrollbar
+from .Base import BaseElement,BaseWidget,BaseWidgetContainer,ElementFlag,BaseWidgetTTK, MixinScrollbar, MixinElementWithValue, MixinElementWithDefaultEvent
 #from .KeyManager import Key,SEPARATOR,duplicate_warnings   # Todo: Make some decent key-manager
 
 from .Widget_Elements.Scrollbar import Scrollbar, ScrollbarHorizontal
@@ -83,7 +83,7 @@ Slider = Scale
 Combo = Combobox
 
 
-from .Windows import Window, BaseKeyHandler, ttk_style, main_window, SubLayout, all_decorator_key_functions, SubWindow, close_all_windows, ValueDict, call_periodically
+from .Windows import Window, BaseKeyHandler, ttk_style, main_window, SubLayout, all_decorator_key_functions, SubWindow, close_all_windows, ValueDict, call_periodically, HiddenMainWindow
 
 from . import KeyFunctions
 
@@ -96,6 +96,7 @@ from .Combined_Elements.BaseCombinedElement import BaseCombinedElement
 from .Combined_Elements.Form import Form
 from .Combined_Elements.MultistateButton import MultistateButton
 from .Combined_Elements.Console import Console
+from .Combined_Elements.Calendar import Calendar
 
 from .Utilities.Threads import clipboard_observer
 

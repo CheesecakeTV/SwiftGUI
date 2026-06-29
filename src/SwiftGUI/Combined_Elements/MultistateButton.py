@@ -19,6 +19,7 @@ class MultistateButton(sg.BaseCombinedElement):
 
             key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
+            default_event: bool = None,
 
             default_selection: Hashable = None,
             default_select_first: bool = None,
@@ -71,7 +72,7 @@ class MultistateButton(sg.BaseCombinedElement):
             frame.update_after_window_creation(text = label_text)
 
         super().__init__(frame, key=key, key_function=key_function,
-                         apply_parent_background_color=apply_parent_background_color)
+                         apply_parent_background_color=apply_parent_background_color, default_event=default_event)
 
         self._update_initial(
             text_color = text_color,
@@ -117,11 +118,11 @@ class MultistateButton(sg.BaseCombinedElement):
         if key == self._current_val:
             if self._can_deselect:
                 self.value = None
-                self._throw_event()
+                self._event_callback()
             return
 
         self.value = key
-        self._throw_event()
+        self._event_callback()
 
     _current_val = None
     def _get_value(self) -> Any:

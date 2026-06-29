@@ -56,7 +56,7 @@ class Frame(BaseWidgetContainer):
             takefocus: bool = None,
 
             # Add here
-            tk_kwargs: dict[str:Any]=None,
+            tk_kwargs: dict[str, Any]=None,
     ):
         self._containing_frames = list()
         self._containing_row_frames = list()

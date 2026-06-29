@@ -3,11 +3,12 @@ from collections.abc import Iterable, Callable
 from typing import Any, Hashable
 from SwiftGUI.Compat import Self
 
-from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement, Frame, Font
+from SwiftGUI import ElementFlag, GlobalOptions, Literals, Color, BaseWidgetTTK, BaseElement, Frame, Font, \
+    MixinElementWithDefaultEvent, MixinElementWithValue
 from SwiftGUI.Extended_Elements.Spacer import Spacer
 
 
-class Notebook(BaseWidgetTTK):
+class Notebook(MixinElementWithValue, BaseWidgetTTK):
     tk_widget:ttk.Notebook
     _tk_widget:ttk.Notebook
     _tk_widget_class:type = ttk.Notebook # Class of the connected widget
@@ -61,7 +62,7 @@ class Notebook(BaseWidgetTTK):
 
             expand: bool = None,
             expand_y: bool = None,
-            tk_kwargs: dict[str:Any]=None
+            tk_kwargs: dict[str, Any]=None
     ):
         """
 
@@ -94,7 +95,7 @@ class Notebook(BaseWidgetTTK):
         :param expand_y:
         :param tk_kwargs:
         """
-        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y)
+        super().__init__(key=key,tk_kwargs=tk_kwargs,expand=expand, expand_y = expand_y, default_event=default_event, default_value=0)
         self._key_function = key_function
 
         self.add_flags(ElementFlag.IS_CONTAINER)    # So .init_containing is called
@@ -136,15 +137,13 @@ class Notebook(BaseWidgetTTK):
                              **tk_kwargs)
 
 
-        self._default_event = default_event
-
         # Todo: These could be parameters too
         self._config_ttk_style(tabmargins = 0)
-        #self._config_ttk_style(borderwidth = 1)
+        #self._map_ttk_style("Tab", expand=[("selected", [0,0,0,0])])
+        #self._config_ttk_style("Tab", expand=)
 
 
     def _update_font(self):
-
         # And now for the headings
         font_options = [
             self._fonttype_tabs,
@@ -238,9 +237,6 @@ class Notebook(BaseWidgetTTK):
 
         super()._apply_update() # Actually apply the update
 
-    def _personal_init(self):
-        super()._personal_init()
-
     @property
     def index(self) -> int: # index of current tab
         return self.tk_widget.index("current")
@@ -250,28 +246,28 @@ class Notebook(BaseWidgetTTK):
         self.set_index(index)
 
     @BaseElement._run_after_window_creation
-    def set_index(self, index: int):
+    def set_index(self, index: int, throw_event: bool = False):
         """
         Changes the active tab to a certain index.
 
         Same as .index = ...
 
         :param index:
+        :param throw_event: True, if the tab-change should generate an event
         :return:
         """
-        self._prev_index = index
+        self._apply_value(index, throw_event)   # This is handled somewhere else in this element
         self.tk_widget.select(index)
 
     def _get_value(self) -> Any | None: # Key of current tab
         return self._element_keys[self.tk_widget.index("current")]
 
     @BaseElement._run_after_window_creation
-    def set_value(self,val: Any):
+    def set_value(self,val: Any, throw_event: bool = False):
         assert val in self._element_keys, "You tried to set the value of a Notebook (Tabview) to a key that doesn't exist. If you want to set an index, use .index instead"
 
         index = self._element_keys.index(val)
-        self._prev_index = index
-        self.tk_widget.select(index)
+        self.set_index(index, throw_event)
 
     def _init_containing(self):
         for tab in self._elements:
@@ -300,30 +296,25 @@ class Notebook(BaseWidgetTTK):
 
             self.tk_widget.add(container.tk_widget, text=str(title))
 
-    _default_event_callback_function: Callable = None
     def init_window_creation_done(self):
         super().init_window_creation_done()
 
-        self._prev_index = self.index
-        self._default_event_callback_function = self.window.get_event_function(self, self.key, key_function=self._key_function)
-        self.tk_widget.bind("<<NotebookTabChanged>>", self._tab_change_callback)
+        self.tk_widget.bind("<<NotebookTabChanged>>", self._event_callback)
 
-    _prev_index: int
     _event_on_backend_selection: bool
-    def _tab_change_callback(self, *_):
+    def _event_callback(self, *_):
         """Called when the tab changes"""
         index = self.index
-        if not self._event_on_backend_selection and index == self._prev_index:
+        if not self._event_on_backend_selection and index == self._prev_value:
             return
 
-        self._prev_index = index
+        self._apply_value(index)
 
         if self._tab_event_functions[index]:
             self._tab_event_functions[index]()
             return
 
-        if self._default_event and self._default_event_callback_function:
-            self._default_event_callback_function()
+        self.throw_default_event()
 
     @BaseElement._run_after_window_creation
     def bind_event_to_tab(self, tab_key:Any = None, tab_index:int = None, key_extention:str | Any=None, key:Any=None, key_function:Callable|Iterable[Callable]=None) ->Self:

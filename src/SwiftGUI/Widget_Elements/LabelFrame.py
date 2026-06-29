@@ -60,7 +60,7 @@ class LabelFrame(Frame):
             highlightthickness: int = None,
             relief: Literals.relief = None,
             takefocus: bool = None,
-            tk_kwargs: dict[str:Any] = None,
+            tk_kwargs: dict[str, Any] = None,
     ):
         """
         Most options are the same in sg.Text, or sg.Frame
