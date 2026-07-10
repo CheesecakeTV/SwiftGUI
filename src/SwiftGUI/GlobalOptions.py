@@ -271,7 +271,6 @@ class Scale(Common_Background, Common_Textual):
     sliderrelief: Literals.relief = None
     orient: Literal["horizontal", "vertical"] = "horizontal"
     disabled: bool = None
-    readonly: bool = None
     borderwidth: int = None
     label: str = None
     troughcolor: str | Color = None
