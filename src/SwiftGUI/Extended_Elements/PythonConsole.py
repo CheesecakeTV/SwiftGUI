@@ -173,7 +173,7 @@ class PythonConsole(sg.TextField):
         self._default_stdin = sys.stdin
         self._reroute_stdin = reroute_stdin
         if reroute_stdin:
-            sys.stdin = _Rerouter(self.get_input)
+            sys.stdin = _Rerouter(self._get_input)
 
     def _update_special_key(self,key:str,new_val:Any) -> bool|None:
         match key:
@@ -220,6 +220,9 @@ class PythonConsole(sg.TextField):
         self._most_recent_line += s
 
         self.append(s, add_newline=False)
+
+        if s == "\n":
+            self.see_end()
         return self
 
     @sg.TextField._run_after_window_creation
@@ -230,6 +233,9 @@ class PythonConsole(sg.TextField):
         :return:
         """
         self.append(s, add_newline=False, tags="error")
+
+        if s == "\n":
+            self.see_end()
 
         if self._default_stderr is not None:
             self._default_stderr.write(s)
@@ -247,12 +253,15 @@ class PythonConsole(sg.TextField):
         if s:
             self.append(s, add_newline=False, tags="input")
 
+            if s == "\n":
+                self.see_end()
+
         if self._default_stdout is not None:
             self._default_stdout.write(s)
 
         return self
 
-    def get_input(self) -> str:
+    def _get_input(self) -> str:
         """
         Same as input(), but returns a new-line at the end
         :return:
