@@ -48,6 +48,7 @@ from .Extended_Elements.FileBrowseButton import FileBrowseButton
 from .Extended_Elements.ColorChooserButton import ColorChooserButton
 from .Extended_Elements.TabFrame import TabFrame
 from .Extended_Elements.ComboboxMapping import ComboboxMapping
+from .Extended_Elements.PythonConsole import PythonConsole
 
 from SwiftGUI.Extended_Elements.Image import Image
 from SwiftGUI.Extended_Elements.ImageButton import ImageButton

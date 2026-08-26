@@ -97,6 +97,19 @@ def preview_all_elements(
             sg.FileBrowseButton("save_single", file_browse_type="save_single", disabled= flip_disabled),
             sg.FileBrowseButton("open_multiple", file_browse_type="open_multiple", disabled= flip_disabled),
             sg.FileBrowseButton("open_directory", file_browse_type="open_directory", disabled= flip_disabled),
+        ],[
+            sg.HSep(),
+            sg.Spacer(height=10),
+        ], [
+            sg.T("sg.PythonConsole, works with the normal print and input functions:"),
+        ],[
+            sg.PythonConsole(width=50, height=10),
+        ],[
+            sg.Spacer(height=5),
+        ], [
+            sg.T("See for yourself:  "),
+            sg.Button("print('Hello World')", key_function=lambda: print("Hello World")),
+            sg.Button("input('Your input: ')", key_function=lambda: input("Your input: ")),
         ]
     ], fake_key= "Extended elements")
 

@@ -465,6 +465,10 @@ class TextField(Input):
     can_reset_value_changes: bool = False
     maxundo: int | Literal[-1] = 1024 # -1 means infinite
 
+class PythonConsole(TextField):
+    error_text_color: str = "red"
+    input_text_color: str = "lime"
+
 class Treeview(Common_Field_Background):
     ...
 
@@ -574,7 +578,7 @@ class Progressbar(Common_Field_Background):
 class ImageButton(Button):
     compound: Literals.compound = "left"
 
-class Console(TextField):
+class Console(PythonConsole):
     input_prefix: str = " >>> "
     print_prefix: str = " "
     add_timestamp: bool = True
