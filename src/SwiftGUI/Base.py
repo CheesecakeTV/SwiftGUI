@@ -4,7 +4,7 @@ from typing import Literal, Union, Any, Hashable, Protocol
 from SwiftGUI.Compat import Self
 import tkinter as tk
 
-from SwiftGUI import Event, GlobalOptions, Color, remove_None_vals, Literals, ReuseError
+from SwiftGUI import Event, GlobalOptions, Color, remove_None_vals, Literals, ReuseError, RowTypeError
 from SwiftGUI.ElementFlags import ElementFlag
 #from SwiftGUI.Widget_Elements.Frame import Frame
 
@@ -770,6 +770,21 @@ class BaseWidgetContainer(BaseWidget):
         super()._flag_init()
         self._line_insert_kwargs = dict()
         self.add_flags(ElementFlag.IS_CONTAINER)
+
+    def _row_iter_to_list(self, row: Iterable[BaseElement | None]) -> list[BaseElement | None]:
+        """
+        Convert a row to a list.
+        If the row can't be converted, a RowTypeError is raised
+        :param row:
+        :return:
+        """
+        try:
+            return list(row)
+        except TypeError:
+            raise RowTypeError("\n\nA row in one of your layouts is not a row.\n"
+                               "\n"
+                               f"This... {repr(self)}\n\n"
+                               f"Contains this (should be a row)... {repr(row)}")
 
     def update_all_containing(self, **kwargs) -> Self:
         """

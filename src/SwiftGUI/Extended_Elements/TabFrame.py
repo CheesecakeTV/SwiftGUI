@@ -1,6 +1,5 @@
 import tkinter as tk
-from collections.abc import Iterable
-from typing import Any, Callable, Hashable
+from typing import Any, Callable, Hashable, Iterable
 from SwiftGUI.Compat import Self
 
 from SwiftGUI import BaseElement, GlobalOptions, Literals, Color, Frame
@@ -49,6 +48,7 @@ class TabFrame(Frame):
             tk_kwargs: dict[str, Any]=None,
     ):
         """
+        A frame better suited for use with sg.Notebook
 
         :param layout:
         :param text:

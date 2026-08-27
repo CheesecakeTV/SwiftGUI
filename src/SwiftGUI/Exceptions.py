@@ -5,3 +5,9 @@ class ReuseError(Exception):
     """
     ...
 
+class RowTypeError(TypeError):
+    """
+    Called when a layout-row is not a row
+    """
+    ...
+
