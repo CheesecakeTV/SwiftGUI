@@ -35,5 +35,3 @@ else:
 
         if collected:
             yield tuple(collected)
-
-
