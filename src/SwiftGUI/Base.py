@@ -4,7 +4,7 @@ from typing import Literal, Union, Any, Hashable, Protocol
 from SwiftGUI.Compat import Self
 import tkinter as tk
 
-from SwiftGUI import Event, GlobalOptions, Color, remove_None_vals, Literals
+from SwiftGUI import Event, GlobalOptions, Color, remove_None_vals, Literals, ReuseError
 from SwiftGUI.ElementFlags import ElementFlag
 #from SwiftGUI.Widget_Elements.Frame import Frame
 
@@ -59,11 +59,11 @@ class BaseElement(_BaseSharedAttributes):
     The different to BaseWidget is that BaseWidget is designed for a single tk-Widget.
     BaseElement allows you to do whatever the f you want, it's just a class pattern.
     """
-    parent:Self = None  # next higher Element
-    _fake_tk_element:tk.Widget = None   # This gets returned when parent is None
-    _element_flags:set[ElementFlag] # Properties the element has
+    parent: Self = None  # next higher Element
+    _fake_tk_element: tk.Widget = None   # This gets returned when parent is None
+    _element_flags: set[ElementFlag] # Properties the element has
 
-    defaults:type[GlobalOptions.DEFAULT_OPTIONS_CLASS] = GlobalOptions.EMPTY  # Change this to apply a different default configuration
+    defaults: type[GlobalOptions.DEFAULT_OPTIONS_CLASS] = GlobalOptions.EMPTY  # Change this to apply a different default configuration
 
     # So you can use it on inheriting classes without importing it
     _run_after_window_creation = run_after_window_creation
@@ -73,6 +73,7 @@ class BaseElement(_BaseSharedAttributes):
         self._run_when_window_exists = list()
 
         self._update_options = dict()   # This saves all valuew passed by .update, so they can be recalled using .get_option()
+        self._is_used_up: bool = False  # True, if self._init ran at least once, indicating that this element was part of a window once
 
     def _init(self,parent:"BaseElement",window):
         """
@@ -84,6 +85,10 @@ class BaseElement(_BaseSharedAttributes):
         :param window: Main Window
         :return:
         """
+        if self._is_used_up:
+            raise ReuseError(f"Element was used in a window multiple times: {repr(self)}")
+        self._is_used_up = True
+
         self._init_defaults()   # Default configuration
         self._flag_init()
 
@@ -91,7 +96,7 @@ class BaseElement(_BaseSharedAttributes):
         self._personal_init()
 
         self._apply_update()
-        self.add_flags(ElementFlag.IS_CREATED)  # Todo: Check if this is okay. It was behind self._flag_init() before.
+        self.add_flags(ElementFlag.IS_CREATED)
         #element_logger.debug(f"Initialized {repr(self)} in {window}")
 
     def _flag_init(self):
