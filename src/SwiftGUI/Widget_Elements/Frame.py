@@ -1,6 +1,5 @@
 import tkinter as tk
-from collections.abc import Iterable
-from typing import Any, Hashable
+from typing import Any, Hashable, Iterable
 
 from SwiftGUI import BaseElement, ElementFlag, BaseWidgetContainer, GlobalOptions, Literals, Color, BaseWidget
 from SwiftGUI.Compat import Self
@@ -64,7 +63,7 @@ class Frame(BaseWidgetContainer):
 
         super().__init__(key=key, tk_kwargs=tk_kwargs, expand=expand, expand_y=expand_y)
 
-        self._contains: list[list[BaseElement]] = list(map(list, layout))
+        self._contains: list[list[BaseElement]] = list(map(self._row_iter_to_list, layout))
         self._linked_background_elements = list()
 
         if background_color and not apply_parent_background_color:
@@ -171,11 +170,14 @@ class Frame(BaseWidgetContainer):
         """
         Append a single element to a row
 
-        :param element:
+        :param element: Will not do anything if the element is None
         :param row_index:
         :param _add_as_contained_element: Leave this to True!
         :return:
         """
+        if element is None:
+            return self
+
         if _add_as_contained_element:
             self._contains[row_index].append(element)
 
@@ -207,8 +209,8 @@ class Frame(BaseWidgetContainer):
         """
         # line = tk.Frame(self._tk_widget,background="orange",relief="raised",borderwidth="3",border=3)
         # actual_line = tk.Frame(line,background="lightBlue",borderwidth=3,border=3,relief="raised")
+        row = self._row_iter_to_list(row)
         if _add_as_contained_row:
-            row = list(row)
             self._contains.append(row)
 
         line = tk.Frame(self._tk_widget,relief="flat",background=self._background_color)  # This is the row

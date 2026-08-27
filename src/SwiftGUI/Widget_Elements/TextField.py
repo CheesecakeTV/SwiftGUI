@@ -317,16 +317,17 @@ class TextField(MixinElementWithValue, BaseWidget, MixinScrollbar):
 
     @BaseWidget._run_after_window_creation
     @_forced_value_change
-    def append(self, text: str, add_newline: bool = True) -> Self:
+    def append(self, text: str, add_newline: bool = True, tags: None | str | tuple[str, ...] = None) -> Self:
         """
         Add text to the end
         :param add_newline: Add a new-line BEFORE the text if there is already text in the widget
         :param text:
+        :param tags: You may provide tkinter-tags for the newly appended text. If you don't know what this is, don't use it.
         :return:
         """
         if add_newline and self.value != "":
             text = "\n" + text
 
-        self.tk_widget.insert("end", text)
+        self.tk_widget.insert("end", text, tags)
         self._apply_value(self._get_value())
         return self

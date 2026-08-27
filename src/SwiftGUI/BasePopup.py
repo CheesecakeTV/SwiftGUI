@@ -1,11 +1,11 @@
 import io
-from collections.abc import Iterable
 from os import PathLike
-from typing import Hashable, Any, Literal
+from typing import Hashable, Any, Literal, Generic, Iterable
+from typing_extensions import TypeVar
 from PIL import Image
 
 import SwiftGUI as sg
-from SwiftGUI import Color, ValueDict
+from SwiftGUI import Color, ValueDict, ReuseError
 from SwiftGUI.Compat import Self
 
 class BasePopupNonblocking:
@@ -67,12 +67,14 @@ class BasePopupNonblocking:
         """
         ...
 
-class BasePopup(BasePopupNonblocking):
+return_type = TypeVar("return_type", default=Any)
+
+class BasePopupTyped(BasePopupNonblocking, Generic[return_type]):
     def __init__(
             self,
             layout: Iterable[Iterable[sg.BaseElement]],
             *,
-            default: Any = None,     # Returned instead of None
+            default: return_type = None,     # Returned instead of None
             keep_on_top: bool = True,
             title: str = None,
             titlebar: bool = None,
@@ -86,6 +88,7 @@ class BasePopup(BasePopupNonblocking):
 
         self._return = None
         self._default = default
+        self._used_up = False
 
         super().__init__(
             layout,
@@ -100,13 +103,7 @@ class BasePopup(BasePopupNonblocking):
             **kwargs,
         )
 
-    def __new__(cls, *args, **kwargs) -> Any:
-        me = super().__new__(cls)
-        me.__init__(*args, **kwargs)
-
-        return me() # Run the popup and return the result
-
-    def done(self, val: Any = None):
+    def done(self, val: Any = None) -> return_type:
         """
         Call this instead of return.
         The popup will close and return_value is returned.
@@ -116,7 +113,7 @@ class BasePopup(BasePopupNonblocking):
         self._return = val
         self.w.close()
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs) -> return_type:
         """
         Execute the popup-functionality.
         YOU DON'T NEED TO CALL THIS!
@@ -125,9 +122,22 @@ class BasePopup(BasePopupNonblocking):
         :param kwargs:
         :return:
         """
+        if self._used_up:
+            raise ReuseError("You cannot re-open popup-instances. Create a new instance to re-use the popup.")
+        self._used_up = True
+
         self.w.block_others_until_close()
 
         if self._return is None:
             return self._default
 
         return self._return
+
+class BasePopup(BasePopupTyped, Generic[return_type]):
+
+    def __new__(cls, *args, **kwargs) -> return_type:
+        me = super().__new__(cls)
+        me.__init__(*args, **kwargs)
+
+        return me() # Run the popup and return the result
+

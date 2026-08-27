@@ -33,13 +33,13 @@ class Scale(MixinElementWithValue, BaseWidget):
 
     def __init__(
             self,
+            default_value: int | float = None,
             *,
             key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
             default_event: bool = False,
             default_event_on_value_change: bool = None,    # Generate an event on EVERY value-change. Normally only on button-release
 
-            default_value: int | float = None,
             number_min: float = None,
             number_max: float = None,
             resolution: float = None,
@@ -62,7 +62,6 @@ class Scale(MixinElementWithValue, BaseWidget):
             font_underline: bool = None,
             font_overstrike: bool = None,
 
-            readonly: bool = None,
             borderwidth:int = None,
 
             label: str = None,
@@ -116,7 +115,6 @@ class Scale(MixinElementWithValue, BaseWidget):
             font_italic = font_italic,
             font_underline = font_underline,
             font_overstrike = font_overstrike,
-            readonly = readonly,
             borderwidth = borderwidth,
             label = label,
             text_color = text_color,

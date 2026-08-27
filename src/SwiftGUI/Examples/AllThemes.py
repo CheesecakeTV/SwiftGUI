@@ -12,7 +12,7 @@ def _get_single_preview(theme: type, name: str) -> sg.Frame:
     return sg.Frame([
         [
             sg.T("Theme: "),
-            sg.T(f"{name}").bind_event(sg.Event.ClickLeft, key_function= lambda val: print(val)),
+            sg.T(f"{name}").bind_event(sg.Event.ClickLeft, key_function=lambda val: print(val)),
         ],[
             sg.HSep()
         ],[

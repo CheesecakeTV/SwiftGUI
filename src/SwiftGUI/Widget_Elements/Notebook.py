@@ -317,7 +317,7 @@ class Notebook(MixinElementWithValue, BaseWidgetTTK):
         self.throw_default_event()
 
     @BaseElement._run_after_window_creation
-    def bind_event_to_tab(self, tab_key:Any = None, tab_index:int = None, key_extention:str | Any=None, key:Any=None, key_function:Callable|Iterable[Callable]=None) ->Self:
+    def bind_event_to_tab(self, tab_key:Any = None, tab_index:int = None, key_extension:str | Any=None, key:Any=None, key_function:Callable|Iterable[Callable]=None) ->Self:
         """
         This event will be called when tab_key-tab is opened.
         Keep in mind, that setting this disables the default event for that tab.
@@ -326,20 +326,20 @@ class Notebook(MixinElementWithValue, BaseWidgetTTK):
 
         :param tab_index: Pass this to apply the event to the index-ths tab
         :param tab_key: Pass this to apply the event to the tab with this key
-        :param key_extention:
+        :param key_extension:
         :param key:
         :param key_function:
         :return:
         """
 
         new_key = ""
-        match (key_extention is not None, key is not None):
+        match (key_extension is not None, key is not None):
             case (True,True):
-                new_key = key + key_extention
+                new_key = key + key_extension
             case (False,True):
                 new_key = key
             case (True,False):
-                new_key = self.key + key_extention
+                new_key = self.key + key_extension
             case (False,False):
                 new_key = self.key
                 assert new_key or key_function, f"You forgot to add either a key or key_function to this element... {self}"

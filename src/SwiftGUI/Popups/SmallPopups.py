@@ -1,5 +1,6 @@
+import typing
 from collections.abc import Iterable
-from typing import Mapping
+from typing import Mapping, Any
 import SwiftGUI as sg
 
 def _apply_defaults(kwargs: Mapping, **defaults) -> dict:
@@ -114,11 +115,37 @@ def button_menu(
 def get_form() -> dict:
     raise NotImplementedError("Nothing to see here right now...")
 
+class _get_text(sg.BasePopup):
+
+    def __init__(
+            self,
+            text: str = "",
+            default: str = None,
+            **window_kwargs,
+    ):
+
+        layout = [
+            [
+                sg.T(text,anchor="center") if text else sg.Spacer()
+            ],[
+                in_elem := sg.In(width=50, key="In").bind_event(sg.Event.KeyEnter, key_function=self.done)
+            ],[
+                sg.Button("Confirm",key="Confirm",justify="center", key_function=lambda: self.done(in_elem.value))
+            ]
+        ]
+
+        super().__init__(
+            layout,
+            default=default,
+            **_apply_defaults(window_kwargs, keep_on_top=True, title="Input"),
+        )
+        in_elem.set_focus()
+
 def get_text(
-        text:str = "",
-        default:str = None,
+        text: str = "",
+        default: str = None,
         **window_kwargs,
-) -> str:
+) -> str | None | Any:
     """
     Ask the user to input some text.
     The user can confirm by pressing enter.
@@ -127,29 +154,9 @@ def get_text(
     :param text:
     :return:
     """
-    layout = [
-        [
-            sg.T(text,anchor="center") if text else sg.HSep()
-        ],[
-            in_elem := sg.In(width=50,key="In").bind_event(sg.Event.KeyEnter)
-        ],[
-            sg.Button("Confirm",key="Confirm",justify="center")
-        ]
-    ]
-
-    w = sg.SubWindow(
-        layout,
-        **_apply_defaults(
-            window_kwargs,
-            keep_on_top=True,
-        )
-    )
-    in_elem.set_focus()
-    e,v = w.loop_close()
-
-    if e is None:
-        return default
-
-    return v["In"]
-
+    return typing.cast(typing.Any, _get_text(
+        text=text,
+        default=default,
+        **window_kwargs,
+    ))
 

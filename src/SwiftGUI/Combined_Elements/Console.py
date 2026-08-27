@@ -14,6 +14,7 @@ class Console(sg.BaseCombinedElement):
             *,
             key: Hashable = None,
             key_function: Callable | Iterable[Callable] = None,
+            input_text_color: str | sg.Color = None,
             default_event: bool = False,
             input_prefix: str = None,
             print_prefix: str = None,
@@ -33,15 +34,12 @@ class Console(sg.BaseCombinedElement):
                 ),
             ],[
                 _input := sg.Input(
-                    expand= True,
-                ).bind_event(
-                    sg.Event.KeyEnter,
-                    key_function= [
-                        lambda val: self.make_input(val),   # Submit to console
-                        lambda elem: elem.set_value(""),    # Clear input
-                        self.throw_default_event,   # Throw event
-                    ]
-                ),
+                    expand=True,
+                ).bind_event(sg.Event.KeyEnter, key_function=[
+                    lambda val: self.make_input(val),  # Submit to console
+                    lambda elem: elem.set_value(""),  # Clear input
+                    self.throw_default_event,  # Throw event
+                ]),
             ]
         ]
 
@@ -57,6 +55,7 @@ class Console(sg.BaseCombinedElement):
             add_timestamp = add_timestamp,
             width = width,
             height = height,
+            input_text_color=input_text_color,
         )
 
     def _get_value(self) -> Any:
@@ -89,6 +88,16 @@ class Console(sg.BaseCombinedElement):
                 self._print_prefix = new_val
             case "add_timestamp":
                 self._add_timestamp = new_val
+            case "input_text_color":
+                if new_val is None:
+                    return True
+
+                if self.window is None:
+                    self.update_after_window_creation(input_text_color = new_val)
+                    return True
+
+                self.textField.tk_widget.tag_config("input", foreground=new_val)
+
             case _: # No other case covered this key, so let's let's the parent-class handle the rest
                 return super()._update_special_key(key, new_val)
 
@@ -141,23 +150,24 @@ class Console(sg.BaseCombinedElement):
         """
         self._prev_value = text
 
-        text = self._input_prefix + text
-
         if self._add_timestamp:
-            text = self.get_time() + text
+            self.append(self.get_time() + " ", add_newline=False)
 
-        self.append(text + "\n", add_newline= False)
+        self.append(self._input_prefix, add_newline=False)
+
+        self.append(text + "\n", add_newline= False, tag="input")
 
         return self
 
-    def append(self, text: str, add_newline: bool = True) -> Self:
+    def append(self, text: str, add_newline: bool = True, tag: str = None) -> Self:
         """
         Just append to the text-field, nothing more, nothing less
         :param add_newline: True, if \n should be appended too
         :param text:
+        :param tag: tkinter-tag
         :return:
         """
-        self.textField.append(text, add_newline=add_newline)
+        self.textField.append(text, add_newline=add_newline, tags=tag)
         self.textField.see_end()
         return self
 

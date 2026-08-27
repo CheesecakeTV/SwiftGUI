@@ -117,10 +117,7 @@ class Form(BaseCombinedElement):
         self._input_elements.append(input_elem)
 
         if self._return_submits:
-            input_elem.bind_event(
-                Event.KeyEnter,
-                key_function= self.throw_event,
-            )
+            input_elem.bind_event(Event.KeyEnter, key_function=self.throw_event)
 
         row: list[BaseElement] = [
             Text(

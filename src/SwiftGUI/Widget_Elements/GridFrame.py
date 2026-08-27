@@ -36,7 +36,7 @@ class GridFrame(Frame):
         """
         Add a single row to the grid-frame.
         """
-        row = list(row)
+        row = self._row_iter_to_list(row)
 
         row_number = len(self._grid_rows)
         self._grid_rows.append(row)

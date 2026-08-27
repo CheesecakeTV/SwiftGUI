@@ -26,11 +26,8 @@ def image_to_tk_image(
     if image is None:
         return None
 
-    # if isinstance(image, str) or isinstance(image, PathLike) or isinstance(image, IO) or isinstance(image, bytes):
-
     if not isinstance(image, PIL_Image.Image):
         image = PIL_Image.open(image)
-    #self._image = image
 
     if width is not None and height is not None:
         image = image.resize((width, height))
@@ -46,5 +43,5 @@ def image_to_tk_image(
     if isinstance(image, PIL_Image.Image):
         image = ImageTk.PhotoImage(image)
 
-    assert isinstance(image, ImageTk.PhotoImage), "An image you supplied has a non-supported type."
+    assert isinstance(image, ImageTk.PhotoImage), "The provided image has an unsupported type"
     return image
