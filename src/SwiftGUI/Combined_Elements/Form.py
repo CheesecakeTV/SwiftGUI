@@ -79,9 +79,12 @@ class Form(BaseCombinedElement):
 
         layout = []
         if space_between_rows:
-            for row in rows:
+            for row in rows[:-1]:
                 layout.append(row)
                 layout.append([Spacer(height=space_between_rows)])
+
+            if len(rows):
+                layout.append(rows[-1])
         else:
             layout = rows
 
