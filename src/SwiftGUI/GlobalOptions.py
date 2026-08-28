@@ -708,6 +708,12 @@ class Canvas_Image(Common_Canvas_Element, Image):
     image_height: int = None
     anchor: sg.Literals.anchor = None
 
+class Form(EMPTY):
+    clear_button_text: str = "Clear"
+    submit_button_text: str = "Submit"
+    space_over_buttons: int = 2
+    space_between_rows: int = 0
+
 def reset_all_options():
     """
     Reset everything done to the global options on runtime.
