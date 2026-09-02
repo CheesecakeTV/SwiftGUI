@@ -1,6 +1,7 @@
 import SwiftGUI as sg
 
 class TooltipPopup(sg.BasePopupNonblocking):
+    defaults = sg.GlobalOptions.Tooltip
 
     def __init__(
             self,
@@ -16,11 +17,19 @@ class TooltipPopup(sg.BasePopupNonblocking):
         )
 
     def _create_layout(self, tooltip_text: str) -> list[list[sg.BaseElement]]:
+        options = self.defaults.apply({   # These are defined via the global options
+                "background_color": None,
+                "relief": None,
+                "padding": None,
+                "text_color": None,
+            }
+        )
+
         layout = [
             [
                 sg.T(
                     tooltip_text,
-                    background_color=sg.GlobalOptions.Common_Field_Background.single("background_color"),
+                    **options,
                 )
             ]
         ]
@@ -29,3 +38,4 @@ class TooltipPopup(sg.BasePopupNonblocking):
 
 
 sg.Tooltips.set_tooltip_function(TooltipPopup)
+

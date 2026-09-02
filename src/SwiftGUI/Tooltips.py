@@ -57,7 +57,7 @@ def mouse_exited_elem_callback(elem):
     if _current_elem is elem:
         _current_elem = None
 
-def handle_tooltips():
+def _handle_tooltips():
     """
     Threaded.
     If the mouse hasn't moved in some time, open the tooltip
@@ -107,6 +107,6 @@ def activate_tooltips():
         return
 
     _tooltips_active = True
-    threading.Thread(target=handle_tooltips, daemon=True).start()
+    threading.Thread(target=_handle_tooltips, daemon=True).start()
 
 

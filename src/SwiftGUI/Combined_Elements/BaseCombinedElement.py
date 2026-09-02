@@ -43,6 +43,7 @@ class BaseCombinedElement(MixinElementWithDefaultEvent, BaseElement):
             frame = layout
         else:
             frame = Frame(layout)
+        self.frame = frame
 
         if internal_key_system:
             self._has_sublayout = True
@@ -233,3 +234,8 @@ class BaseCombinedElement(MixinElementWithDefaultEvent, BaseElement):
             self.set_value(val)
 
         return self
+
+    def _bind_event_to_widget(self, tk_event: str, event_function: Callable) -> Self:
+        self.frame.tk_widget.bind(tk_event, event_function)
+
+

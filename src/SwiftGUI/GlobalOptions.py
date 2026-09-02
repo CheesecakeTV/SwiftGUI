@@ -253,9 +253,9 @@ class Text(Common, Common_Textual, Common_Background):
     justify:Literal["left","right","center"] = "left"
     #borderwidth:int = "5c" # Does not work
     apply_parent_background_color:bool = True
-
     padding:Literals.padding = 0
     width:int = None
+    relief: Literals.relief = "flat"
 
 class Scale(Common_Background, Common_Textual):
     default_value: int | float = None
@@ -409,6 +409,10 @@ class Window(Common_Background):
     hidden: bool = False
     minimized: bool = False
 
+class Tooltip(Common_Background):
+    relief: Literals.relief = "ridge"
+    padding: Literals.padding = (10, 5)
+    text_color: Color | str = None
 
 class SubWindow(Window):
     ...
