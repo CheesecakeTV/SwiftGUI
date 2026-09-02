@@ -85,6 +85,7 @@ Slider = Scale
 
 Combo = Combobox
 
+from . import Tooltips
 
 from .Windows import Window, BaseKeyHandler, ttk_style, main_window, SubLayout, all_decorator_key_functions, SubWindow, close_all_windows, ValueDict, call_periodically, HiddenMainWindow
 

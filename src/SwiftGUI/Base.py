@@ -1,10 +1,9 @@
-from collections.abc import Iterable, Callable
 from functools import wraps
-from typing import Literal, Union, Any, Hashable, Protocol
+from typing import Literal, Union, Any, Hashable, Protocol, Iterable, Callable
 from SwiftGUI.Compat import Self
 import tkinter as tk
 
-from SwiftGUI import Event, GlobalOptions, Color, remove_None_vals, Literals, ReuseError, RowTypeError
+from SwiftGUI import Event, GlobalOptions, Color, remove_None_vals, Literals, ReuseError, RowTypeError, Tooltips
 from SwiftGUI.ElementFlags import ElementFlag
 #from SwiftGUI.Widget_Elements.Frame import Frame
 
@@ -382,6 +381,40 @@ class BaseElement(_BaseSharedAttributes):
         self._bind_event_to_widget(tk_event, event_function)
 
         return self
+
+    _tooltip_text: str | None = None
+    _bound_tooltip_functions: bool = False  # True, if the events for tooltips are already bound
+    @run_after_window_creation
+    def set_tooltip(self, text: str | None = None) -> Self:
+        """
+        Add/Change/Remove a tooltip from this element.
+
+        Set it to None to deactivate tooltips for this element
+
+        :param text: Text for the tooltip to show
+        :return:
+        """
+        self._tooltip_text = text
+
+        if not self._bound_tooltip_functions:
+            self._bound_tooltip_functions = True
+            aw = self.window.actual_window
+            aw.activate_tooltips()
+            self.bind_event(
+                "Enter",
+                key_function=Tooltips.mouse_entered_elem_callback,
+            ).bind_event(
+                "Leave",
+                key_function=Tooltips.mouse_exited_elem_callback,
+            )
+
+    @property
+    def tooltip_text(self) -> str | None:
+        return self._tooltip_text
+
+    @tooltip_text.setter
+    def tooltip_text(self, text: str | None):
+        self.set_tooltip(text)
 
 class BaseWidget(BaseElement):
     """
