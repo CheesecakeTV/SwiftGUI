@@ -18,7 +18,7 @@ class SupportsClose(Protocol):
     def close(self):
         ...
 
-def set_tooltip_function(fct: Callable[[str], SupportsClose], only_if_nonexistent: bool = False):
+def set_tooltip_callable(fct: Callable[[str], SupportsClose], only_if_nonexistent: bool = False):
     """
     Specify the function called on tooltip-opening
     :param fct: The function to call
