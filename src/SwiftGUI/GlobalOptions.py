@@ -409,7 +409,7 @@ class Window(Common_Background):
     hidden: bool = False
     minimized: bool = False
 
-class Tooltip(Common_Background):
+class Tooltip(Text):
     relief: Literals.relief = "ridge"
     padding: Literals.padding = (10, 5)
     text_color: Color | str = None

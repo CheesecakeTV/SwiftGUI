@@ -1,5 +1,7 @@
 import SwiftGUI as sg
 
+TooltipText = sg.T.with_go(sg.GlobalOptions.Tooltip)
+
 class TooltipPopup(sg.BasePopupNonblocking):
     defaults = sg.GlobalOptions.Tooltip
 
@@ -17,19 +19,10 @@ class TooltipPopup(sg.BasePopupNonblocking):
         )
 
     def _create_layout(self, tooltip_text: str) -> list[list[sg.BaseElement]]:
-        options = self.defaults.apply({   # These are defined via the global options
-                "background_color": None,
-                "relief": None,
-                "padding": None,
-                "text_color": None,
-            }
-        )
-
         layout = [
             [
-                sg.T(
+                TooltipText(    # Options of this text are defined in GlobalOptions.Tooltip
                     tooltip_text,
-                    **options,
                 )
             ]
         ]

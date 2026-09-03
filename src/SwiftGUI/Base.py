@@ -1,5 +1,5 @@
 from functools import wraps
-from typing import Literal, Union, Any, Hashable, Protocol, Iterable, Callable
+from typing import Literal, Union, Any, Hashable, Protocol, Iterable, Callable, TypeVar
 from SwiftGUI.Compat import Self
 import tkinter as tk
 
@@ -51,6 +51,7 @@ class _BaseSharedAttributes:
     key: Hashable = None  # If given, this will be written to the event-value. Elements without a key can not throw key-events
     _key_function: Callable | Iterable[Callable] = None  # Saves the key-function(s), if given
 
+same_class = TypeVar("same_class")
 class BaseElement(_BaseSharedAttributes):
     """
     Base for every element and widget.
@@ -415,6 +416,18 @@ class BaseElement(_BaseSharedAttributes):
     @tooltip_text.setter
     def tooltip_text(self, text: str | None):
         self.set_tooltip(text)
+
+    @classmethod
+    def with_go(cls: type[same_class], go_class: type[GlobalOptions.DEFAULT_OPTIONS_CLASS]) -> type[same_class]:
+        """
+        Create this element with a different global-option-class
+        :param go_class: The global-option-class this object should apply
+        :return:
+        """
+        class Modified(cls):
+            defaults = go_class
+
+        return Modified
 
 class BaseWidget(BaseElement):
     """
