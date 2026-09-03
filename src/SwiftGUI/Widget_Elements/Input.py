@@ -160,7 +160,7 @@ class Input(MixinElementWithValue, BaseWidget):
         self._tk_kwargs["font"] = font.Font(
             self.window.parent_tk_widget,
             family=self._fonttype,
-            size=self._fontsize,
+            size=self._fontsize if self._fontsize else 8,
             weight="bold" if self._bold else "normal",
             slant="italic" if self._italic else "roman",
             underline=bool(self._underline),

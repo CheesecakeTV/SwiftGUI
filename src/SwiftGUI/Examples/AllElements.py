@@ -401,7 +401,7 @@ def preview_all_elements(
         ]
     ]
 
-    w = sg.SubWindow(layout, title="Preview of all currently available elements")
+    w = sg.SubWindow(layout, title="Preview of all currently available elements", grab_anywhere=True)
     w["List"].index = 2
     console.print("Hi, I am sg.Console!")
     console.print("I have a print-function that works just like the normal print(...)")
