@@ -165,7 +165,6 @@ def preview_all_elements(
             sg.Notebook(
                 sg.TabFrame([[sg.T("sg.Notebook")]], fake_key="Tab1"),
                 sg.TabFrame([[sg.T("still sg.Notebook")]], fake_key="Tab2"),
-
             )
         ],[
             sg.Spacer(height=20)
@@ -174,9 +173,9 @@ def preview_all_elements(
                 [
                     sg.T("sg.SubLayout"),
                 ],[
-                    sg.T("A seperate layout inside your layout.")
+                    sg.T("A separate layout inside your layout.")
                 ],[
-                    sg.T("It has seperate keys and its own segregated event-loop.")
+                    sg.T("It has separate keys and its own segregated event-loop.")
                 ]
             ], alignment="left"))
         ]
@@ -225,6 +224,8 @@ def preview_all_elements(
                 big_clear_button= True,
                 submit_button= True,
                 default_values= ("", "", "Click on Clear"),
+            ).update_inputs(
+                readonly=flip_readonly,
             )
         ],[
             sg.HSep()
@@ -258,7 +259,9 @@ def preview_all_elements(
             sg.T("Lets you select a day"),
         ], [
             sg.T(expand=True),
-            sg.Calendar(),
+            sg.Calendar(
+                disabled=flip_disabled,
+            ),
             sg.T(expand=True),
         ], [
             sg.HSep()
@@ -318,7 +321,7 @@ def preview_all_elements(
                                 [
                                     sg.T("sgc.Element")
                                 ],[
-                                    sg.Button("Put any sg-element onto your canvas!!")
+                                    sg.Button("Put any sg-element onto your canvas!!", disabled=flip_disabled)
                                 ]
                             ]),
                             anchor= "nw",
