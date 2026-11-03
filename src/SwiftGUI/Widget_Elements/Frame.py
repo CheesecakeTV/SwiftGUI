@@ -187,6 +187,9 @@ class Frame(BaseWidgetContainer):
 
         element._init(self._containing_row_elements[row_index], self.window)
 
+        if self.has_flag(ElementFlag.IS_CREATED):
+            element.init_window_creation_done()
+
         return self
 
     def get_row_index(self, elem: BaseElement) -> int | None:
