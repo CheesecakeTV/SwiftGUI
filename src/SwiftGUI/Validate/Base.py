@@ -14,11 +14,11 @@ class BaseValidate:
 
     def __iter__(self): # Generate the tuple that is passed to the tk.widget (after registering the function) later
         return iter((
-            self.is_valid,
+            self._callback,
             *self.substitutions,
         ))
 
-    def is_valid(self, *args) -> bool:
+    def _callback(self, *args) -> bool:
         """
         Overwrite this to specify the actual validation
         :return:
@@ -29,6 +29,9 @@ class BaseValidateValue(BaseValidate):
     substitutions = (
         Substitutions.new_value,
         Substitutions.callback_reason,
+        Substitutions.old_value,
+        Substitutions.changed_text,
+        Substitutions.action_code,
     )
 
     def __init__(
@@ -37,45 +40,80 @@ class BaseValidateValue(BaseValidate):
     ):
         self._validate_backend_change = False   # This doesn't work...
 
-    def is_valid(self, new_text: str, reason: str) -> bool:
+    def _callback(self, val: str, reason: str, val_before: str, changed_val: str, action_code: str) -> bool:
+        """
+        Gets called by tkinter.
+        All checks must pass to allow the action.
+        """
         if (not self._validate_backend_change) and reason == "forced":
             return True
 
-        return self.is_valid_value(new_text)
+        if action_code == "0":    # Deletion
+            if not self.is_valid_deletion(val, val_before, changed_val):
+                return False
+        elif action_code == "1":  # Insertion
+            if not self.is_valid_insertion(val, val_before, changed_val):
+                return False
 
-    def is_valid_value(self, val: str) -> bool:
+        return self.is_valid_full_value(val)
+
+    def is_valid_full_value(self, val: str) -> bool:
+        """Called on every check with the full value after the change"""
         return True
 
-    def __or__(self, other: "BaseValidateValue") -> "ValueUnion":
-        return ValueUnion(self, other)
+    def is_valid_insertion(self, val: str, val_before: str, inserted_val: str) -> bool:
+        """Called when text is inserted by the user"""
+        return True
 
-    def __and__(self, other: "BaseValidateValue") -> "ValueChain":
-        return ValueChain(self, other)
+    def is_valid_deletion(self, val: str, val_before: str, deleted_val: str) -> bool:
+        """Called when text is deleted by the user"""
+        return True
 
-class ValueChain(BaseValidateValue):
+    def __or__(self, other: "BaseValidateValue") -> "Union":
+        return Union(self, other)
+
+    def __and__(self, other: "BaseValidateValue") -> "Chain":
+        return Chain(self, other)
+
+    def __neg__(self) -> "Negate":
+        return Negate(self)
+
+class Chain(BaseValidateValue):
 
     def __init__(self, *validators: BaseValidateValue):
         """
-        Is valid, if ALL passed validators passes the value-test
+        Is valid, if ALL passed value-validators passes the value-test
         :param validators:
         """
         self._validators = validators
         super().__init__()
 
-    def is_valid_value(self, val: str) -> bool:
-        return all(map(lambda a:a.is_valid_value(val), self._validators))
+    def _callback(self, *args) -> bool:
+        return all(map(lambda a: a._callback(*args), self._validators))
 
 
-class ValueUnion(BaseValidateValue):
+class Union(BaseValidateValue):
 
     def __init__(self, *validators: BaseValidateValue):
         """
-        Is valid, if ANY passed validator passes the value-test
+        Is valid, if ANY passed value-validator passes the value-test
         :param validators:
         """
         self._validators = validators
         super().__init__()
 
-    def is_valid_value(self, val: str) -> bool:
-        return any(map(lambda a: a.is_valid_value(val), self._validators))
+    def _callback(self, *args) -> bool:
+        return any(map(lambda a: a._callback(*args), self._validators))
+
+class Negate(BaseValidateValue):
+    def __init__(self, validator: BaseValidateValue):
+        """
+        Is valid, if the passed validator is not valid
+        :param validator:
+        """
+        self._validator = validator
+        super().__init__()
+
+    def _callback(self, *args) -> bool:
+        return not self._validator._callback(*args)
 

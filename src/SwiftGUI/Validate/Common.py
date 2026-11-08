@@ -1,3 +1,4 @@
+from typing import Iterable
 
 from SwiftGUI.Validate import BaseValidateValue
 
@@ -22,7 +23,7 @@ class CanConvertTo(BaseValidateValue):
 
         super().__init__()
 
-    def is_valid_value(self, val: str) -> bool:
+    def is_valid_full_value(self, val: str) -> bool:
         if self._allow_empty and not val:
             return True
 
@@ -46,7 +47,29 @@ class MaxLength(BaseValidateValue):
         self._max_len = max_len
         super().__init__()
 
-    def is_valid_value(self, val: str) -> bool:
+    def is_valid_full_value(self, val: str) -> bool:
         return len(val) <= self._max_len
+
+class ForbidDeletions(BaseValidateValue):
+    def is_valid_deletion(self, val: str, val_before: str, deleted_val: str) -> bool:
+        return False
+
+class ForbidInsertions(BaseValidateValue):
+    def is_valid_insertion(self, val: str, val_before: str, inserted_val: str) -> bool:
+        return False
+
+class WhitelistCharacters(BaseValidateValue):
+    def __init__(self, characters: Iterable[str]):
+        """
+        Forbid every character not passed.
+        Case sensitive
+        :param characters:
+        """
+        self._chars = set(characters)
+        super().__init__()
+
+    def is_valid_insertion(self, val: str, val_before: str, inserted_val: str) -> bool:
+        return all(map(lambda a:a in self._chars, inserted_val))
+
 
 
