@@ -109,6 +109,9 @@ class BaseFourColors(BaseTheme):
         temp = go.Canvas_Text
         temp.color = c4
 
+        temp = go.Tooltip
+        temp.text_color = c3
+
     def get_palette_frame(self, width: int = 50, height: int = 200) -> sg.Frame:
         """
         Returns an sg.Frame that contains the 4 containing colors.

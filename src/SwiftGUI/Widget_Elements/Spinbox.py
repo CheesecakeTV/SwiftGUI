@@ -3,7 +3,7 @@ import tkinter.font as font
 from collections.abc import Iterable, Callable
 from typing import Literal, Any, Hashable
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, MixinElementWithValue
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, MixinElementWithValue, Validate
 from SwiftGUI.Compat import Self
 
 
@@ -11,6 +11,7 @@ class Spinbox(MixinElementWithValue, BaseWidget):
     _tk_widget_class: type = tk.Spinbox # Class of the connected widget
     tk_widget: tk.Spinbox
     defaults = GlobalOptions.Spinbox   # Default values (Will be applied to kw_args-dict and passed onto the tk_widget
+    _value_type: type = str   # Set in update_initial
 
     _transfer_keys = {
         "background_color_disabled": "disabledbackground",
@@ -48,6 +49,7 @@ class Spinbox(MixinElementWithValue, BaseWidget):
 
             default_value: Any = None,
             value_type: type = None,
+            allow_empty: bool = None,
 
             cursor: Literals.cursor = None,
             cursor_button: Literals.cursor = None,
@@ -159,7 +161,7 @@ class Spinbox(MixinElementWithValue, BaseWidget):
         self._key_function = key_function
 
         self._default_val = default_value
-        self._value_type = self.defaults.single("value_type", value_type, default= float)
+        self._allow_empty = self.defaults.single("allow_empty", allow_empty, default=True)
 
         self._update_initial(cursor=cursor, cursor_button=cursor_button,
                              takefocus=takefocus, justify=justify, background_color=background_color,
@@ -178,6 +180,7 @@ class Spinbox(MixinElementWithValue, BaseWidget):
                              number_min=number_min, number_max=number_max, increment=increment, width=width,
                              repeatdelay=repeatdelay, repeatinterval=repeatinterval, state=state,
                              insertbackground_color=insertbackground_color,
+                             value_type=value_type,
                              # validate = "key",  # This restricts the user to one type of value
                              # validatecommand = (self.parent.register(self._validate), "%P"),  # This too
                              **tk_kwargs)
@@ -189,7 +192,7 @@ class Spinbox(MixinElementWithValue, BaseWidget):
         self._tk_kwargs["font"] = font.Font(
             self.window.parent_tk_widget,
             family=self._fonttype,
-            size=self._fontsize,
+            size=self._fontsize if self._fontsize else 8,
             weight="bold" if self._bold else "normal",
             slant="italic" if self._italic else "roman",
             underline=bool(self._underline),
@@ -217,8 +220,15 @@ class Spinbox(MixinElementWithValue, BaseWidget):
             case "font_overstrike":
                 self._overstrike = self.defaults.single(key,new_val)
                 self.add_flags(ElementFlag.UPDATE_FONT)
+            case "value_type":
+                self._value_type = new_val
+                self._update_initial(
+                    validate="key",
+                    validatecommand=Validate.CanConvertTo(new_val, allow_empty=self._allow_empty),
+                )
+
             case _: # Not a match
-                return super()._update_special_key(key, new_val)
+                    return super()._update_special_key(key, new_val)
 
         return True
 
@@ -242,16 +252,16 @@ class Spinbox(MixinElementWithValue, BaseWidget):
         except tk.TclError:  # _tk_target_value isn't used
             pass
 
+        if not self._last_viable_value:
+            return self._value_type()
+
         return self._value_type(self._last_viable_value)
 
-    def _validate(self, val: Any) -> bool:
-        try:
-            self._value_type(val)
-            return True
-        except (ValueError, TypeError):
-            return False
-
     def set_value(self,val:Any) -> Self:
+        if self._allow_empty and not val:
+            self._prev_value = self._value_type()
+            return super().set_value(self._prev_value)
+
         try:
             # Try to convert and manually apply the new value
             self._prev_value = self._value_type(val)
@@ -262,11 +272,6 @@ class Spinbox(MixinElementWithValue, BaseWidget):
 
     def init_window_creation_done(self):
         super().init_window_creation_done()
-
-        self._update_initial(
-            validate= "key",
-            validatecommand = (self.tk_widget.register(self._validate), "%P")
-        )
 
         if self._default_val is not None:
             self._tk_target_value.set(self._default_val)

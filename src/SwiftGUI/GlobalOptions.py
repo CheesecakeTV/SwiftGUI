@@ -5,7 +5,7 @@ from collections.abc import Iterable
 from os import PathLike
 from typing import Literal, Union, Any, Callable
 
-from SwiftGUI import Literals, Color, font_windows, Font, Extras
+from SwiftGUI import Literals, Color, font_windows, Font, Extras, Validate
 from SwiftGUI.Utilities.Images import file_from_b64
 import SwiftGUI as sg
 
@@ -253,9 +253,9 @@ class Text(Common, Common_Textual, Common_Background):
     justify:Literal["left","right","center"] = "left"
     #borderwidth:int = "5c" # Does not work
     apply_parent_background_color:bool = True
-
     padding:Literals.padding = 0
     width:int = None
+    relief: Literals.relief = "flat"
 
 class Scale(Common_Background, Common_Textual):
     default_value: int | float = None
@@ -306,7 +306,7 @@ class Input(Common,Common_Textual,Common_Field_Background):
     relief: Literals.relief = None
     exportselection: bool = None
     validate: Literals.validate = None
-    validatecommand: Callable = None
+    validatecommand: Validate.BaseValidate = None
     insertbackground_color: str | Color = None
     #
     # Mixed options
@@ -409,6 +409,10 @@ class Window(Common_Background):
     hidden: bool = False
     minimized: bool = False
 
+class Tooltip(Text):
+    relief: Literals.relief = "ridge"
+    padding: Literals.padding = (10, 5)
+    text_color: Color | str = None
 
 class SubWindow(Window):
     ...
@@ -540,6 +544,7 @@ class TabFrame(Frame):
 class Spinbox(Button, Input):
     default_value: float = None
     value_type: type = float
+    allow_empty: bool = True
     cursor_button: Literals.cursor = None
     background_color_button: Color | str = None
     relief_button_down: Literals.relief = None
@@ -707,6 +712,12 @@ class Canvas_Image(Common_Canvas_Element, Image):
     image_width: int = None
     image_height: int = None
     anchor: sg.Literals.anchor = None
+
+class Form(EMPTY):
+    clear_button_text: str = "Clear"
+    submit_button_text: str = "Submit"
+    space_over_buttons: int = 2
+    space_between_rows: int = 0
 
 def reset_all_options():
     """

@@ -16,7 +16,7 @@ from PIL import Image, ImageTk
 import time
 import logging
 
-from SwiftGUI import BaseElement, Frame, ElementFlag, Literals, GlobalOptions, Color, Debug
+from SwiftGUI import BaseElement, Frame, ElementFlag, Literals, GlobalOptions, Color, Debug, Tooltips
 
 if TYPE_CHECKING:
     from SwiftGUI import AnyElement
@@ -640,6 +640,15 @@ class BaseKeyHandler(BaseElement):
         self.value.from_json(data)
         return self
 
+    def activate_tooltips(self) -> Self:
+        """
+        Activate the necessary event for tooltip-handling.
+        You don't need to call this, just ignore.
+        :return:
+        """
+        self.actual_window.activate_tooltips()
+        return self
+
 class SubLayout(BaseKeyHandler):
     """
     Can be used as an sg-element.
@@ -862,6 +871,7 @@ class Window(BaseKeyHandler):
 
         self._sg_widget:Frame = Frame(layout,alignment= self.defaults.single("alignment", alignment), expand_y=True, expand=True)
         self.root = tk.Tk()
+        self.root.withdraw()
         self.ttk_style: ttk.Style = ttk.Style(self.root)
 
         if ttk_style is None:
@@ -1425,6 +1435,22 @@ class Window(BaseKeyHandler):
 
         return x, y
 
+    ###         TOOLTIPS        ###
+    _tooltips_active: bool = False
+    def activate_tooltips(self) -> Self:
+        if self._tooltips_active:
+            return self
+
+        self.bind_event("Motion", key_function=Tooltips.mouse_moved_callback)
+        self._tooltips_active = True
+        Tooltips.activate_tooltips()
+        return self
+
+    @staticmethod
+    def _mouse_moved():
+        """Callback for the motion-event"""
+        Tooltips.mouse_moved_callback()
+
 class HiddenMainWindow(Window):
     def __init__(self):
         """
@@ -1509,7 +1535,8 @@ class SubWindow(Window):
         self._grab_anywhere = self.defaults.single("grab_anywhere", grab_anywhere)
 
         self._sg_widget:Frame = Frame(layout,alignment= self.defaults.single("alignment", alignment), expand_y=True, expand=True)
-        self.root: tk.Toplevel = tk.Toplevel()
+        self.root: tk.Toplevel = tk.Toplevel(_main_window.root)
+        self.root.withdraw()    # Todo: Stop the window from flickering when it is being created
         self.ttk_style: ttk.Style = _main_window.ttk_style
 
         if icon is None:
@@ -1535,6 +1562,7 @@ class SubWindow(Window):
         )
 
         self.init(self._sg_widget, self.root, grab_anywhere_window= self)
+        self.root.deiconify()
 
         self.bind_grab_anywhere_to_element(self._sg_widget.tk_widget)
 
@@ -1542,6 +1570,10 @@ class SubWindow(Window):
         if key is not None:
             _main_window.register_element(self)
             _main_window._value_dict.set_extra_value(key, self.value)
+
+    def init_window_creation_done(self):
+        super().init_window_creation_done()
+        self.root.deiconify()
 
     def loop_close(self, block_others: bool = True) -> tuple[Any,dict[Hashable, Any]]:
         """

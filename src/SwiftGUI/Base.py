@@ -1,10 +1,9 @@
-from collections.abc import Iterable, Callable
 from functools import wraps
-from typing import Literal, Union, Any, Hashable, Protocol
+from typing import Literal, Union, Any, Hashable, Protocol, Iterable, Callable, TypeVar
 from SwiftGUI.Compat import Self
 import tkinter as tk
 
-from SwiftGUI import Event, GlobalOptions, Color, remove_None_vals, Literals, ReuseError, RowTypeError
+from SwiftGUI import Event, GlobalOptions, Color, remove_None_vals, Literals, ReuseError, RowTypeError, Tooltips
 from SwiftGUI.ElementFlags import ElementFlag
 #from SwiftGUI.Widget_Elements.Frame import Frame
 
@@ -52,6 +51,7 @@ class _BaseSharedAttributes:
     key: Hashable = None  # If given, this will be written to the event-value. Elements without a key can not throw key-events
     _key_function: Callable | Iterable[Callable] = None  # Saves the key-function(s), if given
 
+same_class = TypeVar("same_class")
 class BaseElement(_BaseSharedAttributes):
     """
     Base for every element and widget.
@@ -382,6 +382,52 @@ class BaseElement(_BaseSharedAttributes):
         self._bind_event_to_widget(tk_event, event_function)
 
         return self
+
+    _tooltip_text: str | None = None
+    _bound_tooltip_functions: bool = False  # True, if the events for tooltips are already bound
+    @run_after_window_creation
+    def set_tooltip(self, text: str | None = None) -> Self:
+        """
+        Add/Change/Remove a tooltip from this element.
+
+        Set it to None to deactivate tooltips for this element
+
+        :param text: Text for the tooltip to show
+        :return:
+        """
+        self._tooltip_text = text
+
+        if not self._bound_tooltip_functions:
+            self._bound_tooltip_functions = True
+            aw = self.window.actual_window
+            aw.activate_tooltips()
+            self.bind_event(
+                "Enter",
+                key_function=Tooltips.mouse_entered_elem_callback,
+            ).bind_event(
+                "Leave",
+                key_function=Tooltips.mouse_exited_elem_callback,
+            )
+
+    @property
+    def tooltip_text(self) -> str | None:
+        return self._tooltip_text
+
+    @tooltip_text.setter
+    def tooltip_text(self, text: str | None):
+        self.set_tooltip(text)
+
+    @classmethod
+    def with_go(cls: type[same_class], go_class: type[GlobalOptions.DEFAULT_OPTIONS_CLASS]) -> type[same_class]:
+        """
+        Create this element with a different global-option-class
+        :param go_class: The global-option-class this object should apply
+        :return:
+        """
+        class Modified(cls):
+            defaults = go_class
+
+        return Modified
 
 class BaseWidget(BaseElement):
     """
@@ -719,6 +765,28 @@ class BaseWidget(BaseElement):
 
     def __repr__(self) -> str:
         return f"<sg.{self.__class__.__name__} element with key={self.key} at {id(self)}>"
+
+    def _update_special_key(self,key:str,new_val:Any) -> bool|None:
+
+        match key:
+            case "validatecommand":
+                if new_val is None:
+                    return True
+
+                if not self.has_flag(ElementFlag.IS_CREATED):
+                    self.update_after_window_creation(validatecommand=new_val)
+                    return True
+
+                as_tuple = tuple(new_val)
+                self._tk_kwargs["validatecommand"] = (
+                    self.tk_widget.register(as_tuple[0]),
+                    *as_tuple[1:],
+                )
+
+            case _:
+                return super()._update_special_key(key, new_val)
+
+        return True
 
 class MixinScrollbar:
     """

@@ -1,6 +1,5 @@
 
 # SwiftGUI
-
 A python-package to easily create user-interfaces (GUIs).
 
 While most packages focus either on small, or big applications, SwiftGUI does both.
@@ -11,20 +10,20 @@ Has some minor optimizations when running in Python 3.12+.
 # Getting started / documentation
 [Start your journey here](https://github.com/CheesecakeTV/SwiftGUI-Docs/blob/main/01%20Basic%20tutorials/01%20Getting-started.md)
 
-The documentation now has [its own repository](https://github.com/CheesecakeTV/SwiftGUI-Docs).
+[Documentation](https://github.com/CheesecakeTV/SwiftGUI-Docs).
 
-# Completely vibe-coding free
+# Vibe-coding free
 No AI was used in writing this code.
 
 The only way I used it was to research really specific topics with tkinter.
 
-I did not use AI to write, check, correct, or refractor code.
-
 Even the documentation was written completely AI-free.
 Takes me around 2 hours per document, but that's a good price for keeping everything slop-free.
 
-# 35 different elements, 9 different canvas-elements
-(Version 0.11.0)
+Yes, this does slow down development quite a bit, but I trust myself to be more reliable than an AI agent.
+
+# 38 different elements, 9 different canvas-elements
+(Version 0.12.0)
 
 `import SwiftGUI as sg`
 
@@ -39,18 +38,14 @@ This applies the `Emerald`-theme, my personal favorite.
 
 See which themes are available by calling `sg.Examples.preview_all_themes()`.
 
-#  Alpha-phase!
-I am already using SwiftGUI for smaller projects and personally, like it a lot so far.
+#  Final minor version before Beta starts!
+You might have noticed that updates for SwiftGUI are rarer than they used to be.
+That's actually a good sign, it means I find less things to add/correct.
 
-However, until version 1.0.0, downward-compatability is not a priority.
-Names and functions/methods might change, which could potentially mess up your code.
+There will not be version 0.13.0, but 1.0.0 instead.
 
-For version 1.0.0, I'll sort and standardize names, so they are easier to remember.
-After version 1.0.0, there will be little to no changes that might break existing code.
-If changes can't be avoided, there will be a separate changelog which shows everything you need to
-adjust so you may update without issues.
-
-Don't worry too much though, the package is pretty much ready for beta-phase.
+I do have a couple of major tasks on my list before rolling out 1.0 though.
+Fixing the treeview for example.
 
 # Installation
 Install using pip:
@@ -58,26 +53,27 @@ Install using pip:
 pip install SwiftGUI
 ```
 
-Update SwiftGUI for the newest features and elements:
+Regularely update SwiftGUI for the newest features and bugfixes:
 ```bash
 pip install SwiftGUI -U
 ```
 
 # NOT a clone of PySimpleGUI
-SwiftGUI is it's own package with its own functionality.
+SwiftGUI is it's own package, with its own functionality.
 
 I really liked PySimpleGUI (until they went "premium"),
-but once you work a lot with it, you'll notice the downsides of it more and more.
+but once you work a lot with it, you'll notice its downsides more and more.
 
-**SwiftGUI can be used very simmilar to PySimpleGUI**, but has a lot of additional features.\
-So if you know PySimpleGUI, you won't need to start from scratch.
+The basics of SwiftGUI are almost the same as PySimpleGUI.
+So if you know PySimpleGUI, you already know many concepts of SwiftGUI.
 
-Also, there will be a lot of learning-material, including
-- Written tutorials (see "getting started" below)
-- Video tutorials (Planned for version 1.0.0)
-- Application notes, which are short descriptions of actual applications
+There is already a collection of helpful learning material, including:
+- Written tutorials (see "getting started" above)
+- Application notes, which summarize different tutorials regarding specific applications
 - Examples, which show an actual application of SwiftGUI
 - The GitHub forum ([discussions](https://github.com/CheesecakeTV/SwiftGUI/discussions)) for questions
+
+Video tutorials are planned for version 1.0.0.
 
 ## Why SwiftGUI instead of PySimpleGUI?
 I have a lot of experience with `PySimpleGUI`, used it for years.\
@@ -86,14 +82,19 @@ It is very useful for smaller applications.
 Unfortunately, at a certain level of complexity, you'll hit a wall.\
 All those simple features that make PySimpleGUI great, are suddenly very annoying.
 
-What annoys me the most is that PySimpleGUI forces you to use only the event-loop for functionality.
-That means, every tiny tiniest functionality needs a key and code in the event-loop.
+In the earlier versions of SwiftGUI, it was ment to "fix" annoying things in PySimpleGUI.
+For example:
+- You are forced to use the event-loop for every tiny functionality
+- You can pretty much forget about editing elements, since they are implemented so convoluded
+- Some elements throw events wrong, including sg.Table and sg.Input
 
-SwiftGUI on the other hand offers many different ways to connect layout with functionality.
-That makes it easy to "copy and paste" parts of the layout.
+Nowadays, SwiftGUI's functionality goes far beyond what PySimpleGUI has to offer.
 
-SwiftGUI also supports multiple windows much better, with every window having its own event-loop.
+The reason is simple:
+SwiftGUI is built for modularity and expandability.
+You can easily create templates, themes, custom popups, modify elements, etc.
 
-On top of that, SwiftGUI enables expandability everywhere.
-You can easily create your own elements, themes, popups and templates.
+Also, SwiftGUI works a lot better with multiple windows.
+Creating a second window is almost as simple as creating a single one.
 
+A lot more features are described/mentioned in the documentation.

@@ -235,7 +235,9 @@ class Table(MixinElementWithDefaultEvent, BaseWidgetTTK, MixinScrollbar):
 
         self._prev_selection = all_indexes
 
-        if not all_indexes: # It's impossible for the user to cause a real event without anything selected in the table
+        if not all_indexes: # It's NEARLY impossible for the user to cause a real event without anything selected in the table
+            # The annoyance is worse without this check, so keep it!
+            # If the selectmode is extended, you can deselect rows. This is the only exception
             return
 
         self.throw_default_event()

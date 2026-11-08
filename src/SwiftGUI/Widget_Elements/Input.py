@@ -3,7 +3,7 @@ import tkinter.font as font
 from collections.abc import Iterable, Callable
 from typing import Literal, Any, Hashable
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, MixinElementWithValue
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, MixinElementWithValue, Validate
 from SwiftGUI.Compat import Self
 
 
@@ -61,7 +61,7 @@ class Input(MixinElementWithValue, BaseWidget):
             relief: Literals.relief = None,
             exportselection: bool = None,
             validate: Literals.validate = None,
-            validatecommand: Callable = None,
+            validatecommand: Validate.BaseValidate = None,
             #
             fonttype: str = None,
             fontsize: int = None,
@@ -160,7 +160,7 @@ class Input(MixinElementWithValue, BaseWidget):
         self._tk_kwargs["font"] = font.Font(
             self.window.parent_tk_widget,
             family=self._fonttype,
-            size=self._fontsize,
+            size=self._fontsize if self._fontsize else 8,
             weight="bold" if self._bold else "normal",
             slant="italic" if self._italic else "roman",
             underline=bool(self._underline),
