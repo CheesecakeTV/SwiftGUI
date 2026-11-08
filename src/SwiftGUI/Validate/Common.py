@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Callable
 
 from SwiftGUI.Validate import BaseValidateValue
 
@@ -71,5 +71,12 @@ class WhitelistCharacters(BaseValidateValue):
     def is_valid_insertion(self, val: str, val_before: str, inserted_val: str) -> bool:
         return all(map(lambda a:a in self._chars, inserted_val))
 
+class FullValueFunction(BaseValidateValue):
+    def __init__(self, function: Callable[[str], bool]):
+        self._fct = function
+        super().__init__()
+
+    def is_valid_full_value(self, val: str) -> bool:
+        return self._fct(val)
 
 
