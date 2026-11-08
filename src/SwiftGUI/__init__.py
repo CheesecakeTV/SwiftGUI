@@ -6,6 +6,8 @@ logger.debug("Beginning to load SwiftGUI")
 loaded_addons: set[str] = set() # Contains all included SwiftGUI-addons.
 # If you'd like your own addon officially included, create an issue on GitHub.
 
+from . import Validate
+
 from .Exceptions import *
 
 from . import Extras

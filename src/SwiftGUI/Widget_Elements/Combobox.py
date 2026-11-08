@@ -4,7 +4,8 @@ from typing import Any, Iterable, Callable, Hashable
 from SwiftGUI.Base import run_after_window_creation
 from SwiftGUI.Compat import Self
 
-from SwiftGUI import GlobalOptions, BaseWidgetTTK, Literals, Color, ElementFlag, Scrollbar, MixinElementWithValue
+from SwiftGUI import GlobalOptions, BaseWidgetTTK, Literals, Color, ElementFlag, Scrollbar, MixinElementWithValue, \
+    Validate
 
 
 class Combobox(MixinElementWithValue, BaseWidgetTTK):
@@ -57,8 +58,8 @@ class Combobox(MixinElementWithValue, BaseWidgetTTK):
 
             exportselection: bool = None,
 
-            # Todo: validate,
-            #  validatecommand,
+            validate: Literals.validate = None,
+            validatecommand: Validate.BaseValidate = None,
 
             height: int = None,
             width: int = None,
@@ -155,6 +156,9 @@ class Combobox(MixinElementWithValue, BaseWidgetTTK):
             font_overstrike=font_overstrike,
 
             insertbackground = insertbackground,
+
+            validate=validate,
+            validatecommand=validatecommand,
         )
 
     @BaseWidgetTTK._run_after_window_creation

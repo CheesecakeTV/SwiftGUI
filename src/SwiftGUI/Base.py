@@ -766,6 +766,28 @@ class BaseWidget(BaseElement):
     def __repr__(self) -> str:
         return f"<sg.{self.__class__.__name__} element with key={self.key} at {id(self)}>"
 
+    def _update_special_key(self,key:str,new_val:Any) -> bool|None:
+
+        match key:
+            case "validatecommand":
+                if new_val is None:
+                    return True
+
+                if not self.has_flag(ElementFlag.IS_CREATED):
+                    self.update_after_window_creation(validatecommand=new_val)
+                    return True
+
+                as_tuple = tuple(new_val)
+                self._tk_kwargs["validatecommand"] = (
+                    self.tk_widget.register(as_tuple[0]),
+                    *as_tuple[1:],
+                )
+
+            case _:
+                return super()._update_special_key(key, new_val)
+
+        return True
+
 class MixinScrollbar:
     """
     Base for every widget that has a scrollbar.

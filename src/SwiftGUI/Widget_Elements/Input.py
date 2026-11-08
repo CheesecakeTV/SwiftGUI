@@ -3,7 +3,7 @@ import tkinter.font as font
 from collections.abc import Iterable, Callable
 from typing import Literal, Any, Hashable
 
-from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, MixinElementWithValue
+from SwiftGUI import ElementFlag, BaseWidget, GlobalOptions, Literals, Color, MixinElementWithValue, Validate
 from SwiftGUI.Compat import Self
 
 
@@ -61,7 +61,7 @@ class Input(MixinElementWithValue, BaseWidget):
             relief: Literals.relief = None,
             exportselection: bool = None,
             validate: Literals.validate = None,
-            validatecommand: Callable = None,
+            validatecommand: Validate.BaseValidate = None,
             #
             fonttype: str = None,
             fontsize: int = None,
